@@ -1,6 +1,6 @@
 services:
   django:
-    build: ./services/django
+    build: ./backend
     ports:
       - 3000:3000
     networks:
@@ -13,7 +13,7 @@ services:
     restart: unless-stopped
 
   postgresql:
-    build: ./services/postgresql
+    image: postgres:16-alpine
     ports:
       - 8080:8080
     networks:
