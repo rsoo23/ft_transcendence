@@ -1,0 +1,30 @@
+services:
+  django:
+    build: ./services/django
+    ports:
+      - 3000:3000
+    networks:
+      - backend_net
+    # volumes:
+    env_file:
+      - .env
+    depends_on:
+      - postgresql
+    restart: unless-stopped
+
+  postgresql:
+    build: ./services/postgresql
+    ports:
+      - 8080:8080
+    networks:
+      - backend_net
+    # volumes:
+    env_file:
+      - .env
+    restart: unless-stopped
+
+volumes:
+  data:
+
+networks:
+  backend_net:
