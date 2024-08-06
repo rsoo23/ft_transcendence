@@ -10,8 +10,6 @@ _____
 
 ## Features
 * User Management
-* Authentication with 42 OAuth 2.0
-* Two-factor authentication with Google Authentication
 * Game
 
 _______
