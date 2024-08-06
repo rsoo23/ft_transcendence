@@ -3,8 +3,11 @@ DC		=	docker compose -f
 YAML	=	docker-compose.yml
 RMRF	=	sudo rm -rf
 
-up:
+up: build
 		$(DC) $(YAML) up -d
+
+build:
+		$(DC) $(YAML) build
 
 down:
 		$(DC) $(YAML) down
@@ -21,7 +24,6 @@ fclean:
 		docker volume rm $$(docker volume ls -q); \
 		docker network ls -q | grep -v -E 'bridge|host|none' | xargs -r docker network rm;
 
-re:
-		make fclean; make all
+re: fclean up
 
-.PHONY:	all down fclean re
+.PHONY:	all down fclean re build cclean up
