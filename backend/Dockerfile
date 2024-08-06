@@ -3,4 +3,4 @@ WORKDIR /app
 COPY . .
 RUN pip install -r requirements.txt
 
-CMD ["python", "-m", "django"]
+CMD ["python", "manage.py", "runserver"]
