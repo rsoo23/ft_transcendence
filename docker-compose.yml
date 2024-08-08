@@ -4,7 +4,8 @@ services:
     ports:
       - 3000:3000
     networks:
-      - backend_net
+      - django_net
+      - db_net
     # volumes:
     env_file:
       - .env
@@ -17,8 +18,23 @@ services:
     ports:
       - 8080:8080
     networks:
-      - backend_net
+      - db_net
     # volumes:
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27.0-alpine
+    ports:
+      - 8000:8000
+    networks:
+      - django_net
+    depends_on:
+      - django
+    volumes:
+      - ./frontend:/var/www/html
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
     env_file:
       - .env
     restart: unless-stopped
@@ -27,4 +43,5 @@ volumes:
   data:
 
 networks:
-  backend_net:
+  django_net:
+  db_net:
