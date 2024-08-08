@@ -48,6 +48,16 @@ If you want to clean up the images and rebuild at the same time, run:
 make re
 ```
 
+### Summary of Makefile rules
+```yaml
+all: (default) Builds and runs the containers.
+re: Similar to "all" but removes containers, images, and volumes.
+up: Runs the containers in the background.
+down: Stops and removes containers running in the background (including networks)
+cclean: Purges EVERYTHING Docker related, including cache and stuff. Use with caution.
+fclean: Attempts to remove everything created by the containers (including volumes and images)
+```
+
 ______
 ## Running Django without Docker
 > This is only useful if you don't want to bother with using Docker to run Django.
