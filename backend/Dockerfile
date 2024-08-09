@@ -3,4 +3,4 @@ WORKDIR /app
 COPY . .
 RUN pip install -r requirements.txt
 
-CMD ["python", "manage.py", "runserver"]
+CMD ["daphne", "-p3000", "-b0.0.0.0", "main.asgi:application"]
