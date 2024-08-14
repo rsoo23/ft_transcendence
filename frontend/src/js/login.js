@@ -34,6 +34,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             if (data.success) {
+				try {
+					const status = await fetch('/token_management/create_token/', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({ username, password })
+					});
+					/*console.log(document.cookie)*/
+				} catch (error) {
+					console.error('Error:', error);
+            		alert('Token Creation Error');
+				}
                 alert('Login successful!');
                 showMenu();
             } else {
