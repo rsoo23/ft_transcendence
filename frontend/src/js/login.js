@@ -1,60 +1,65 @@
-document.addEventListener('DOMContentLoaded', () => {
+function showLoginPage() {
     const app = document.getElementById('app');
     app.innerHTML = `
     <section class="container">
-		<img src="static/image/pingpong.gif" alt="pingpong">
+        <img src="static/image/pingpong.gif" alt="pingpong">
         <div class="login-container">
-			<h1 class="opacity">LOGIN</h1>
-			<form id="login-form">
-				<input type="text" id="username" name="username" placeholder="USERNAME" required />
-				<input type="password" id="password" name="password" placeholder="PASSWORD" required />
-				<button type="submit" class="opacity">SUBMIT</button>
-			</form>
-			<div class="register-forget opacity">
-				<a href="#" id="register-link">REGISTER</a>
-				<a href="#" id="forgot-password-link">FORGOT PASSWORD</a>
-			</div>
+            <h1 class="opacity">LOGIN</h1>
+            <form id="login-form">
+                <input type="text" id="username" name="username" placeholder="USERNAME" required />
+                <input type="password" id="password" name="password" placeholder="PASSWORD" required />
+                <button type="submit" class="opacity">SUBMIT</button>
+            </form>
+            <div class="register-forget opacity">
+                <a href="#" id="register-link">REGISTER</a>
+                <a href="#" id="forgot-password-link">FORGOT PASSWORD</a>
+            </div>
         </div>
     </section>
     `;
 
-    document.getElementById('login-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-
-        try {
-            const response = await fetch('/api/login/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password })
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                alert('Login successful!');
-                showMenu();
-            } else {
-                alert('Login failed: ' + data.error);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
-        }
-    });
-
-	document.getElementById('register-link').addEventListener('click', (e) => {
+    // Add event listeners
+    document.getElementById('login-form').addEventListener('submit', handleLogin);
+    document.getElementById('register-link').addEventListener('click', (e) => {
         e.preventDefault();
         showRegisterForm();
     });
+    document.getElementById('forgot-password-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        showForgotPasswordForm();
+    });
+}
 
-	document.getElementById('forgot-password-link').addEventListener('click', (e) => {
-		e.preventDefault();
-		showForgotPasswordForm();
-	});
-});
+// Separate function for handling login
+async function handleLogin(e) {
+	e.preventDefault();
+	const username = document.getElementById('username').value;
+	const password = document.getElementById('password').value;
+
+	try {
+		const response = await fetch('/api/login/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ username, password })
+		});
+
+		const data = await response.json();
+		if (data.success) {
+			alert('Login successful!');
+			showMenu();
+		} else {
+			alert('Login failed: ' + data.error);
+		}
+	} catch (error) {
+		console.error('Error:', error);
+		alert('An error occurred. Please try again.');
+	}
+}
+
+// Call this function when the DOM is loaded
+document.addEventListener('DOMContentLoaded', showLoginPage);
 
 function showRegisterForm() {
     const app = document.getElementById('app');
