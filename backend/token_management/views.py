@@ -27,7 +27,7 @@ def verify_token(request) :
         if 'ID_Token' in request.COOKIES :
             token = request.COOKIES['ID_Token']
         else :
-            return JsonResponse({'success' : False, 'Error': 'ID_Token Not Found'}, status=401)
+            return JsonResponse({'success' : False, 'Error': 'ID_Token Not Found'})
         
         if token == "":
             return JsonResponse({'success' : False, 'Error' : 'Invalid token value'}, status=401)
@@ -39,8 +39,3 @@ def verify_token(request) :
             return JsonResponse({'success' : False, 'Status' : 'Token bearer not found'}, status=401)
 
     return JsonResponse({'Error': 'Invalid request method'}, status=405)
-            
-        
-    
-    
-    
