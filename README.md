@@ -50,7 +50,8 @@ make re
 
 ### Summary of Makefile rules
 ```yaml
-all: (default) Builds and runs the containers.
+all: (default) Stops, builds, and runs the containers.
+reload: Restarts the containers.
 re: Similar to "all" but removes containers, images, and volumes.
 up: Runs the containers in the background.
 down: Stops and removes containers running in the background (including networks)
@@ -71,7 +72,7 @@ If you don't know what that is, look up `venv`.
 $ cd backend
 
 # Then install the backend dependencies
-$ pip install -r ./backend/requirements.txt
+$ pip install -r ./requirements.txt
 
 # After that, start up django
 $ ./manage.py runserver
