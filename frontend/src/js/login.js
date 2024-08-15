@@ -100,9 +100,6 @@ async function handleLogin(e) {
 	}
 }
 
-// Call this function when the DOM is loaded
-document.addEventListener('DOMContentLoaded', showLoginPage);
-
 function showRegisterForm() {
     const app = document.getElementById('app');
     app.innerHTML = `
