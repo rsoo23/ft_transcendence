@@ -57,17 +57,15 @@ function showLoginPage() {
 }
 
 async function get_ID_Token(username, password) {
-	try 
-	{
+	try {
 		const status = await fetch('/token_management/create_token/', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ username, password })
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ username, password })
 		});
-	} catch (error) 
-	{
+	} catch (error) {
 		console.error('Error:', error);
 		alert('Token Creation Error');
 		return (false);

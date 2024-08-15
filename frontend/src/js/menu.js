@@ -18,7 +18,7 @@ function showMenu() {
   }
   
   async function showUserProfile() {
-	if((await verify_token()))
+	if(await verify_token())
 		alert('User Profile feature coming soon!');
 	else
 	{
@@ -28,7 +28,7 @@ function showMenu() {
   }
   
   async function showAddFriends() {
-	if( await verify_token())
+	if(await verify_token())
 		alert('Add Friends feature coming soon!');
 	else
 	{
@@ -38,7 +38,7 @@ function showMenu() {
   }
   
   async function showChat() {
-	if( await verify_token())
+	if(await verify_token())
 		alert('Chat feature coming soon!');
 	else
 	{
