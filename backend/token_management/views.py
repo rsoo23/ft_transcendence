@@ -17,7 +17,7 @@ def create_token(request):
             return JsonResponse({'error': 'Token creation fail'}, status=405)
         
         response = HttpResponse('Sending back ID_Token cookie')
-        response.set_cookie('ID_Token', encoded_jwt, httponly = 'True', max_age=60)
+        response.set_cookie('ID_Token', encoded_jwt, httponly = 'True', max_age=5)
         return response
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
@@ -27,7 +27,7 @@ def verify_token(request) :
         if 'ID_Token' in request.COOKIES :
             token = request.COOKIES['ID_Token']
         else :
-            return JsonResponse({'success' : False, 'Error': 'ID_Token Not Found'})
+            return JsonResponse({'success' : False, 'Error': 'ID_Token Not Found'}, status=401)
         
         if token == "":
             return JsonResponse({'success' : False, 'Error' : 'Invalid token value'}, status=401)

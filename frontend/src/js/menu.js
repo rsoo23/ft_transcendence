@@ -17,18 +17,51 @@ function showMenu() {
 	`;
   }
   
-  function showUserProfile() {
-	alert('User Profile feature coming soon!');
+  async function showUserProfile() {
+	if((await verify_token()))
+		alert('User Profile feature coming soon!');
+	else
+	{
+		alert('Please Login Again !');
+		showLoginPage();
+	}
   }
   
-  function showAddFriends() {
-	alert('Add Friends feature coming soon!');
+  async function showAddFriends() {
+	if( await verify_token())
+		alert('Add Friends feature coming soon!');
+	else
+	{
+		alert('Please Login Again !');
+		showLoginPage();
+	}
   }
   
-  function showChat() {
-	alert('Chat feature coming soon!');
+  async function showChat() {
+	if( await verify_token())
+		alert('Chat feature coming soon!');
+	else
+	{
+		alert('Please Login Again !');
+		showLoginPage();
+	}
   }
   
-  function showGame() {
-	alert('Game feature coming soon!');
+  async function showGame() {
+	if(await verify_token())
+		alert('Game feature coming soon!');
+	else
+	{
+		alert('Please Login Again !');
+		showLoginPage();
+	}
+  }
+
+  async function verify_token() {
+	const response = await fetch('/token_management/verify_token', {
+		method: 'GET',
+	});
+
+	const status = await response.json();
+	return(status.success);
   }
