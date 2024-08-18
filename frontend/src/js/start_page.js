@@ -9,3 +9,9 @@ function loadStartPage() {
 }
 
 loadStartPage();
+
+document.getElementById('login-button').addEventListener('click', (e) => {
+});
+
+document.getElementById('signup-button').addEventListener('click', (e) => {
+});
