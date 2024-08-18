@@ -1,12 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
-/*:root {*/
-/*  --main-bg-color: #000000;*/
-/*  --panel-bg-color: #000000;*/
-/*}*/
+:root {
+  --main-bg-color: #000000;
+  --panel-bg-color: #000000;
+
+  --teal-500: #08b393;
+  --magenta-500: #cf2350;
+  --orange-500: #e37144;
+  --blue-500: #2a86bb;
+  --yellow-500: #f6b20d;
+  --charcoal-500: #8d8d8d;
+  --chilled-gray-500: #8e92b9;
+}
 
 body, html {
-  background-color: #000000;
+  background-color: var(--main-bg-color);
 }
 
 body {
@@ -21,7 +29,7 @@ body {
 }
 
 .panel {
-  background-color: #000000;
+  background-color: var(--panel-bg-color);
   border: 10px solid white;
 }
 
