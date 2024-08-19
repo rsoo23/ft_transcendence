@@ -1,17 +1,45 @@
 
-function loadStartPage() {
-  fetch('/static/components/start_page.html')
-    .then(response => response.text())
-    .then(html => {
-      document.body.innerHTML = html;
-    })
-    .catch(error => console.error('Error loading Start Page:', error));
+import { showLoginPanel } from "./login_panel.js";
+import { showSignupPanel } from "./signup_panel.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadStartPage()
+})
+
+
+async function loadStartPage() {
+  try {
+    const response = await fetch('/static/components/start_page.html')
+    const html = await response.text()
+    document.body.innerHTML = html;
+
+    connectLoginButton()
+    connectSignupButton()
+  } catch (error) {
+    console.error('Error loading Start Page:', error)
+  }
 }
 
-loadStartPage();
+function connectLoginButton() {
+  const loginButton = document.getElementById('login-button')
 
-document.getElementById('login-button').addEventListener('click', (e) => {
-});
+  if (loginButton) {
+    loginButton.addEventListener('click', (e) => {
+      showLoginPanel();
+    });
+  } else {
+    console.error('Login button not found')
+  }
+}
 
-document.getElementById('signup-button').addEventListener('click', (e) => {
-});
+function connectSignupButton() {
+  const signupButton = document.getElementById('signup-button')
+
+  if (signupButton) {
+    signupButton.addEventListener('click', (e) => {
+      showSignupPanel();
+    });
+  } else {
+    console.error('Signup button not found')
+  }
+}

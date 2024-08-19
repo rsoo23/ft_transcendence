@@ -1,5 +1,5 @@
 
-function showLoginPanel() {
+export function showLoginPanel() {
   fetch('/static/components/login_panel.html')
     .then(response => response.text())
     .then(html => {
