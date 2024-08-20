@@ -11,14 +11,8 @@ export async function loadLoginPanel() {
     await loadComponent('components/login_panel.html')
 
     initBackToStartButton()
-
-    const togglePasswordVisibilityIcon = document.getElementById('toggle-password-visibility-icon')
-
-    addEventListenerTo(
-      togglePasswordVisibilityIcon,
-      'click',
-      () => togglePasswordVisibility(togglePasswordVisibilityIcon)
-    )
+    initConfirmLoginButton()
+    initTogglePasswordVisibilityIcon()
   } catch (error) {
     console.error('Error loading Login Panel:', error)
   }
@@ -64,6 +58,58 @@ function initBackToStartButton() {
     () => {
       backToStartButton.style.backgroundColor = getColor(colorInfo['name'], 700)
     }
+  )
+}
+
+function initConfirmLoginButton() {
+  const button = document.getElementById('confirm-login-button')
+  let colorInfo = {
+    hex: '',
+    name: ''
+  }
+
+  addEventListenerTo(
+    button,
+    'click',
+    () => loadStartPage()
+  )
+
+  addEventListenerTo(
+    button,
+    'mouseover',
+    () => {
+      colorInfo = getRandomColor(500)
+
+      button.style.backgroundColor = colorInfo['hex']
+      button.style.color = getColor(colorInfo['name'], 800)
+    }
+  )
+
+  addEventListenerTo(
+    button,
+    'mouseout',
+    () => {
+      button.style.backgroundColor = getColor('charcoal', 700)
+      button.style.color = getColor('charcoal', 100)
+    }
+  )
+
+  addEventListenerTo(
+    button,
+    'mousedown',
+    () => {
+      button.style.backgroundColor = getColor(colorInfo['name'], 700)
+    }
+  )
+}
+
+function initTogglePasswordVisibilityIcon() {
+  const togglePasswordVisibilityIcon = document.getElementById('toggle-password-visibility-icon')
+
+  addEventListenerTo(
+    togglePasswordVisibilityIcon,
+    'click',
+    () => togglePasswordVisibility(togglePasswordVisibilityIcon)
   )
 }
 
