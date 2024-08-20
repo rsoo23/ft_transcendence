@@ -10,9 +10,7 @@ export async function loadComponent(path) {
   }
 }
 
-export function addEventListenerTo(elementID, event, callback) {
-  const element = document.getElementById(elementID)
-
+export function addEventListenerTo(element, event, callback) {
   if (element) {
     element.addEventListener(event, (e) => {
       callback()

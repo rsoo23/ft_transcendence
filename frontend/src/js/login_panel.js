@@ -9,27 +9,30 @@ export async function loadLoginPanel() {
   try {
     await loadComponent('components/login_panel.html')
 
+    const backToStartButton = document.getElementById('back-to-start-button')
+
     addEventListenerTo(
-      'back-to-start-button',
+      backToStartButton,
       'click',
       () => loadStartPage()
     )
 
+    const togglePasswordVisibilityIcon = document.getElementById('toggle-password-visibility-icon')
+
     addEventListenerTo(
-      'toggle-password-visibility-icon',
+      togglePasswordVisibilityIcon,
       'click',
-      () => togglePasswordVisibility()
+      () => togglePasswordVisibility(togglePasswordVisibilityIcon)
     )
   } catch (error) {
     console.error('Error loading Login Panel:', error)
   }
 }
 
-function togglePasswordVisibility() {
-  const button = document.getElementById('toggle-password-visibility-icon')
+function togglePasswordVisibility(icon) {
   const passwordField = document.getElementById('login-password-input')
 
-  if (!button) {
+  if (!icon) {
     console.error('Error: toggle-password-visibility-icon not found')
     return
   }
@@ -40,13 +43,11 @@ function togglePasswordVisibility() {
 
   if (!isPasswordVisible) {
     passwordField.setAttribute('type', 'text')
-    button.textContent = 'Show'
-    button.innerHTML = 'visibility'
+    icon.innerHTML = 'visibility'
     isPasswordVisible = true
   } else {
     passwordField.setAttribute('type', 'password')
-    button.textContent = 'Hide'
-    button.innerHTML = 'visibility_off'
+    icon.innerHTML = 'visibility_off'
     isPasswordVisible = false
   }
 }

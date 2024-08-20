@@ -4,11 +4,55 @@
   --main-bg-color: #000000;
   --panel-bg-color: #000000;
 
-  --teal-500: #08b393;
-  --magenta-500: #cf2350;
-  --orange-500: #e37144;
-  --blue-500: #2a86bb;
-  --yellow-500: #f6b20d;
+  --teal-100: #C0FCF1;
+  --teal-200: #85FAE4;
+  --teal-300: #46F7D6;
+  --teal-400: #0BEFC5;
+  --teal-500: #08B393;
+  --teal-600: #068E75;
+  --teal-700: #056B59;
+  --teal-800: #03493C;
+  --teal-900: #02221C;
+
+  --magenta-100: #F8D3DD;
+  --magenta-200: #F0A3B8;
+  --magenta-300: #E87896;
+  --magenta-400: #E04870;
+  --magenta-500: #CF2350;
+  --magenta-600: #A61C41;
+  --magenta-700: #7F1531;
+  --magenta-800: #530E20;
+  --magenta-900: #2C0711;
+  
+  --orange-100: #FAE4DC;
+  --orange-200: #F4C6B4;
+  --orange-300: #EEAB90;
+  --orange-400: #E88C68;
+  --orange-500: #E37144;
+  --orange-600: #CC501E;
+  --orange-700: #9B3D17;
+  --orange-800: #66280F;
+  --orange-900: #351508;
+
+  --blue-100: #D1E8F5;
+  --blue-200: #A3D0EA;
+  --blue-300: #76B9E0;
+  --blue-400: #48A2D6;
+  --blue-500: #2A86BB;
+  --blue-600: #226B96;
+  --blue-700: #195070;
+  --blue-800: #11364B;
+  --blue-900: #081B25;
+
+  --yellow-100: #FDEFCE;
+  --yellow-200: #FBDF9D;
+  --yellow-300: #F9CF6C;
+  --yellow-400: #F8C03F;
+  --yellow-500: #F6B20D;
+  --yellow-600: #CA8F08;
+  --yellow-700: #936906;
+  --yellow-800: #624604;
+  --yellow-900: #312302;
 
   --charcoal-100: #e8e8e8;
   --charcoal-200: #d1d1d1;
@@ -20,7 +64,15 @@
   --charcoal-800: #383838;
   --charcoal-900: #1c1c1c;
   
-  --chilled-gray-500: #8e92b9;
+  --chilled-gray-100: #E9EAF1;
+  --chilled-gray-200: #D3D5E4;
+  --chilled-gray-300: #BABCD4;
+  --chilled-gray-400: #A4A7C6;
+  --chilled-gray-500: #8E92B9;
+  --chilled-gray-600: #656B9F;
+  --chilled-gray-700: #4A4F78;
+  --chilled-gray-800: #333652;
+  --chilled-gray-900: #191B29;
 }
 
 * {
@@ -40,6 +92,17 @@ body {
   margin: 0;
 }
 
+/*anchors*/
+a:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+a:active {
+  color: var(--charcoal-500)
+}
+
+/*containers and panels*/
 .main-container {
   display: flex;
   justify-content: center;
@@ -51,13 +114,18 @@ body {
   border: 5px solid white;
 }
 
+/*buttons*/
+.button {
+  background-color: var(--charcoal-700);
+  color: var(--charcoal-100);
+  transition: 0.2s;
+}
+
 .button-lg {
   width: 9rem;
   height: 3.5rem;
   font-size: 1.25rem;
   border-radius: 24px;
-  background-color: var(--charcoal-700);
-  color: var(--charcoal-100);
   outline: none;
   border: none;
 }
@@ -67,8 +135,6 @@ body {
   height: 3rem;
   font-size: 1rem;
   border-radius: 24px;
-  background-color: var(--charcoal-700);
-  color: var(--charcoal-100);
   outline: none;
   border: none;
 }
@@ -77,12 +143,11 @@ body {
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 100px;
-  background-color: var(--charcoal-700);
-  color: #ffffff;
   outline: none;
   border: none;
 }
 
+/*input fields*/
 .input-field {
   background-color: var(--charcoal-700);
   color: var(--charcoal-100);
