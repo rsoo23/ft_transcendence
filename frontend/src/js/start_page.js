@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
   loadStartPage()
 })
 
-
 async function loadStartPage() {
   try {
     const response = await fetch('/static/components/start_page.html')

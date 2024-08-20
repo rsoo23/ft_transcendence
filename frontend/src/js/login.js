@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const app = document.getElementById('app');
-    app.innerHTML = `
+  const app = document.getElementById('app');
+  app.innerHTML = `
     <section class="container">
 		<img src="static/image/pingpong.gif" alt="pingpong">
         <div class="login-container">
@@ -18,47 +18,47 @@ document.addEventListener('DOMContentLoaded', () => {
     </section>
     `;
 
-    document.getElementById('login-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
-        try {
-            const response = await fetch('/api/login/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password })
-            });
+    try {
+      const response = await fetch('/api/login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password })
+      });
 
-            const data = await response.json();
-            if (data.success) {
-                alert('Login successful!');
-                showMenu();
-            } else {
-                alert('Login failed: ' + data.error);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
-        }
-    });
+      const data = await response.json();
+      if (data.success) {
+        alert('Login successful!');
+        showMenu();
+      } else {
+        alert('Login failed: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred. Please try again.');
+    }
+  });
 
-	document.getElementById('register-link').addEventListener('click', (e) => {
-        e.preventDefault();
-        showRegisterForm();
-    });
+  document.getElementById('register-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    showRegisterForm();
+  });
 
-	document.getElementById('forgot-password-link').addEventListener('click', (e) => {
-		e.preventDefault();
-		showForgotPasswordForm();
-	});
+  document.getElementById('forgot-password-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    showForgotPasswordForm();
+  });
 });
 
 function showRegisterForm() {
-    const app = document.getElementById('app');
-    app.innerHTML = `
+  const app = document.getElementById('app');
+  app.innerHTML = `
     <section class="container">
         <img src="static/image/pingpong.gif" alt="pingpong">
         <div class="login-container">
@@ -77,45 +77,45 @@ function showRegisterForm() {
     </section>
     `;
 
-	document.getElementById('register-form').addEventListener('submit', handleRegister);
-    document.getElementById('back-to-login').addEventListener('click', (e) => {
-        e.preventDefault();
-        location.reload(); // This will reload the page and show the login form
-    });
+  document.getElementById('register-form').addEventListener('submit', handleRegister);
+  document.getElementById('back-to-login').addEventListener('click', (e) => {
+    e.preventDefault();
+    location.reload(); // This will reload the page and show the login form
+  });
 }
 
 async function handleRegister(e) {
-    e.preventDefault();
-    const username = document.getElementById('reg-username').value;
-	const email = document.getElementById('reg-email').value;
-    const password1 = document.getElementById('reg-password').value;
-    const password2 = document.getElementById('reg-confirm-password').value;
+  e.preventDefault();
+  const username = document.getElementById('reg-username').value;
+  const email = document.getElementById('reg-email').value;
+  const password1 = document.getElementById('reg-password').value;
+  const password2 = document.getElementById('reg-confirm-password').value;
 
-    try {
-        const response = await fetch('/api/register/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username, email, password1, password2 })
-        });
+  try {
+    const response = await fetch('/api/register/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, email, password1, password2 })
+    });
 
-        const data = await response.json();
-        if (data.success) {
-            alert('Registration successful! Please log in.');
-            location.reload(); // Reload to show login form
-        } else {
-            alert('Registration failed: ' + JSON.stringify(data.errors));
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred. Please try again.');
+    const data = await response.json();
+    if (data.success) {
+      alert('Registration successful! Please log in.');
+      location.reload(); // Reload to show login form
+    } else {
+      alert('Registration failed: ' + JSON.stringify(data.errors));
     }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An error occurred. Please try again.');
+  }
 }
 
 function showForgotPasswordForm() {
-	const app = document.getElementById('app');
-	app.innerHTML = `
+  const app = document.getElementById('app');
+  app.innerHTML = `
 	<section class="container">
 		<img src="static/image/pingpong.gif" alt="pingpong">
 		<div class="login-container">
@@ -131,35 +131,35 @@ function showForgotPasswordForm() {
 	</section>
 	`;
 
-	document.getElementById('forgot-password-form').addEventListener('submit', handleForgotPassword);
-	document.getElementById('back-to-login').addEventListener('click', (e) => {
-		e.preventDefault();
-		location.reload(); // This will reload the page and show the login form
-	});
+  document.getElementById('forgot-password-form').addEventListener('submit', handleForgotPassword);
+  document.getElementById('back-to-login').addEventListener('click', (e) => {
+    e.preventDefault();
+    location.reload(); // This will reload the page and show the login form
+  });
 }
 
 async function handleForgotPassword(e) {
-	e.preventDefault();
-	const email = document.getElementById('email').value;
+  e.preventDefault();
+  const email = document.getElementById('email').value;
 
-	try {
-		const response = await fetch('/api/forgot-password/', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ email })
-		});
+  try {
+    const response = await fetch('/api/forgot-password/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email })
+    });
 
-		const data = await response.json();
-		if (data.success) {
-			alert('If an account exists with this email, password reset instructions have been sent.');
-			location.reload(); // Reload to show login form
-		} else {
-			alert('An error occurred. Please try again.');
-		}
-	} catch (error) {
-		console.error('Error:', error);
-		alert('An error occurred. Please try again.');
-	}
+    const data = await response.json();
+    if (data.success) {
+      alert('If an account exists with this email, password reset instructions have been sent.');
+      location.reload(); // Reload to show login form
+    } else {
+      alert('An error occurred. Please try again.');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An error occurred. Please try again.');
+  }
 }
