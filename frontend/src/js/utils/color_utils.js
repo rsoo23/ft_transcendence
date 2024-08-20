@@ -11,7 +11,7 @@ export function getRandomColor(weight) {
     const colorVarName = `--${colorName}-${weight.toString()}`
     const colorHexVal = getComputedStyle(document.documentElement).getPropertyValue(colorVarName)
 
-    console.log("Selected random color: ", colorVarName, ' ', colorHexVal)
+    // console.log("Selected random color: ", colorVarName, ' ', colorHexVal)
     return {
       hex: colorHexVal,
       name: colorName
@@ -29,7 +29,7 @@ export function getColor(colorName, weight) {
     colorVarName = `--${colorName}-${weight.toString()}`
     const colorHexVal = getComputedStyle(document.documentElement).getPropertyValue(colorVarName)
 
-    console.log("Selected random color: ", colorVarName, ' ', colorHexVal)
+    // console.log("Selected random color: ", colorVarName, ' ', colorHexVal)
     return colorHexVal
   } else {
     console.error("Error in getColor(): Invalid color ", colorVarName)

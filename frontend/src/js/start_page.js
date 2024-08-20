@@ -13,9 +13,7 @@ export async function loadStartPage() {
     await loadComponent('components/start_page.html')
 
     initLoginButton()
-
-    // addEventListenerTo('signup-button', 'click', () => )
-
+    initSignupButton()
   } catch (error) {
     console.error('Error loading Start Page:', error)
   }
@@ -59,6 +57,48 @@ function initLoginButton() {
     'mousedown',
     () => {
       loginButton.style.backgroundColor = getColor(colorInfo['name'], 700)
+    }
+  )
+}
+
+function initSignupButton() {
+  const signupButton = document.getElementById('signup-button')
+  let colorInfo = {
+    hex: '',
+    name: ''
+  }
+
+  addEventListenerTo(
+    signupButton,
+    'click',
+    () => loadSignupPanel()
+  )
+
+  addEventListenerTo(
+    signupButton,
+    'mouseover',
+    () => {
+      colorInfo = getRandomColor(500)
+
+      signupButton.style.backgroundColor = colorInfo['hex']
+      signupButton.style.color = getColor(colorInfo['name'], 800)
+    }
+  )
+
+  addEventListenerTo(
+    signupButton,
+    'mouseout',
+    () => {
+      signupButton.style.backgroundColor = getColor('charcoal', 700)
+      signupButton.style.color = getColor('charcoal', 100)
+    }
+  )
+
+  addEventListenerTo(
+    signupButton,
+    'mousedown',
+    () => {
+      signupButton.style.backgroundColor = getColor(colorInfo['name'], 700)
     }
   )
 }
