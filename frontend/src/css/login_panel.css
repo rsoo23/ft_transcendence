@@ -72,11 +72,19 @@
   position: relative;
 }
 
-.password-container > i {
+#toggle-password-visibility-icon {
   color: var(--charcoal-500);
   position: absolute;
   top: 25%;
   right: 1rem;
   cursor: pointer;
+  transition: 0.3s;
 }
 
+#toggle-password-visibility-icon:hover {
+  color: var(--charcoal-100)
+}
+
+#toggle-password-visibility-icon:active {
+  color: var(--charcoal-300)
+}

@@ -119,6 +119,7 @@ a:active {
   background-color: var(--charcoal-700);
   color: var(--charcoal-100);
   transition: 0.2s;
+  cursor: pointer;
 }
 
 .button-lg {
@@ -154,5 +155,9 @@ a:active {
   padding: 0 1rem 0 1rem;
   outline: none;
   border: none;
+}
+
+.input-field::placeholder {
+  color: var(--charcoal-300);
 }
 
