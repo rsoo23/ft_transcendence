@@ -9,7 +9,17 @@
   --orange-500: #e37144;
   --blue-500: #2a86bb;
   --yellow-500: #f6b20d;
+
+  --charcoal-100: #e8e8e8;
+  --charcoal-200: #d1d1d1;
+  --charcoal-300: #bababa;
+  --charcoal-400: #a3a3a3;
   --charcoal-500: #8d8d8d;
+  --charcoal-600: #707070;
+  --charcoal-700: #545454;
+  --charcoal-800: #383838;
+  --charcoal-900: #1c1c1c;
+  
   --chilled-gray-500: #8e92b9;
 }
 
@@ -30,7 +40,6 @@ body {
   margin: 0;
 }
 
-
 .main-container {
   display: flex;
   justify-content: center;
@@ -47,8 +56,8 @@ body {
   height: 3.5rem;
   font-size: 1.25rem;
   border-radius: 24px;
-  background-color: #6e6e6e;
-  color: #ffffff;
+  background-color: var(--charcoal-700);
+  color: var(--charcoal-100);
   outline: none;
   border: none;
 }
@@ -58,8 +67,8 @@ body {
   height: 3rem;
   font-size: 1rem;
   border-radius: 24px;
-  background-color: #6e6e6e;
-  color: #ffffff;
+  background-color: var(--charcoal-700);
+  color: var(--charcoal-100);
   outline: none;
   border: none;
 }
@@ -68,8 +77,16 @@ body {
   width: 3rem;
   height: 3rem;
   border-radius: 100px;
-  background-color: #6e6e6e;
+  background-color: var(--charcoal-700);
   color: #ffffff;
+  outline: none;
+  border: none;
+}
+
+.input-field {
+  background-color: var(--charcoal-700);
+  color: var(--charcoal-100);
+  padding: 0 1rem 0 1rem;
   outline: none;
   border: none;
 }
