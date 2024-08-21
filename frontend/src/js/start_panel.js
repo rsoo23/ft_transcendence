@@ -1,5 +1,6 @@
 
 import { loadLoginPanel } from "./login_panel.js";
+import { loadSignupPanel } from "./signup_panel.js";
 import { getColor, getRandomColor } from "./utils/color_utils.js";
 import { loadComponent } from "./utils/ui_utils.js";
 import { addEventListenerTo } from "./utils/ui_utils.js";

@@ -1,0 +1,45 @@
+
+<div class="main-container">
+  <div id='signup-panel' class='panel'>
+    <div class='top-container'>
+      <div class='header'>
+        <button id="back-to-start-button" class="button round-button">
+          <i id="back-icon" class="material-icons">arrow_back</i>
+        </button>
+        <h1 id='signup-title'>
+          <span style="color: var(--teal-500)">S</span>
+          <span style="color: var(--orange-500)">i</span>
+          <span style="color: var(--yellow-500)">g</span>
+          <span style="color: var(--chilled-gray-500)">n</span>
+          <span style="color: var(--magenta-500)">u</span>
+          <span style="color: var(--blue-500)">p</span>
+        </h1>
+      </div>
+      <form id="signup-form">
+        <div id="signup-username-input-container">
+          <input type="text" class="input-field" name="signup-username" placeholder="Username" required>
+          <div class="text-alert-container">
+            <div class="text-alert"></div>
+          </div>
+        </div>
+        <div id="signup-email-input-container">
+          <input type="text" class="input-field" name="signup-email" placeholder="Email" required>
+          <div class="text-alert-container">
+            <div class="text-alert"></div>
+          </div>
+        </div>
+        <div id="signup-password-input-container">
+          <div class="password-container">
+            <input type="password" class="input-field" name="signup-password" placeholder="Password" maxLength="12" required>
+            <i class="material-icons" id="toggle-password-visibility-icon">visibility_off</i>
+          </div>
+          <div class="text-alert-container">
+            <div class="text-alert"></div>
+            <a>Forgot Password?</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  <button id="confirm-signup-button" class="button button-md">Signup</button>
+  </div>
+</div>

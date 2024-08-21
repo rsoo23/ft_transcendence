@@ -1,5 +1,5 @@
 
-export function showSignupPanel() {
+export function loadSignupPanel() {
   fetch('/static/components/signup_panel.html')
     .then(response => response.text())
     .then(html => {
