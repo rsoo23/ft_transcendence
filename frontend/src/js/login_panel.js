@@ -3,6 +3,7 @@ import { loadStartPage } from "./start_page.js";
 import { loadComponent } from "./utils/ui_utils.js";
 import { addEventListenerTo } from "./utils/ui_utils.js";
 import { getColor, getRandomColor } from "./utils/color_utils.js";
+import { setInputFieldHint } from "./utils/input_field_utils.js";
 
 let isPasswordVisible = false;
 
@@ -71,7 +72,13 @@ function initConfirmLoginButton() {
   addEventListenerTo(
     button,
     'click',
-    () => loadStartPage()
+    () => {
+      const inputFieldContainer1 = document.getElementById('login-username-input-container')
+      const inputFieldContainer2 = document.getElementById('login-password-input-container')
+
+      setInputFieldHint(inputFieldContainer1, 'Username already exists', getColor('magenta', 500))
+      setInputFieldHint(inputFieldContainer2, 'Incorrect password', getColor('magenta', 500), true)
+    }
   )
 
   addEventListenerTo(
@@ -114,7 +121,7 @@ function initTogglePasswordVisibilityIcon() {
 }
 
 function togglePasswordVisibility(icon) {
-  const passwordField = document.getElementById('login-password-input')
+  const passwordField = document.querySelector('#login-password-input-container > .password-container > .input-field')
 
   if (!icon) {
     console.error('Error: toggle-password-visibility-icon not found')

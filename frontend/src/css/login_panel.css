@@ -62,10 +62,20 @@
   gap: 0.25rem;
 }
 
-#login-username-input, #login-password-input {
+#login-username-input-container > .input-field, 
+#login-password-input-container > .password-container > .input-field {
   width: 15rem;
   height: 2.75rem;
   border-radius: 20px;
+}
+
+.text-alert-container {
+  display: flex;
+  /*padding-left: 0.75rem;*/
+}
+
+#login-password-input-container > .text-alert-container {
+  justify-content: flex-end; 
 }
 
 .password-container {
@@ -88,3 +98,4 @@
 #toggle-password-visibility-icon:active {
   color: var(--charcoal-300)
 }
+
