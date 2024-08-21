@@ -14,7 +14,7 @@ export function initTogglePasswordVisibilityIcon() {
 }
 
 function togglePasswordVisibility(icon) {
-  const passwordField = document.querySelector('#login-password-input-container > .password-container > .input-field')
+  const passwordField = document.querySelector('.password-container > .input-field')
 
   if (!icon) {
     console.error('Error: toggle-password-visibility-icon not found')
@@ -37,14 +37,15 @@ function togglePasswordVisibility(icon) {
 }
 
 export function resetInputField(inputFieldContainer, hasSpaceBetween = false) {
-  const textAlertContainer = inputFieldContainer.querySelector('.text-alert-container')
-  const textAlert = textAlertContainer.querySelector('.text-alert')
-  const inputField = inputFieldContainer.querySelector('.input-field')
-
   if (!inputFieldContainer) {
     console.error('Error in resetInputField(): input-field-container  not found')
     return
   }
+
+  const textAlertContainer = inputFieldContainer.querySelector('.text-alert-container')
+  const textAlert = textAlertContainer.querySelector('.text-alert')
+  const inputField = inputFieldContainer.querySelector('.input-field')
+
   if (!textAlert) {
     console.error('Error in resetInputField(): text-alert not found')
     return
@@ -64,6 +65,11 @@ export function resetInputField(inputFieldContainer, hasSpaceBetween = false) {
 
 // sets the the input-field's border and hint color, size and text-alert-container's justification
 export function setInputFieldHint(inputFieldContainer, message, colorHexVal, isSpaceBetween = false) {
+  if (!inputFieldContainer) {
+    console.error('Error in setInputFieldHint(): input-field-container  not found')
+    return
+  }
+
   const textAlertContainer = inputFieldContainer.querySelector('.text-alert-container')
   const textAlert = textAlertContainer.querySelector('.text-alert')
   const inputField = inputFieldContainer.querySelector('.input-field')
@@ -71,10 +77,6 @@ export function setInputFieldHint(inputFieldContainer, message, colorHexVal, isS
   const borderType = 'solid'
   const borderWidth = '3px'
 
-  if (!inputFieldContainer) {
-    console.error('Error in setInputFieldHint(): input-field-container  not found')
-    return
-  }
   if (!textAlertContainer) {
     console.error('Error in setInputFieldHint(): text-alert-container not found')
     return
