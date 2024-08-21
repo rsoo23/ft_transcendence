@@ -1,5 +1,5 @@
 
-import { loadStartPage } from "./start_page.js";
+import { loadStartPanel } from "./start_panel.js";
 import { loadComponent } from "./utils/ui_utils.js";
 import { addEventListenerTo } from "./utils/ui_utils.js";
 import { getColor, getRandomColor } from "./utils/color_utils.js";
@@ -30,7 +30,7 @@ function initBackToStartButton() {
   addEventListenerTo(
     backToStartButton,
     'click',
-    () => loadStartPage()
+    () => loadStartPanel()
   )
 
   addEventListenerTo(

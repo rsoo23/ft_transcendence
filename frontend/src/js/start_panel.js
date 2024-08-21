@@ -5,17 +5,17 @@ import { loadComponent } from "./utils/ui_utils.js";
 import { addEventListenerTo } from "./utils/ui_utils.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  loadStartPage()
+  loadStartPanel()
 })
 
-export async function loadStartPage() {
+export async function loadStartPanel() {
   try {
-    await loadComponent('components/start_page.html')
+    await loadComponent('components/start_panel.html')
 
     initLoginButton()
     initSignupButton()
   } catch (error) {
-    console.error('Error loading Start Page:', error)
+    console.error('Error loading Start Panel:', error)
   }
 }
 
