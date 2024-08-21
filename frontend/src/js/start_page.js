@@ -59,6 +59,15 @@ function initLoginButton() {
       loginButton.style.backgroundColor = getColor(colorInfo['name'], 700)
     }
   )
+
+  addEventListenerTo(
+    loginButton,
+    'mouseup',
+    () => {
+      loginButton.style.backgroundColor = colorInfo['hex']
+      loginButton.style.color = getColor(colorInfo['name'], 800)
+    }
+  )
 }
 
 function initSignupButton() {
@@ -99,6 +108,15 @@ function initSignupButton() {
     'mousedown',
     () => {
       signupButton.style.backgroundColor = getColor(colorInfo['name'], 700)
+    }
+  )
+
+  addEventListenerTo(
+    signupButton,
+    'mouseup',
+    () => {
+      signupButton.style.backgroundColor = colorInfo['hex']
+      signupButton.style.color = getColor(colorInfo['name'], 800)
     }
   )
 }

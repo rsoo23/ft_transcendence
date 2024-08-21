@@ -60,6 +60,15 @@ function initBackToStartButton() {
       backToStartButton.style.backgroundColor = getColor(colorInfo['name'], 700)
     }
   )
+
+  addEventListenerTo(
+    backToStartButton,
+    'mouseup',
+    () => {
+      backToStartButton.style.backgroundColor = colorInfo['hex']
+      backIcon.style.color = getColor(colorInfo['name'], 800)
+    }
+  )
 }
 
 function initConfirmLoginButton() {
@@ -114,6 +123,15 @@ function initConfirmLoginButton() {
     'mousedown',
     () => {
       button.style.backgroundColor = getColor(colorInfo['name'], 700)
+    }
+  )
+
+  addEventListenerTo(
+    button,
+    'mouseup',
+    () => {
+      button.style.backgroundColor = colorInfo['hex']
+      button.style.color = getColor(colorInfo['name'], 800)
     }
   )
 }
