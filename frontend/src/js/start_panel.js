@@ -4,6 +4,7 @@ import { loadSignupPanel } from "./signup_panel.js";
 import { getColor, getRandomColor } from "./utils/color_utils.js";
 import { loadComponent } from "./utils/ui_utils.js";
 import { addEventListenerTo } from "./utils/ui_utils.js";
+import { initPanelShrinkAnim } from "./animations/ui_anim_utils.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   loadStartPanel()
@@ -22,6 +23,7 @@ export async function loadStartPanel() {
 
 function initLoginButton() {
   const loginButton = document.getElementById('login-button')
+  const startPagePanel = document.getElementById('start-page-panel')
   let colorInfo = {
     hex: '',
     name: ''
@@ -30,7 +32,12 @@ function initLoginButton() {
   addEventListenerTo(
     loginButton,
     'click',
-    () => loadLoginPanel()
+    () => {
+      initPanelShrinkAnim(startPagePanel)
+      setTimeout(() => {
+        loadLoginPanel()
+      }, 1100)
+    }
   )
 
   addEventListenerTo(
