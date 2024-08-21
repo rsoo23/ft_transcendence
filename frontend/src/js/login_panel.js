@@ -3,7 +3,7 @@ import { loadStartPage } from "./start_page.js";
 import { loadComponent } from "./utils/ui_utils.js";
 import { addEventListenerTo } from "./utils/ui_utils.js";
 import { getColor, getRandomColor } from "./utils/color_utils.js";
-import { setInputFieldHint } from "./utils/input_field_utils.js";
+import { resetInputField, setInputFieldHint } from "./utils/input_field_utils.js";
 
 let isPasswordVisible = false;
 
@@ -68,16 +68,24 @@ function initConfirmLoginButton() {
     hex: '',
     name: ''
   }
+  // let hi = true
 
   addEventListenerTo(
     button,
     'click',
     () => {
-      const inputFieldContainer1 = document.getElementById('login-username-input-container')
-      const inputFieldContainer2 = document.getElementById('login-password-input-container')
-
-      setInputFieldHint(inputFieldContainer1, 'Username already exists', getColor('magenta', 500))
-      setInputFieldHint(inputFieldContainer2, 'Incorrect password', getColor('magenta', 500), true)
+      // const inputFieldContainer1 = document.getElementById('login-username-input-container')
+      // const inputFieldContainer2 = document.getElementById('login-password-input-container')
+      //
+      // if (hi) {
+      //   setInputFieldHint(inputFieldContainer1, 'Username already exists', getColor('magenta', 500))
+      //   setInputFieldHint(inputFieldContainer2, 'Incorrect password', getColor('magenta', 500), true)
+      //   hi = false
+      // } else {
+      //   resetInputField(inputFieldContainer1)
+      //   resetInputField(inputFieldContainer2, true)
+      //   hi = true
+      // }
     }
   )
 
