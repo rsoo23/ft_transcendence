@@ -1,4 +1,41 @@
 
+import { addEventListenerTo } from "./ui_utils.js"
+
+let isPasswordVisible = false;
+
+export function initTogglePasswordVisibilityIcon() {
+  const togglePasswordVisibilityIcon = document.getElementById('toggle-password-visibility-icon')
+
+  addEventListenerTo(
+    togglePasswordVisibilityIcon,
+    'click',
+    () => togglePasswordVisibility(togglePasswordVisibilityIcon)
+  )
+}
+
+function togglePasswordVisibility(icon) {
+  const passwordField = document.querySelector('#login-password-input-container > .password-container > .input-field')
+
+  if (!icon) {
+    console.error('Error: toggle-password-visibility-icon not found')
+    return
+  }
+  if (!passwordField) {
+    console.error('Error: login-password-input not found')
+    return
+  }
+
+  if (!isPasswordVisible) {
+    passwordField.setAttribute('type', 'text')
+    icon.innerHTML = 'visibility'
+    isPasswordVisible = true
+  } else {
+    passwordField.setAttribute('type', 'password')
+    icon.innerHTML = 'visibility_off'
+    isPasswordVisible = false
+  }
+}
+
 export function resetInputField(inputFieldContainer, hasSpaceBetween = false) {
   const textAlertContainer = inputFieldContainer.querySelector('.text-alert-container')
   const textAlert = textAlertContainer.querySelector('.text-alert')
