@@ -30,22 +30,23 @@ function initConfirmSignupButton() {
     button,
     'click',
     () => {
-   //   const inputFieldContainer1 = document.getElementById('signup-username-input-container')
-    //   const inputFieldContainer2 = document.getElementById('signup-password-input-container')
-    //   const inputFieldContainer3 = document.getElementById('signup-email-input-container')
-    //
-    //   if (hi) {
-    //     setInputFieldHint(inputFieldContainer1, 'Username already exists', getColor('magenta', 500))
-    //     setInputFieldHint(inputFieldContainer2, 'Incorrect password', getColor('magenta', 500), true)
-    //     setInputFieldHint(inputFieldContainer3, 'Invalid email', getColor('magenta', 500), true)
-    //     hi = false
-    //   } else {
-    //     resetInputField(inputFieldContainer1)
-    //     resetInputField(inputFieldContainer2, true)
-    //     resetInputField(inputFieldContainer3)
-    //     hi = true
-    //   }
-    // }
+      //   const inputFieldContainer1 = document.getElementById('signup-username-input-container')
+      //   const inputFieldContainer2 = document.getElementById('signup-password-input-container')
+      //   const inputFieldContainer3 = document.getElementById('signup-email-input-container')
+      //
+      //   if (hi) {
+      //     setInputFieldHint(inputFieldContainer1, 'Username already exists', getColor('magenta', 500))
+      //     setInputFieldHint(inputFieldContainer2, 'Incorrect password', getColor('magenta', 500), true)
+      //     setInputFieldHint(inputFieldContainer3, 'Invalid email', getColor('magenta', 500), true)
+      //     hi = false
+      //   } else {
+      //     resetInputField(inputFieldContainer1)
+      //     resetInputField(inputFieldContainer2, true)
+      //     resetInputField(inputFieldContainer3)
+      //     hi = true
+      //   }
+      // }
+    }
   )
 
   addEventListenerTo(
