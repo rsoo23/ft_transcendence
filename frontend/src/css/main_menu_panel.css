@@ -1,0 +1,110 @@
+
+#main-menu-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 35px;
+
+  width: 62.5rem;
+  height: 32rem;
+  border-radius: 40px;
+
+  position: relative;
+
+  border: 5px solid var(--teal-500);
+}
+
+#hotbar {
+  border-radius: 30px 0px 0px 30px;
+  width: 4rem;
+  height: 18rem;
+
+  position: absolute;
+  left: -4.6rem;
+
+  border: 5px solid var(--teal-500);
+}
+
+#icons-highlight-container {
+  width: 4rem;
+  height: 18rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  position: absolute;
+  z-index: 0;
+}
+
+#icons-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+
+  position: absolute;
+  z-index: 1;
+}
+
+.icon-bg-highlight.play {
+  width: 4rem;
+  height: 3.6rem;
+
+  border-radius: 24px 0px 0px 0px;
+  background-color: var(--teal-500);
+}
+
+.icon-bg-highlight.stats {
+  width: 4rem;
+  height: 3.6rem;
+
+  background-color: black;
+}
+
+.icon-bg-highlight.friends {
+  width: 4rem;
+  height: 3.6rem;
+
+  background-color: black;
+}
+
+.icon-bg-highlight.how-to-play {
+  width: 4rem;
+  height: 3.6rem;
+
+  background-color: black;
+}
+
+.icon-bg-highlight.settings {
+  width: 4rem;
+  height: 3.7rem;
+
+  border-radius: 0px 0px 0px 24px;
+  background-color: black;
+}
+
+#play-icon {
+  color: var(--teal-200)
+}
+
+#stats-icon {
+  color: var(--yellow-500)
+}
+
+#friends-icon {
+  color: var(--blue-500)
+}
+
+#how-to-play-icon {
+  color: var(--orange-500)
+}
+
+#settings-icon {
+  color: var(--magenta-500)
+}

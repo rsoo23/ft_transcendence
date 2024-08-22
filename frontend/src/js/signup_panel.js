@@ -5,6 +5,7 @@ import { addEventListenerTo } from "./utils/ui_utils.js";
 import { getColor, getRandomColor } from "./utils/color_utils.js";
 import { initTogglePasswordVisibilityIcon } from "./utils/input_field_utils.js";
 import { resetInputField, setInputFieldHint } from "./utils/input_field_utils.js";
+import { loadMainMenuPanel } from "./main_menu_panel.js";
 
 export async function loadSignupPanel() {
   try {
@@ -46,6 +47,7 @@ function initConfirmSignupButton() {
       //     hi = true
       //   }
       // }
+      loadMainMenuPanel()
     }
   )
 

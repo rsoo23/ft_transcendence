@@ -6,6 +6,7 @@ import { resetInputField, setInputFieldHint } from "./utils/input_field_utils.js
 
 import { initBackToStartButton } from "./utils/button_utils.js"
 import { initTogglePasswordVisibilityIcon } from "./utils/input_field_utils.js";
+import { loadMainMenuPanel } from "./main_menu_panel.js";
 
 export async function loadLoginPanel() {
   try {
@@ -42,6 +43,7 @@ function initConfirmLoginButton() {
       //   resetInputField(inputFieldContainer2, true)
       //   hi = true
       // }
+      loadMainMenuPanel()
     }
   )
 

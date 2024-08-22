@@ -1,3 +1,3 @@
 
-export const ANIM_WAIT_DURATION = 1100
+export const ANIM_WAIT_DURATION = 550
 
