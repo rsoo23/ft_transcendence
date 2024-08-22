@@ -26,7 +26,7 @@
   border: 5px solid var(--teal-500);
 }
 
-#icons-highlight-container {
+#icon-buttons-container {
   width: 4rem;
   height: 18rem;
 
@@ -52,7 +52,7 @@
   z-index: 1;
 }
 
-.icon-bg-highlight.play {
+.icon-button.play {
   width: 4rem;
   height: 3.6rem;
 
@@ -60,28 +60,28 @@
   background-color: var(--teal-500);
 }
 
-.icon-bg-highlight.stats {
+.icon-button.stats {
   width: 4rem;
   height: 3.6rem;
 
   background-color: black;
 }
 
-.icon-bg-highlight.friends {
+.icon-button.friends {
   width: 4rem;
   height: 3.6rem;
 
   background-color: black;
 }
 
-.icon-bg-highlight.how-to-play {
+.icon-button.how-to-play {
   width: 4rem;
   height: 3.6rem;
 
   background-color: black;
 }
 
-.icon-bg-highlight.settings {
+.icon-button.settings {
   width: 4rem;
   height: 3.7rem;
 
@@ -107,4 +107,43 @@
 
 #settings-icon {
   color: var(--magenta-500)
+}
+
+#tooltips-container {
+  width: 10rem;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+
+  color: white;
+  position: absolute;
+  left: 5rem;
+}
+
+.tooltip {
+  width: fit-content;
+  padding: 0.5rem;
+  border-radius: 5px;
+}
+
+#play-tooltip {
+  background-color: var(--teal-500);
+}
+
+#stats-tooltip {
+  background-color: var(--yellow-500);
+}
+
+#friends-tooltip {
+  background-color: var(--blue-500);
+}
+
+#how-to-play-tooltip {
+  background-color: var(--orange-500);
+}
+
+#settings-tooltip {
+  background-color: var(--magenta-500);
 }
