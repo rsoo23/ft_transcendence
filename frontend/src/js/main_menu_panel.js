@@ -84,10 +84,26 @@ function updateButtonState(buttonName) {
       hotbarItems[key]['button'].style.backgroundColor = '#000'
       hotbarItems[key]['icon'].style.color = getColor(buttonColor, 500)
 
-      console.log('hotbarItem: ', hotbarItems[key])
       return
     }
   });
+}
+
+function updateBorderColor(buttonColor) {
+  const mainMenuPanel = document.getElementById('main-menu-panel')
+  const hotbar = document.getElementById('hotbar')
+
+  if (!mainMenuPanel) {
+    console.error("Error in updateBorderColor(): main-menu-panel not found")
+    return
+  }
+  if (!hotbar) {
+    console.error("Error in updateBorderColor(): hotbar not found")
+    return
+  }
+
+  mainMenuPanel.style.border = `5px solid var(--${buttonColor}-500)`
+  hotbar.style.border = `5px solid var(--${buttonColor}-500)`
 }
 
 function initButton(hotbarItemInfo) {
@@ -130,6 +146,7 @@ function initButton(hotbarItemInfo) {
     () => {
       if (!hotbarItemInfo['isSelected']) {
         updateButtonState(buttonName)
+        updateBorderColor(buttonColor)
         button.style.backgroundColor = getColor(buttonColor, 800)
         icon.style.color = getColor(buttonColor, 600)
       }

@@ -13,6 +13,7 @@
   position: relative;
 
   border: 5px solid var(--teal-500);
+  transition: 0.3s;
 }
 
 #hotbar {
@@ -24,6 +25,7 @@
   left: -4.6rem;
 
   border: 5px solid var(--teal-500);
+  transition: 0.3s;
 }
 
 #icon-buttons-container {
