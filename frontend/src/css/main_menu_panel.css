@@ -39,6 +39,49 @@
   z-index: 0;
 }
 
+.icon-button {
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#play-button {
+  width: 4rem;
+  height: 3.6rem;
+
+  border-radius: 24px 0px 0px 0px;
+  background-color: var(--teal-500);
+}
+
+#stats-button {
+  width: 4rem;
+  height: 3.6rem;
+
+  background-color: black;
+}
+
+#friends-button {
+  width: 4rem;
+  height: 3.6rem;
+
+  background-color: black;
+}
+
+#how-to-play-button {
+  width: 4rem;
+  height: 3.6rem;
+
+  background-color: black;
+}
+
+#settings-button {
+  width: 4rem;
+  height: 3.7rem;
+
+  border-radius: 0px 0px 0px 24px;
+  background-color: black;
+}
+
 #icons-container {
   display: flex;
   flex-direction: column;
@@ -50,43 +93,11 @@
 
   position: absolute;
   z-index: 1;
+  pointer-events: none; 
 }
 
-.icon-button.play {
-  width: 4rem;
-  height: 3.6rem;
-
-  border-radius: 24px 0px 0px 0px;
-  background-color: var(--teal-500);
-}
-
-.icon-button.stats {
-  width: 4rem;
-  height: 3.6rem;
-
-  background-color: black;
-}
-
-.icon-button.friends {
-  width: 4rem;
-  height: 3.6rem;
-
-  background-color: black;
-}
-
-.icon-button.how-to-play {
-  width: 4rem;
-  height: 3.6rem;
-
-  background-color: black;
-}
-
-.icon-button.settings {
-  width: 4rem;
-  height: 3.7rem;
-
-  border-radius: 0px 0px 0px 24px;
-  background-color: black;
+.hotbar-icon {
+  /*pointer-events: none; */
 }
 
 #play-icon {
@@ -126,6 +137,8 @@
   width: fit-content;
   padding: 0.5rem;
   border-radius: 5px;
+  opacity: 0;
+  transition: 0.3s;
 }
 
 #play-tooltip {

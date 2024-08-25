@@ -66,7 +66,7 @@ export function resetInputField(inputFieldContainer, hasSpaceBetween = false) {
 // sets the the input-field's border and hint color, size and text-alert-container's justification
 export function setInputFieldHint(inputFieldContainer, message, colorHexVal, isSpaceBetween = false) {
   if (!inputFieldContainer) {
-    console.error('Error in setInputFieldHint(): input-field-container  not found')
+    console.error('Error in setInputFieldHint(): input-field-container not found')
     return
   }
 

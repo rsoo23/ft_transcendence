@@ -16,6 +16,6 @@ export function addEventListenerTo(element, event, callback) {
       callback()
     });
   } else {
-    console.error(`Error ${elementID} not found`)
+    console.error(`Error ${element} not found`)
   }
 }
