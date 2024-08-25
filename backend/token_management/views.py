@@ -17,7 +17,7 @@ def create_token(request):
             return JsonResponse({'error': 'Token creation fail'}, status=405)
         
         response = HttpResponse('Sending back ID_Token cookie')
-        response.set_cookie('ID_Token', encoded_jwt, httponly = 'True', max_age=5)
+        response.set_cookie('ID_Token', encoded_jwt, httponly = 'True', max_age=120)
         return response
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
