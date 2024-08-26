@@ -1,4 +1,9 @@
 
+* {
+  font-weight: 800;
+  font-size: 15px;
+}
+
 #main-menu-panel {
   display: flex;
   justify-content: center;
@@ -22,7 +27,7 @@
   height: 18rem;
 
   position: absolute;
-  left: -4.6rem;
+  left: -4.7rem;
 
   border: 5px solid var(--teal-500);
   transition: 0.3s;
@@ -161,4 +166,134 @@
 
 #settings-tooltip {
   background-color: var(--magenta-500);
+}
+
+#stats-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+#match-history-container {
+  width: 20rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 35px 0px 0px 35px;
+  background-color: var(--charcoal-800);
+}
+
+#match-history-container > .title {
+  padding-top: 2rem;
+  padding-left: 1.25rem;
+  font-size: 30px;
+}
+
+.scrollable-container {
+  padding: 1.25rem 1.25rem 1.25rem 1.25rem;
+  /*outline: solid red 2px;*/
+  height: 100%;
+  overflow-y: scroll;
+  border-radius: 0 0 0 2.3rem;
+}
+
+.scrollable-container::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+/* Track */
+.scrollable-container::-webkit-scrollbar-track {
+  border-radius: 1rem;
+  background-color: var(--charcoal-700);
+}
+ 
+/* Handle */
+.scrollable-container::-webkit-scrollbar-thumb {
+  background: var(--charcoal-400);
+  border-radius: 10px;
+  height: 1rem;
+  transition: 0.2s;
+}
+
+/* Handle on hover */
+.scrollable-container::-webkit-scrollbar-thumb:hover {
+  background: var(--charcoal-500); 
+  cursor: pointer;
+}
+
+.record-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125rem;
+}
+
+.match-record {
+  display: flex;
+  justify-content: space-around;
+
+  width: 100%;
+  height: 5rem;
+
+  background-color: var(--charcoal-600);
+  border-radius: 10px;
+  transition: 0.2s;
+}
+
+.match-record:hover {
+  background-color: var(--charcoal-700);
+  cursor: pointer;
+}
+
+.match-record .record-section {
+  color: #000;
+  font-weight: 800;
+}
+
+.match-record .score {
+  background-color: var(--teal-500);
+  height: fit-content;
+  width: fit-content;
+  border-radius: 1rem;
+  padding: 0.5rem;
+}
+
+.match-record .time {
+  font-size: 0.75rem;
+}
+
+.match-record .avatar-name {
+  font-size: 0.75rem;
+}
+
+.match-record .score-time-section {
+  gap: 0.3125rem;
+}
+
+.avatar-section, .score-time-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.match-record .avatar-container {
+  position: relative
+}
+
+.match-record .avatar {
+  /*vertical-align: middle;*/
+  object-fit: cover;
+  width: 2.5rem;
+  height: 2.5rem;
+  /*border-radius: 50%;*/
+}
+
+.match-record .status-badge {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  position: absolute;
+  right: 0.25rem;
+  bottom: 0.25rem;
+  background-color: var(--teal-500)
 }
