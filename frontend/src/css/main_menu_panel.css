@@ -4,6 +4,12 @@
   font-size: 15px;
 }
 
+#main-menu-panel > .content-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
 #main-menu-panel {
   display: flex;
   justify-content: center;
@@ -168,12 +174,6 @@
 
 #settings-tooltip {
   background-color: var(--magenta-500);
-}
-
-#stats-container {
-  width: 100%;
-  height: 100%;
-  display: flex;
 }
 
 #match-history-container {
@@ -371,5 +371,5 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.875rem;  
+  font-size: 1.875rem;
 }
