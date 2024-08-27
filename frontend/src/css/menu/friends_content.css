@@ -1,0 +1,152 @@
+
+#friends-container {
+  min-width: 20rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 35px 0px 0px 35px;
+  background-color: var(--charcoal-800);
+  gap: 1rem;
+}
+
+#friends-container > .header {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: 2rem 1.25rem 0 1.25rem;
+}
+
+#friends-container > .header > .title {
+  font-size: 1.875rem;
+}
+
+#add-friend-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.friends-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125rem;
+}
+
+.friend-record {
+  display: flex;
+  justify-content: space-between;
+
+  width: 100%;
+  height: 3.75rem;
+  box-sizing: border-box;
+  padding: 0 0.75rem 0 0.75rem;
+
+  background-color: var(--charcoal-600);
+  border-radius: 10px;
+  transition: 0.2s;
+  position: relative;
+}
+
+.friend-record .avatar-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.friend-record .avatar-name {
+  font-size: 1rem;
+}
+
+.friend-record .avatar-container {
+  position: relative
+}
+
+.friend-record .avatar {
+  object-fit: cover;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.friend-record .status-badge {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  position: absolute;
+  right: 0.25rem;
+  bottom: 0.25rem;
+  background-color: var(--teal-500)
+}
+
+.friend-record .icons-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.friend-record .icons-section > * {
+  cursor: pointer;
+  color: var(--charcoal-300);
+  transition: 0.2s;
+  position: relative;
+}
+
+.friend-record .icons-section > *:hover {
+  color: var(--charcoal-100);
+}
+
+.friend-record .icons-section > *:active {
+  color: var(--charcoal-200);
+}
+
+#chat-icon {
+  font-size: 1.25rem;
+}
+
+#block-icon {
+  font-size: 1.25rem;
+}
+
+#close-icon {
+  font-size: 1.25rem;
+}
+
+.icon-tooltip {
+  width: fit-content;
+  padding: 0.5rem;
+  border-radius: 5px;
+  position: absolute;
+  opacity: 1;
+  transition: 0.3s;
+  background-color: var(--blue-500);
+  z-index: 1;
+  /*bottom: 0;*/
+  /*right: 100%;*/
+
+  left: 100%;
+  pointer-events: none;
+}
+
+#challenge-tooltip {
+}
+
+#chat-tooltip {
+}
+
+#block-tooltip {
+}
+
+#challenge-icon:hover > .icon-tooltip {
+  opacity: 1;
+}
+
+#chat-icon:hover > .icon-tooltip {
+  opacity: 1;
+}
+
+#block-icon:hover > .icon-tooltip {
+  opacity: 1;
+}
+
+#close-icon:hover {
+}
+

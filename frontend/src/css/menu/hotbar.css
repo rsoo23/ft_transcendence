@@ -81,10 +81,6 @@
   pointer-events: none; 
 }
 
-.hotbar-icon {
-  /*pointer-events: none; */
-}
-
 #play-icon {
   color: var(--teal-200)
 }
@@ -147,5 +143,4 @@
 #settings-tooltip {
   background-color: var(--magenta-500);
 }
-
 

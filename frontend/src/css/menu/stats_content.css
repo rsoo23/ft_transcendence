@@ -103,7 +103,8 @@
   gap: 0.3125rem;
 }
 
-.avatar-section, .score-time-section {
+.match-record .avatar-section, 
+.match-record .score-time-section {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -115,11 +116,9 @@
 }
 
 .match-record .avatar {
-  /*vertical-align: middle;*/
   object-fit: cover;
   width: 2.5rem;
   height: 2.5rem;
-  /*border-radius: 50%;*/
 }
 
 .match-record .status-badge {
