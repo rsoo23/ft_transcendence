@@ -24,6 +24,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+  background-color: var(--blue-500);
+  transition: 0.3s;
+}
+
+#add-friend-icon {
+  color: var(--blue-200);
+  transition: 0.3s;
 }
 
 .friends-section {

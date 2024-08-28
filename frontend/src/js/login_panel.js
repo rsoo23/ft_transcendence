@@ -19,6 +19,7 @@ export async function loadLoginPanel() {
     console.error('Error loading Login Panel:', error)
   }
 }
+
 function initConfirmLoginButton() {
   const button = document.getElementById('confirm-login-button')
   let colorInfo = {

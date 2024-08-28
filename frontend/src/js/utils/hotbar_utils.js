@@ -150,8 +150,7 @@ function initButton(hotbarItemInfo) {
       if (!hotbarItemInfo['isSelected']) {
         updateButtonState(buttonName)
         updateBorderColor(buttonColor)
-
-        loadMainMenuContent(`components/menu/${fileName}`)
+        loadMainMenuContent(fileName)
         button.style.backgroundColor = getColor(buttonColor, 500)
         icon.style.color = getColor(buttonColor, 200)
       } else {
