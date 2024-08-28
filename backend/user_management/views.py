@@ -1,10 +1,16 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth import authenticate, login, get_user_model
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import authenticate, login
+from django.views.decorators.http import require_http_methods
 import json
 from django.conf import settings
+from django import forms
+
+User = get_user_model()
 
 @csrf_exempt
 def login_view(request):
@@ -22,13 +28,14 @@ def login_view(request):
 
 class CustomUserCreationForm(UserCreationForm):
 	class Meta(UserCreationForm.Meta):
+		model = User
 		fields = UserCreationForm.Meta.fields + ('email',)
 
 @csrf_exempt
 def register_view(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        form = UserCreationForm(data)
+        form = CustomUserCreationForm(data)
         if form.is_valid():
             user = form.save()
             login(request, user)
@@ -49,3 +56,19 @@ def forgot_password_view(request):
             return JsonResponse({"success": True})
         return JsonResponse({"success": False, "error": "Invalid email"}, status=400)
     return JsonResponse({"success": False, "error": "Invalid method"}, status=405)
+
+@login_required
+@require_http_methods(["POST"])
+def update_profile(request):
+    data = json.loads(request.body)
+    new_username = data.get('username')
+    
+    if new_username:
+        if User.objects.filter(username=new_username).exists():
+            return JsonResponse({'success': False, 'error': 'Username already taken'}, status=400)
+        
+        request.user.username = new_username
+        request.user.save()
+        return JsonResponse({'success': True})
+    else:
+        return JsonResponse({'success': False, 'error': 'Username is required'}, status=400)

@@ -1,3 +1,4 @@
+import { showUserProfile } from "./profile.js";
 
 function showMenu() {
 	const app = document.getElementById('app');
@@ -11,6 +12,7 @@ function showMenu() {
 			<button onclick="showAddFriends()">Add Friends</button>
 			<button onclick="showChat()">Chat</button>
 			<button onclick="showGame()">Game</button>
+			<button onclick="showUserProfile()">User Profile</button>
 		  </div>
 		</div>
 	  </section>
