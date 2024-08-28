@@ -1,7 +1,7 @@
 
 import { loadComponent } from "./utils/ui_utils.js";
 import { initHotbar } from "./utils/hotbar_utils.js";
-import { initAddFriendButton, loadToFriendsContainer } from "./friends_content.js";
+import { initAddFriendButton, loadToFriendsContainer, initCloseSearchFriendButton } from "./friends_content.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   loadMainMenuPanel()

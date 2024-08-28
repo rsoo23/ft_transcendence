@@ -10,7 +10,7 @@ export async function loadComponent(path) {
   }
 }
 
-export function addEventListenerTo(element, event, callback) {
+export async function addEventListenerTo(element, event, callback) {
   if (element) {
     element.addEventListener(event, (e) => {
       callback()

@@ -139,7 +139,6 @@
 #stats-content-container {
   display: flex;
   width: 100%;
-  /*outline: 2px red solid;*/
 }
 
 #overall-stats-container {
@@ -169,7 +168,6 @@
   background-color: var(--charcoal-800);
   border-radius: 1rem;
 }
-
 
 #match-stats-container {
   height: 100%;

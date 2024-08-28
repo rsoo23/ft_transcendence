@@ -1,55 +1,29 @@
 
 <div class='header'>
   <div class='title'>Friend Search</div>
-  <button id='add-friend-button' class='button round-button'>
-    <i id="add-friend-icon" class='material-icons'>person_add</i>
+  <button id='close-search-friend-button' class='button round-button'>
+    <i id="close-search-friend-icon" class='material-icons'>close</i>
   </button>
 </div>
-<div class='scrollable-container'>
-  <div class="friend-record">
-    <div class='avatar-section'>
-      <div class='avatar-container'>
-        <img src='static/images/kirby.png' alt='avatar' class='avatar'>
-        <div class='status-badge'></div>
+<div class='panel-content-container'>
+  <form id="friend-search-form">
+    <input type="text" class="input-field" name="friend-search" placeholder="Search for a friend">
+  </form>
+  <div class='scrollable-container friend-search'>
+    <div class="friend-record">
+      <div class='avatar-section'>
+        <div class='avatar-container'>
+          <img src='static/images/kirby.png' alt='avatar' class='avatar'>
+          <div class='status-badge'></div>
+        </div>
+        <div class='avatar-name'>player 1</div>
       </div>
-      <div class='avatar-name'>player 1</div>
-    </div>
-    <div class='icons-section'>
-      <i id='challenge-icon' class='material-icons'>
-        play_circle
-        <div id='challenge-tooltip' class='icon-tooltip'>Challenge</div>
-      </i>
-      <i id='chat-icon' class='material-icons'>
-        chat
-        <div id='chat-tooltip' class='icon-tooltip'>Chat</div>
-      </i>
-      <i id='block-icon' class='material-icons'>
-        block
-        <div id='block-tooltip' class='icon-tooltip'>Block</div>
-      </i>
-    </div>
-  </div>
-  <div class="friend-record">
-    <div class='avatar-section'>
-      <div class='avatar-container'>
-        <img src='static/images/kirby.png' alt='avatar' class='avatar'>
-        <div class='status-badge'></div>
+      <div class='icons-section'>
+        <i id='add-person-icon' class='material-icons icon-with-tooltip'>
+          person_add
+          <div id='add-person-tooltip' class='icon-tooltip'>Send friend request</div>
+        </i>
       </div>
-      <div class='avatar-name'>player 1</div>
-    </div>
-    <div class='icons-section'>
-      <i id='challenge-icon' class='material-icons'>
-        play_circle
-        <div id='challenge-tooltip' class='icon-tooltip'>Challenge</div>
-      </i>
-      <i id='chat-icon' class='material-icons'>
-        chat
-        <div id='chat-tooltip' class='icon-tooltip'>Chat</div>
-      </i>
-      <i id='block-icon' class='material-icons'>
-        block
-        <div id='block-tooltip' class='icon-tooltip'>Block</div>
-      </i>
     </div>
   </div>
 </div>
