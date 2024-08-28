@@ -1,58 +1,62 @@
-
-async function showUserProfile() {
+function showUserProfile() {
     const app = document.getElementById('app');
     app.innerHTML = `
-        <section class="container">
-            <h1 class="opacity">User Profile</h1>
-            <form id="profile-form">
-                <input type="text" id="username" name="username" placeholder="New username" required />
-                <button type="submit" class="opacity">Update Username</button>
+    <section class="container">
+        <img src="static/image/pingpong.gif" alt="pingpong">
+        <div class="profile-container">
+            <h1 class="opacity">USER PROFILE</h1>
+            <form id="update-profile-form">
+                <input type="text" id="new-username" name="new-username" placeholder="New Username" required />
+                <button type="submit" class="opacity">UPDATE USERNAME</button>
             </form>
-        </section>
+            <button id="back-to-menu" class="opacity">BACK TO MENU</button>
+        </div>
+    </section>
     `;
 
-    document.getElementById('profile-form').addEventListener('submit', handleProfileUpdate);
+    document.getElementById('update-profile-form').addEventListener('submit', handleUpdateProfile);
+    document.getElementById('back-to-menu').addEventListener('click', showMenu);
 }
 
-async function handleProfileUpdate(e) {
+async function get_ID_Token(newUsername) {
+	try {
+		const status = await fetch('/token_management/create_token/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ newUsername})
+		});
+	} catch (error) {
+		console.error('Error:', error);
+		alert('Token Creation Error');
+		return (false);
+	}
+}
+
+async function handleUpdateProfile(e) {
     e.preventDefault();
-    const username = document.getElementById('username').value;
+    const newUsername = document.getElementById('new-username').value;
 
     try {
-        const response = await fetch('/update-profile/', {
+        const response = await fetch('/api/update-profile/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
             },
-            body: JSON.stringify({ username })
+            body: JSON.stringify({ username: newUsername })
         });
 
         const data = await response.json();
         if (data.success) {
+			await get_ID_Token(username);
             alert('Username updated successfully!');
+            showMenu();
         } else {
-            alert(`Update failed: ${data.error}`);
+            alert('Update failed: ' + (data.error || 'Unknown error'));
         }
     } catch (error) {
         console.error('Error:', error);
         alert('An error occurred. Please try again.');
     }
 }
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-export { showUserProfile };

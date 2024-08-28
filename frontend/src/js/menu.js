@@ -1,5 +1,3 @@
-import { showUserProfile } from "./profile.js";
-
 function showMenu() {
 	const app = document.getElementById('app');
 	app.innerHTML = `
@@ -12,21 +10,10 @@ function showMenu() {
 			<button onclick="showAddFriends()">Add Friends</button>
 			<button onclick="showChat()">Chat</button>
 			<button onclick="showGame()">Game</button>
-			<button onclick="showUserProfile()">User Profile</button>
 		  </div>
 		</div>
 	  </section>
 	`;
-  }
-  
-  async function showUserProfile() {
-	if(await verify_token())
-		alert('User Profile feature coming soon!');
-	else
-	{
-		alert('Please Login Again !');
-		showLoginPage();
-	}
   }
   
   async function showAddFriends() {
