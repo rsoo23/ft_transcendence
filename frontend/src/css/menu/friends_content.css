@@ -98,41 +98,18 @@
   color: var(--charcoal-200);
 }
 
-#chat-icon {
-  font-size: 1.25rem;
-}
-
-#block-icon {
-  font-size: 1.25rem;
-}
-
-#close-icon {
-  font-size: 1.25rem;
-}
-
 .icon-tooltip {
   width: fit-content;
   padding: 0.5rem;
   border-radius: 5px;
   position: absolute;
-  opacity: 1;
+  opacity: 0;
   transition: 0.3s;
   background-color: var(--blue-500);
   z-index: 1;
-  /*bottom: 0;*/
-  /*right: 100%;*/
-
-  left: 100%;
+  bottom: 1.75rem;
+  right: 0;
   pointer-events: none;
-}
-
-#challenge-tooltip {
-}
-
-#chat-tooltip {
-}
-
-#block-tooltip {
 }
 
 #challenge-icon:hover > .icon-tooltip {
@@ -147,6 +124,10 @@
   opacity: 1;
 }
 
-#close-icon:hover {
+#cancel-icon:hover > .icon-tooltip {
+  opacity: 1;
 }
 
+#unblock-icon:hover > .icon-tooltip {
+  opacity: 1;
+}
