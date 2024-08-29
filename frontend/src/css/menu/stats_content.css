@@ -111,17 +111,19 @@
   align-items: center;
 }
 
-.match-record .avatar-container {
-  position: relative
+.avatar-container {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
-.match-record .avatar {
+.avatar {
   object-fit: cover;
   width: 2.5rem;
   height: 2.5rem;
 }
 
-.match-record .status-badge {
+.status-badge {
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
