@@ -174,7 +174,6 @@
 #match-stats-container {
   height: 100%;
   width: 50%;
-  /*outline: 2px yellow solid;*/
 }
 
 #match-stats-container > .content {
