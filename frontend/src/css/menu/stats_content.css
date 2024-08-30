@@ -188,7 +188,8 @@
   margin: 1rem 2.5rem 1rem 2.5rem;
 }
 
-h1 {
+#overall-stats-container > h1,
+#match-stats-container > h1 {
   display: flex;
   justify-content: center;
   align-items: center;
