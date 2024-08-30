@@ -14,35 +14,29 @@ function showLogoutPage() {
     </section>
     `;
 
-    document.getElementById('logout-button').addEventListener('click', async () => {
-        try {
-            const response = await fetch('/api/logout/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include'  // To send cookies
-            });
+    document.getElementById('logout-button').addEventListener('click', handleLogout);
+    document.getElementById('back-to-menu').addEventListener('click', showMenu);
+}
 
-            const data = await response.json();
-            if (data.success) {
-                // Clear any stored tokens or session data
-                document.cookie = 'ID_Token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                localStorage.removeItem('user');  // If storing any user data in localStorage
+async function handleLogout() {
+    try {
+        const response = await fetch('/api/logout/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+        });
 
-                alert('Logged out successfully');
-                showLoginPage();  // Redirect to login page after logout
-            } else {
-                alert('Logout failed: ' + (data.error || 'Unknown error'));
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred during logout. Please try again.');
+        const data = await response.json();
+        if (data.success) {
+            alert('Logged out successfully');
+            showLoginPage();
+        } else {
+            alert('Logout failed: ' + (data.error || 'Unknown error'));
         }
-    });
-
-    document.getElementById('back-to-menu').addEventListener('click', (e) => {
-        e.preventDefault();
-        showMenu();
-    });
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during logout. Please try again.');
+    }
 }

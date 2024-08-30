@@ -71,6 +71,7 @@ def update_profile(request):
     else:
         return JsonResponse({'success': False, 'error': 'Username is required'}, status=400)
 
+@csrf_exempt
 @require_http_methods(["POST"])
 def logout_view(request):
 	logout(request) 
