@@ -34,10 +34,11 @@ function initLoginButton() {
     loginButton,
     'click',
     () => {
-      initPanelShrinkAnim(startPagePanel)
-      setTimeout(() => {
-        loadLoginPanel()
-      }, ANIM_WAIT_DURATION)
+      // initPanelShrinkAnim(startPagePanel)
+      // setTimeout(() => {
+      //   loadLoginPanel()
+      // }, ANIM_WAIT_DURATION)
+      loadLoginPanel()
     }
   )
 
@@ -48,6 +49,7 @@ function initLoginButton() {
       colorInfo = getRandomColor(500)
 
       loginButton.style.backgroundColor = colorInfo['hex']
+      startPagePanel.style.borderColor = colorInfo['hex']
       loginButton.style.color = getColor(colorInfo['name'], 800)
     }
   )
@@ -56,8 +58,11 @@ function initLoginButton() {
     loginButton,
     'mouseout',
     () => {
+      const color = getColor('charcoal', 100)
+
       loginButton.style.backgroundColor = getColor('charcoal', 700)
-      loginButton.style.color = getColor('charcoal', 100)
+      startPagePanel.style.borderColor = color
+      loginButton.style.color = color
     }
   )
 
@@ -65,7 +70,10 @@ function initLoginButton() {
     loginButton,
     'mousedown',
     () => {
-      loginButton.style.backgroundColor = getColor(colorInfo['name'], 700)
+      const color = getColor(colorInfo['name'], 700)
+
+      loginButton.style.backgroundColor = color
+      startPagePanel.style.borderColor = color
     }
   )
 
@@ -91,10 +99,11 @@ function initSignupButton() {
     signupButton,
     'click',
     () => {
-      initPanelShrinkAnim(startPagePanel)
-      setTimeout(() => {
-        loadSignupPanel()
-      }, ANIM_WAIT_DURATION)
+      // initPanelShrinkAnim(startPagePanel)
+      // setTimeout(() => {
+      //   loadSignupPanel()
+      // }, ANIM_WAIT_DURATION)
+      loadSignupPanel()
     }
   )
 
@@ -105,6 +114,7 @@ function initSignupButton() {
       colorInfo = getRandomColor(500)
 
       signupButton.style.backgroundColor = colorInfo['hex']
+      startPagePanel.style.borderColor = colorInfo['hex']
       signupButton.style.color = getColor(colorInfo['name'], 800)
     }
   )
@@ -113,8 +123,11 @@ function initSignupButton() {
     signupButton,
     'mouseout',
     () => {
+      const color = getColor('charcoal', 100)
+
       signupButton.style.backgroundColor = getColor('charcoal', 700)
-      signupButton.style.color = getColor('charcoal', 100)
+      startPagePanel.style.borderColor = color
+      signupButton.style.color = color
     }
   )
 
@@ -122,7 +135,10 @@ function initSignupButton() {
     signupButton,
     'mousedown',
     () => {
-      signupButton.style.backgroundColor = getColor(colorInfo['name'], 700)
+      const color = getColor(colorInfo['name'], 700)
+
+      signupButton.style.backgroundColor = color
+      startPagePanel.style.borderColor = color
     }
   )
 

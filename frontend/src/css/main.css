@@ -124,6 +124,7 @@ a:active {
   background-color: var(--charcoal-700);
   color: var(--charcoal-100);
   transition: 0.2s;
+  font-weight: 700;
   cursor: pointer;
 }
 
