@@ -10,6 +10,7 @@ function showMenu() {
 			<button onclick="showAddFriends()">Add Friends</button>
 			<button onclick="showChat()">Chat</button>
 			<button onclick="showGame()">Game</button>
+			<button onclick="showLogoutPage()">Logout</button>
 		  </div>
 		</div>
 	  </section>

@@ -1,8 +1,6 @@
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.forms import PasswordResetForm
-from django.contrib.auth import authenticate, login, get_user_model
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
+from django.contrib.auth import authenticate, login, get_user_model, logout
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -72,3 +70,9 @@ def update_profile(request):
         return JsonResponse({'success': True})
     else:
         return JsonResponse({'success': False, 'error': 'Username is required'}, status=400)
+
+@require_http_methods(["POST"])
+def logout_view(request):
+	logout(request) 
+     # Django's built-in logout function - removes authenticated user from session, flushes session data, deletes session cookie
+	return JsonResponse({'success': True})
