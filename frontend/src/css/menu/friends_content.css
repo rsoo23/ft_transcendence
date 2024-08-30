@@ -118,6 +118,8 @@
   bottom: 1.75rem;
   right: 0;
   pointer-events: none;
+  font-size: 1rem;
+  font-weight: 800;
 }
 
 .icon-with-tooltip:hover > .icon-tooltip {
