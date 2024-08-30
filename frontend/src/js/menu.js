@@ -15,20 +15,53 @@ function showMenu() {
 		</div>
 	  </section>
 	`;
-}
+  }
+  
+  async function showUserProfile() {
+	if(await verify_token())
+		alert('User Profile feature coming soon!');
+	else
+	{
+		alert('Please Login Again !');
+		showLoginPage();
+	}
+  }
+  
+  async function showAddFriends() {
+	if(await verify_token())
+		alert('Add Friends feature coming soon!');
+	else
+	{
+		alert('Please Login Again !');
+		showLoginPage();
+	}
+  }
+  
+  async function showChat() {
+	if(await verify_token())
+		alert('Chat feature coming soon!');
+	else
+	{
+		alert('Please Login Again !');
+		showLoginPage();
+	}
+  }
+  
+  async function showGame() {
+	if(await verify_token())
+		alert('Game feature coming soon!');
+	else
+	{
+		alert('Please Login Again !');
+		showLoginPage();
+	}
+  }
 
-function showUserProfile() {
-  alert('User Profile feature coming soon!');
-}
+  async function verify_token() {
+	const response = await fetch('/token_management/verify_token', {
+		method: 'GET',
+	});
 
-function showAddFriends() {
-  alert('Add Friends feature coming soon!');
-}
-
-function showChat() {
-  alert('Chat feature coming soon!');
-}
-
-function showGame() {
-  alert('Game feature coming soon!');
-}
+	const status = await response.json();
+	return(status.success);
+  }

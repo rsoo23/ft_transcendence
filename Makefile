@@ -3,7 +3,8 @@ DC		=	docker compose -f
 YAML	=	docker-compose.yml
 RMRF	=	sudo rm -rf
 
-all: build up
+all: down build up
+reload: down up
 re: fclean all
 
 up:
