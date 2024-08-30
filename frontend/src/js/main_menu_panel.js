@@ -12,7 +12,7 @@ export async function loadMainMenuPanel() {
     await loadComponent('components/menu/main_menu_panel.html')
 
     initHotbar()
-    // await loadMainMenuContent('play_content.html')
+    await loadMainMenuContent('play_content.html')
   } catch (error) {
     console.error('Error loading Main Menu Panel :', error)
   }
