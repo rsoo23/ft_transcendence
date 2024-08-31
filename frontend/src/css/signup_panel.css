@@ -53,9 +53,7 @@
   align-items: center;
 }
 
-#signup-username-input-container > .input-field, 
-#signup-email-input-container > .input-field, 
-#signup-password-input-container > .password-container > .input-field {
+#signup-form .input-field{
   width: 15rem;
   height: 2.75rem;
   border-radius: 20px;
@@ -82,22 +80,5 @@
 
 .password-container {
   position: relative;
-}
-
-#toggle-password-visibility-icon {
-  color: var(--charcoal-500);
-  position: absolute;
-  top: 25%;
-  right: 1rem;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-#toggle-password-visibility-icon:hover {
-  color: var(--charcoal-100)
-}
-
-#toggle-password-visibility-icon:active {
-  color: var(--charcoal-300)
 }
 

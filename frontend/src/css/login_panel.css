@@ -81,7 +81,7 @@
   position: relative;
 }
 
-#toggle-password-visibility-icon {
+.toggle-password-visibility-icon {
   color: var(--charcoal-500);
   position: absolute;
   top: 25%;
@@ -90,11 +90,11 @@
   transition: 0.3s;
 }
 
-#toggle-password-visibility-icon:hover {
+.toggle-password-visibility-icon:hover {
   color: var(--charcoal-100)
 }
 
-#toggle-password-visibility-icon:active {
+.toggle-password-visibility-icon:active {
   color: var(--charcoal-300)
 }
 

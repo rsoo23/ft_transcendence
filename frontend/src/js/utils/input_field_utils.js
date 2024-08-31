@@ -4,17 +4,20 @@ import { addEventListenerTo } from "./ui_utils.js"
 let isPasswordVisible = false;
 
 export function initTogglePasswordVisibilityIcon() {
-  const togglePasswordVisibilityIcon = document.getElementById('toggle-password-visibility-icon')
+  const togglePasswordVisibilityIcons = document.getElementsByClassName('toggle-password-visibility-icon')
 
-  addEventListenerTo(
-    togglePasswordVisibilityIcon,
-    'click',
-    () => togglePasswordVisibility(togglePasswordVisibilityIcon)
-  )
+  Array.from(togglePasswordVisibilityIcons).forEach(icon => {
+    icon.className
+    addEventListenerTo(
+      icon,
+      'click',
+      () => togglePasswordVisibility(icon)
+    );
+  });
 }
 
 function togglePasswordVisibility(icon) {
-  const passwordField = document.querySelector('.password-container > .input-field')
+  const passwordField = icon.previousElementSibling;
 
   if (!icon) {
     console.error('Error: toggle-password-visibility-icon not found')

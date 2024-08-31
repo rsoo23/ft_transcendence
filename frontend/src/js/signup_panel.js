@@ -25,29 +25,12 @@ function initConfirmSignupButton() {
     hex: '',
     name: ''
   }
-  // let hi = true
 
   addEventListenerTo(
     button,
     'click',
     () => {
-      //   const inputFieldContainer1 = document.getElementById('signup-username-input-container')
-      //   const inputFieldContainer2 = document.getElementById('signup-password-input-container')
-      //   const inputFieldContainer3 = document.getElementById('signup-email-input-container')
-      //
-      //   if (hi) {
-      //     setInputFieldHint(inputFieldContainer1, 'Username already exists', getColor('magenta', 500))
-      //     setInputFieldHint(inputFieldContainer2, 'Incorrect password', getColor('magenta', 500), true)
-      //     setInputFieldHint(inputFieldContainer3, 'Invalid email', getColor('magenta', 500), true)
-      //     hi = false
-      //   } else {
-      //     resetInputField(inputFieldContainer1)
-      //     resetInputField(inputFieldContainer2, true)
-      //     resetInputField(inputFieldContainer3)
-      //     hi = true
-      //   }
-      // }
-      loadMainMenuPanel()
+      handleSignup()
     }
   )
 
@@ -88,4 +71,33 @@ function initConfirmSignupButton() {
     }
   )
 }
+
+async function handleSignup() {
+  const username = document.getElementById('reg-username').value;
+  const email = document.getElementById('reg-email').value;
+  const password1 = document.getElementById('reg-password').value;
+  const password2 = document.getElementById('reg-confirm-password').value;
+
+  try {
+    const response = await fetch('/api/register/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, email, password1, password2 })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      alert('Registration successful! Please log in.');
+      location.reload(); // Reload to show login form
+    } else {
+      alert('Registration failed: ' + JSON.stringify(data.errors));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An error occurred. Please try again.');
+  }
+}
+
 
