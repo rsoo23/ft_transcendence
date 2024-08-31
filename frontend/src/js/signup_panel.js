@@ -72,14 +72,16 @@ function initConfirmSignupButton() {
   )
 }
 
+// password1: first password input
+// password2: password input confirmation
 async function handleSignup() {
   const username = document.getElementById('signup-username').value;
   const email = document.getElementById('signup-email').value;
-  const password = document.getElementById('signup-password').value;
-  const passwordConfirmation = document.getElementById('signup-password-confirmation').value;
+  const password1 = document.getElementById('signup-password').value;
+  const password2 = document.getElementById('signup-password-confirmation').value;
 
   try {
-    const response = await postRequest('/api/register/', { username, email, password, passwordConfirmation })
+    const response = await postRequest('/api/register/', { username, email, password1, password2 })
 
     if (response.success) {
       alert('Registration successful! Please log in.');
