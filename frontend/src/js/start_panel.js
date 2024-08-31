@@ -1,12 +1,10 @@
 
 import { loadLoginPanel } from "./login_panel.js";
 import { loadSignupPanel } from "./signup_panel.js";
-import { getColor, getRandomColor } from "./utils/color_utils.js";
-import { loadComponent } from "./utils/ui_utils.js";
-import { addEventListenerTo } from "./utils/ui_utils.js";
-import { initPanelShrinkAnim } from "./animations/ui_anim_utils.js";
-import { ANIM_WAIT_DURATION } from "./constants.js";
-import { verifyToken } from "./token_utils.js";
+import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
+import { loadComponent } from "./ui_utils/ui_utils.js";
+import { addEventListenerTo } from "./ui_utils/ui_utils.js";
+import { verifyToken } from "./network_utils/token_utils.js";
 import { loadMainMenuPanel } from "./main_menu_panel.js";
 
 document.addEventListener("DOMContentLoaded", () => {

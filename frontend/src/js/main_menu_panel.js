@@ -1,6 +1,6 @@
 
-import { loadComponent } from "./utils/ui_utils.js";
-import { initHotbar } from "./utils/hotbar_utils.js";
+import { loadComponent } from "./ui_utils/ui_utils.js";
+import { initHotbar } from "./ui_utils/hotbar_utils.js";
 import { initAddFriendButton, loadToFriendsContainer, initCloseSearchFriendButton } from "./friends_content.js";
 
 // document.addEventListener("DOMContentLoaded", () => {

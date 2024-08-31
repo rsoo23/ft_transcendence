@@ -1,6 +1,6 @@
 
-import { addEventListenerTo } from "./utils/ui_utils.js"
-import { getColor } from "./utils/color_utils.js"
+import { addEventListenerTo } from "./ui_utils/ui_utils.js"
+import { getColor } from "./ui_utils/color_utils.js"
 
 export async function loadToFriendsContainer(fileName) {
   try {

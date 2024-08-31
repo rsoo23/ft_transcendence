@@ -1,13 +1,13 @@
 
-import { loadComponent } from "./utils/ui_utils.js";
-import { addEventListenerTo } from "./utils/ui_utils.js";
-import { getColor, getRandomColor } from "./utils/color_utils.js";
-import { resetInputField, setInputFieldHint } from "./utils/input_field_utils.js";
+import { loadComponent } from "./ui_utils/ui_utils.js";
+import { addEventListenerTo } from "./ui_utils/ui_utils.js";
+import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
+import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
 
-import { initBackToStartButton } from "./utils/button_utils.js"
-import { initTogglePasswordVisibilityIcon } from "./utils/input_field_utils.js";
+import { initBackToStartButton } from "./ui_utils/button_utils.js"
+import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
 import { loadMainMenuPanel } from "./main_menu_panel.js";
-import { postRequest } from "./api_requests.js";
+import { postRequest } from "./network_utils/api_requests.js";
 
 export async function loadLoginPanel() {
   try {
