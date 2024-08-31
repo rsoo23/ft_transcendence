@@ -6,6 +6,8 @@ import { getColor, getRandomColor } from "./utils/color_utils.js";
 import { initTogglePasswordVisibilityIcon } from "./utils/input_field_utils.js";
 import { resetInputField, setInputFieldHint } from "./utils/input_field_utils.js";
 import { loadMainMenuPanel } from "./main_menu_panel.js";
+import { postRequest } from "./api_requests.js";
+import { loadLoginPanel } from "./login_panel.js";
 
 export async function loadSignupPanel() {
   try {
@@ -73,24 +75,17 @@ function initConfirmSignupButton() {
 }
 
 async function handleSignup() {
-  const username = document.getElementById('reg-username').value;
-  const email = document.getElementById('reg-email').value;
-  const password1 = document.getElementById('reg-password').value;
-  const password2 = document.getElementById('reg-confirm-password').value;
+  const username = document.getElementById('signup-username').value;
+  const email = document.getElementById('signup-email').value;
+  const password = document.getElementById('signup-password').value;
+  const passwordConfirmation = document.getElementById('signup-password-confirmation').value;
 
   try {
-    const response = await fetch('/api/register/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username, email, password1, password2 })
-    });
+    const response = await postRequest('/api/register/', { username, email, password, passwordConfirmation })
 
-    const data = await response.json();
-    if (data.success) {
+    if (response.success) {
       alert('Registration successful! Please log in.');
-      location.reload(); // Reload to show login form
+      loadLoginPanel()
     } else {
       alert('Registration failed: ' + JSON.stringify(data.errors));
     }
