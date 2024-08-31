@@ -6,10 +6,26 @@ import { loadComponent } from "./utils/ui_utils.js";
 import { addEventListenerTo } from "./utils/ui_utils.js";
 import { initPanelShrinkAnim } from "./animations/ui_anim_utils.js";
 import { ANIM_WAIT_DURATION } from "./constants.js";
+import { verifyToken } from "./token_utils.js";
+import { loadMainMenuPanel } from "./main_menu_panel.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  loadStartPanel()
+  initializeApp()
 })
+
+async function initializeApp() {
+  try {
+    const isTokenValid = await verifyToken();
+    if (isTokenValid) {
+      loadMainMenuPanel();
+    } else {
+      loadStartPanel();
+    }
+  } catch (error) {
+    console.error('Error during app initialization:', error);
+    loadStartPanel();
+  }
+}
 
 export async function loadStartPanel() {
   try {
