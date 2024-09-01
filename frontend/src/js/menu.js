@@ -95,9 +95,34 @@ function showMenu() {
 	</section>
 	`;
 
-	document.getElementById('two-factor-form').addEventListener('submit', handleForgotPassword);
+	document.getElementById('two-factor-form').addEventListener('submit', handleTwoFactor);
 	document.getElementById('back').addEventListener('click', (e) => {
 		e.preventDefault();
 		location.reload(); // This will reload the page and show the login form
 	});
+}
+
+async function handleTwoFactor(e) {
+	e.preventDefault();
+	const email = document.getElementById('email').value;
+
+	try {
+		const response = await fetch('/two_factor_auth/enable_2FA/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ email })
+		});
+
+		const data = await response.json();
+		if (data.success) {
+			alert('2FA Enabled using email:' + email);
+		} else {
+			alert('An error occurred. Please try again.');
+		}
+	} catch (error) {
+		console.error('Error:', error);
+		alert('An error occurred. Please try again.');
+	}
 }

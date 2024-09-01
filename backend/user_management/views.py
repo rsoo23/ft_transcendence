@@ -26,10 +26,11 @@ def login_view(request):
 def register_view(request):
     if request.method == 'POST':
         data = json.loads(request.body)
+        print(data['password1'])
         form = CustomUserCreationForm(data)
         if form.is_valid():
             user = form.save()
-            #login(request, user)
+            login(request, user)
             return JsonResponse({'success': True})
         else:
             return JsonResponse({'success': False, 'errors': form.errors}, status=400)

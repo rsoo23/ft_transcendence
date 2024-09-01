@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user_management',
-    'token_management'
+    'token_management',
+    'two_factor_auth'
 ]
 
 AUHENTICATION_BACKENDS = [
