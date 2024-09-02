@@ -71,7 +71,6 @@
 
 .text-alert-container {
   display: flex;
-  /*padding-left: 0.75rem;*/
 }
 
 #signup-password-input-container > .text-alert-container {
@@ -82,3 +81,10 @@
   position: relative;
 }
 
+.buttons-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.75rem;
+}

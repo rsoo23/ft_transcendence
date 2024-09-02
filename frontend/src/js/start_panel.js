@@ -12,17 +12,18 @@ document.addEventListener("DOMContentLoaded", () => {
 })
 
 async function initializeApp() {
-  try {
-    const isTokenValid = await verifyToken();
-    if (isTokenValid) {
-      loadMainMenuPanel();
-    } else {
-      loadStartPanel();
-    }
-  } catch (error) {
-    console.error('Error during app initialization:', error);
-    loadStartPanel();
-  }
+  // try {
+  //   const isTokenValid = await verifyToken();
+  //   if (isTokenValid) {
+  //     loadMainMenuPanel();
+  //   } else {
+  //     loadStartPanel();
+  //   }
+  // } catch (error) {
+  //   console.error('Error during app initialization:', error);
+  //   loadStartPanel();
+  // }
+  loadStartPanel()
 }
 
 export async function loadStartPanel() {
