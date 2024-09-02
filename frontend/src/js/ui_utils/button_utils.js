@@ -55,4 +55,64 @@ export function initBackButton(callback) {
   )
 }
 
+export function initRandomColorButton(buttonID, panelID, callback) {
+  const button = document.getElementById(buttonID)
+  const panel = document.getElementById(panelID)
+  let colorInfo = {
+    hex: '',
+    name: ''
+  }
+
+  addEventListenerTo(
+    button,
+    'click',
+    () => {
+      callback();
+    }
+  )
+
+  addEventListenerTo(
+    button,
+    'mouseover',
+    () => {
+      colorInfo = getRandomColor(500)
+
+      button.style.backgroundColor = colorInfo['hex']
+      panel.style.borderColor = colorInfo['hex']
+      button.style.color = getColor(colorInfo['name'], 800)
+    }
+  )
+
+  addEventListenerTo(
+    button,
+    'mouseout',
+    () => {
+      const color = getColor('charcoal', 100)
+
+      button.style.backgroundColor = getColor('charcoal', 700)
+      panel.style.borderColor = color
+      button.style.color = color
+    }
+  )
+
+  addEventListenerTo(
+    button,
+    'mousedown',
+    () => {
+      const color = getColor(colorInfo['name'], 700)
+
+      button.style.backgroundColor = color
+      panel.style.borderColor = color
+    }
+  )
+
+  addEventListenerTo(
+    button,
+    'mouseup',
+    () => {
+      button.style.backgroundColor = colorInfo['hex']
+      button.style.color = getColor(colorInfo['name'], 800)
+    }
+  )
+}
 

@@ -12,6 +12,7 @@
 
   padding: 1.5rem 1rem 1.5rem 1rem;
   box-sizing: border-box;
+  transition: 0.3s;
 }
 
 #signup-panel > .top-container > .header {

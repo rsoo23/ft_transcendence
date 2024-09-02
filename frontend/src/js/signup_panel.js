@@ -1,5 +1,5 @@
 
-import { initBackButton } from "./ui_utils/button_utils.js";
+import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { loadComponent } from "./ui_utils/ui_utils.js";
 import { addEventListenerTo } from "./ui_utils/ui_utils.js";
 import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
@@ -15,65 +15,18 @@ export async function loadSignupPanel() {
     await loadComponent('components/signup_panel.html')
 
     initBackButton(() => loadStartPanel())
-    initConfirmSignupButton()
+    initRandomColorButton(
+      'confirm-signup-button',
+      'signup-panel',
+      () => {
+        handleSignup()
+      }
+    )
     initEnable2FAButton()
     initTogglePasswordVisibilityIcon()
   } catch (error) {
     console.error('Error loading Login Panel:', error)
   }
-}
-
-function initConfirmSignupButton() {
-  const button = document.getElementById('confirm-signup-button')
-  let colorInfo = {
-    hex: '',
-    name: ''
-  }
-
-  addEventListenerTo(
-    button,
-    'click',
-    () => {
-      handleSignup()
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mouseover',
-    () => {
-      colorInfo = getRandomColor(500)
-
-      button.style.backgroundColor = colorInfo['hex']
-      button.style.color = getColor(colorInfo['name'], 800)
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mouseout',
-    () => {
-      button.style.backgroundColor = getColor('charcoal', 700)
-      button.style.color = getColor('charcoal', 100)
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mousedown',
-    () => {
-      button.style.backgroundColor = getColor(colorInfo['name'], 700)
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mouseup',
-    () => {
-      button.style.backgroundColor = colorInfo['hex']
-      button.style.color = getColor(colorInfo['name'], 800)
-    }
-  )
 }
 
 function initEnable2FAButton() {
