@@ -5,6 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
 import json
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from .forms import CustomUserCreationForm
 
 @csrf_exempt
 def login_view(request):
@@ -20,15 +22,12 @@ def login_view(request):
             return JsonResponse({'success': False, 'error': 'Invalid credentials'}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-class CustomUserCreationForm(UserCreationForm):
-	class Meta(UserCreationForm.Meta):
-		fields = UserCreationForm.Meta.fields + ('email',)
-
 @csrf_exempt
 def register_view(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        form = UserCreationForm(data)
+        print(data['password1'])
+        form = CustomUserCreationForm(data)
         if form.is_valid():
             user = form.save()
             login(request, user)
