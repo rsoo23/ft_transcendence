@@ -81,7 +81,7 @@ async function handleLogin() {
   const passwordInputContainer = document.getElementById('login-password-input-container')
 
   try {
-    const response = await postRequest('/api/login', { username, password })
+    const response = await postRequest('/api/login/', { username, password })
 
     if (response.success) {
       await getIdToken(username, password);
