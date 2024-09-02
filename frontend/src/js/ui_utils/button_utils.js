@@ -3,8 +3,8 @@ import { loadStartPanel } from "../start_panel.js";
 import { addEventListenerTo } from "./ui_utils.js";
 import { getColor, getRandomColor } from "./color_utils.js";
 
-export function initBackToStartButton() {
-  const backToStartButton = document.getElementById('back-to-start-button')
+export function initBackButton(callback) {
+  const backToStartButton = document.getElementById('back-button')
   const backIcon = document.getElementById('back-icon')
   let colorInfo = {
     hex: '',
@@ -14,7 +14,7 @@ export function initBackToStartButton() {
   addEventListenerTo(
     backToStartButton,
     'click',
-    () => loadStartPanel()
+    () => callback()
   )
 
   addEventListenerTo(
