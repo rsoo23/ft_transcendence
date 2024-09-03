@@ -50,7 +50,7 @@ async function handleLogin() {
     const response = await postRequest('/api/login/', loginInfo)
 
     if (response.success) {
-      await getIdToken(loginInfo);
+      // await getIdToken(loginInfo);
 
       if (isEnable2FAButtonClicked) {
         load2FAPanel()
@@ -100,7 +100,7 @@ function handleLoginErrors(inputContainers, errors) {
     resetInputField(inputContainers.username)
   }
   if (errors.password) {
-    setInputFieldHint(inputContainers.password, errors.password[0], getColor('magenta', 500))
+    setInputFieldHint(inputContainers.password, errors.password[0], getColor('magenta', 500), true)
   } else {
     resetInputField(inputContainers.password)
   }
