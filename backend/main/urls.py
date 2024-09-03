@@ -26,4 +26,5 @@ urlpatterns = [
     path('api/', include('user_management.urls')),  # Include your user_management app URLs
     path('', TemplateView.as_view(template_name='index.html'), name='index'),
     path('token_management/', include('token_management.urls')),
+    path('two_factor_auth/', include('two_factor_auth.urls'))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

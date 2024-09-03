@@ -1,12 +1,14 @@
-from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm, AuthenticationForm
 from django.contrib.auth import authenticate, login, get_user_model, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, get_user_model
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import json
 from django.conf import settings
-from django import forms
+from django.contrib.auth import get_user_model
+from .forms import CustomUserCreationForm
 
 User = get_user_model()
 
@@ -23,11 +25,6 @@ def login_view(request):
         else:
             return JsonResponse({'success': False, 'error': 'Invalid credentials'}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
-
-class CustomUserCreationForm(UserCreationForm):
-	class Meta(UserCreationForm.Meta):
-		model = User
-		fields = UserCreationForm.Meta.fields + ('email',)
 
 @csrf_exempt
 def register_view(request):

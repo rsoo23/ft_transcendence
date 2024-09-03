@@ -1,0 +1,29 @@
+
+#start-page-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 35px;
+
+  width: 32rem;
+  height: 32rem;
+  border-radius: 40px;
+
+  transition: 0.3s;
+  /*transition: transform 0.5s ease;*/
+}
+
+#main-title {
+  letter-spacing: -7px;
+  font-size: 4.5rem;
+  margin: 0;
+}
+
+#start-page-panel > .buttons-container {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+

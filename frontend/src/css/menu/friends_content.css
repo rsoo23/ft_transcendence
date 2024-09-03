@@ -1,0 +1,375 @@
+
+#friends-container {
+  min-width: 20rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 35px 0px 0px 35px;
+  background-color: var(--charcoal-800);
+  gap: 1rem;
+}
+
+#friends-container > .header {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: 2rem 1.25rem 0 1.25rem;
+}
+
+#friends-container > .header > .title {
+  font-size: 1.875rem;
+}
+
+#add-friend-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: var(--blue-500);
+  transition: 0.3s;
+}
+
+#add-friend-icon {
+  color: var(--blue-200);
+  transition: 0.3s;
+}
+
+.friends-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125rem;
+}
+
+.friend-record {
+  display: flex;
+  justify-content: space-between;
+
+  width: 100%;
+  min-height: 3.75rem;
+  box-sizing: border-box;
+  padding: 0 0.75rem 0 0.75rem;
+
+  background-color: var(--charcoal-600);
+  border-radius: 10px;
+  transition: 0.2s;
+  position: relative;
+}
+
+.friend-record .avatar-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.friend-record .avatar-name {
+  font-size: 1rem;
+}
+
+.friend-record .avatar-container {
+  position: relative
+}
+
+.friend-record .avatar {
+  object-fit: cover;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.friend-record .status-badge {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  position: absolute;
+  right: 0.25rem;
+  bottom: 0.25rem;
+  background-color: var(--teal-500)
+}
+
+.friend-record .icons-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.friend-record .icons-section > * {
+  cursor: pointer;
+  color: var(--charcoal-300);
+  transition: 0.2s;
+  position: relative;
+}
+
+.friend-record .icons-section > *:hover {
+  color: var(--charcoal-100);
+}
+
+.friend-record .icons-section > *:active {
+  color: var(--charcoal-200);
+}
+
+.icon-tooltip {
+  width: fit-content;
+  padding: 0.5rem;
+  border-radius: 5px;
+  position: absolute;
+  opacity: 0;
+  transition: 0.3s;
+  background-color: var(--blue-500);
+  z-index: 1;
+  bottom: 1.75rem;
+  right: 0;
+  pointer-events: none;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.icon-with-tooltip:hover > .icon-tooltip {
+  opacity: 1;
+}
+
+/*friend search panel*/
+.panel-content-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 82.82%;
+}
+
+.scrollable-container.friend-search {
+  gap: 0.3125rem;
+  padding: 1.25rem 1.25rem 1.25rem 1.25rem;
+  height: 100%;
+  overflow-y: scroll; 
+}
+
+#friend-search-form > .input-field {
+  margin: 0 1.25rem 0 1.25rem;
+  width: 75%;
+  height: 2rem;
+  border-radius: 1rem;
+  font-weight: 600;
+  padding: 0.25rem 1rem 0.25rem 1rem;
+}
+
+#friend-search-form {
+  width: 100%;
+}
+
+#close-search-friend-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/*chat panel*/
+#friends-content-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+  gap: 1rem;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+#chat-content-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column-reverse;
+  overflow-y: scroll;
+  border-radius: 1rem;
+  background-color: var(--charcoal-800);
+  padding: 1rem;
+  gap: 1rem;
+  box-sizing: border-box;
+}
+
+#chat-content-container::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+/* Track */
+#chat-content-container::-webkit-scrollbar-track {
+  border-radius: 1rem;
+  background-color: var(--charcoal-700);
+}
+ 
+/* Handle */
+#chat-content-container::-webkit-scrollbar-thumb {
+  background: var(--charcoal-400);
+  border-radius: 10px;
+  height: 1rem;
+  transition: 0.2s;
+}
+
+/* Handle on hover */
+.scrollable-container::-webkit-scrollbar-thumb:hover {
+  background: var(--charcoal-500); 
+  cursor: pointer;
+}
+
+
+#chat-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 1rem;
+  height: 100%;
+}
+
+#chat-input-form {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+#chat-input {
+  width: 100%;
+  height: 3rem;
+  padding: 0.5rem 6rem 0.5rem 1rem;
+  border-radius: 1rem;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+
+#chat-icons-container {
+  display: flex;
+
+  gap: 1rem;
+  position: absolute;
+  right: 1rem;
+}
+
+#chat-icons-container > * {
+  cursor: pointer;
+  color: var(--charcoal-300);
+  transition: 0.2s;
+}
+
+#chat-icons-container > * {
+  cursor: pointer;
+  color: var(--charcoal-300);
+  transition: 0.2s;
+}
+
+#chat-icons-container > *:hover {
+  color: var(--charcoal-100);
+}
+
+#chat-icons-container > *:active {
+  color: var(--charcoal-200);
+}
+
+/*chat message container*/
+.chat-message-container {
+  display: flex;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  /*margin: 0.5rem 1rem 0.5rem 1rem;*/
+}
+
+.message-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.user-details {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-details > .username {
+  color: var(--orange-500);
+  font-size: 1rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.user-details > .message-datetime {
+  font-size: 0.75rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+/*profile-container*/
+#profile-container {
+  padding-top: 2rem;
+  width: 40%;
+  height: 100%;
+  border-radius: 1rem;
+  background-color: var(--charcoal-800);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+#profile-container > .avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1.5rem;
+}
+
+#profile-container .avatar-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+#profile-container .avatar {
+  width: 6rem;
+  height: 6rem;
+}
+
+#profile-container .status-badge {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.pvp-stat-container,
+.total-game-stat-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3125rem;
+}
+
+.win-lose-stat-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  width: 10rem;
+  align-items: center;
+}
+
+.lose-bar {
+  width: 100%;
+  height: 0.5rem;
+  background-color: var(--magenta-500);
+  border-radius: 0.5rem;
+}
+
+.win-bar {
+  width: 50%;
+  height: 0.5rem;
+  background-color: var(--teal-500);
+  border-radius: 0.5rem 0 0 0.5rem;
+}
+
+.win-lose-label {
+  display: flex;
+  justify-content: space-between;
+  min-width: 10rem;
+}
