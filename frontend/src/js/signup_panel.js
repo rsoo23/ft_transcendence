@@ -10,6 +10,7 @@ import { handle2FA } from "./network_utils/token_utils.js";
 import { isEnable2FAButtonClicked, toggle2FAButton } from "./global_vars.js";
 import { loadStartPanel } from "./start_panel.js";
 import { setInputFieldHint } from "./ui_utils/input_field_utils.js";
+import { loadMainMenuPanel } from "./main_menu_panel.js";
 
 
 export async function loadSignupPanel() {
@@ -124,7 +125,7 @@ async function handleSignup() {
     const response = await postRequest('/api/register/', signupInfo)
 
     if (response.success) {
-      loadLoginPanel()
+      loadMainMenuPanel()
     } else {
       handleSignupErrors(inputContainers, response.errors)
     }
