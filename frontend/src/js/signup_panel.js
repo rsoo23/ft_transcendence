@@ -134,29 +134,13 @@ async function handleSignup() {
 }
 
 function isInputEmpty(signupInfo, inputContainers) {
-  if (!signupInfo.username) {
-    setInputFieldHint(inputContainers.username, 'This field is required', getColor('magenta', 500))
-    return true
-  } else {
-    resetInputField(inputContainers.username)
-  }
-  if (!signupInfo.email) {
-    setInputFieldHint(inputContainers.email, 'This field is required', getColor('magenta', 500))
-    return true
-  } else {
-    resetInputField(inputContainers.email)
-  }
-  if (!signupInfo.password1) {
-    setInputFieldHint(inputContainers.password1, 'This field is required', getColor('magenta', 500))
-    return true
-  } else {
-    resetInputField(inputContainers.password1)
-  }
-  if (!signupInfo.password2) {
-    setInputFieldHint(inputContainers.password2, 'This field is required', getColor('magenta', 500))
-    return true
-  } else {
-    resetInputField(inputContainers.password2)
+  for (let key of Object.keys(signupInfo)) {
+    if (!signupInfo[key]) {
+      setInputFieldHint(inputContainers[key], 'This field is required', getColor('magenta', 500))
+      return true
+    } else {
+      resetInputField(inputContainers[key])
+    }
   }
   return false
 }
