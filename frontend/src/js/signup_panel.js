@@ -7,7 +7,7 @@ import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.j
 import { postRequest } from "./network_utils/api_requests.js";
 import { loadLoginPanel } from "./login_panel.js";
 import { handle2FA } from "./network_utils/token_utils.js";
-import { isEnable2FAButtonClicked } from "./global_vars.js";
+import { isEnable2FAButtonClicked, toggle2FAButton } from "./global_vars.js";
 import { loadStartPanel } from "./start_panel.js";
 
 export async function loadSignupPanel() {
@@ -42,9 +42,9 @@ function initEnable2FAButton() {
     'click',
     () => {
       if (!isEnable2FAButtonClicked) {
-        isEnable2FAButtonClicked = true
+        toggle2FAButton()
       } else {
-        isEnable2FAButtonClicked = false
+        toggle2FAButton()
         button.style.backgroundColor = charcoal700
         button.style.color = charcoal100
       }
