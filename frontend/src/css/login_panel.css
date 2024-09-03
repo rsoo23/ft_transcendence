@@ -56,7 +56,7 @@
 
 #login-username-input-container > .input-field, 
 #login-password-input-container > .password-container > .input-field {
-  width: 15rem;
+  width: 17rem;
   height: 2.75rem;
   border-radius: 20px;
 }

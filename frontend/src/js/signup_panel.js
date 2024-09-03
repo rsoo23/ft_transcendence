@@ -3,13 +3,14 @@ import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.j
 import { loadComponent } from "./ui_utils/ui_utils.js";
 import { addEventListenerTo } from "./ui_utils/ui_utils.js";
 import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
-import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
+import { initTogglePasswordVisibilityIcon, resetInputField } from "./ui_utils/input_field_utils.js";
 import { postRequest } from "./network_utils/api_requests.js";
 import { loadLoginPanel } from "./login_panel.js";
 import { handle2FA } from "./network_utils/token_utils.js";
 import { isEnable2FAButtonClicked, toggle2FAButton } from "./global_vars.js";
 import { loadStartPanel } from "./start_panel.js";
 import { setInputFieldHint } from "./ui_utils/input_field_utils.js";
+
 
 export async function loadSignupPanel() {
   try {
@@ -96,45 +97,89 @@ function initEnable2FAButton() {
 // password1: first password input
 // password2: password input confirmation
 async function handleSignup() {
-  const username = document.getElementById('signup-username').value;
-  const email = document.getElementById('signup-email').value;
-  const password1 = document.getElementById('signup-password').value;
-  const password2 = document.getElementById('signup-password-confirmation').value;
+  const inputContainers = {
+    'username': document.getElementById('signup-username-input-container'),
+    'email': document.getElementById('signup-email-input-container'),
+    'password1': document.getElementById('signup-password-input-container'),
+    'password2': document.getElementById('signup-confirm-password-input-container')
+  }
+
+  const signupInfo = {
+    'username': document.getElementById('signup-username').value,
+    'email': document.getElementById('signup-email').value,
+    'password1': document.getElementById('signup-password').value,
+    'password2': document.getElementById('signup-password-confirmation').value
+  }
 
   try {
-    if (isEnable2FAButtonClicked) {
-      handle2FA(email)
+    console.log('isEnable2FAButtonClicked: ', isEnable2FAButtonClicked)
+    // if (isEnable2FAButtonClicked) {
+    //   handle2FA(email)
+    // }
+
+    if (isInputEmpty(signupInfo, inputContainers)) {
+      return
     }
 
-    const response = await postRequest('/api/register/', { username, email, password1, password2 })
+    const response = await postRequest('/api/register/', signupInfo)
 
     if (response.success) {
-      alert('Registration successful! Please log in.');
       loadLoginPanel()
     } else {
-      handleSignupErrors(response.errors)
+      handleSignupErrors(inputContainers, response.errors)
     }
   } catch (error) {
     console.error('Error:', error);
   }
 }
 
-function handleSignupErrors(errors) {
-  const usernameInputContainer = document.getElementById('signup-username-input-container')
-  const emailInputContainer = document.getElementById('signup-email-input-container')
-  const password1InputContainer = document.getElementById('signup-password-input-container')
-  const password2InputContainer = document.getElementById('signup-confirm-password-input-container')
+function isInputEmpty(signupInfo, inputContainers) {
+  if (!signupInfo.username) {
+    setInputFieldHint(inputContainers.username, 'This field is required', getColor('magenta', 500))
+    return true
+  } else {
+    resetInputField(inputContainers.username)
+  }
+  if (!signupInfo.email) {
+    setInputFieldHint(inputContainers.email, 'This field is required', getColor('magenta', 500))
+    return true
+  } else {
+    resetInputField(inputContainers.email)
+  }
+  if (!signupInfo.password1) {
+    setInputFieldHint(inputContainers.password1, 'This field is required', getColor('magenta', 500))
+    return true
+  } else {
+    resetInputField(inputContainers.password1)
+  }
+  if (!signupInfo.password2) {
+    setInputFieldHint(inputContainers.password2, 'This field is required', getColor('magenta', 500))
+    return true
+  } else {
+    resetInputField(inputContainers.password2)
+  }
+  return false
+}
 
+function handleSignupErrors(inputContainers, errors) {
   if (errors.username) {
-    setInputFieldHint(usernameInputContainer, errors.username[0], getColor('magenta', 500))
+    setInputFieldHint(inputContainers.username, errors.username[0], getColor('magenta', 500))
+  } else {
+    resetInputField(inputContainers.username)
   }
   if (errors.email) {
-    setInputFieldHint(emailInputContainer, errors.email[0], getColor('magenta', 500))
+    setInputFieldHint(inputContainers.email, errors.email[0], getColor('magenta', 500))
+  } else {
+    resetInputField(inputContainers.email)
   }
   if (errors.password1) {
-    setInputFieldHint(password1InputContainer, errors.password1[0], getColor('magenta', 500))
+    setInputFieldHint(inputContainers.password1, errors.password1[0], getColor('magenta', 500))
+  } else {
+    resetInputField(inputContainers.password1)
   }
   if (errors.password2) {
-    setInputFieldHint(password2InputContainer, errors.password2[0], getColor('magenta', 500))
+    setInputFieldHint(inputContainers.password2, errors.password2[0], getColor('magenta', 500))
+  } else {
+    resetInputField(inputContainers.password2)
   }
 }
