@@ -20,7 +20,7 @@
   margin: 0;
 }
 
-.buttons-container {
+#start-page-panel > .buttons-container {
   font-family: 'Plus Jakarta Sans', sans-serif;
   display: flex;
   flex-direction: column;

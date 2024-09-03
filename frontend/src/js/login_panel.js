@@ -4,108 +4,105 @@ import { addEventListenerTo } from "./ui_utils/ui_utils.js";
 import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
 import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
 
-import { initBackToStartButton } from "./ui_utils/button_utils.js"
+import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
 import { loadMainMenuPanel } from "./main_menu_panel.js";
 import { postRequest } from "./network_utils/api_requests.js";
+import { isEnable2FAButtonClicked } from "./global_vars.js";
+import { load2FAPanel } from "./2FA_panel.js";
+import { loadStartPanel } from "./start_panel.js";
 
 export async function loadLoginPanel() {
   try {
     await loadComponent('components/login_panel.html')
 
-    initBackToStartButton()
-    initConfirmLoginButton()
+    initBackButton(() => loadStartPanel())
+    initRandomColorButton(
+      'confirm-login-button',
+      'login-panel',
+      () => {
+        handleLogin()
+        // load2FAPanel()
+      }
+    )
     initTogglePasswordVisibilityIcon()
   } catch (error) {
     console.error('Error loading Login Panel:', error)
   }
 }
 
-function initConfirmLoginButton() {
-  const button = document.getElementById('confirm-login-button')
-  let colorInfo = {
-    hex: '',
-    name: ''
+async function handleLogin() {
+  const inputContainers = {
+    'username': document.getElementById('login-username-input-container'),
+    'password': document.getElementById('login-password-input-container')
   }
 
-  addEventListenerTo(
-    button,
-    'click',
-    () => {
-      handleLogin()
-    }
-  )
+  const loginInfo = {
+    'username': document.getElementById('login-username').value,
+    'password': document.getElementById('login-password').value,
+  }
 
-  addEventListenerTo(
-    button,
-    'mouseover',
-    () => {
-      colorInfo = getRandomColor(500)
-
-      button.style.backgroundColor = colorInfo['hex']
-      button.style.color = getColor(colorInfo['name'], 800)
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mouseout',
-    () => {
-      button.style.backgroundColor = getColor('charcoal', 700)
-      button.style.color = getColor('charcoal', 100)
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mousedown',
-    () => {
-      button.style.backgroundColor = getColor(colorInfo['name'], 700)
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mouseup',
-    () => {
-      button.style.backgroundColor = colorInfo['hex']
-      button.style.color = getColor(colorInfo['name'], 800)
-    }
-  )
-}
-
-async function handleLogin() {
-  const username = document.getElementById('login-username').value;
-  const password = document.getElementById('login-password').value;
-  const usernameInputContainer = document.getElementById('login-username-input-container')
-  const passwordInputContainer = document.getElementById('login-password-input-container')
+  if (isInputEmpty(loginInfo, inputContainers)) {
+    return
+  }
 
   try {
-    const response = await postRequest('/api/login/', { username, password })
+    const response = await postRequest('/api/login/', loginInfo)
 
     if (response.success) {
-      await getIdToken(username, password);
-      alert('Login successful!');
-      loadMainMenuPanel();
+      // await getIdToken(loginInfo);
+
+      if (isEnable2FAButtonClicked) {
+        load2FAPanel()
+      } else {
+        loadMainMenuPanel()
+      }
+
     } else {
-      setInputFieldHint(
-        usernameInputContainer,
-        'User not found. Please register',
-        getColor('magenta', 500)
-      )
+      handleLoginErrors(inputContainers, response.errors)
     }
   } catch (error) {
     console.error('Error:', error);
-    alert('An error occurred. Please try again.');
   }
 }
 
-async function getIdToken(username, password) {
+async function getIdToken(loginInfo) {
   try {
-    await postRequest('/token_management/create_token/', { username, password })
+    await postRequest('/token_management/create_token/', loginInfo)
   } catch (error) {
     console.error('Error:', error);
     alert('Token Creation Error');
+  }
+}
+
+function isInputEmpty(loginInfo, inputContainers) {
+  for (let key of Object.keys(loginInfo)) {
+    if (!loginInfo[key]) {
+
+      if (key === 'username') {
+        setInputFieldHint(inputContainers[key], 'This field is required', getColor('magenta', 500))
+      } else if (key === 'password') {
+        setInputFieldHint(inputContainers[key], 'This field is required', getColor('magenta', 500), true)
+      }
+
+      return true
+    } else {
+      resetInputField(inputContainers[key])
+    }
+  }
+  return false
+}
+
+function handleLoginErrors(inputContainers, errors) {
+  if (errors.username) {
+    setInputFieldHint(inputContainers.username, errors.username[0], getColor('magenta', 500))
+  } else {
+    resetInputField(inputContainers.username)
+  }
+  if (errors.password) {
+    setInputFieldHint(inputContainers.password, errors.password[0], getColor('magenta', 500), true)
+  } else {
+    resetInputField(inputContainers.password)
   }
 }
 

@@ -12,6 +12,7 @@
 
   padding: 1.5rem 1rem 1.5rem 1rem;
   box-sizing: border-box;
+  transition: 0.3s;
 }
 
 #login-panel > .top-container > .header {
@@ -55,7 +56,7 @@
 
 #login-username-input-container > .input-field, 
 #login-password-input-container > .password-container > .input-field {
-  width: 15rem;
+  width: 17rem;
   height: 2.75rem;
   border-radius: 20px;
 }
@@ -70,7 +71,10 @@
 
 .text-alert-container {
   display: flex;
-  /*padding-left: 0.75rem;*/
+}
+
+#login-username-input-container > .text-alert-container {
+  justify-content: flex-start;
 }
 
 #login-password-input-container > .text-alert-container {
