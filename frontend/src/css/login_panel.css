@@ -71,7 +71,10 @@
 
 .text-alert-container {
   display: flex;
-  /*padding-left: 0.75rem;*/
+}
+
+#login-username-input-container > .text-alert-container {
+  justify-content: flex-start;
 }
 
 #login-password-input-container > .text-alert-container {

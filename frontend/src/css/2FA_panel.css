@@ -68,7 +68,7 @@
   gap: 0.15rem;
 }
 
-.text-alert-container {
+#two-fa-form > .text-alert-container {
   display: flex;
   justify-content: flex-end; 
 }

@@ -13,6 +13,7 @@
   padding: 1.5rem 1rem 1.5rem 1rem;
   box-sizing: border-box;
   transition: 0.3s;
+  position: relative;
 }
 
 #signup-panel > .top-container > .header {
@@ -54,13 +55,8 @@
   align-items: center;
 }
 
-#signup-form .input-field{
-  width: 15rem;
-  height: 2.75rem;
-  border-radius: 20px;
-}
-
 #signup-password-input-container, 
+#signup-confirm-password-input-container, 
 #signup-email-input-container, 
 #signup-username-input-container {
   display: flex;
@@ -70,22 +66,22 @@
   gap: 0.15rem;
 }
 
-.text-alert-container {
+#signup-form .text-alert-container {
+  max-width: 17rem;
   display: flex;
-}
-
-#signup-password-input-container > .text-alert-container {
-  justify-content: flex-end; 
+  justify-content: flex-start;
+  white-space: normal; /* Ensures text wraps */
 }
 
 .password-container {
   position: relative;
 }
 
-.buttons-container {
+#signup-panel > .buttons-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
   gap: 0.75rem;
+  position: absolute;
+  bottom: 1.5rem;
 }

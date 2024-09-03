@@ -9,6 +9,7 @@ import { loadLoginPanel } from "./login_panel.js";
 import { handle2FA } from "./network_utils/token_utils.js";
 import { isEnable2FAButtonClicked, toggle2FAButton } from "./global_vars.js";
 import { loadStartPanel } from "./start_panel.js";
+import { setInputFieldHint } from "./ui_utils/input_field_utils.js";
 
 export async function loadSignupPanel() {
   try {
@@ -111,12 +112,29 @@ async function handleSignup() {
       alert('Registration successful! Please log in.');
       loadLoginPanel()
     } else {
-      alert('Registration failed: ' + JSON.stringify(data.errors));
+      handleSignupErrors(response.errors)
     }
   } catch (error) {
     console.error('Error:', error);
-    alert('An error occurred. Please try again.');
   }
 }
 
+function handleSignupErrors(errors) {
+  const usernameInputContainer = document.getElementById('signup-username-input-container')
+  const emailInputContainer = document.getElementById('signup-email-input-container')
+  const password1InputContainer = document.getElementById('signup-password-input-container')
+  const password2InputContainer = document.getElementById('signup-confirm-password-input-container')
 
+  if (errors.username) {
+    setInputFieldHint(usernameInputContainer, errors.username[0], getColor('magenta', 500))
+  }
+  if (errors.email) {
+    setInputFieldHint(emailInputContainer, errors.email[0], getColor('magenta', 500))
+  }
+  if (errors.password1) {
+    setInputFieldHint(password1InputContainer, errors.password1[0], getColor('magenta', 500))
+  }
+  if (errors.password2) {
+    setInputFieldHint(password2InputContainer, errors.password2[0], getColor('magenta', 500))
+  }
+}

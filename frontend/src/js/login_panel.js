@@ -21,8 +21,8 @@ export async function loadLoginPanel() {
       'confirm-login-button',
       'login-panel',
       () => {
-        // handleLogin()
-        load2FAPanel()
+        handleLogin()
+        // load2FAPanel()
       }
     )
     initTogglePasswordVisibilityIcon()

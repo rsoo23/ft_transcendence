@@ -161,6 +161,12 @@ a:active {
   padding: 0 1rem 0 1rem;
   outline: none;
   border: none;
+  box-sizing: border-box;
+
+  width: 17rem;
+  height: 2.75rem;
+  border-radius: 20px;
+
 }
 
 .input-field::placeholder {
