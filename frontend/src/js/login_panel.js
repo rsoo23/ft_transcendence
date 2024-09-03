@@ -75,9 +75,9 @@ async function getIdToken(loginInfo) {
   }
 }
 
-function isInputEmpty(signupInfo, inputContainers) {
-  for (let key of Object.keys(signupInfo)) {
-    if (!signupInfo[key]) {
+function isInputEmpty(loginInfo, inputContainers) {
+  for (let key of Object.keys(loginInfo)) {
+    if (!loginInfo[key]) {
 
       if (key === 'username') {
         setInputFieldHint(inputContainers[key], 'This field is required', getColor('magenta', 500))
