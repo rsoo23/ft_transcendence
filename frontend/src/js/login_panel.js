@@ -32,17 +32,25 @@ export async function loadLoginPanel() {
 }
 
 async function handleLogin() {
-  const username = document.getElementById('login-username').value;
-  const password = document.getElementById('login-password').value;
-  const usernameInputContainer = document.getElementById('login-username-input-container')
-  const passwordInputContainer = document.getElementById('login-password-input-container')
+  const inputContainers = {
+    'username': document.getElementById('login-username-input-container'),
+    'password': document.getElementById('login-password-input-container')
+  }
+
+  const loginInfo = {
+    'username': document.getElementById('login-username').value,
+    'password': document.getElementById('login-password').value,
+  }
+
+  if (isInputEmpty(loginInfo, inputContainers)) {
+    return
+  }
 
   try {
-    const response = await postRequest('/api/login/', { username, password })
+    const response = await postRequest('/api/login/', loginInfo)
 
     if (response.success) {
-      await getIdToken(username, password);
-      alert('Login successful!');
+      await getIdToken(loginInfo);
 
       if (isEnable2FAButtonClicked) {
         load2FAPanel()
@@ -51,24 +59,50 @@ async function handleLogin() {
       }
 
     } else {
-      setInputFieldHint(
-        usernameInputContainer,
-        'User not found. Please register',
-        getColor('magenta', 500)
-      )
+      handleLoginErrors(inputContainers, response.errors)
     }
   } catch (error) {
     console.error('Error:', error);
-    alert('An error occurred. Please try again.');
   }
 }
 
-async function getIdToken(username, password) {
+async function getIdToken(loginInfo) {
   try {
-    await postRequest('/token_management/create_token/', { username, password })
+    await postRequest('/token_management/create_token/', loginInfo)
   } catch (error) {
     console.error('Error:', error);
     alert('Token Creation Error');
+  }
+}
+
+function isInputEmpty(signupInfo, inputContainers) {
+  for (let key of Object.keys(signupInfo)) {
+    if (!signupInfo[key]) {
+
+      if (key === 'username') {
+        setInputFieldHint(inputContainers[key], 'This field is required', getColor('magenta', 500))
+      } else if (key === 'password') {
+        setInputFieldHint(inputContainers[key], 'This field is required', getColor('magenta', 500), true)
+      }
+
+      return true
+    } else {
+      resetInputField(inputContainers[key])
+    }
+  }
+  return false
+}
+
+function handleLoginErrors(inputContainers, errors) {
+  if (errors.username) {
+    setInputFieldHint(inputContainers.username, errors.username[0], getColor('magenta', 500))
+  } else {
+    resetInputField(inputContainers.username)
+  }
+  if (errors.password) {
+    setInputFieldHint(inputContainers.password, errors.password[0], getColor('magenta', 500))
+  } else {
+    resetInputField(inputContainers.password)
   }
 }
 

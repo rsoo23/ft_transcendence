@@ -111,15 +111,15 @@ async function handleSignup() {
     'password2': document.getElementById('signup-password-confirmation').value
   }
 
+  if (isInputEmpty(signupInfo, inputContainers)) {
+    return
+  }
+
   try {
     console.log('isEnable2FAButtonClicked: ', isEnable2FAButtonClicked)
     // if (isEnable2FAButtonClicked) {
     //   handle2FA(email)
     // }
-
-    if (isInputEmpty(signupInfo, inputContainers)) {
-      return
-    }
 
     const response = await postRequest('/api/register/', signupInfo)
 
