@@ -1,6 +1,5 @@
 
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
-import { loadComponent } from "./ui_utils/ui_utils.js";
 import { addEventListenerTo } from "./ui_utils/ui_utils.js";
 import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
 import { initTogglePasswordVisibilityIcon, resetInputField } from "./ui_utils/input_field_utils.js";
@@ -11,11 +10,13 @@ import { isEnable2FAButtonClicked, toggle2FAButton } from "./global_vars.js";
 import { loadStartPanel } from "./start_panel.js";
 import { setInputFieldHint } from "./ui_utils/input_field_utils.js";
 import { loadMainMenuPanel } from "./main_menu_panel.js";
+import { loadContent } from "./router.js";
 
 
 export async function loadSignupPanel() {
   try {
-    await loadComponent('components/signup_panel.html')
+    window.history.pushState({}, '', '/signup')
+    await loadContent()
 
     initBackButton(() => loadStartPanel())
     initRandomColorButton(

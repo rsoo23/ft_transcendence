@@ -1,12 +1,13 @@
 
-import { loadComponent } from "./ui_utils/ui_utils.js"
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { loadLoginPanel } from "./login_panel.js"
 import { loadMainMenuPanel } from "./main_menu_panel.js"
+import { loadContent } from "./router.js";
 
 export async function load2FAPanel() {
   try {
-    await loadComponent('components/2FA_panel.html')
+    window.history.pushState({}, '', '/2fa');
+    await loadContent()
 
     initBackButton(() => loadLoginPanel())
     initRandomColorButton(

@@ -10,10 +10,12 @@ import { isEnable2FAButtonClicked } from "./global_vars.js";
 import { load2FAPanel } from "./2FA_panel.js";
 import { loadStartPanel } from "./start_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
+import { loadContent } from "./router.js";
 
 export async function loadLoginPanel() {
   try {
-    await loadComponent('components/login_panel.html')
+    window.history.pushState({}, '', '/login');
+    await loadContent()
 
     initBackButton(() => loadStartPanel())
     initRandomColorButton(
@@ -111,7 +113,6 @@ function handleLoginErrors(inputContainers, errors) {
 
 async function handleForgotPassword() {
   // const email = document.getElementById('email').value;
-
   const email = 'rongjie.soo12@gmail.com'
   try {
     const response = await postRequest('/api/forgot_password/', { email })

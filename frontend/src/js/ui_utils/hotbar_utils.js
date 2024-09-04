@@ -2,7 +2,8 @@
 import { addEventListenerTo } from "./ui_utils.js";
 import { getColor, getRandomColor } from "./color_utils.js";
 import { hideTooltip, showTooltip } from "./tooltip_utils.js";
-import { loadMainMenuContent } from "../main_menu_panel.js";
+import { loadContentToMainMenu } from "../router.js";
+// import { loadMainMenuContent } from "../main_menu_panel.js";
 
 let hotbarItems
 
@@ -146,11 +147,14 @@ function initButton(hotbarItemInfo) {
   addEventListenerTo(
     button,
     'mouseup',
-    () => {
+    async () => {
       if (!hotbarItemInfo['isSelected']) {
         updateButtonState(buttonName)
         updateBorderColor(buttonColor)
-        loadMainMenuContent(fileName)
+
+        window.history.pushState({}, '', '/settings')
+        await loadContentToMainMenu()
+
         button.style.backgroundColor = getColor(buttonColor, 500)
         icon.style.color = getColor(buttonColor, 200)
       } else {

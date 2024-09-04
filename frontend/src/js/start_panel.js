@@ -1,14 +1,14 @@
 
 import { loadLoginPanel } from "./login_panel.js";
+import { loadContent } from "./router.js";
 import { loadSignupPanel } from "./signup_panel.js";
-import { loadComponent } from "./ui_utils/ui_utils.js";
-import { verifyToken } from "./network_utils/token_utils.js";
-import { loadMainMenuPanel } from "./main_menu_panel.js";
 import { initRandomColorButton } from "./ui_utils/button_utils.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   initializeApp()
 })
+
+window.addEventListener('popstate', loadContent);
 
 async function initializeApp() {
   // try {
@@ -27,7 +27,8 @@ async function initializeApp() {
 
 export async function loadStartPanel() {
   try {
-    await loadComponent('components/start_panel.html')
+    window.history.pushState({}, '', '/');
+    await loadContent()
 
     initRandomColorButton(
       'login-button',
