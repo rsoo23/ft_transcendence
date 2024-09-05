@@ -1,4 +1,5 @@
 import { updateBorderColor, updateButtonState } from "./ui_utils/hotbar_utils.js";
+import { loadToFriendsContainer, initAddFriendButton } from "./friends_content.js"
 
 const routes = {
   '/': 'start_panel.html',
@@ -54,8 +55,19 @@ export async function loadContentToMainMenu(contentName) {
 
     updateBorderColor(contentName)
     updateButtonState(contentName)
-
+    loadDynamicContent(contentName)
   } catch (error) {
     console.error(`Error loading ${htmlPath}:`, error)
   }
 }
+
+// - loads dynamic content after loading content to main menu
+// - initializes event listeners for any ui components
+async function loadDynamicContent(contentName) {
+  if (contentName === 'friends') {
+    await loadToFriendsContainer('friend_list_panel.html')
+    initAddFriendButton()
+  }
+}
+
+
