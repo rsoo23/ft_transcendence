@@ -18,12 +18,19 @@ def login_view(request):
         data = json.loads(request.body)
         username = data.get('username')
         password = data.get('password')
+
         user = authenticate(request, username=username, password=password)
+
         if user is not None:
             login(request, user)
             return JsonResponse({'success': True})
         else:
-            return JsonResponse({'success': False, 'error': 'Invalid credentials'}, status=400)
+            errors = {}
+            if not User.objects.filter(username=username).exists():
+                errors['username'] = ['User does not exist: please sign up']
+            else:
+                errors['password'] = ['Incorrect password']
+            return JsonResponse({'success': False, 'errors': errors}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
