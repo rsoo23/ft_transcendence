@@ -1,39 +1,15 @@
 
-import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { addEventListenerTo } from "./ui_utils/ui_utils.js";
 import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
 import { initTogglePasswordVisibilityIcon, resetInputField } from "./ui_utils/input_field_utils.js";
 import { postRequest } from "./network_utils/api_requests.js";
-import { loadLoginPanel } from "./login_panel.js";
 import { handle2FA } from "./network_utils/token_utils.js";
 import { isEnable2FAButtonClicked, toggle2FAButton } from "./global_vars.js";
-import { loadStartPanel } from "./start_panel.js";
 import { setInputFieldHint } from "./ui_utils/input_field_utils.js";
 import { loadMainMenuPanel } from "./main_menu_panel.js";
-import { loadContent } from "./router.js";
+import { loadMainMenuContent, loadPage } from "./router.js";
 
-
-export async function loadSignupPanel() {
-  try {
-    window.history.pushState({}, '', '/signup')
-    await loadContent()
-
-    initBackButton(() => loadStartPanel())
-    initRandomColorButton(
-      'confirm-signup-button',
-      'signup-panel',
-      () => {
-        handleSignup()
-      }
-    )
-    initEnable2FAButton()
-    initTogglePasswordVisibilityIcon()
-  } catch (error) {
-    console.error('Error loading Login Panel:', error)
-  }
-}
-
-function initEnable2FAButton() {
+export function initEnable2FAButton() {
   const button = document.getElementById('enable-2fa-button')
   let teal500 = getColor('teal', 500)
   let teal700 = getColor('teal', 700)
@@ -98,7 +74,7 @@ function initEnable2FAButton() {
 
 // password1: first password input
 // password2: password input confirmation
-async function handleSignup() {
+export async function handleSignup() {
   const inputContainers = {
     'username': document.getElementById('signup-username-input-container'),
     'email': document.getElementById('signup-email-input-container'),
@@ -126,7 +102,8 @@ async function handleSignup() {
     const response = await postRequest('/api/register/', signupInfo)
 
     if (response.success) {
-      loadMainMenuPanel()
+      loadPage('main_menu')
+      loadMainMenuContent('play')
     } else {
       handleSignupErrors(inputContainers, response.errors)
     }

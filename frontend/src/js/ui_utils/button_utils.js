@@ -1,5 +1,4 @@
 
-import { loadStartPanel } from "../start_panel.js";
 import { addEventListenerTo } from "./ui_utils.js";
 import { getColor, getRandomColor } from "./color_utils.js";
 

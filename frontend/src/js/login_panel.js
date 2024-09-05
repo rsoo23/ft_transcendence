@@ -1,41 +1,12 @@
 
 import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
 import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
-import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
-import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
 import { loadMainMenuPanel } from "./main_menu_panel.js";
 import { postRequest } from "./network_utils/api_requests.js";
 import { isEnable2FAButtonClicked } from "./global_vars.js";
-import { load2FAPanel } from "./2FA_panel.js";
-import { loadStartPanel } from "./start_panel.js";
-import { initLink } from "./ui_utils/link_utils.js";
-import { loadContent } from "./router.js";
+import { loadMainMenuContent, loadPage } from "./router.js";
 
-export async function loadLoginPanel() {
-  try {
-    window.history.pushState({}, '', '/login');
-    await loadContent()
-
-    initBackButton(() => loadStartPanel())
-    initRandomColorButton(
-      'confirm-login-button',
-      'login-panel',
-      () => {
-        handleLogin()
-        // load2FAPanel()
-      }
-    )
-    initTogglePasswordVisibilityIcon()
-    initLink(
-      'forgot-password-link',
-      () => handleForgotPassword()
-    )
-  } catch (error) {
-    console.error('Error loading Login Panel:', error)
-  }
-}
-
-async function handleLogin() {
+export async function handleLogin() {
   const inputContainers = {
     'username': document.getElementById('login-username-input-container'),
     'password': document.getElementById('login-password-input-container')
@@ -57,9 +28,10 @@ async function handleLogin() {
       // await getIdToken(loginInfo);
 
       if (isEnable2FAButtonClicked) {
-        load2FAPanel()
+        loadPage('2fa')
       } else {
-        loadMainMenuPanel()
+        loadPage('main_menu')
+        loadMainMenuContent('play')
       }
 
     } else {
@@ -110,7 +82,7 @@ function handleLoginErrors(inputContainers, errors) {
   }
 }
 
-async function handleForgotPassword() {
+export async function handleForgotPassword() {
   // const email = document.getElementById('email').value;
   const email = 'rongjie.soo12@gmail.com'
   try {
