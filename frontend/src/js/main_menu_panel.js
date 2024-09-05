@@ -12,9 +12,9 @@ export async function loadMainMenuPanel() {
     window.history.pushState({}, '', '/main_menu');
     await loadContent()
 
-    initHotbar()
     window.history.pushState({}, '', '/menu/play');
-    await loadContentToMainMenu()
+    await loadContentToMainMenu('play')
+    initHotbar()
   } catch (error) {
     console.error('Error loading Main Menu Panel :', error)
   }
