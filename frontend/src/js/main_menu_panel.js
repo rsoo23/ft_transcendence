@@ -9,34 +9,22 @@ import { loadContent, loadContentToMainMenu } from "./router.js";
 
 export async function loadMainMenuPanel() {
   try {
-    window.history.pushState({}, '', '/');
+    window.history.pushState({}, '', '/main_menu');
     await loadContent()
 
     initHotbar()
-    window.history.pushState({}, '', '/play');
+    window.history.pushState({}, '', '/menu/play');
     await loadContentToMainMenu()
   } catch (error) {
     console.error('Error loading Main Menu Panel :', error)
   }
 }
-//
-// export async function loadMainMenuContent(fileName) {
-//   try {
-//     const response = await fetch(`/static/components/menu/${fileName}`)
-//     const html = await response.text()
-//
-//     document.querySelector('#main-menu-panel > .content-container').innerHTML = html;
-//     loadContent(fileName)
-//   } catch (error) {
-//     console.error(`Error loading static/components/menu/${fileName}:`, error)
-//   }
-// }
-//
-// async function loadContent(fileName) {
-//   if (fileName === 'friends_content.html') {
-//     await loadToFriendsContainer('friend_list_panel.html')
-//     initAddFriendButton()
-//   }
-// }
-//
+
+async function loadMenuContent(fileName) {
+  if (fileName === 'friends_content.html') {
+    await loadToFriendsContainer('friend_list_panel.html')
+    initAddFriendButton()
+  }
+}
+
 

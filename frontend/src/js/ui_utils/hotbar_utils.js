@@ -11,47 +11,47 @@ export function initHotbar() {
   hotbarItems = {
     'play': {
       'name': 'play',
+      'urlPath': '/menu/play',
       'button': document.getElementById('play-button'),
       'icon': document.getElementById('play-icon'),
       'tooltip': document.getElementById('play-tooltip'),
       'isSelected': true,
-      'fileName': 'play_content.html',
       'color': 'teal'
     },
     'stats': {
       'name': 'stats',
+      'urlPath': '/menu/stats',
       'button': document.getElementById('stats-button'),
       'icon': document.getElementById('stats-icon'),
       'tooltip': document.getElementById('stats-tooltip'),
       'isSelected': false,
-      'fileName': 'stats_content.html',
       'color': 'yellow'
     },
     'friends': {
       'name': 'friends',
+      'urlPath': '/menu/friends',
       'button': document.getElementById('friends-button'),
       'icon': document.getElementById('friends-icon'),
       'tooltip': document.getElementById('friends-tooltip'),
       'isSelected': false,
-      'fileName': 'friends_content.html',
       'color': 'blue'
     },
     'how-to-play': {
       'name': 'how-to-play',
+      'urlPath': '/menu/how_to_play',
       'button': document.getElementById('how-to-play-button'),
       'icon': document.getElementById('how-to-play-icon'),
       'tooltip': document.getElementById('how-to-play-tooltip'),
       'isSelected': false,
-      'fileName': 'how_to_play_content.html',
       'color': 'orange'
     },
     'settings': {
       'name': 'settings',
+      'urlPath': '/menu/settings',
       'button': document.getElementById('settings-button'),
       'icon': document.getElementById('settings-icon'),
       'tooltip': document.getElementById('settings-tooltip'),
       'isSelected': false,
-      'fileName': 'settings_content.html',
       'color': 'magenta'
     }
   }
@@ -104,7 +104,7 @@ function initButton(hotbarItemInfo) {
   const icon = hotbarItemInfo['icon']
   const tooltip = hotbarItemInfo['tooltip']
   const buttonColor = hotbarItemInfo['color']
-  const fileName = hotbarItemInfo['fileName']
+  const urlPath = hotbarItemInfo['urlPath']
 
   addEventListenerTo(
     button,
@@ -152,7 +152,7 @@ function initButton(hotbarItemInfo) {
         updateButtonState(buttonName)
         updateBorderColor(buttonColor)
 
-        window.history.pushState({}, '', '/settings')
+        window.history.pushState({}, '', `${urlPath}`)
         await loadContentToMainMenu()
 
         button.style.backgroundColor = getColor(buttonColor, 500)

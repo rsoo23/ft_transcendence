@@ -1,5 +1,4 @@
 
-import { loadComponent } from "./ui_utils/ui_utils.js";
 import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
 import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"

@@ -8,8 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initializeApp()
 })
 
-window.addEventListener('popstate', loadContent);
-
 async function initializeApp() {
   // try {
   //   const isTokenValid = await verifyToken();
