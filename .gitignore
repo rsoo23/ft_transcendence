@@ -4,3 +4,5 @@
 .vscode
 __pycache__/
 myenv/
+0001_initial.py
+backend/user_management/migrations/

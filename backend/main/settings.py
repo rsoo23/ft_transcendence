@@ -34,15 +34,14 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'daphne',
-    # 'django.contrib.admin',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user_management',
-    'token_management',
-    'two_factor_auth'
+	'user_management',
+    'token_management'
 ]
 
 AUHENTICATION_BACKENDS = [
@@ -138,4 +137,4 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = "user_management.CustomUser"
+AUTH_USER_MODEL = 'user_management.CustomUser'

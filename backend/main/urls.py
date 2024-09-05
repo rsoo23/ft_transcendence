@@ -23,7 +23,7 @@ from django.conf.urls.static import static
 from django.urls import re_path
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('api/', include('user_management.urls')),  # Include your user_management app URLs
     path('', TemplateView.as_view(template_name='index.html'), name='index'),
     path('token_management/', include('token_management.urls')),
