@@ -22,7 +22,10 @@ Docker, docker-compose, Makefile
 
 ______
 ## Docker Setup
-If you just want to get stuff up and running, just run the following:
+Before you do anything, copy `.env.template` and make a `.env` file. (make sure this is in the same directory as the `docker-compose.yml` file)
+Make sure to also fill in the empty values.
+
+After that, you can just run the following to get stuff up and running:
 ```sh
 make
 ```
