@@ -74,9 +74,6 @@ $ cd backend
 # Then install the backend dependencies
 $ pip install -r ./requirements.txt
 
-# After that, start up django
-$ ./manage.py runserver
-
-# alternatively
-$ python manage.py runserver
+# After that, start up django with the devrun script
+$ ./devrun.sh
 ```
