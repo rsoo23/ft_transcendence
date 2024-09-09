@@ -9,6 +9,7 @@ import json
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from .forms import CustomUserCreationForm
+from django.contrib.auth.hashers import check_password
 
 User = get_user_model()
 
@@ -81,3 +82,37 @@ def logout_view(request):
 	logout(request) 
      # Django's built-in logout function - removes authenticated user from session, flushes session data, deletes session cookie
 	return JsonResponse({'success': True})
+
+# def hello_world(request):
+#     return JsonResponse({'message': 'Hello, world!'})
+
+@csrf_exempt
+def update_password(request):
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		old_password = data.get('old_password')
+		new_password = data.get('new_password')
+		email = data.get('email')
+
+		try:
+			user = User.objects.get(email=email)
+		except User.DoesNotExist:
+			return JsonResponse({'error': 'User does not exist'}, status=400)
+
+		# Django's built-in check_password function
+        # old_password is the password entered by the user
+        # user.password is the hashed password stored in the database
+		if check_password(old_password, user.password):
+			# todo: validate password strength
+			user.set_password(new_password)
+			user.save()
+			return JsonResponse({'message': 'Password updated successfully'})
+		else:
+			return JsonResponse({'error': 'Incorrect old password'}, status=400)
+
+		# print(user)
+		# print(user.password)
+		# return JsonResponse({'old_password is ': old_password, 'new_password is ': new_password, 'email is ': email})
+	else:
+		return JsonResponse({'error': 'Invalid request method'}, status=405)
+
