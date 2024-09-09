@@ -70,6 +70,8 @@ A quick preface:
 I recommend using a Python environment before doing the following steps.
 If you don't know what that is, look up `venv`.
 
+NOTE: use `devrun.sh` instead of `manage.py`, this script will automatically load the .env in the root directory, which `main/settings.py` needs to work
+
 ```sh
 # First, make sure your current directory is in "./backend"
 $ cd backend
@@ -78,5 +80,5 @@ $ cd backend
 $ pip install -r ./requirements.txt
 
 # After that, start up django with the devrun script
-$ ./devrun.sh
+$ ./devrun.sh runserver
 ```

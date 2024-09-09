@@ -9,5 +9,5 @@ fi
 
 export $(cat "${BASEDIR}/../.env" | sed -e 's/#.*$//' | xargs)
 export DJANGO_DEBUG=true
-echo "Starting Django server with debug mode enabled..."
-$BASEDIR/manage.py runserver
+echo "Running manage.py with debug mode forcefully enabled..."
+$BASEDIR/manage.py $1
