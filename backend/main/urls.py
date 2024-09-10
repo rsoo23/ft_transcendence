@@ -35,6 +35,7 @@ urlpatterns = [
         'path': 'index.html',
         'document_root': os.path.join(settings.BASE_DIR, 'frontend'),
     }),
+    path('test', TemplateView.as_view(template_name='websockettest.html'), name='websockettest'),
 ]
 
 if settings.DEBUG:
