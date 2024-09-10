@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/static/js/websocket.js"></script>
-    <title>websocket test</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="module" src="static/js/websocket.js"></script>
+	<title>websocket test</title>
 </head>
 <body>
-	<input name="user" type="text"></input>
-	<button onclick="connectToWebsocket()">connect to websocket</button>
+	p1:<input id="player1" type="number"></input>
+	</br>
+	p2:<input id="player2" type="number"></input>
+	</br>
+	<button id="testmatch">create match</button>
+	</br>
+	match id: <p id="matchid">N/A</p>
+	your uuid:<input name="user" type="text"></input>
+	<button id="websocket">connect to websocket</button>
 </body>
 </html>
