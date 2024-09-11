@@ -6,7 +6,7 @@ import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
 import { initTogglePasswordVisibilityIcon, resetInputField } from "./ui_utils/input_field_utils.js";
 import { postRequest } from "./network_utils/api_requests.js";
 import { loadLoginPanel } from "./login_panel.js";
-import { handle2FA } from "./network_utils/token_utils.js";
+import { send_2FA_code_email } from "./network_utils/token_utils.js";
 import { isEnable2FAButtonClicked, toggle2FAButton } from "./global_vars.js";
 import { loadStartPanel } from "./start_panel.js";
 import { setInputFieldHint } from "./ui_utils/input_field_utils.js";
@@ -26,14 +26,14 @@ export async function loadSignupPanel() {
         handleSignup()
       }
     )
-    initEnable2FAButton()
+    initEnable2FAButton(() => handle2FA())
     initTogglePasswordVisibilityIcon()
   } catch (error) {
     console.error('Error loading Login Panel:', error)
   }
 }
 
-function initEnable2FAButton() {
+function initEnable2FAButton(callback) {
   const button = document.getElementById('enable-2fa-button')
   let teal500 = getColor('teal', 500)
   let teal700 = getColor('teal', 700)
@@ -47,7 +47,7 @@ function initEnable2FAButton() {
     () => {
       if (!isEnable2FAButtonClicked) {
         toggle2FAButton()
-        load2FAPanel();
+        callback();
       } else {
         toggle2FAButton()
         button.style.backgroundColor = charcoal700
@@ -120,14 +120,47 @@ async function handleSignup() {
 
   try {
     console.log('isEnable2FAButtonClicked: ', isEnable2FAButtonClicked)
-    // if (isEnable2FAButtonClicked) {
-    //   handle2FA(email)
-    // }
+    if (isEnable2FAButtonClicked) {
+      send_2FA_code_email(document.getElementById('signup-email').value)
+    }
 
     const response = await postRequest('/api/register/', signupInfo)
 
     if (response.success) {
       loadMainMenuPanel()
+    } else {
+      handleSignupErrors(inputContainers, response.errors)
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+async function handle2FA() {
+  const inputContainers = {
+    'username': document.getElementById('signup-username-input-container'),
+    'email': document.getElementById('signup-email-input-container'),
+    'password1': document.getElementById('signup-password-input-container'),
+    'password2': document.getElementById('signup-confirm-password-input-container')
+  }
+
+  const signupInfo = {
+    'username': document.getElementById('signup-username').value,
+    'email': document.getElementById('signup-email').value,
+    'password1': document.getElementById('signup-password').value,
+    'password2': document.getElementById('signup-password-confirmation').value
+  }
+
+  if (isInputEmpty(signupInfo, inputContainers)) {
+    return
+  }
+
+  try {
+    const response = await postRequest('/api/register/', signupInfo)
+
+    if (response.success) {
+      send_2FA_code_email(document.getElementById('signup-email').value)
+      load2FAPanel()
     } else {
       handleSignupErrors(inputContainers, response.errors)
     }

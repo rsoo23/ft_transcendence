@@ -3,15 +3,16 @@ import { loadComponent } from "./ui_utils/ui_utils.js"
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { loadLoginPanel } from "./login_panel.js"
 import { loadMainMenuPanel } from "./main_menu_panel.js"
-import { handle2FA } from "./network_utils/token_utils.js"
+import { send_2FA_code_email } from "./network_utils/token_utils.js"
 import { getColor} from "./ui_utils/color_utils.js";
 import { addEventListenerTo } from "./ui_utils/ui_utils.js";
-import { isSubmit2FAButtonClicked, toggle2FASubmitButton } from "./global_vars.js";
+import { isSubmit2FAButtonClicked, toggle2FAButton, toggle2FASubmitButton } from "./global_vars.js";
 
 export async function load2FAPanel() {
   try {
     await loadComponent('components/2FA_panel.html')
 
+    toggle2FAButton()
     initBackButton(() => loadLoginPanel())
     initRandomColorButton(
       'confirm-2fa-button',
@@ -40,7 +41,6 @@ function initSubmit2FAButton() {
     () => {
       if (!isSubmit2FAButtonClicked) {
         toggle2FASubmitButton()
-        handle2FA();
       } else {
         toggle2FASubmitButton()
         button.style.backgroundColor = charcoal700
