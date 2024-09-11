@@ -10,6 +10,8 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from .forms import CustomUserCreationForm
 from django.contrib.auth.hashers import check_password
+from django.core.exceptions import ValidationError
+from django.contrib.auth.password_validation import validate_password
 
 User = get_user_model()
 
@@ -103,7 +105,11 @@ def update_password(request):
         # old_password is the password entered by the user
         # user.password is the hashed password stored in the database
 		if check_password(old_password, user.password):
-			# todo: validate password strength
+			# Django's built-in validate_password function
+			try:
+				validate_password(new_password, user=user)
+			except ValidationError as e:
+				return JsonResponse({'error': list(e.messages)}, status=400)
 			user.set_password(new_password)
 			user.save()
 			return JsonResponse({'message': 'Password updated successfully'})
