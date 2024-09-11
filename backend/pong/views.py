@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
-from pong.models import PongMatch
+from .models import PongMatch
 from main.settings import JWT_SECRET_KEY
 
 # NOTE: This should be used in a "try except" block
