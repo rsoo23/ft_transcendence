@@ -10,6 +10,7 @@ const routes = {
   '/start': 'start_panel.html',
   '/login': 'login_panel.html',
   '/signup': 'signup_panel.html',
+  '/user_profile': 'user_profile_panel.html',
   '/2fa': '2FA_panel.html',
   '/main_menu': 'menu/main_menu_panel.html',
   '/menu/play': 'menu/play_content.html',
@@ -82,7 +83,7 @@ async function loadDynamicContent(contentName) {
     initRandomColorButton(
       'signup-button',
       'start-page-panel',
-      () => loadPage('signup')
+      () => loadPage('user_profile')
     )
 
   } else if (contentName === 'login') {
@@ -119,7 +120,7 @@ async function loadDynamicContent(contentName) {
 
   } else if (contentName === '2fa') {
 
-    initBackButton(() => loadLoginPanel())
+    initBackButton(() => loadPage('login'))
     initRandomColorButton(
       'confirm-2fa-button',
       'two-fa-panel',
@@ -128,7 +129,30 @@ async function loadDynamicContent(contentName) {
         loadMainMenuContent('play')
       }
     )
-    initConfirm2FAButton()
+
+  } else if (contentName === 'user_profile') {
+
+    initBackButton(() => loadPage('login'))
+    initRandomColorButton(
+      'use-default-avatar-button',
+      'user-profile-panel',
+      () => {
+      }
+    )
+    initRandomColorButton(
+      'change-avatar-button',
+      'user-profile-panel',
+      () => {
+      }
+    )
+    initRandomColorButton(
+      'confirm-user-profile-button',
+      'user-profile-panel',
+      () => {
+        loadPage('main_menu')
+        loadMainMenuContent('play')
+      }
+    )
 
   } else if (contentName === 'main_menu') {
     initHotbar()
