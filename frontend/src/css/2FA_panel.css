@@ -44,7 +44,7 @@
 #two-fa-form {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: left;
   gap: 0.75rem;
 }
 
@@ -52,12 +52,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-#two-fa-code-input-container .input-field {
-  width: 15rem;
-  height: 2.75rem;
-  border-radius: 20px;
 }
 
 #two-fa-code-input-container {
@@ -73,3 +67,10 @@
   justify-content: flex-end; 
 }
 
+#two-fa-email-input-container{
+  display: flex;
+  flex-direction: column;
+  color: var(--charcoal-100);
+  font-size: 0.75rem;
+  gap: 0.15rem;
+}

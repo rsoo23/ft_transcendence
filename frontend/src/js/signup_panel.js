@@ -11,6 +11,7 @@ import { isEnable2FAButtonClicked, toggle2FAButton } from "./global_vars.js";
 import { loadStartPanel } from "./start_panel.js";
 import { setInputFieldHint } from "./ui_utils/input_field_utils.js";
 import { loadMainMenuPanel } from "./main_menu_panel.js";
+import { load2FAPanel } from "./2FA_panel.js";
 
 
 export async function loadSignupPanel() {
@@ -46,6 +47,7 @@ function initEnable2FAButton() {
     () => {
       if (!isEnable2FAButtonClicked) {
         toggle2FAButton()
+        load2FAPanel();
       } else {
         toggle2FAButton()
         button.style.backgroundColor = charcoal700
