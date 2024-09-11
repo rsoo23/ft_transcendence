@@ -107,7 +107,7 @@ def update_password(request):
 		if check_password(old_password, user.password):
 			# Django's built-in validate_password function
 			try:
-				validate_password(new_password, user=user)
+				validate_password(new_password, user=user) #user=user to check if password is similar user attributes like username and email
 			except ValidationError as e:
 				return JsonResponse({'error': list(e.messages)}, status=400)
 			user.set_password(new_password)
