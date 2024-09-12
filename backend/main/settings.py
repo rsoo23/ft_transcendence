@@ -41,7 +41,7 @@ DEBUG = True
 if os.getenv('DJANGO_DEBUG', 'false').lower() in ['false', '']:
     DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -107,7 +107,7 @@ else:
         'default': {
             'BACKEND': 'channels_redis.core.RedisChannelLayer',
             'CONFIG': {
-                'hosts': [('127.0.0.1', 6379)]
+                'hosts': [('redis', 6379)]
             },
         }
     }

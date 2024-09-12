@@ -9,4 +9,4 @@ fi
 export $(cat "${BASEDIR}/../.env" | sed -e 's/#.*$//' | xargs)
 export DJANGO_DEBUG=true
 echo "Running manage.py with debug mode forcefully enabled..."
-python3 $BASEDIR/manage.py $@
+python3 $BASEDIR/manage.py "$@"

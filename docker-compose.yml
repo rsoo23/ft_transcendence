@@ -3,13 +3,24 @@ services:
     build: ./backend
     networks:
       - django_net
+      - redis_net
       - db_net
     # volumes:
     env_file:
       - .env
     depends_on:
+      - redis
       - postgresql
     restart: unless-stopped
+
+  redis:
+    image: redis:7.4-alpine
+    networks:
+      - redis_net
+    ulimits:
+      nofile:
+        soft: 10032
+        hard: 10032
 
   postgresql:
     image: postgres:16-alpine
@@ -40,4 +51,5 @@ volumes:
 
 networks:
   django_net:
+  redis_net:
   db_net:
