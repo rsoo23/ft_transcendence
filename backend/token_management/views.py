@@ -16,9 +16,10 @@ def create_token(request):
         if encoded_jwt is None:
             return JsonResponse({'error': 'Token creation fail'}, status=405)
         
-        response = HttpResponse('Sending back ID_Token cookie')
+        response = JsonResponse({'success': True, 'message': 'Sending back ID_Token cookie'})
         response.set_cookie('ID_Token', encoded_jwt, httponly = 'True', max_age=120)
         return response
+
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt

@@ -22,7 +22,10 @@ Docker, docker-compose, Makefile
 
 ______
 ## Docker Setup
-If you just want to get stuff up and running, just run the following:
+Before you do anything, copy `.env.template` and make a `.env` file. (make sure this is in the same directory as the `docker-compose.yml` file)
+Make sure to also fill in the empty values.
+
+After that, you can just run the following to get stuff up and running:
 ```sh
 make
 ```
@@ -67,6 +70,8 @@ A quick preface:
 I recommend using a Python environment before doing the following steps.
 If you don't know what that is, look up `venv`.
 
+NOTE: use `devrun.sh` instead of `manage.py`, this script will automatically load the .env in the root directory, which `main/settings.py` needs to work
+
 ```sh
 # First, make sure your current directory is in "./backend"
 $ cd backend
@@ -74,9 +79,6 @@ $ cd backend
 # Then install the backend dependencies
 $ pip install -r ./requirements.txt
 
-# After that, start up django
-$ ./manage.py runserver
-
-# alternatively
-$ python manage.py runserver
+# After that, start up django with the devrun script
+$ ./devrun.sh runserver
 ```

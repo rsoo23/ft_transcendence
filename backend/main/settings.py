@@ -13,6 +13,18 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 
+# because os.environ's exception isn't that descriptive
+def getenv_and_validate(name):
+    value = os.getenv(name)
+
+    if value == None:
+        raise KeyError('Environment variable "' + name + '" does not exist')
+
+    elif value == '':
+        raise ValueError('Environment variable "' + name + '" has an empty value')
+
+    return value
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -22,10 +34,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-8(*2i*l0##=#g-=_d#%6tr!&i%20(ng%&9jiad!si-oa&ohex_'
-JWT_SECRET_KEY = 'applebananasgreenmonkey123'
+JWT_SECRET_KEY = getenv_and_validate('DJANGO_JWT_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+if os.getenv('DJANGO_DEBUG', 'false').lower() in ['false', '']:
+    DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -80,6 +94,23 @@ WSGI_APPLICATION = 'main.wsgi.application'
 
 # Daphne/Channels
 ASGI_APPLICATION = 'main.asgi.application'
+
+if DEBUG:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer'
+        }
+    }
+
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [('127.0.0.1', 6379)]
+            },
+        }
+    }
 
 
 # Database

@@ -23,6 +23,7 @@ export function initEnable2FAButton() {
     () => {
       if (!isEnable2FAButtonClicked) {
         toggle2FAButton()
+        callback();
       } else {
         toggle2FAButton()
         button.style.backgroundColor = charcoal700
@@ -95,9 +96,9 @@ export async function handleSignup() {
 
   try {
     console.log('isEnable2FAButtonClicked: ', isEnable2FAButtonClicked)
-    // if (isEnable2FAButtonClicked) {
-    //   handle2FA(email)
-    // }
+    if (isEnable2FAButtonClicked) {
+      send_2FA_code_email(document.getElementById('signup-email').value)
+    }
 
     const response = await postRequest('/api/register/', signupInfo)
 
@@ -110,6 +111,39 @@ export async function handleSignup() {
   } catch (error) {
     console.error('Error:', error);
     return 'error'
+  }
+}
+
+async function handle2FA() {
+  const inputContainers = {
+    'username': document.getElementById('signup-username-input-container'),
+    'email': document.getElementById('signup-email-input-container'),
+    'password1': document.getElementById('signup-password-input-container'),
+    'password2': document.getElementById('signup-confirm-password-input-container')
+  }
+
+  const signupInfo = {
+    'username': document.getElementById('signup-username').value,
+    'email': document.getElementById('signup-email').value,
+    'password1': document.getElementById('signup-password').value,
+    'password2': document.getElementById('signup-password-confirmation').value
+  }
+
+  if (isInputEmpty(signupInfo, inputContainers)) {
+    return
+  }
+
+  try {
+    const response = await postRequest('/api/register/', signupInfo)
+
+    if (response.success) {
+      send_2FA_code_email(document.getElementById('signup-email').value)
+      load2FAPanel()
+    } else {
+      handleSignupErrors(inputContainers, response.errors)
+    }
+  } catch (error) {
+    console.error('Error:', error);
   }
 }
 
