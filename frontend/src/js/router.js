@@ -95,9 +95,15 @@ async function loadDynamicContent(contentName) {
     initRandomColorButton(
       'confirm-login-button',
       'login-panel',
-      () => {
-        handleLogin()
-        // load2FAPanel()
+      async () => {
+        const result = await handleLogin()
+
+        if (result === 'success-with-2fa') {
+          load2FAPanel()
+        } else if (result === 'success') {
+          loadPage('main_menu')
+          loadMainMenuContent('play')
+        }
       }
     )
     initTogglePasswordVisibilityIcon()
@@ -114,7 +120,13 @@ async function loadDynamicContent(contentName) {
     initRandomColorButton(
       'confirm-signup-button',
       'signup-panel',
-      () => handleSignup()
+      async () => {
+        const result = await handleSignup()
+
+        if (result === 'success') {
+          loadPage('user_profile')
+        }
+      }
     )
     initEnable2FAButton()
     initTogglePasswordVisibilityIcon()

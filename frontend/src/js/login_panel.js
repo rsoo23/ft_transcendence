@@ -18,7 +18,7 @@ export async function handleLogin() {
   }
 
   if (isInputEmpty(loginInfo, inputContainers)) {
-    return
+    return 'error'
   }
 
   try {
@@ -28,17 +28,16 @@ export async function handleLogin() {
       // await getIdToken(loginInfo);
 
       if (isEnable2FAButtonClicked) {
-        loadPage('2fa')
-      } else {
-        loadPage('main_menu')
-        loadMainMenuContent('play')
+        return 'success-with-2fa'
       }
+      return 'success'
 
     } else {
       handleLoginErrors(inputContainers, response.errors)
     }
   } catch (error) {
     console.error('Error:', error);
+    return 'error'
   }
 }
 

@@ -90,7 +90,7 @@ export async function handleSignup() {
   }
 
   if (isInputEmpty(signupInfo, inputContainers)) {
-    return
+    return 'error'
   }
 
   try {
@@ -102,13 +102,14 @@ export async function handleSignup() {
     const response = await postRequest('/api/register/', signupInfo)
 
     if (response.success) {
-      loadPage('main_menu')
-      loadMainMenuContent('play')
+      return 'success'
     } else {
       handleSignupErrors(inputContainers, response.errors)
+      return 'error'
     }
   } catch (error) {
     console.error('Error:', error);
+    return 'error'
   }
 }
 
