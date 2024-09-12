@@ -26,33 +26,26 @@ export async function loadSignupPanel() {
         handleSignup()
       }
     )
-    initEnable2FAButton(() => handle2FA())
+    initEnable2FAButton('signup-panel', () => handle2FA())
     initTogglePasswordVisibilityIcon()
   } catch (error) {
     console.error('Error loading Login Panel:', error)
   }
 }
 
-function initEnable2FAButton(callback) {
+function initEnable2FAButton(panelID, callback) {
   const button = document.getElementById('enable-2fa-button')
-  let teal500 = getColor('teal', 500)
-  let teal700 = getColor('teal', 700)
-  let teal800 = getColor('teal', 800)
-  let charcoal100 = getColor('charcoal', 100)
-  let charcoal700 = getColor('charcoal', 700)
+  const panel = document.getElementById(panelID)
+  let colorInfo = {
+    hex: '',
+    name: ''
+  }
 
   addEventListenerTo(
     button,
     'click',
     () => {
-      if (!isEnable2FAButtonClicked) {
-        toggle2FAButton()
-        callback();
-      } else {
-        toggle2FAButton()
-        button.style.backgroundColor = charcoal700
-        button.style.color = charcoal100
-      }
+      callback();
     }
   )
 
@@ -60,8 +53,11 @@ function initEnable2FAButton(callback) {
     button,
     'mouseover',
     () => {
-      button.style.backgroundColor = teal500
-      button.style.color = teal800
+      colorInfo = getRandomColor(500)
+
+      button.style.backgroundColor = colorInfo['hex']
+      panel.style.borderColor = colorInfo['hex']
+      button.style.color = getColor(colorInfo['name'], 800)
     }
   )
 
@@ -69,13 +65,11 @@ function initEnable2FAButton(callback) {
     button,
     'mouseout',
     () => {
-      if (!isEnable2FAButtonClicked) {
-        button.style.backgroundColor = charcoal700
-        button.style.color = charcoal100
-      } else {
-        button.style.backgroundColor = teal500
-        button.style.color = teal800
-      }
+      const color = getColor('charcoal', 100)
+
+      button.style.backgroundColor = getColor('charcoal', 700)
+      panel.style.borderColor = color
+      button.style.color = color
     }
   )
 
@@ -83,7 +77,10 @@ function initEnable2FAButton(callback) {
     button,
     'mousedown',
     () => {
-      button.style.backgroundColor = teal700
+      const color = getColor(colorInfo['name'], 700)
+
+      button.style.backgroundColor = color
+      panel.style.borderColor = color
     }
   )
 
@@ -91,8 +88,8 @@ function initEnable2FAButton(callback) {
     button,
     'mouseup',
     () => {
-      button.style.backgroundColor = teal500
-      button.style.color = teal800
+      button.style.backgroundColor = colorInfo['hex']
+      button.style.color = getColor(colorInfo['name'], 800)
     }
   )
 }
