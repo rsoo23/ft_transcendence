@@ -5,6 +5,7 @@ import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.j
 import { loadToFriendsContainer, initAddFriendButton } from "./friends_content.js"
 import { handleLogin, handleForgotPassword } from "./login_panel.js";
 import { handleSignup, initEnable2FAButton } from "./signup_panel.js"
+import { changeAvatar, initFileInput, setDefaultAvatar } from "./user_profile_panel.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -133,16 +134,19 @@ async function loadDynamicContent(contentName) {
   } else if (contentName === 'user_profile') {
 
     initBackButton(() => loadPage('login'))
+    initFileInput()
     initRandomColorButton(
       'use-default-avatar-button',
       'user-profile-panel',
       () => {
+        setDefaultAvatar()
       }
     )
     initRandomColorButton(
       'change-avatar-button',
       'user-profile-panel',
       () => {
+        changeAvatar()
       }
     )
     initRandomColorButton(

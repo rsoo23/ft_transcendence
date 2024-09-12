@@ -69,3 +69,7 @@
   display: flex;
   gap: 1rem;
 }
+
+#user-profile-panel .img-upload-input {
+  display: none;
+}
