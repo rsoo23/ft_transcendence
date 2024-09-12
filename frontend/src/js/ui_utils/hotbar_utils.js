@@ -2,108 +2,22 @@
 import { addEventListenerTo } from "./ui_utils.js";
 import { getColor, getRandomColor } from "./color_utils.js";
 import { hideTooltip, showTooltip } from "./tooltip_utils.js";
-import { loadMainMenuContent } from "../main_menu_panel.js";
-
-let hotbarItems
+import { loadContentToMainMenu } from "../router.js";
+import { hotbarItems, toggle2FAButton, setHotbarSelected } from "../global_vars.js";
 
 export function initHotbar() {
-  hotbarItems = {
-    'play': {
-      'name': 'play',
-      'button': document.getElementById('play-button'),
-      'icon': document.getElementById('play-icon'),
-      'tooltip': document.getElementById('play-tooltip'),
-      'isSelected': true,
-      'fileName': 'play_content.html',
-      'color': 'teal'
-    },
-    'stats': {
-      'name': 'stats',
-      'button': document.getElementById('stats-button'),
-      'icon': document.getElementById('stats-icon'),
-      'tooltip': document.getElementById('stats-tooltip'),
-      'isSelected': false,
-      'fileName': 'stats_content.html',
-      'color': 'yellow'
-    },
-    'friends': {
-      'name': 'friends',
-      'button': document.getElementById('friends-button'),
-      'icon': document.getElementById('friends-icon'),
-      'tooltip': document.getElementById('friends-tooltip'),
-      'isSelected': false,
-      'fileName': 'friends_content.html',
-      'color': 'blue'
-    },
-    'how-to-play': {
-      'name': 'how-to-play',
-      'button': document.getElementById('how-to-play-button'),
-      'icon': document.getElementById('how-to-play-icon'),
-      'tooltip': document.getElementById('how-to-play-tooltip'),
-      'isSelected': false,
-      'fileName': 'how_to_play_content.html',
-      'color': 'orange'
-    },
-    'settings': {
-      'name': 'settings',
-      'button': document.getElementById('settings-button'),
-      'icon': document.getElementById('settings-icon'),
-      'tooltip': document.getElementById('settings-tooltip'),
-      'isSelected': false,
-      'fileName': 'settings_content.html',
-      'color': 'magenta'
-    }
-  }
-
-  initButton(hotbarItems['play'])
-  initButton(hotbarItems['stats'])
-  initButton(hotbarItems['friends'])
-  initButton(hotbarItems['how-to-play'])
-  initButton(hotbarItems['settings'])
-}
-
-// sets the selected button's isSelected variable to true and the rest is false
-// also sets resets all the colors of the non-selected buttons
-function updateButtonState(buttonName) {
-  hotbarItems[buttonName]['isSelected'] = true
-
   Object.keys(hotbarItems).forEach(key => {
-    if (key !== buttonName) {
-      const buttonColor = hotbarItems[key]['color']
-
-      hotbarItems[key]['isSelected'] = false
-      hotbarItems[key]['button'].style.backgroundColor = '#000'
-      hotbarItems[key]['icon'].style.color = getColor(buttonColor, 500)
-
-      return
-    }
+    initButton(hotbarItems[key])
   });
 }
 
-function updateBorderColor(buttonColor) {
-  const mainMenuPanel = document.getElementById('main-menu-panel')
-  const hotbar = document.getElementById('hotbar')
-
-  if (!mainMenuPanel) {
-    console.error("Error in updateBorderColor(): main-menu-panel not found")
-    return
-  }
-  if (!hotbar) {
-    console.error("Error in updateBorderColor(): hotbar not found")
-    return
-  }
-
-  mainMenuPanel.style.border = `5px solid var(--${buttonColor}-500)`
-  hotbar.style.border = `5px solid var(--${buttonColor}-500)`
-}
-
 function initButton(hotbarItemInfo) {
-  const buttonName = hotbarItemInfo['name']
-  const button = hotbarItemInfo['button']
-  const icon = hotbarItemInfo['icon']
-  const tooltip = hotbarItemInfo['tooltip']
+  const contentName = hotbarItemInfo['name']
   const buttonColor = hotbarItemInfo['color']
-  const fileName = hotbarItemInfo['fileName']
+  const urlPath = hotbarItemInfo['urlPath']
+  const button = document.getElementById(`${contentName}-button`)
+  const icon = document.getElementById(`${contentName}-icon`)
+  const tooltip = document.getElementById(`${contentName}-tooltip`)
 
   addEventListenerTo(
     button,
@@ -146,11 +60,12 @@ function initButton(hotbarItemInfo) {
   addEventListenerTo(
     button,
     'mouseup',
-    () => {
+    async () => {
       if (!hotbarItemInfo['isSelected']) {
-        updateButtonState(buttonName)
-        updateBorderColor(buttonColor)
-        loadMainMenuContent(fileName)
+
+        window.history.pushState({}, '', `${urlPath}`)
+        await loadContentToMainMenu(contentName)
+
         button.style.backgroundColor = getColor(buttonColor, 500)
         icon.style.color = getColor(buttonColor, 200)
       } else {
@@ -160,3 +75,49 @@ function initButton(hotbarItemInfo) {
     }
   )
 }
+
+// sets the selected button's isSelected variable to true and the rest is false
+// set the color of the selected button
+// resets all the colors of the non-selected buttons
+export function updateButtonState(contentName) {
+  const selectedButton = document.getElementById(`${contentName}-button`)
+  const selectedIcon = document.getElementById(`${contentName}-icon`)
+  const color = hotbarItems[contentName]['color']
+
+  setHotbarSelected(contentName, true)
+  selectedButton.style.backgroundColor = getColor(color, 500)
+  selectedIcon.style.color = getColor(color, 200)
+
+  Object.keys(hotbarItems).forEach(key => {
+    if (key !== contentName) {
+      const button = document.getElementById(`${key}-button`)
+      const icon = document.getElementById(`${key}-icon`)
+      const buttonColor = hotbarItems[key]['color']
+
+      setHotbarSelected(key, false)
+      button.style.backgroundColor = '#000'
+      icon.style.color = getColor(buttonColor, 500)
+
+      return
+    }
+  });
+}
+
+export function updateBorderColor(contentName) {
+  const mainMenuPanel = document.getElementById('main-menu-panel')
+  const hotbar = document.getElementById('hotbar')
+  const buttonColor = hotbarItems[contentName]['color']
+
+  if (!mainMenuPanel) {
+    console.error("Error in updateBorderColor(): main-menu-panel not found")
+    return
+  }
+  if (!hotbar) {
+    console.error("Error in updateBorderColor(): hotbar not found")
+    return
+  }
+
+  mainMenuPanel.style.border = `5px solid var(--${buttonColor}-500)`
+  hotbar.style.border = `5px solid var(--${buttonColor}-500)`
+}
+

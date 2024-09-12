@@ -1,19 +1,19 @@
 
 import { addEventListenerTo } from "./ui_utils.js"
 
-let isPasswordVisible = false;
 
 export function initTogglePasswordVisibilityIcon() {
   const togglePasswordVisibilityIcons = document.getElementsByClassName('toggle-password-visibility-icon')
 
-  Array.from(togglePasswordVisibilityIcons).forEach(icon => {
-    icon.className
+  for (let icon of togglePasswordVisibilityIcons) {
+    icon.isPasswordVisible = false;
+
     addEventListenerTo(
       icon,
       'click',
       () => togglePasswordVisibility(icon)
     );
-  });
+  }
 }
 
 function togglePasswordVisibility(icon) {
@@ -28,14 +28,14 @@ function togglePasswordVisibility(icon) {
     return
   }
 
-  if (!isPasswordVisible) {
+  if (!icon.isPasswordVisible) {
     passwordField.setAttribute('type', 'text')
     icon.innerHTML = 'visibility'
-    isPasswordVisible = true
+    icon.isPasswordVisible = true
   } else {
     passwordField.setAttribute('type', 'password')
     icon.innerHTML = 'visibility_off'
-    isPasswordVisible = false
+    icon.isPasswordVisible = false
   }
 }
 
