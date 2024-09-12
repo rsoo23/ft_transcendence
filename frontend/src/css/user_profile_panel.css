@@ -29,7 +29,7 @@
   justify-content: center;
   align-items: center;
   min-width: 17rem;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 #user-profile-title {
@@ -73,3 +73,7 @@
 #user-profile-panel .img-upload-input {
   display: none;
 }
+
+#user-profile-panel p {
+  margin: 0;
+} 

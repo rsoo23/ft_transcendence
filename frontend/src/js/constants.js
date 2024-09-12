@@ -1,3 +1,5 @@
 
 export const ANIM_WAIT_DURATION = 550
 
+export const MAX_AVATAR_FILE_SIZE = 2000000
+

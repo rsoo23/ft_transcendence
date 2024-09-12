@@ -1,3 +1,4 @@
+import { MAX_AVATAR_FILE_SIZE } from "./constants"
 
 export function setDefaultAvatar() {
   const avatar = document.querySelector('#user-profile-panel .avatar')
@@ -18,6 +19,11 @@ export function initFileInput() {
 
   imgUploadInput.addEventListener('change', function () {
     const image = this.files[0]
+
+    if (image.size > MAX_AVATAR_FILE_SIZE) {
+      alert("Image size more than 10MB")
+      return
+    }
     const reader = new FileReader()
     reader.onload = () => {
       const imgUrl = reader.result
