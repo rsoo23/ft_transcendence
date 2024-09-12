@@ -29,6 +29,9 @@ window.addEventListener('popstate', (event) => {
 
   if (path.startsWith('/menu')) {
     loadContentToMainMenu(lastUrlSegment);
+  } else if (path.startsWith('/main_menu')) {
+    loadPage('main_menu');
+    loadMainMenuContent('play');
   } else {
     loadContent(lastUrlSegment);
   }
@@ -71,6 +74,16 @@ export async function loadContentToMainMenu(contentName) {
   }
 }
 
+export async function loadPage(contentName) {
+  window.history.pushState({}, '', `/${contentName}`);
+  await loadContent(contentName)
+}
+
+export async function loadMainMenuContent(contentName) {
+  window.history.pushState({}, '', `/menu/${contentName}`);
+  await loadContentToMainMenu(contentName)
+}
+
 // - loads dynamic content after loading content to main menu
 // - initializes event listeners for any ui components
 async function loadDynamicContent(contentName) {
@@ -84,7 +97,7 @@ async function loadDynamicContent(contentName) {
     initRandomColorButton(
       'signup-button',
       'start-page-panel',
-      () => loadPage('user_profile')
+      () => loadPage('signup')
     )
 
   } else if (contentName === 'login') {
@@ -145,7 +158,7 @@ async function loadDynamicContent(contentName) {
 
   } else if (contentName === 'user_profile') {
 
-    initBackButton(() => loadPage('login'))
+    initBackButton(() => loadPage('signup'))
     initFileInput()
     initRandomColorButton(
       'use-default-avatar-button',
@@ -180,12 +193,3 @@ async function loadDynamicContent(contentName) {
   }
 }
 
-export async function loadPage(contentName) {
-  window.history.pushState({}, '', `/${contentName}`);
-  await loadContent(contentName)
-}
-
-export async function loadMainMenuContent(contentName) {
-  window.history.pushState({}, '', `/${contentName}`);
-  await loadContentToMainMenu(contentName)
-}
