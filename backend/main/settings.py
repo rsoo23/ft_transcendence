@@ -47,6 +47,7 @@ ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
+    'realtime_chat.apps.RealtimeChatConfig'
     'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -55,8 +56,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 	'user_management',
-    'token_management'
+    'token_management',
+    'realtime_chat',
+    'channels',
 ]
+
+ASGI_APPLICATION='backend.asgi.application'
 
 AUHENTICATION_BACKENDS = [
 	'django.contrib.auth.backends.ModelBackend',

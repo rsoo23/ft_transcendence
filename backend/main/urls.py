@@ -28,5 +28,6 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='index'),
     path('token_management/', include('token_management.urls')),
     path('two_factor_auth/', include('two_factor_auth.urls')),
+    path('realtime_chat/', include('realtime_chat.urls')),
     re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
