@@ -33,7 +33,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-8(*2i*l0##=#g-=_d#%6tr!&i%20(ng%&9jiad!si-oa&ohex_'
+SECRET_KEY = getenv_and_validate('DJANGO_SECRET_KEY')
 JWT_SECRET_KEY = getenv_and_validate('DJANGO_JWT_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -119,11 +119,11 @@ else:
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST'),
-        'PORT': env('DB_PORT'),
+        'NAME': getenv_and_validate('DB_NAME'),
+        'USER': getenv_and_validate('DB_USER'),
+        'PASSWORD': getenv_and_validate('DB_PASSWORD'),
+        'HOST': getenv_and_validate('DB_HOST'),
+        'PORT': getenv_and_validate('DB_PORT'),
     }
 }
 
