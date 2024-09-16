@@ -11,19 +11,15 @@ class CustomUserCreationForm(UserCreationForm):
         self.fields['username'].label = 'username'
         self.fields['email'].label = 'email'
         self.fields['two_factor_enabled'].label = False
-        self.fields['two_factor_email'].label = ""
+        self.fields['base32_secret'].label = ""
         
     class Meta:
         model = CustomUser
-        fields = ("username", "password1", "email", "two_factor_enabled", "two_factor_email")
+        fields = ("username", "password1", "email", "two_factor_enabled", "base32_secret")
 
 
 class CustomUserChangeForm(UserChangeForm):
 
     class Meta(UserChangeForm.Meta):
         model = CustomUser
-        fields = ("two_factor_enabled", "two_factor_email")
-        
-#class CustomUserCreationForm(UserCreationForm):
-#	class Meta(UserCreationForm.Meta):
-#		fields = UserCreationForm.Meta.fields + ('email',)
+        fields = ("two_factor_enabled", "base32_secret") 
