@@ -6,9 +6,9 @@ export async function verifyToken() {
   return (status.success);
 }
 
-export async function send_2FA_code_email(email) {
+export async function enable_2FA(email) {
   try {
-    const response = await postRequest('/two_factor_auth/email_2FA_send_code/', { email })
+    const response = await postRequest('/two_factor_auth/enable_2FA/', { email })
 
     if (response.success) {
       alert('2FA code sent to email: ' + email);

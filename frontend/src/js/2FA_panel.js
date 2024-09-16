@@ -3,7 +3,7 @@ import { loadComponent } from "./ui_utils/ui_utils.js"
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { loadLoginPanel } from "./login_panel.js"
 import { loadMainMenuPanel } from "./main_menu_panel.js"
-import { send_2FA_code_email } from "./network_utils/token_utils.js"
+import { enable_2FA} from "./network_utils/token_utils.js"
 import { getColor} from "./ui_utils/color_utils.js";
 import { addEventListenerTo } from "./ui_utils/ui_utils.js";
 import { isSubmit2FAButtonClicked, toggle2FAButton, toggle2FASubmitButton } from "./global_vars.js";

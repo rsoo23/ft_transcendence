@@ -6,7 +6,7 @@ import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
 import { initTogglePasswordVisibilityIcon, resetInputField } from "./ui_utils/input_field_utils.js";
 import { postRequest } from "./network_utils/api_requests.js";
 import { loadLoginPanel } from "./login_panel.js";
-import { send_2FA_code_email } from "./network_utils/token_utils.js";
+import { enable_2FA } from "./network_utils/token_utils.js";
 import { isEnable2FAButtonClicked, toggle2FAButton } from "./global_vars.js";
 import { loadStartPanel } from "./start_panel.js";
 import { setInputFieldHint } from "./ui_utils/input_field_utils.js";
@@ -118,7 +118,7 @@ async function handleSignup() {
   try {
     console.log('isEnable2FAButtonClicked: ', isEnable2FAButtonClicked)
     if (isEnable2FAButtonClicked) {
-      send_2FA_code_email(document.getElementById('signup-email').value)
+      enable_2FA(document.getElementById('signup-email').value)
     }
 
     const response = await postRequest('/api/register/', signupInfo)
@@ -156,7 +156,7 @@ async function handle2FA() {
     const response = await postRequest('/api/register/', signupInfo)
 
     if (response.success) {
-      send_2FA_code_email(document.getElementById('signup-email').value)
+      enable_2FA(document.getElementById('signup-email').value)
       load2FAPanel()
     } else {
       handleSignupErrors(inputContainers, response.errors)
