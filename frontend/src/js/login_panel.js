@@ -22,7 +22,6 @@ export async function loadLoginPanel() {
       'login-panel',
       () => {
         handleLogin()
-        // load2FAPanel()
       }
     )
     initTogglePasswordVisibilityIcon()
@@ -50,7 +49,7 @@ async function handleLogin() {
     const response = await postRequest('/api/login/', loginInfo)
 
     if (response.success) {
-      // await getIdToken(loginInfo);
+      await getIdToken(loginInfo);
 
       if (isEnable2FAButtonClicked) {
         load2FAPanel()

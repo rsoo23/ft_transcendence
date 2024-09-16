@@ -156,7 +156,7 @@ async function handle2FA() {
     const response = await postRequest('/api/register/', signupInfo)
 
     if (response.success) {
-      enable_2FA(document.getElementById('signup-email').value)
+      enable_2FA(document.getElementById('signup-email').value, document.getElementById('signup-username').value)
       load2FAPanel()
     } else {
       handleSignupErrors(inputContainers, response.errors)
