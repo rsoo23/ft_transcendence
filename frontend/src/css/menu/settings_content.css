@@ -1,7 +1,15 @@
-
 #settings-container {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
+}
+
+#enable-2fa-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: var(--blue-500);
+  transition: 0.3s;
 }

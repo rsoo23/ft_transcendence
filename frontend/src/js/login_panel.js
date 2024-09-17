@@ -11,6 +11,7 @@ import { postRequest } from "./network_utils/api_requests.js";
 import { isEnable2FAButtonClicked } from "./global_vars.js";
 import { load2FAPanel } from "./2FA_panel.js";
 import { loadStartPanel } from "./start_panel.js";
+import { getIdToken } from "./network_utils/token_utils.js"
 
 export async function loadLoginPanel() {
   try {
@@ -62,15 +63,6 @@ async function handleLogin() {
     }
   } catch (error) {
     console.error('Error:', error);
-  }
-}
-
-async function getIdToken(loginInfo) {
-  try {
-    await postRequest('/token_management/create_token/', loginInfo)
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Token Creation Error');
   }
 }
 

@@ -6,12 +6,21 @@ export async function verifyToken() {
   return (status.success);
 }
 
-export async function enable_2FA(email, username) {
+export async function getIdToken(loginInfo) {
   try {
-    const response = await postRequest('/two_factor_auth/enable_2FA/', { email , username})
+    await postRequest('/token_management/create_token/', loginInfo)
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Token Creation Error');
+  }
+}
+
+export async function send_otp_2FA() {
+  try {
+    const response = await postRequest('/two_factor_auth/send_otp_2FA/')
 
     if (response.success) {
-      alert('2FA code sent to email: ' + email);
+      alert('2FA code sent to ur email');
     } else {
       alert('An error occurred. Please try again.');
     }

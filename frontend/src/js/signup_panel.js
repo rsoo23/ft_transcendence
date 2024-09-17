@@ -6,12 +6,13 @@ import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
 import { initTogglePasswordVisibilityIcon, resetInputField } from "./ui_utils/input_field_utils.js";
 import { postRequest } from "./network_utils/api_requests.js";
 import { loadLoginPanel } from "./login_panel.js";
-import { enable_2FA } from "./network_utils/token_utils.js";
+import { send_otp_2FA } from "./network_utils/token_utils.js";
 import { isEnable2FAButtonClicked, toggle2FAButton } from "./global_vars.js";
 import { loadStartPanel } from "./start_panel.js";
 import { setInputFieldHint } from "./ui_utils/input_field_utils.js";
 import { loadMainMenuPanel } from "./main_menu_panel.js";
 import { load2FAPanel } from "./2FA_panel.js";
+import { getIdToken } from "./network_utils/token_utils.js"
 
 
 export async function loadSignupPanel() {
@@ -26,7 +27,6 @@ export async function loadSignupPanel() {
         handleSignup()
       }
     )
-    initEnable2FAButton('signup-panel', () => handle2FA())
     initTogglePasswordVisibilityIcon()
   } catch (error) {
     console.error('Error loading Login Panel:', error)
@@ -116,48 +116,11 @@ async function handleSignup() {
   }
 
   try {
-    console.log('isEnable2FAButtonClicked: ', isEnable2FAButtonClicked)
-    if (isEnable2FAButtonClicked) {
-      enable_2FA(document.getElementById('signup-email').value)
-    }
-
     const response = await postRequest('/api/register/', signupInfo)
 
     if (response.success) {
+      await getIdToken(signupInfo);
       loadMainMenuPanel()
-    } else {
-      handleSignupErrors(inputContainers, response.errors)
-    }
-  } catch (error) {
-    console.error('Error:', error);
-  }
-}
-
-async function handle2FA() {
-  const inputContainers = {
-    'username': document.getElementById('signup-username-input-container'),
-    'email': document.getElementById('signup-email-input-container'),
-    'password1': document.getElementById('signup-password-input-container'),
-    'password2': document.getElementById('signup-confirm-password-input-container')
-  }
-
-  const signupInfo = {
-    'username': document.getElementById('signup-username').value,
-    'email': document.getElementById('signup-email').value,
-    'password1': document.getElementById('signup-password').value,
-    'password2': document.getElementById('signup-password-confirmation').value
-  }
-
-  if (isInputEmpty(signupInfo, inputContainers)) {
-    return
-  }
-
-  try {
-    const response = await postRequest('/api/register/', signupInfo)
-
-    if (response.success) {
-      enable_2FA(document.getElementById('signup-email').value, document.getElementById('signup-username').value)
-      load2FAPanel()
     } else {
       handleSignupErrors(inputContainers, response.errors)
     }
