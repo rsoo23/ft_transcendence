@@ -36,6 +36,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = 'django-insecure-8(*2i*l0##=#g-=_d#%6tr!&i%20(ng%&9jiad!si-oa&ohex_'
 JWT_SECRET_KEY = getenv_and_validate('DJANGO_JWT_SECRET_KEY')
 
+BOT_GOOGLE_EMAIL = getenv_and_validate('BOT_GOOGLE_EMAIL')  # The email you setup to send the email using app password
+BOT_GOOGLE_EMAIL_APP_PASSWORD = getenv_and_validate('BOT_GOOGLE_EMAIL_APP_PASSWORD')  # The app password you generated
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 if os.getenv('DJANGO_DEBUG', 'false').lower() in ['false', '']:
