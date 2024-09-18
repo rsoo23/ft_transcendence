@@ -4,7 +4,6 @@ services:
     networks:
       - django_net
       - redis_net
-      - db_net
     # volumes:
     env_file:
       - .env
@@ -24,8 +23,10 @@ services:
 
   postgresql:
     image: postgres:16-alpine
-    ports: 
-      - "${DB_PORT}:${DB_PORT}"
+    networks:
+      - django_net
+    expose:
+      - 5432
     volumes:
       - postgres-data:/var/lib/postgresql/data
     environment:
