@@ -1,0 +1,79 @@
+
+#user-profile-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  gap: 35px;
+
+  width: 21rem;
+  height: 32rem;
+  border-radius: 40px;
+
+  padding: 1.5rem 1rem 1.5rem 1rem;
+  box-sizing: border-box;
+  transition: 0.3s;
+}
+
+#user-profile-panel > .top-container > .header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 20px;
+}
+
+#user-profile-panel > .top-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 17rem;
+  gap: 1rem;
+}
+
+#user-profile-title {
+  letter-spacing: -0.25rem;
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+#user-profile-panel .avatar-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.#user-profile-panel .avatar-name {
+  min-height: 1rem;
+  font-size: 10rem;
+}
+
+#user-profile-panel .avatar-container {
+  min-width: 6rem;
+  min-height: 6rem;
+}
+
+#user-profile-panel .avatar {
+  background-color: white;
+  border-radius: 50%;
+  object-fit: cover;
+  width: 6rem;
+  height: 6rem;
+}
+
+#user-profile-panel .buttons-container {
+  display: flex;
+  gap: 1rem;
+}
+
+#user-profile-panel .img-upload-input {
+  display: none;
+}
+
+#user-profile-panel p {
+  margin: 0;
+} 
