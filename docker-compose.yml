@@ -4,7 +4,6 @@ services:
     networks:
       - django_net
       - redis_net
-      - db_net
     volumes:
       - django_statics:/app/static
     env_file:
