@@ -4,13 +4,9 @@ services:
     networks:
       - django_net
       - redis_net
-<<<<<<< HEAD
-    # volumes:
-=======
       - db_net
     volumes:
       - django_statics:/app/static
->>>>>>> 0970811ec0450c93a8237086ddeb1ff9204ab9f6
     env_file:
       - .env
     depends_on:
