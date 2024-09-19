@@ -42,6 +42,7 @@ if os.getenv('DJANGO_DEBUG', 'false').lower() in ['false', '']:
     DEBUG = False
 
 ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000'] # TODO: change this to https when we have SSL
 
 
 # Application definition
@@ -163,6 +164,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = './static'
 STATICFILES_DIRS = [
 	os.path.join(BASE_DIR, 'frontend', 'src'),
 ]
