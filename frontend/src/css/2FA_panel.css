@@ -68,13 +68,14 @@
 }
 
 #resend-code-button {
-  background: none;               /* Remove button background */
-  color: white;        /* Change text color */
-  border: none;                    /* Remove border */
-  padding: 0;                      /* Remove padding */ 
-  font-size: 12px;                 /* Smaller font size */
-  cursor: pointer;                 /* Change cursor to pointer */
-  display: block;                  /* Make it block to align correctly */
-  text-align: left;                /* Align the text to the left */
-  margin-top: 5px;                 /* Add some space above the link */
+  background: none;
+  color: white;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  font-size: 12px;
+  cursor: pointer;
+  display: block;
+  text-align: left;
+  margin-top: 5px;
 }

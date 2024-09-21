@@ -6,7 +6,6 @@ import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
 import { initTogglePasswordVisibilityIcon, resetInputField } from "./ui_utils/input_field_utils.js";
 import { postRequest } from "./network_utils/api_requests.js";
 import { loadLoginPanel } from "./login_panel.js";
-import { send_otp_2FA } from "./network_utils/token_utils.js";
 import { isEnable2FAButtonClicked, toggle2FAButton } from "./global_vars.js";
 import { loadStartPanel } from "./start_panel.js";
 import { setInputFieldHint } from "./ui_utils/input_field_utils.js";

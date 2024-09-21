@@ -2,10 +2,12 @@
 import { loadComponent } from "./ui_utils/ui_utils.js"
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { loadMainMenuPanel } from "./main_menu_panel.js"
-import { send_otp_2FA} from "./network_utils/token_utils.js"
+import { send_otp_2FA } from "./network_utils/2FA_utils.js"
 import { getColor} from "./ui_utils/color_utils.js";
 import { addEventListenerTo } from "./ui_utils/ui_utils.js";
 import { isSubmit2FAButtonClicked, toggle2FAButton, toggle2FASubmitButton } from "./global_vars.js";
+import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
+import { postRequest } from "./network_utils/api_requests.js";
 
 export async function load2FAPanel() {
   try {
@@ -15,79 +17,57 @@ export async function load2FAPanel() {
     initBackButton(() => loadMainMenuPanel())
     initResendCodeButton(() => send_otp_2FA())
     initRandomColorButton(
-      'confirm-2fa-button',
+      'submit-2fa-button',
       'two-fa-panel',
       () => {
-        loadMainMenuPanel()
+        handle2FA()
       }
     )
-    initSubmit2FAButton()
   } catch (error) {
     console.error('Error loading 2FA Panel:', error)
   }
 }
 
-function initSubmit2FAButton() {
-  const button = document.getElementById('confirm-2fa-button')
-  let teal500 = getColor('teal', 500)
-  let teal700 = getColor('teal', 700)
-  let teal800 = getColor('teal', 800)
-  let charcoal100 = getColor('charcoal', 100)
-  let charcoal700 = getColor('charcoal', 700)
+async function handle2FA() {
+  const inputContainers = {
+    'code': document.getElementById('two-fa-code-input-container')
+  }
 
-  addEventListenerTo(
-    button,
-    'click',
-    () => {
-      if (!isSubmit2FAButtonClicked) {
-        toggle2FASubmitButton()
-      } else {
-        toggle2FASubmitButton()
-        button.style.backgroundColor = charcoal700
-        button.style.color = charcoal100
+  const info = {
+    'code': document.getElementById('two-fa-code').value,
+  }
+
+  if (isInputEmpty(info, inputContainers)) {
+    return
+  }
+
+  try {
+    const response = await postRequest('/two_factor_auth/verify_2FA/', info)
+
+    if (response.success) {
+      alert('2FA Enabled !')
+      loadMainMenuPanel()
+    } else {
+      console.log('Error')
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+function isInputEmpty(code, inputContainers) {
+  for (let key of Object.keys(code)) {
+    if (!code[key]) {
+
+      if (key === 'code') {
+        setInputFieldHint(inputContainers[key], 'This field is required', getColor('magenta', 500))
       }
+      return true
+    } else {
+      resetInputField(inputContainers[key])
     }
-  )
-
-  addEventListenerTo(
-    button,
-    'mouseover',
-    () => {
-      button.style.backgroundColor = teal500
-      button.style.color = teal800
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mouseout',
-    () => {
-      if (!isSubmit2FAButtonClicked) {
-        button.style.backgroundColor = charcoal700
-        button.style.color = charcoal100
-      } else {
-        button.style.backgroundColor = teal500
-        button.style.color = teal800
-      }
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mousedown',
-    () => {
-      button.style.backgroundColor = teal700
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mouseup',
-    () => {
-      button.style.backgroundColor = teal500
-      button.style.color = teal800
-    }
-  )
+  }
+  return false
 }
 
 function initResendCodeButton(callback) {
