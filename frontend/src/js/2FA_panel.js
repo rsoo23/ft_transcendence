@@ -13,6 +13,7 @@ export async function load2FAPanel() {
 
     toggle2FAButton()
     initBackButton(() => loadMainMenuPanel())
+    initResendCodeButton(() => send_otp_2FA())
     initRandomColorButton(
       'confirm-2fa-button',
       'two-fa-panel',
@@ -85,6 +86,50 @@ function initSubmit2FAButton() {
     () => {
       button.style.backgroundColor = teal500
       button.style.color = teal800
+    }
+  )
+}
+
+function initResendCodeButton(callback) {
+  const button = document.getElementById('resend-code-button')
+
+  addEventListenerTo(
+    button,
+    'click',
+    () => {
+      callback()
+    }
+  )
+
+  addEventListenerTo(
+    button,
+    'mouseover',
+    () => {
+      button.style.textDecoration = 'underline'
+    }
+  )
+
+  addEventListenerTo(
+    button,
+    'mouseout',
+    () => {
+      button.style.textDecoration = 'none'
+    }
+  )
+
+  addEventListenerTo(
+    button,
+    'mousedown',
+    () => {
+      button.style.textDecoration = 'underline'
+    }
+  )
+
+  addEventListenerTo(
+    button,
+    'mouseup',
+    () => {
+      button.style.textDecoration = 'none'
     }
   )
 }
