@@ -7,11 +7,12 @@ import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
 import { loadMainMenuPanel } from "./main_menu_panel.js";
-import { postRequest } from "./network_utils/api_requests.js";
+import { postRequest, getRequest} from "./network_utils/api_requests.js";
 import { isEnable2FAButtonClicked } from "./global_vars.js";
 import { load2FAPanel } from "./2FA_panel.js";
 import { loadStartPanel } from "./start_panel.js";
 import { getIdToken } from "./network_utils/token_utils.js"
+import { send_otp_2FA } from "./network_utils/2FA_utils.js";
 
 export async function loadLoginPanel() {
   try {
@@ -50,14 +51,14 @@ async function handleLogin() {
     const response = await postRequest('/api/login/', loginInfo)
 
     if (response.success) {
-      await getIdToken(loginInfo);
-
-      if (isEnable2FAButtonClicked) {
+      await getIdToken(loginInfo)
+      if (await status_2FA()) {
         load2FAPanel()
-      } else {
+        send_otp_2FA()
+      }
+      else {
         loadMainMenuPanel()
       }
-
     } else {
       handleLoginErrors(inputContainers, response.errors)
     }
@@ -95,6 +96,15 @@ function handleLoginErrors(inputContainers, errors) {
   } else {
     resetInputField(inputContainers.password)
   }
+}
+
+async function status_2FA() {
+  const response = await getRequest('/two_factor_auth/status_2FA')
+  console.log(response.success)
+  if (response.success)
+    return true
+  else
+    return false
 }
 
 // async function handleForgotPassword() {
