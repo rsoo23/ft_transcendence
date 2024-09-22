@@ -49,3 +49,14 @@ def get_token_bearer_name(cookie):
         token = cookie['ID_Token']
     decoded_jwt = jwt.decode(token, JWT_SECRET_KEY, algorithms="HS256")
     return(decoded_jwt['username'])
+
+@csrf_exempt
+def status_2FA(request):
+    if request.method == 'GET':
+        username = get_token_bearer_name(request.COOKIES)
+        User = get_user_model().objects.get(username=username)
+        if User.two_factor_enabled :
+            return JsonResponse({'success' : True, 'Status' : '2FA enabled'}, status=200)
+        else :
+            return JsonResponse({'success' : False, 'Status' : '2FA not enabled'},status=401)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
