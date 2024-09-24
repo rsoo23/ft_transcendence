@@ -25,7 +25,6 @@ export async function handle2FA() {
 
     if (response.success) {
       alert('2FA Enabled !')
-      loadMainMenuPanel()
       return 'success'
     } else {
       console.log('Error')
