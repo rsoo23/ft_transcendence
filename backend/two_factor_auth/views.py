@@ -25,7 +25,7 @@ def send_otp_2FA(request):
             totp = pyotp.TOTP(User.base32_secret)
             otp = totp.now()
         send_email(email, otp)
-        return JsonResponse({'success' : True, 'Status' : '2FA Token sent to :' + email + f' haha {otp}'})
+        return JsonResponse({'success' : True, 'Status' : '2FA Token sent to :' + email})
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
@@ -41,7 +41,7 @@ def verify_2FA(request):
             User.save()
             return JsonResponse({'success' : True, 'Status' : '2FA Code Verified'}, status=200)
         else:
-            return JsonResponse({'success' : False, 'Status' : f'2FA Code is Wrong {code}'},status=401)
+            return JsonResponse({'success' : False, 'Status' : f'2FA Code is Wrong'},status=401)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 def get_token_bearer_name(cookie):
