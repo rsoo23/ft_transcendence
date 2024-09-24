@@ -3,7 +3,6 @@ import { loadMainMenuPanel } from "./main_menu_panel.js"
 import { send_otp_2FA } from "./network_utils/2FA_utils.js"
 import { getColor} from "./ui_utils/color_utils.js";
 import { addEventListenerTo } from "./ui_utils/ui_utils.js";
-import { isSubmit2FAButtonClicked, toggle2FAButton, toggle2FASubmitButton } from "./global_vars.js";
 import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
 import { postRequest } from "./network_utils/api_requests.js";
 
