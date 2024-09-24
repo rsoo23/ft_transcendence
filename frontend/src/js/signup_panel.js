@@ -1,13 +1,11 @@
 
-import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
-import { loadComponent } from "./ui_utils/ui_utils.js";
 import { addEventListenerTo } from "./ui_utils/ui_utils.js";
 import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
 import { initTogglePasswordVisibilityIcon, resetInputField } from "./ui_utils/input_field_utils.js";
 import { postRequest } from "./network_utils/api_requests.js";
+import { loadMainMenuContent, loadPage } from "./router.js";
 import { loadLoginPanel } from "./login_panel.js";
 import { isEnable2FAButtonClicked, toggle2FAButton } from "./global_vars.js";
-import { loadStartPanel } from "./start_panel.js";
 import { setInputFieldHint } from "./ui_utils/input_field_utils.js";
 import { loadMainMenuPanel } from "./main_menu_panel.js";
 import { load2FAPanel } from "./2FA_panel.js";
@@ -32,7 +30,7 @@ export async function loadSignupPanel() {
   }
 }
 
-function initEnable2FAButton(panelID, callback) {
+export function initEnable2FAButton() {
   const button = document.getElementById('enable-2fa-button')
   const panel = document.getElementById(panelID)
   let colorInfo = {
@@ -95,7 +93,7 @@ function initEnable2FAButton(panelID, callback) {
 
 // password1: first password input
 // password2: password input confirmation
-async function handleSignup() {
+export async function handleSignup() {
   const inputContainers = {
     'username': document.getElementById('signup-username-input-container'),
     'email': document.getElementById('signup-email-input-container'),
@@ -111,7 +109,7 @@ async function handleSignup() {
   }
 
   if (isInputEmpty(signupInfo, inputContainers)) {
-    return
+    return 'error'
   }
 
   try {
@@ -120,11 +118,14 @@ async function handleSignup() {
     if (response.success) {
       await getIdToken(signupInfo);
       loadMainMenuPanel()
+      return 'success'
     } else {
       handleSignupErrors(inputContainers, response.errors)
+      return 'error'
     }
   } catch (error) {
     console.error('Error:', error);
+    return 'error'
   }
 }
 

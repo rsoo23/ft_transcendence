@@ -55,9 +55,12 @@ def forgot_password_view(request):
         data = json.loads(request.body)
         form = PasswordResetForm(data)
         if form.is_valid():
-            form.save(request=request, use_https=request.is_secure(), 
-                      from_email=settings.DEFAULT_FROM_EMAIL,
-                      email_template_name='registration/password_reset_email.html')
+            form.save(
+                request=request,
+                use_https=request.is_secure(), 
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                email_template_name='registration/password_reset_email.html'
+            )
             return JsonResponse({"success": True})
         return JsonResponse({"success": False, "error": "Invalid email"}, status=400)
     return JsonResponse({"success": False, "error": "Invalid method"}, status=405)

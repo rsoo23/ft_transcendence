@@ -1,20 +1,23 @@
 
-import { loadComponent } from "./ui_utils/ui_utils.js";
 import { initHotbar } from "./ui_utils/hotbar_utils.js";
+import { loadContent, loadContentToMainMenu } from "./router.js";
 import { initAddFriendButton, loadToFriendsContainer, initCloseSearchFriendButton } from "./friends_content.js";
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { send_otp_2FA } from "./network_utils/2FA_utils.js";
 import { load2FAPanel } from "./2FA_panel.js";
+
 // document.addEventListener("DOMContentLoaded", () => {
 //   loadMainMenuPanel()
 // })
 
 export async function loadMainMenuPanel() {
   try {
-    await loadComponent('components/menu/main_menu_panel.html')
+    window.history.pushState({}, '', '/main_menu');
+    await loadContent()
 
+    window.history.pushState({}, '', '/menu/play');
+    await loadContentToMainMenu('play')
     initHotbar()
-    await loadMainMenuContent('play_content.html')
   } catch (error) {
     console.error('Error loading Main Menu Panel :', error)
   }
@@ -55,5 +58,3 @@ async function loadContent(fileName) {
       })
   }
 }
-
-

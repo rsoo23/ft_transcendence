@@ -1,4 +1,3 @@
-
 import { loadComponent } from "./ui_utils/ui_utils.js"
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { loadMainMenuPanel } from "./main_menu_panel.js"

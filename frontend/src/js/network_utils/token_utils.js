@@ -1,7 +1,7 @@
 import { getRequest, postRequest } from "./api_requests.js";
 
 export async function verifyToken() {
-  const response = await getRequest('/token_management/verify_token')
+  const response = await getRequest('/api/token_management/verify_token')
   const status = await response.json();
   return (status.success);
 }

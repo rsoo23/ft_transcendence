@@ -1,14 +1,10 @@
 
-import { loadComponent } from "./ui_utils/ui_utils.js";
-import { addEventListenerTo } from "./ui_utils/ui_utils.js";
 import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
 import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
-
-import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
-import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
 import { loadMainMenuPanel } from "./main_menu_panel.js";
 import { postRequest, getRequest} from "./network_utils/api_requests.js";
 import { isEnable2FAButtonClicked } from "./global_vars.js";
+import { loadMainMenuContent, loadPage } from "./router.js";
 import { load2FAPanel } from "./2FA_panel.js";
 import { loadStartPanel } from "./start_panel.js";
 import { getIdToken } from "./network_utils/token_utils.js"
@@ -32,7 +28,7 @@ export async function loadLoginPanel() {
   }
 }
 
-async function handleLogin() {
+export async function handleLogin() {
   const inputContainers = {
     'username': document.getElementById('login-username-input-container'),
     'password': document.getElementById('login-password-input-container')
@@ -44,7 +40,7 @@ async function handleLogin() {
   }
 
   if (isInputEmpty(loginInfo, inputContainers)) {
-    return
+    return 'error'
   }
 
   try {
@@ -64,6 +60,7 @@ async function handleLogin() {
     }
   } catch (error) {
     console.error('Error:', error);
+    return 'error'
   }
 }
 

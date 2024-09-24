@@ -18,13 +18,19 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
+from django.views.static import serve
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import re_path
+import os
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('user_management.urls')),  # Include your user_management app URLs
-    path('', TemplateView.as_view(template_name='index.html'), name='index'),
-    path('token_management/', include('token_management.urls')),
-    path('two_factor_auth/', include('two_factor_auth.urls'))
+    path('api/', include('user_management.urls')),
+    path('api/token_management/', include('token_management.urls')),
+    path('api/two_factor_auth/', include('two_factor_auth.urls')),
+    re_path(r'^.*$', serve, kwargs={
+        'path': 'index.html',
+        'document_root': os.path.join(settings.BASE_DIR, 'frontend'),
+    }),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
