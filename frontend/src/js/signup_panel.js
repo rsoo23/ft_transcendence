@@ -3,71 +3,8 @@ import { addEventListenerTo } from "./ui_utils/ui_utils.js";
 import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
 import { initTogglePasswordVisibilityIcon, resetInputField } from "./ui_utils/input_field_utils.js";
 import { postRequest } from "./network_utils/api_requests.js";
-import { isEnable2FAButtonClicked, toggle2FAButton } from "./global_vars.js";
 import { setInputFieldHint } from "./ui_utils/input_field_utils.js";
 import { getIdToken } from "./network_utils/token_utils.js"
-
-
-export function initEnable2FAButton() {
-  const button = document.getElementById('enable-2fa-button')
-  const panel = document.getElementById(panelID)
-  let colorInfo = {
-    hex: '',
-    name: ''
-  }
-
-  addEventListenerTo(
-    button,
-    'click',
-    () => {
-      callback();
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mouseover',
-    () => {
-      colorInfo = getRandomColor(500)
-
-      button.style.backgroundColor = colorInfo['hex']
-      panel.style.borderColor = colorInfo['hex']
-      button.style.color = getColor(colorInfo['name'], 800)
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mouseout',
-    () => {
-      const color = getColor('charcoal', 100)
-
-      button.style.backgroundColor = getColor('charcoal', 700)
-      panel.style.borderColor = color
-      button.style.color = color
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mousedown',
-    () => {
-      const color = getColor(colorInfo['name'], 700)
-
-      button.style.backgroundColor = color
-      panel.style.borderColor = color
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mouseup',
-    () => {
-      button.style.backgroundColor = colorInfo['hex']
-      button.style.color = getColor(colorInfo['name'], 800)
-    }
-  )
-}
 
 // password1: first password input
 // password2: password input confirmation

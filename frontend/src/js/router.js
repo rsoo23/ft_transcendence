@@ -4,7 +4,7 @@ import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.j
 import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
 import { loadToFriendsContainer, initAddFriendButton } from "./friends_content.js"
 import { handleLogin } from "./login_panel.js";
-import { handleSignup, initEnable2FAButton } from "./signup_panel.js"
+import { handleSignup } from "./signup_panel.js"
 import { changeAvatar, initFileInput, setDefaultAvatar } from "./user_profile_panel.js";
 import { handle2FA, initResendCodeButton } from "./2FA_panel.js";
 import { send_otp_2FA } from "./network_utils/2FA_utils.js";
@@ -144,7 +144,6 @@ async function loadDynamicContent(contentName) {
         }
       }
     )
-    initEnable2FAButton()
     initTogglePasswordVisibilityIcon()
 
   } else if (contentName === '2fa_verify' || contentName === '2fa_enable') {

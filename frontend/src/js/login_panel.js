@@ -3,7 +3,6 @@ import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
 import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
 import { loadMainMenuPanel } from "./main_menu_panel.js";
 import { postRequest, getRequest} from "./network_utils/api_requests.js";
-import { isEnable2FAButtonClicked } from "./global_vars.js";
 import { loadMainMenuContent, loadPage } from "./router.js";
 // import { load2FAPanel } from "./2FA_panel.js";
 import { getIdToken } from "./network_utils/token_utils.js"
