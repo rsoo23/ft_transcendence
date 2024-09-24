@@ -47,7 +47,7 @@ ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
-    'realtime_chat.apps.RealtimeChatConfig'
+    'realtime_chat.apps.RealtimeChatConfig',
     'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
