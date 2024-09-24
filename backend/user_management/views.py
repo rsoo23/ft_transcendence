@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, get_user_model
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
 import json
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -88,11 +87,13 @@ def update_username(request):
 		return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
-@require_http_methods(["POST"])
 def logout_view(request):
-	logout(request) 
-     # Django's built-in logout function - removes authenticated user from session, flushes session data, deletes session cookie
-	return JsonResponse({'success': True})
+	if request.method == 'POST':
+		logout(request)
+	# Django's built-in logout function - removes authenticated user from session, flushes session data, deletes session cookie
+		return JsonResponse({'message': 'Logged out successfully'})
+	else:
+		return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 # def hello_world(request):
 #     return JsonResponse({'message': 'Hello, world!'})
