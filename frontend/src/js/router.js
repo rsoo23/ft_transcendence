@@ -8,6 +8,7 @@ import { handleSignup } from "./signup_panel.js"
 import { changeAvatar, initFileInput, setDefaultAvatar } from "./user_profile_panel.js";
 import { handle2FA, initResendCodeButton } from "./2FA_panel.js";
 import { send_otp_2FA } from "./network_utils/2FA_utils.js";
+import { getRequest } from "./network_utils/api_requests.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -46,8 +47,7 @@ export async function loadContent(contentName) {
   const htmlPath = routes[path] || '<h1>404 Page Not Found</h1>';
 
   try {
-    const response = await fetch(`/static/components/${htmlPath}`)
-    const html = await response.text()
+    const html = await getRequest(`/static/components/${htmlPath}`, 'text')
 
     document.body.innerHTML = html;
 
@@ -64,8 +64,7 @@ export async function loadContentToMainMenu(contentName) {
   const htmlPath = routes[path] || '<h1>404 Page Not Found</h1>';
 
   try {
-    const response = await fetch(`/static/components/${htmlPath}`)
-    const html = await response.text()
+    const html = await getRequest(`/static/components/${htmlPath}`, 'text')
 
     document.querySelector('#main-menu-panel > .content-container').innerHTML = html;
 
