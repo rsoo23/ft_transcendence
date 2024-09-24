@@ -57,7 +57,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 	'user_management',
     'token_management',
-    'realtime_chat',
     'channels',
 ]
 
