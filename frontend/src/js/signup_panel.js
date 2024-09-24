@@ -3,32 +3,10 @@ import { addEventListenerTo } from "./ui_utils/ui_utils.js";
 import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
 import { initTogglePasswordVisibilityIcon, resetInputField } from "./ui_utils/input_field_utils.js";
 import { postRequest } from "./network_utils/api_requests.js";
-import { loadMainMenuContent, loadPage } from "./router.js";
-import { loadLoginPanel } from "./login_panel.js";
 import { isEnable2FAButtonClicked, toggle2FAButton } from "./global_vars.js";
 import { setInputFieldHint } from "./ui_utils/input_field_utils.js";
-import { loadMainMenuPanel } from "./main_menu_panel.js";
-import { load2FAPanel } from "./2FA_panel.js";
 import { getIdToken } from "./network_utils/token_utils.js"
 
-
-export async function loadSignupPanel() {
-  try {
-    await loadComponent('components/signup_panel.html')
-
-    initBackButton(() => loadStartPanel())
-    initRandomColorButton(
-      'confirm-signup-button',
-      'signup-panel',
-      () => {
-        handleSignup()
-      }
-    )
-    initTogglePasswordVisibilityIcon()
-  } catch (error) {
-    console.error('Error loading Login Panel:', error)
-  }
-}
 
 export function initEnable2FAButton() {
   const button = document.getElementById('enable-2fa-button')
@@ -117,7 +95,6 @@ export async function handleSignup() {
 
     if (response.success) {
       await getIdToken(signupInfo);
-      loadMainMenuPanel()
       return 'success'
     } else {
       handleSignupErrors(inputContainers, response.errors)

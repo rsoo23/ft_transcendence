@@ -1,4 +1,3 @@
-import { loadComponent } from "./ui_utils/ui_utils.js"
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { loadMainMenuPanel } from "./main_menu_panel.js"
 import { send_otp_2FA } from "./network_utils/2FA_utils.js"
@@ -8,26 +7,7 @@ import { isSubmit2FAButtonClicked, toggle2FAButton, toggle2FASubmitButton } from
 import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
 import { postRequest } from "./network_utils/api_requests.js";
 
-export async function load2FAPanel() {
-  try {
-    await loadComponent('components/2FA_panel.html')
-
-    toggle2FAButton()
-    initBackButton(() => loadMainMenuPanel())
-    initResendCodeButton(() => send_otp_2FA())
-    initRandomColorButton(
-      'submit-2fa-button',
-      'two-fa-panel',
-      () => {
-        handle2FA()
-      }
-    )
-  } catch (error) {
-    console.error('Error loading 2FA Panel:', error)
-  }
-}
-
-async function handle2FA() {
+export async function handle2FA() {
   const inputContainers = {
     'code': document.getElementById('two-fa-code-input-container')
   }
@@ -37,20 +17,23 @@ async function handle2FA() {
   }
 
   if (isInputEmpty(info, inputContainers)) {
-    return
+    return 'error'
   }
 
   try {
-    const response = await postRequest('/two_factor_auth/verify_2FA/', info)
+    const response = await postRequest('/api/two_factor_auth/verify_2FA/', info)
 
     if (response.success) {
       alert('2FA Enabled !')
       loadMainMenuPanel()
+      return 'success'
     } else {
       console.log('Error')
+      return 'error'
     }
   } catch (error) {
     console.error('Error:', error);
+    return 'error'
   }
 }
 
@@ -69,7 +52,7 @@ function isInputEmpty(code, inputContainers) {
   return false
 }
 
-function initResendCodeButton(callback) {
+export function initResendCodeButton(callback) {
   const button = document.getElementById('resend-code-button')
 
   addEventListenerTo(

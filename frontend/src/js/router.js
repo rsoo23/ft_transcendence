@@ -3,16 +3,19 @@ import { initLink } from "./ui_utils/link_utils.js";
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
 import { loadToFriendsContainer, initAddFriendButton } from "./friends_content.js"
-import { handleLogin, handleForgotPassword } from "./login_panel.js";
+import { handleLogin } from "./login_panel.js";
 import { handleSignup, initEnable2FAButton } from "./signup_panel.js"
 import { changeAvatar, initFileInput, setDefaultAvatar } from "./user_profile_panel.js";
+import { handle2FA, initResendCodeButton } from "./2FA_panel.js";
+import { send_otp_2FA } from "./network_utils/2FA_utils.js";
 
 const routes = {
   '/start': 'start_panel.html',
   '/login': 'login_panel.html',
   '/signup': 'signup_panel.html',
   '/user_profile': 'user_profile_panel.html',
-  '/2fa': '2FA_panel.html',
+  '/2fa_verify': '2FA_panel.html',
+  '/2fa_enable': '2FA_panel.html',
   '/main_menu': 'menu/main_menu_panel.html',
   '/menu/play': 'menu/play_content.html',
   '/menu/stats': 'menu/stats_content.html',
@@ -112,7 +115,7 @@ async function loadDynamicContent(contentName) {
         const result = await handleLogin()
 
         if (result === 'success-with-2fa') {
-          load2FAPanel()
+          loadPage('2fa_verify')
         } else if (result === 'success') {
           loadPage('main_menu')
           loadMainMenuContent('play')
@@ -144,15 +147,31 @@ async function loadDynamicContent(contentName) {
     initEnable2FAButton()
     initTogglePasswordVisibilityIcon()
 
-  } else if (contentName === '2fa') {
+  } else if (contentName === '2fa_verify' || contentName === '2fa_enable') {
 
-    initBackButton(() => loadPage('login'))
+    send_otp_2FA()
+    if (contentName === '2fa_verify') {
+      initBackButton(() => loadPage('login'))
+    } else {
+      initBackButton(() => loadPage('main_menu'))
+    }
+    initResendCodeButton(() => send_otp_2FA())
     initRandomColorButton(
-      'confirm-2fa-button',
+      'submit-2fa-button',
       'two-fa-panel',
-      () => {
+      async () => {
+        const result = await handle2FA()
+
+        if (result === 'error') {
+          return
+        }
+
         loadPage('main_menu')
-        loadMainMenuContent('play')
+        if (contentName === '2fa_verify') {
+            loadMainMenuContent('play')
+        } else {
+            loadMainMenuContent('settings')
+        }
       }
     )
 
@@ -189,6 +208,14 @@ async function loadDynamicContent(contentName) {
 
     await loadToFriendsContainer('friend_list_panel.html')
     initAddFriendButton()
+
+  } else if (contentName === 'settings') {
+
+    initRandomColorButton(
+      'enable-2fa-button',
+      'settings-container',
+      () => loadPage('2fa_enable')
+    )
 
   }
 }

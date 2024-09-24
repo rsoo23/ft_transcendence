@@ -8,7 +8,7 @@ export async function verifyToken() {
 
 export async function getIdToken(loginInfo) {
   try {
-    await postRequest('/token_management/create_token/', loginInfo)
+    await postRequest('/api/token_management/create_token/', loginInfo)
   } catch (error) {
     console.error('Error:', error);
     alert('Token Creation Error');

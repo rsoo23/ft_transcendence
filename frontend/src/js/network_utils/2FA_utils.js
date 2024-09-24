@@ -2,7 +2,7 @@ import { getRequest, postRequest } from "./api_requests.js";
 
 export async function send_otp_2FA() {
     try {
-      const response = await postRequest('/two_factor_auth/send_otp_2FA/')
+      const response = await postRequest('/api/two_factor_auth/send_otp_2FA/')
   
       if (response.success) {
         alert('2FA code sent to ur email');

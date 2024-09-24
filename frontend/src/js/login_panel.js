@@ -5,28 +5,27 @@ import { loadMainMenuPanel } from "./main_menu_panel.js";
 import { postRequest, getRequest} from "./network_utils/api_requests.js";
 import { isEnable2FAButtonClicked } from "./global_vars.js";
 import { loadMainMenuContent, loadPage } from "./router.js";
-import { load2FAPanel } from "./2FA_panel.js";
-import { loadStartPanel } from "./start_panel.js";
+// import { load2FAPanel } from "./2FA_panel.js";
 import { getIdToken } from "./network_utils/token_utils.js"
-import { send_otp_2FA } from "./network_utils/2FA_utils.js";
+// import { send_otp_2FA } from "./network_utils/2FA_utils.js";
 
-export async function loadLoginPanel() {
-  try {
-    await loadComponent('components/login_panel.html')
+// export async function loadLoginPanel() {
+//   try {
+//     await loadComponent('components/login_panel.html')
 
-    initBackButton(() => loadStartPanel())
-    initRandomColorButton(
-      'confirm-login-button',
-      'login-panel',
-      () => {
-        handleLogin()
-      }
-    )
-    initTogglePasswordVisibilityIcon()
-  } catch (error) {
-    console.error('Error loading Login Panel:', error)
-  }
-}
+//     initBackButton(() => loadStartPanel())
+//     initRandomColorButton(
+//       'confirm-login-button',
+//       'login-panel',
+//       () => {
+//         handleLogin()
+//       }
+//     )
+//     initTogglePasswordVisibilityIcon()
+//   } catch (error) {
+//     console.error('Error loading Login Panel:', error)
+//   }
+// }
 
 export async function handleLogin() {
   const inputContainers = {
@@ -48,13 +47,12 @@ export async function handleLogin() {
 
     if (response.success) {
       await getIdToken(loginInfo)
+
       if (await status_2FA()) {
-        load2FAPanel()
-        send_otp_2FA()
+        return 'success-with-2fa'
       }
-      else {
-        loadMainMenuPanel()
-      }
+      return 'success'
+
     } else {
       handleLoginErrors(inputContainers, response.errors)
     }
@@ -96,7 +94,7 @@ function handleLoginErrors(inputContainers, errors) {
 }
 
 async function status_2FA() {
-  const response = await getRequest('/two_factor_auth/status_2FA')
+  const response = await getRequest('/api/two_factor_auth/status_2FA/')
   console.log(response.success)
   if (response.success)
     return true
