@@ -22,12 +22,14 @@ function connect() {
     switch (data.type) {
       case "chat_message":
         // chatLog.value += data.message + "\n";
-        // add your chat message container instantiation 
+        // addMessage(username, avatarUrl, message, datetime)
         break;
       default:
         console.error("Unknown message type!");
         break;
     }
+
+    // scrollup function
   };
 
   chatSocket.onclose = function (e) {

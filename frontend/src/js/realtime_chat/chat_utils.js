@@ -18,6 +18,7 @@ sendMessageButton.onclick = function () {
   chatSocket.send(JSON.stringify({
     "message": chatInput.value,
   }));
+  // addMessage(username, avatarUrl, message, datetime)
   chatInput.value = "";
 };
 
