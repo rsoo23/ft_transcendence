@@ -1,8 +1,9 @@
 
+let chatSocket = null
 
-function initWebSocket() {
+function connect() {
   const roomName = 'hello'
-  const chatSocket = new WebSocket(
+  chatSocket = new WebSocket(
     'ws://'
     + window.location.host
     + '/ws/chat/'
@@ -10,23 +11,38 @@ function initWebSocket() {
     + '/'
   )
 
+  chatSocket.onopen = function (e) {
+    console.log("Successfully connected to the WebSocket.");
+  }
+
   chatSocket.onmessage = function (e) {
     const data = JSON.parse(e.data);
-    // document.querySelector('#chat-log').value += (data.message + '\n');
     console.log(data)
+
+    switch (data.type) {
+      case "chat_message":
+        // chatLog.value += data.message + "\n";
+        // add your chat message container instantiation 
+        break;
+      default:
+        console.error("Unknown message type!");
+        break;
+    }
   };
 
   chatSocket.onclose = function (e) {
-    console.error('Chat socket closed unexpectedly');
+    console.error('WebSocket connection closed unexpectedly. Trying to reconnect in 2 seconds');
+    setTimeout(function () {
+      console.log("Reconnecting...")
+      connect()
+    }, 2000)
   };
 
-  // document.getElementById('#chat-message-submit').onclick = function (e) {
-  //   const messageInputDom = document.querySelector('#chat-message-input');
-  //   const message = messageInputDom.value;
-  //   chatSocket.send(JSON.stringify({
-  //     'message': message
-  //   }));
-  //   messageInputDom.value = '';
-  // };
+  chatSocket.onerror = function (err) {
+    console.log("WebSocket encountered an error: " + err.message);
+    console.log("Closing the socket.");
+    chatSocket.close();
+  }
 }
 
+connect()
