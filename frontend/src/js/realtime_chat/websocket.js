@@ -22,7 +22,7 @@ function connect() {
     switch (data.type) {
       case "chat_message":
         // chatLog.value += data.message + "\n";
-        // addMessage(username, avatarUrl, message, datetime)
+        // addMessage(data.user, avatarUrl, data.message, datetime)
         break;
       default:
         console.error("Unknown message type!");
