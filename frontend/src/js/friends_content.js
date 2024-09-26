@@ -1,17 +1,6 @@
 
-import { addEventListenerTo } from "./ui_utils/ui_utils.js"
+import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js"
 import { getColor } from "./ui_utils/color_utils.js"
-
-export async function loadToFriendsContainer(fileName) {
-  try {
-    const response = await fetch(`/static/components/menu/${fileName}`)
-    const html = await response.text()
-
-    document.getElementById('friends-container').innerHTML = html;
-  } catch (error) {
-    console.error(`Error loading static/components/menu/${fileName}:`, error)
-  }
-}
 
 export function initAddFriendButton() {
   const button = document.getElementById('add-friend-button')
@@ -22,7 +11,7 @@ export function initAddFriendButton() {
     button,
     'click',
     async () => {
-      await loadToFriendsContainer('friend_search_panel.html')
+      await loadContentToTarget('menu/friend_search_panel.html', 'friends-container')
       initCloseSearchFriendButton()
     }
   )
@@ -73,7 +62,7 @@ export function initCloseSearchFriendButton() {
     button,
     'click',
     async () => {
-      await loadToFriendsContainer('friend_list_panel.html')
+      await loadContentToTarget('menu/friend_list_panel.html', 'friends-container')
       initAddFriendButton()
     }
   )
