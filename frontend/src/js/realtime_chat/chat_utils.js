@@ -18,7 +18,9 @@ sendMessageButton.onclick = function () {
   chatSocket.send(JSON.stringify({
     "message": chatInput.value,
   }));
-  // addMessage(data.user, avatarUrl, data.message, datetime)
+  const currentTime = new Date()
+
+  addMessage('rsoo', '/static/image/kirby.png', chatInput.value, currentTime)
   chatInput.value = "";
 };
 

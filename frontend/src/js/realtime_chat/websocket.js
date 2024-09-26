@@ -21,8 +21,13 @@ function connect() {
 
     switch (data.type) {
       case "chat_message":
-        // chatLog.value += data.message + "\n";
-        // addMessage(data.user, avatarUrl, data.message, datetime)
+        addMessage(data.user, '/static/images/kirby.png', data.message, data.datetime)
+        break;
+      case "private_message":
+        addMessage(data.user, '/static/images/kirby.png', data.message, data.datetime)
+        break;
+      case "private_message_delivered":
+        addMessage(data.user, '/static/images/kirby.png', data.message, data.datetime)
         break;
       default:
         console.error("Unknown message type!");
