@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, get_user_model
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
 import json
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -65,28 +64,36 @@ def forgot_password_view(request):
         return JsonResponse({"success": False, "error": "Invalid email"}, status=400)
     return JsonResponse({"success": False, "error": "Invalid method"}, status=405)
 
-@login_required
-@require_http_methods(["POST"])
-def update_profile(request):
-    data = json.loads(request.body)
-    new_username = data.get('username')
-    
-    if new_username:
-        if User.objects.filter(username=new_username).exists():
-            return JsonResponse({'success': False, 'error': 'Username already taken'}, status=400)
-        
-        request.user.username = new_username
-        request.user.save()
-        return JsonResponse({'success': True})
-    else:
-        return JsonResponse({'success': False, 'error': 'Username is required'}, status=400)
+@csrf_exempt
+def update_username(request):
+	# print("Request received~~~~~~~~~~~~", flush=True)
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		old_username = data.get('old_username')
+		new_username = data.get('new_username')
+		
+		try:
+			user = User.objects.get(username=old_username)
+		except User.DoesNotExist:
+			return JsonResponse({'error': 'User does not exist'}, status=400)
+		
+		if User.objects.filter(username=new_username).exists():
+			return JsonResponse({'error': 'Username already exists'}, status=400)
+		
+		user.username = new_username
+		user.save()
+		return JsonResponse({'message': 'Username updated successfully'})
+	else:
+		return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
-@require_http_methods(["POST"])
 def logout_view(request):
-	logout(request) 
-     # Django's built-in logout function - removes authenticated user from session, flushes session data, deletes session cookie
-	return JsonResponse({'success': True})
+	if request.method == 'POST':
+		logout(request)
+	# Django's built-in logout function - removes authenticated user from session, flushes session data, deletes session cookie
+		return JsonResponse({'message': 'Logged out successfully'})
+	else:
+		return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 # def hello_world(request):
 #     return JsonResponse({'message': 'Hello, world!'})

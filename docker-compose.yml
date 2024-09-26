@@ -4,8 +4,8 @@ services:
     networks:
       - django_net
       - redis_net
-      - db_net
-    # volumes:
+    volumes:
+      - django_statics:/app/static
     env_file:
       - .env
     depends_on:
@@ -25,8 +25,30 @@ services:
   postgresql:
     image: postgres:16-alpine
     networks:
-      - db_net
-    # volumes:
+      - django_net
+    expose:
+      - 5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    env_file:
+      - .env
+    restart: unless-stopped
+ 
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - postgresql
+    networks:
+      - django_net
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL} 
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     env_file:
       - .env
     restart: unless-stopped
@@ -40,16 +62,18 @@ services:
     depends_on:
       - django
     volumes:
-      - ./frontend:/var/www/html
+      - ./frontend:/var/www/html/
+      - django_statics:/var/www/django
       - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
     env_file:
       - .env
     restart: unless-stopped
 
 volumes:
+  django_statics:
   data:
+  postgres-data:
 
 networks:
   django_net:
   redis_net:
-  db_net:

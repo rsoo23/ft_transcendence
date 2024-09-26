@@ -1,8 +1,15 @@
 
-export async function getRequest(url) {
+export async function getRequest(url, outputType = 'json') {
   const response = await fetch(url);
-  const data = await response.json();
+  let data
 
+  if (outputType === 'text') {
+    data = await response.text()
+  } else if (outputType === 'json') {
+    data = await response.json();
+  } else {
+    throw new Error('Invalid outputType. Please use "json" or "text".');
+  }
   console.log(data);
   return data
 }
