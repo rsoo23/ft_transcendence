@@ -82,10 +82,9 @@ class ChatConsumer(WebsocketConsumer):
 
     def chat_message(self, event):
         self.send(text_data=json.dumps(event))
-       await self.send(text_data=json.dumps({"message": message}))
 
     def private_message(self, event):
-    self.send(text_data=json.dumps(event))
+        self.send(text_data=json.dumps(event))
 
     def private_message_delivered(self, event):
         self.send(text_data=json.dumps(event))
