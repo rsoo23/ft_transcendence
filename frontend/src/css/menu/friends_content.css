@@ -373,3 +373,21 @@
   justify-content: space-between;
   min-width: 10rem;
 }
+
+#send-message-button {
+  background-color: transparent;
+}
+
+#friends-content-container > .content {
+  width: auto;
+  height: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.chat-demo {
+  height: 20rem;
+  width: auto;
+}
