@@ -11,6 +11,7 @@ from .forms import CustomUserCreationForm
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
+from .serializers import UserAvatarImageSerializer
 
 User = get_user_model()
 
@@ -132,3 +133,14 @@ def update_password(request):
 	else:
 		return JsonResponse({'error': 'Invalid request method'}, status=405)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upload_avatar_image(request):
+    user = request.user
+    serializer = UserAvatarImageSerializer(user, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"message": "Profile image updated successfully"}, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
