@@ -5,14 +5,14 @@ import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.j
 import { loadToFriendsContainer, initAddFriendButton } from "./friends_content.js"
 import { handleLogin, handleForgotPassword } from "./login_panel.js";
 import { handleSignup, initEnable2FAButton } from "./signup_panel.js"
-import { changeAvatar, initFileInput, setDefaultAvatar } from "./user_profile_panel.js";
+import { changeAvatar, initFileInput, setDefaultAvatar } from "./avatar_upload_panel.js";
 import { getRequest } from "./network_utils/api_requests.js";
 
 const routes = {
   '/start': 'start_panel.html',
   '/login': 'login_panel.html',
   '/signup': 'signup_panel.html',
-  '/user_profile': 'user_profile_panel.html',
+  '/avatar_upload': 'avatar_upload_panel.html',
   '/2fa': '2FA_panel.html',
   '/main_menu': 'menu/main_menu_panel.html',
   '/menu/play': 'menu/play_content.html',
@@ -136,7 +136,7 @@ async function loadDynamicContent(contentName) {
         const result = await handleSignup()
 
         if (result === 'success') {
-          loadPage('user_profile')
+          loadPage('avatar_upload')
         }
       }
     )
@@ -155,7 +155,7 @@ async function loadDynamicContent(contentName) {
       }
     )
 
-  } else if (contentName === 'user_profile') {
+  } else if (contentName === 'avatar_upload') {
 
     initBackButton(() => loadPage('signup'))
     initFileInput()
