@@ -8,5 +8,5 @@ urlpatterns = [
 	path('update-username/', views.update_username, name='update_username'),
 	path('logout/', views.logout_view, name='logout'),
 	path('update-password/', views.update_password, name='update_password'),
-    path('update-avatar-image/', views.update_avatar_image, name='update_avatar_image')
+    path('upload-avatar-image/', views.upload_avatar_image, name='upload_avatar_image')
 ]
