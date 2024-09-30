@@ -157,7 +157,6 @@ async function loadDynamicContent(contentName) {
 
   } else if (contentName === 'avatar_upload') {
 
-    initBackButton(() => loadPage('signup'))
     initFileInput()
     initRandomColorButton(
       'use-default-avatar-button',
