@@ -132,3 +132,14 @@ def update_password(request):
 	else:
 		return JsonResponse({'error': 'Invalid request method'}, status=405)
 
+@csrf_exempt
+def email_exist(request):
+    if request.method == 'PUT':
+        data = json.loads(request.body)
+        email = data.get('email')
+        if get_user_model().objects.filter(email=email).exists():
+            return JsonResponse({'success' : True, 'Status' : 'User with email: ' + email + 'is found'}, status=200)
+        else :
+            return JsonResponse({'success' : False, 'Status' : 'NO user with email: {' + email + '} is found'},status=401)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
