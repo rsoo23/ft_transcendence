@@ -1,4 +1,7 @@
 import { MAX_AVATAR_FILE_SIZE } from "./constants.js"
+import { postRequest } from "./network_utils/api_requests.js"
+
+let imageToUpload
 
 export function setDefaultAvatar() {
   const avatar = document.querySelector('#user-profile-panel .avatar')
@@ -30,5 +33,21 @@ export function initFileInput() {
       avatar.src = imgUrl
     }
     reader.readAsDataURL(image)
+    imageToUpload = image
   })
+}
+
+export async function uploadAvatarImage() {
+  try {
+    const response = await postRequest('/upload-avatar-image/', { 'avatar-img': imageToUpload })
+
+    if (response.ok) {
+      return 'success'
+    } else {
+      alert('Error uploading image to server')
+      return 'failure'
+    }
+  } catch (error) {
+    console.error('Error uploading image: ', error)
+  }
 }
