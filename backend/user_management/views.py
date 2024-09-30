@@ -12,6 +12,8 @@ from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from .serializers import UserAvatarImageSerializer
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 User = get_user_model()
 
@@ -134,7 +136,6 @@ def update_password(request):
 		return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def upload_avatar_image(request):
     user = request.user
     serializer = UserAvatarImageSerializer(user, data=request.data, partial=True)
