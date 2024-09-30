@@ -5,7 +5,7 @@ import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.j
 import { loadToFriendsContainer, initAddFriendButton } from "./friends_content.js"
 import { handleLogin, handleForgotPassword } from "./login_panel.js";
 import { handleSignup, initEnable2FAButton } from "./signup_panel.js"
-import { changeAvatar, initFileInput, setDefaultAvatar } from "./avatar_upload_panel.js";
+import { changeAvatar, initFileInput, setDefaultAvatar, uploadAvatarImage } from "./avatar_upload_panel.js";
 import { getRequest } from "./network_utils/api_requests.js";
 
 const routes = {
@@ -174,11 +174,15 @@ async function loadDynamicContent(contentName) {
       }
     )
     initRandomColorButton(
-      'confirm-user-profile-button',
-      'user-profile-panel',
-      () => {
-        loadPage('main_menu')
-        loadMainMenuContent('play')
+      'confirm-avatar-upload-button',
+      'avatar-upload-panel',
+      async () => {
+        const result = await uploadAvatarImage()
+
+        if (result === 'success') {
+          loadPage('main_menu')
+          loadMainMenuContent('play')
+        }
       }
     )
 
