@@ -101,12 +101,12 @@ async function status_2FA() {
     return false
 }
 
-// async function handleForgotPassword() {
+// export async function handleForgotPassword() {
 //   const email = document.getElementById('email').value;
-//
+
 //   try {
 //     const response = await postRequest('/api/forgot-password/', { email })
-//
+
 //     if (response.success) {
 //       alert('If an account exists with this email, password reset instructions have been sent.');
 //       location.reload(); // Reload to show login form

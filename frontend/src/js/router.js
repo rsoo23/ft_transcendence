@@ -9,6 +9,7 @@ import { changeAvatar, initFileInput, setDefaultAvatar } from "./user_profile_pa
 import { handle2FA, initResendCodeButton } from "./2FA_panel.js";
 import { send_otp_2FA } from "./network_utils/2FA_utils.js";
 import { getRequest } from "./network_utils/api_requests.js";
+import { check_email } from "./forgot_password.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -22,7 +23,8 @@ const routes = {
   '/menu/stats': 'menu/stats_content.html',
   '/menu/friends': 'menu/friends_content.html',
   '/menu/how-to-play': 'menu/how_to_play_content.html',
-  '/menu/settings': 'menu/settings_content.html'
+  '/menu/settings': 'menu/settings_content.html',
+  '/forgot_password' : 'forgot_password.html'
 }
 
 // manages back and forth history
@@ -124,7 +126,7 @@ async function loadDynamicContent(contentName) {
     initTogglePasswordVisibilityIcon()
     initLink(
       'forgot-password-link',
-      () => handleForgotPassword()
+      () => loadPage('forgot_password')
     )
 
   } else if (contentName === 'signup') {
@@ -213,6 +215,22 @@ async function loadDynamicContent(contentName) {
       'enable-2fa-button',
       'settings-container',
       () => loadPage('2fa_enable')
+    )
+
+  } else if (contentName === 'forgot_password') {
+    console.log('here')
+    initBackButton(() => loadPage('login'))
+    initRandomColorButton(
+      'submit-2fa-button',
+      'two-fa-panel',
+      async () => {
+        const result = await check_email()
+
+        if (result === 'error') {
+          return
+        }
+        loadPage('login')
+      }
     )
 
   }
