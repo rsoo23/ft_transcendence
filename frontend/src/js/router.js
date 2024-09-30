@@ -24,7 +24,8 @@ const routes = {
   '/menu/friends': 'menu/friends_content.html',
   '/menu/how-to-play': 'menu/how_to_play_content.html',
   '/menu/settings': 'menu/settings_content.html',
-  '/forgot_password' : 'forgot_password.html'
+  '/forgot_password/get_email' : 'forgot_password.html',
+  '/forgot_password/verify_code' : 'forgot_password.html'
 }
 
 // manages back and forth history
@@ -217,7 +218,7 @@ async function loadDynamicContent(contentName) {
       () => loadPage('2fa_enable')
     )
 
-  } else if (contentName === 'forgot_password') {
+  } else if (contentName === 'forgot_password/get_email') {
     console.log('here')
     initBackButton(() => loadPage('login'))
     initRandomColorButton(
@@ -229,7 +230,7 @@ async function loadDynamicContent(contentName) {
         if (result === 'error') {
           return
         }
-        loadPage('login')
+        loadPage('forgot_password/verify_code')
       }
     )
 
