@@ -160,14 +160,14 @@ async function loadDynamicContent(contentName) {
     initFileInput()
     initRandomColorButton(
       'use-default-avatar-button',
-      'user-profile-panel',
+      'avatar-upload-panel',
       () => {
         setDefaultAvatar()
       }
     )
     initRandomColorButton(
       'change-avatar-button',
-      'user-profile-panel',
+      'avatar-upload-panel',
       () => {
         changeAvatar()
       }
