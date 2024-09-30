@@ -4,21 +4,21 @@ import { postRequest } from "./network_utils/api_requests.js"
 let imageToUpload
 
 export function setDefaultAvatar() {
-  const avatar = document.querySelector('#user-profile-panel .avatar')
+  const avatar = document.querySelector('#avatar-upload-panel .avatar')
 
   avatar.src = '/static/images/kirby.png'
 }
 
 export async function changeAvatar() {
-  const avatar = document.querySelector('#user-profile-panel .avatar')
-  const imgUploadInput = document.querySelector('#user-profile-panel .img-upload-input')
+  const avatar = document.querySelector('#avatar-upload-panel .avatar')
+  const imgUploadInput = document.querySelector('#avatar-upload-panel .img-upload-input')
 
   imgUploadInput.click()
 }
 
 export function initFileInput() {
-  const imgUploadInput = document.querySelector('#user-profile-panel .img-upload-input')
-  const avatar = document.querySelector('#user-profile-panel .avatar')
+  const imgUploadInput = document.querySelector('#avatar-upload-panel .img-upload-input')
+  const avatar = document.querySelector('#avatar-upload-panel .avatar')
 
   imgUploadInput.addEventListener('change', function () {
     const image = this.files[0]
