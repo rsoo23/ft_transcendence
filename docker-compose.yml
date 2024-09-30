@@ -37,21 +37,6 @@ services:
     env_file:
       - .env
     restart: unless-stopped
- 
-  pgadmin:
-    image: dpage/pgadmin4
-    depends_on:
-      - postgresql
-    networks:
-      - django_net
-    ports:
-      - "5050:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL} 
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-    env_file:
-      - .env
-    restart: unless-stopped
 
   nginx:
     image: nginx:1.27.0-alpine
