@@ -11,6 +11,13 @@ from .forms import CustomUserCreationForm
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
+from rest_framework import viewsets
+from .models import CustomUser
+from .serializers import CustomUserSerializer
+
+def CustomUserViewSet(viewsets.ModelViewSet):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
 
 User = get_user_model()
 
