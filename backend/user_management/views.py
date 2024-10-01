@@ -15,6 +15,13 @@ from rest_framework import viewsets
 from .models import CustomUser
 from .serializers import CustomUserSerializer
 
+# CustomUserViewSet:
+# list()        for listing all users (GET /users/)
+# retrieve()    for getting a single user (GET /users/<id>/)
+# create()      for adding a new user (POST /users/)
+# update()      partial_update() for updating users (PUT/PATCH /users/<id>/)
+# destroy()     for deleting a user (DELETE /users/<id>/)
+
 def CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
