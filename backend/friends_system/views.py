@@ -29,11 +29,11 @@ def send_friend_request(request):
 
                 except Exception as e:
                     payload['response'] = str(e)
-        except FriendRequest.DoesNotExist:
-            # there are no friend requests found: create one
-            friend_request = FriendRequest(sender=user, receiver=receiver)
-            friend_request.save()
-            payload['response'] = 'Friend request sent.'
+            except FriendRequest.DoesNotExist:
+                # there are no friend requests found: create one
+                friend_request = FriendRequest(sender=user, receiver=receiver)
+                friend_request.save()
+                payload['response'] = 'Friend request sent.'
         else:
             payload['response'] = 'Unable to send a friend request.'
     else:

@@ -48,7 +48,7 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000'] # TODO
 # Application definition
 
 INSTALLED_APPS = [
-    'realtime_chat.apps.RealtimeChatConfig',
+    'realtime_chat',
     'daphne',
     'rest_framework',
     'rest_framework_simplejwt',
@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 	'user_management',
     'token_management',
+    'friends_system',
     'channels',
 ]
 

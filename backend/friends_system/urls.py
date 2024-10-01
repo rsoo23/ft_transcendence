@@ -1,9 +1,9 @@
 from django.urls import path
-from friend.views import (
+from .views import (
     send_friend_request,
 )
 
-app_name = 'friend_system'
+app_name = 'friends_system'
 
 urlpatterns = [
     path('friend_request/', send_friend_request, name='friend-request'),

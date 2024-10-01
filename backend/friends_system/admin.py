@@ -1,5 +1,5 @@
 from django.contrib import admin
-from friend.models import FriendRequest, FriendList
+from .models import FriendRequest, FriendList
 
 class FriendListAdmin(admin.ModelAdmin):
     list_filter = ['user']

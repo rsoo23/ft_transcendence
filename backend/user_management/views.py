@@ -22,7 +22,7 @@ from .serializers import CustomUserSerializer
 # update()      partial_update() for updating users (PUT/PATCH /users/<id>/)
 # destroy()     for deleting a user (DELETE /users/<id>/)
 
-def CustomUserViewSet(viewsets.ModelViewSet):
+class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
 
