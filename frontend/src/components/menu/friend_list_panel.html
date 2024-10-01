@@ -5,7 +5,7 @@
   </button>
 </div>
 <div class='scrollable-container'>
-  <div class='friends-section'>
+  <div class='friends-section added'>
     <div class='friend-state'>Added</div>
     <div class="friend-record">
       <div class='avatar-section'>
@@ -146,7 +146,7 @@
       </div>
     </div>
   </div>
-  <div class='friends-section'>
+  <div class='friends-section pending'>
     <div class='friend-state'>Pending</div>
       <div class="friend-record">
         <div class='avatar-section'>
@@ -164,23 +164,23 @@
         </div>
       </div>
     </div>
-    <div class='friends-section'>
-      <div class='friend-state'>Blocked</div>
-      <div class="friend-record">
-        <div class='avatar-section'>
-          <div class='avatar-container'>
-            <img src='/static/images/kirby.png' alt='avatar' class='avatar'>
-            <div class='status-badge'></div>
-          </div>
-          <div class='avatar-name'>player 1</div>
+  <div class='friends-section blocked'>
+    <div class='friend-state'>Blocked</div>
+    <div class="friend-record">
+      <div class='avatar-section'>
+        <div class='avatar-container'>
+          <img src='/static/images/kirby.png' alt='avatar' class='avatar'>
+          <div class='status-badge'></div>
         </div>
-        <div class='icons-section'>
-          <i id='unblock-icon' class='material-icons icon-with-tooltip'>
-            lock_reset
-            <div id='unblock-tooltip' class='icon-tooltip'>Unblock</div>
-          </i>
-        </div>
+        <div class='avatar-name'>player 1</div>
+      </div>
+      <div class='icons-section'>
+        <i id='unblock-icon' class='material-icons icon-with-tooltip'>
+          lock_reset
+          <div id='unblock-tooltip' class='icon-tooltip'>Unblock</div>
+        </i>
       </div>
     </div>
   </div>
+</div>
 
