@@ -1,7 +1,9 @@
-import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
-import { getColor } from "./ui_utils/color_utils.js";
-import { getRequest, putRequest} from "./network_utils/api_requests.js";
-import { getEmailToken } from "./network_utils/token_utils.js";
+import { resetInputField, setInputFieldHint } from "../ui_utils/input_field_utils.js";
+import { getColor } from "../ui_utils/color_utils.js";
+import { putRequest} from "../network_utils/api_requests.js";
+import { getEmailToken } from "../network_utils/token_utils.js";
+import { send_otp_forgot_password } from "../network_utils/2FA_utils.js";
+
 export async function check_email() {
     const inputContainers = {
       'email': document.getElementById('forgot-password-email-input-container')
@@ -20,7 +22,8 @@ export async function check_email() {
   
       if (response.success) {
         alert('email exists !')
-        getEmailToken(info)
+        await getEmailToken(info)
+        send_otp_forgot_password()
         return 'success'
       } else {
         alert('email does not exists !')

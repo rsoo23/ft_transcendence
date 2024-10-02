@@ -9,7 +9,9 @@ import { changeAvatar, initFileInput, setDefaultAvatar } from "./user_profile_pa
 import { handle2FA, initResendCodeButton } from "./2FA_panel.js";
 import { send_otp_2FA } from "./network_utils/2FA_utils.js";
 import { getRequest } from "./network_utils/api_requests.js";
-import { check_email } from "./forgot_password.js";
+import { check_email } from "./forgot_password/get_email.js";
+import { verify_code } from "./forgot_password/verify_code.js";
+import { handle_change_password } from "./forgot_password/change_password.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -24,8 +26,9 @@ const routes = {
   '/menu/friends': 'menu/friends_content.html',
   '/menu/how-to-play': 'menu/how_to_play_content.html',
   '/menu/settings': 'menu/settings_content.html',
-  '/forgot_password/get_email' : 'forgot_password.html',
-  '/forgot_password/verify_code' : 'forgot_password.html'
+  '/forgot_password/get_email' : 'forgot_password/get_email.html',
+  '/forgot_password/verify_code' : 'forgot_password/verify_code.html',
+  '/forgot_password/change_password' : 'forgot_password/change_password.html'
 }
 
 // manages back and forth history
@@ -127,7 +130,7 @@ async function loadDynamicContent(contentName) {
     initTogglePasswordVisibilityIcon()
     initLink(
       'forgot-password-link',
-      () => loadPage('forgot_password')
+      () => loadPage('forgot_password/get_email')
     )
 
   } else if (contentName === 'signup') {
@@ -219,10 +222,9 @@ async function loadDynamicContent(contentName) {
     )
 
   } else if (contentName === 'forgot_password/get_email') {
-    console.log('here')
     initBackButton(() => loadPage('login'))
     initRandomColorButton(
-      'submit-2fa-button',
+      'submit-email-button',
       'two-fa-panel',
       async () => {
         const result = await check_email()
@@ -233,7 +235,35 @@ async function loadDynamicContent(contentName) {
         loadPage('forgot_password/verify_code')
       }
     )
+  } else if (contentName === 'forgot_password/verify_code') {
+    initBackButton(() => loadPage('forgot_password/get_email'))
+    initRandomColorButton(
+      'submit-code-button',
+      'two-fa-panel',
+      async () => {
+        const result = await verify_code()
 
+        if (result === 'error') {
+          return
+        }
+        loadPage('forgot_password/change_password')
+      }
+    )
+  } else if (contentName === 'forgot_password/change_password') {
+    initBackButton(() => loadPage('forgot_password/verify_code'))
+    initTogglePasswordVisibilityIcon()
+    initRandomColorButton(
+      'confirm-signup-button',
+      'signup-panel',
+      async () => {
+        const result = await handle_change_password()
+
+        if (result === 'error') {
+          return
+        }
+        loadPage('login')
+      }
+    )
   }
 }
 

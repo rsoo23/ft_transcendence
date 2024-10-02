@@ -15,3 +15,18 @@ export async function send_otp_2FA() {
       alert('An error occurred. Please try again.');
     }
   }
+
+  export async function send_otp_forgot_password() {
+    try {
+      const response = await postRequest('/api/send_otp_forgot_password/')
+  
+      if (response.success) {
+        alert('Change password code sent to ur email');
+      } else {
+        alert('An error occurred. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred. Please try again.');
+    }
+  }
