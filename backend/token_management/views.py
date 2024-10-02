@@ -1,10 +1,12 @@
 import jwt
-from django.http import HttpResponse
 import json
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+
 from main.settings import JWT_SECRET_KEY
+
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
+
+from django.http import JsonResponse
 
 @csrf_exempt
 def create_token(request):
