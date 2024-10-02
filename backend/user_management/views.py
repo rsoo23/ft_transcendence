@@ -1,16 +1,17 @@
-from django.contrib.auth.forms import UserCreationForm, PasswordResetForm, AuthenticationForm
-from django.contrib.auth import authenticate, login, get_user_model, logout
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, get_user_model
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 import json
-from django.conf import settings
-from django.contrib.auth import get_user_model
+import jwt
+import pyotp
+
+from main.settings import JWT_SECRET_KEY
+
+from django.contrib.auth import authenticate, login, get_user_model, logout
+from django.views.decorators.csrf import csrf_exempt
+from user_management.emails import send_email
+
+from django.http import JsonResponse
 from .forms import CustomUserCreationForm
-from django.contrib.auth.hashers import check_password
-from django.core.exceptions import ValidationError
-from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.forms import SetPasswordForm
+
 
 User = get_user_model()
 
@@ -49,22 +50,6 @@ def register_view(request):
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
-def forgot_password_view(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        form = PasswordResetForm(data)
-        if form.is_valid():
-            form.save(
-                request=request,
-                use_https=request.is_secure(), 
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                email_template_name='registration/password_reset_email.html'
-            )
-            return JsonResponse({"success": True})
-        return JsonResponse({"success": False, "error": "Invalid email"}, status=400)
-    return JsonResponse({"success": False, "error": "Invalid method"}, status=405)
-
-@csrf_exempt
 def update_username(request):
 	# print("Request received~~~~~~~~~~~~", flush=True)
 	if request.method == 'POST':
@@ -95,43 +80,6 @@ def logout_view(request):
 	else:
 		return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-# def hello_world(request):
-#     return JsonResponse({'message': 'Hello, world!'})
-
-@csrf_exempt
-def update_password(request):
-	if request.method == 'POST':
-		data = json.loads(request.body)
-		old_password = data.get('old_password')
-		new_password = data.get('new_password')
-		email = data.get('email')
-
-		try:
-			user = User.objects.get(email=email)
-		except User.DoesNotExist:
-			return JsonResponse({'error': 'User does not exist'}, status=400)
-
-		# Django's built-in check_password function
-        # old_password is the password entered by the user
-        # user.password is the hashed password stored in the database
-		if check_password(old_password, user.password):
-			# Django's built-in validate_password function
-			try:
-				validate_password(new_password, user=user) #user=user to check if password is similar user attributes like username and email
-			except ValidationError as e:
-				return JsonResponse({'error': list(e.messages)}, status=400)
-			user.set_password(new_password)
-			user.save()
-			return JsonResponse({'message': 'Password updated successfully'})
-		else:
-			return JsonResponse({'error': 'Incorrect old password'}, status=400)
-
-		# print(user)
-		# print(user.password)
-		# return JsonResponse({'old_password is ': old_password, 'new_password is ': new_password, 'email is ': email})
-	else:
-		return JsonResponse({'error': 'Invalid request method'}, status=405)
-
 @csrf_exempt
 def email_exist(request):
     if request.method == 'PUT':
@@ -141,5 +89,65 @@ def email_exist(request):
             return JsonResponse({'success' : True, 'Status' : 'User with email: ' + email + 'is found'}, status=200)
         else :
             return JsonResponse({'success' : False, 'Status' : 'NO user with email: {' + email + '} is found'},status=401)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def verify_change_password_code(request):
+    if request.method == 'PUT':
+        data = json.loads(request.body)
+        code = data.get('code')
+        if 'Email_Token' in request.COOKIES :
+            decoded_token = jwt.decode(request.COOKIES['Email_Token'], JWT_SECRET_KEY, algorithms="HS256")
+        else :
+            return JsonResponse({'success' : False, 'Error': 'Email_Token Not Found'}, status=401)
+        email = decoded_token['email']
+        User = get_user_model().objects.get(email=email)
+        totp = pyotp.TOTP(User.base32_secret)
+        if totp.verify(code):
+            return JsonResponse({'success' : True, 'Status' : 'Forgot password Code Verified'}, status=200)
+        else:
+            return JsonResponse({'success' : False, 'Status' : f'Forgot password code is Wrong'},status=401)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def send_otp_forgot_password(request):
+    if request.method == 'POST':
+        if 'Email_Token' in request.COOKIES :
+            decoded_token = jwt.decode(request.COOKIES['Email_Token'], JWT_SECRET_KEY, algorithms="HS256")
+        else :
+            return JsonResponse({'success' : False, 'Error': 'Email_Token Not Found'}, status=401)
+        email = decoded_token['email']
+        User = get_user_model().objects.get(email=email)
+        if not User.base32_secret:
+            secret = pyotp.random_base32()
+            User.base32_secret = secret
+            User.save()
+            totp = pyotp.TOTP(User.base32_secret)
+            otp = totp.now()
+        else:
+            totp = pyotp.TOTP(User.base32_secret) 
+            otp = totp.now()
+        send_email(email, otp)
+        return JsonResponse({'success' : True, 'Status' : 'Change password Token sent to :' + email})
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def change_password_view(request):
+    if request.method == 'POST':
+        if 'Email_Token' in request.COOKIES :
+            decoded_token = jwt.decode(request.COOKIES['Email_Token'], JWT_SECRET_KEY, algorithms="HS256")
+        else :
+            return JsonResponse({'success' : False, 'Error': 'Email_Token Not Found'}, status=401)
+        email = decoded_token['email']
+        user = get_user_model().objects.get(email=email)
+        data = json.loads(request.body)
+        form = SetPasswordForm(data=data, user=user)
+        if form.is_valid():
+            form.save()
+            response = JsonResponse({'success': True, 'message': 'Password Changed !'})
+            response.delete_cookie('Email_Token')
+            return response
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
