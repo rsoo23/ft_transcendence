@@ -1,13 +1,14 @@
-from django.http import HttpResponse
+import pyotp
 import json
-from django.http import JsonResponse
+import jwt
+
+from main.settings import JWT_SECRET_KEY
+
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
-from main.settings import JWT_SECRET_KEY
 from two_factor_auth.emails import send_email
-import pyotp
 from django.contrib.auth import get_user_model
-import jwt
+from django.http import JsonResponse
 
 @csrf_exempt
 def send_otp_2FA(request):
