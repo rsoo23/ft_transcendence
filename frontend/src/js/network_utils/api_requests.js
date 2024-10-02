@@ -10,7 +10,7 @@ export async function getRequest(url, outputType = 'json') {
   } else {
     throw new Error('Invalid outputType. Please use "json" or "text".');
   }
-  console.log(data);
+  // console.log(data);
   return data
 }
 
@@ -24,7 +24,7 @@ export async function postRequest(url, data) {
   });
   const responseData = await response.json();
 
-  console.log(responseData);
+  // console.log(responseData);
   return responseData
 }
 
@@ -38,7 +38,7 @@ export async function putRequest(url, data) {
   });
   const responseData = await response.json();
 
-  console.log(responseData);
+  // console.log(responseData);
   return responseData;
 }
 
@@ -51,7 +51,7 @@ export async function deleteData(url) {
   });
   const responseData = await response.json();
 
-  console.log('Deleted:', responseData);
+  // console.log('Deleted:', responseData);
   return responseData
 }
 
