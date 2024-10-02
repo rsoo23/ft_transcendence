@@ -1,6 +1,7 @@
 
 import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js"
 import { getColor } from "./ui_utils/color_utils.js"
+import { getRequest } from "./network_utils/api_requests.js"
 
 export function initAddFriendButton() {
   const button = document.getElementById('add-friend-button')
@@ -102,4 +103,19 @@ export function initCloseSearchFriendButton() {
       icon.style.color = getColor(colorName, 400)
     }
   )
+}
+
+export async function loadFriendsList() {
+  const addedList = document.querySelector('friends-section added')
+  const pendingList = document.querySelector('friends-section pending')
+  const blockedList = document.querySelector('friends-section blocked')
+
+  try {
+    const response = await getRequest('/api/users/')
+
+    console.log('hi')
+    console.log(response)
+  } catch (error) {
+    console.error('Error loading friends list: ', error)
+  }
 }
