@@ -116,13 +116,23 @@ export async function loadFriendsList() {
     const response = await getRequest('/api/users/')
 
     if (response.length === 0) {
-      // add 'No users on the game yet'
+      addListContentPlaceholderText('No users exist yet', friendSearchList)
     } else {
       response.map(friend => addFriendRecord(friend, friendSearchList))
     }
   } catch (error) {
     console.error('Error loading friends list: ', error)
   }
+}
+
+function addListContentPlaceholderText(labelText, targetList) {
+  const listContentPlaceholderText = document.createElement('p')
+  listContentPlaceholderText.className = 'list-content-placeholder-text'
+  listContentPlaceholderText.textContent = labelText
+
+  targetList.style.justifyContent = 'center'
+
+  targetList.appendChild(listContentPlaceholderText)
 }
 
 function addFriendRecord(friendInfo, targetList) {
@@ -175,6 +185,7 @@ function addFriendRecord(friendInfo, targetList) {
   friendRecord.appendChild(avatarSection);
   friendRecord.appendChild(iconsSection);
 
+  targetList.style.justifyContent = 'flex-start'
   targetList.appendChild(friendRecord)
 }
 

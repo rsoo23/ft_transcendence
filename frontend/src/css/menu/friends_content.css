@@ -135,10 +135,18 @@
 }
 
 .scrollable-container.friend-search {
+  display: flex;
+  justify-content: center;
   gap: 0.3125rem;
   padding: 1.25rem 1.25rem 1.25rem 1.25rem;
   height: 100%;
   overflow-y: scroll; 
+}
+
+.list-content-placeholder-text {
+  margin: 0;
+  text-align: center;
+  font-size: 1rem;
 }
 
 #friend-search-form > .input-field {
