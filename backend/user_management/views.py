@@ -27,7 +27,7 @@ from rest_framework.permissions import IsAuthenticated
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     # gets all users info excluding the current user
     def get_queryset(self):
@@ -35,7 +35,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         return CustomUser.objects.exclude(id=current_user.id)
 
     # gets the current user's info
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def current_user(self, request):
         user = request.user
         serializer = self.get_serializer(user)
