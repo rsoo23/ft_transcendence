@@ -190,7 +190,6 @@ async function loadDynamicContent(contentName) {
     await loadContentToTarget('menu/friend_list_panel.html', 'friends-container')
     await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
     initAddFriendButton()
-    await loadFriendsList()
 
   }
 }
