@@ -14,7 +14,9 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import viewsets
 from .models import CustomUser
 from .serializers import CustomUserSerializer
-
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 # CustomUserViewSet:
 # list()        for listing all users (GET /users/)
 # retrieve()    for getting a single user (GET /users/<id>/)
@@ -25,7 +27,19 @@ from .serializers import CustomUserSerializer
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+
+    # gets all users info excluding the current user
+    def get_queryset(self):
+        current_user = self.request.user
+        return CustomUser.objects.exclude(id=current_user.id)
+
+    # gets the current user's info
+    @action(detail=False, methods=['get'])
+    def current_user(self, request):
+        user = request.user
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
 
 User = get_user_model()
 
