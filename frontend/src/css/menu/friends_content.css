@@ -152,6 +152,7 @@
 #friend-search-form > .input-field {
   margin: 0 1.25rem 0 1.25rem;
   height: 2rem;
+  width: 88%;
   border-radius: 1rem;
   font-weight: 600;
   padding: 0.25rem 1rem 0.25rem 1rem;
