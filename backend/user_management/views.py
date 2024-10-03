@@ -25,6 +25,7 @@ from .serializers import CustomUserSerializer
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthenticated]
 
 User = get_user_model()
 
