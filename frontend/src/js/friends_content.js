@@ -117,11 +117,13 @@ export async function loadFriendsList() {
 
     if (response.length === 0) {
       addListContentPlaceholderText('No users exist yet', friendSearchList)
-    } else {
+    } else if (response) {
       response.map(friend => addFriendRecord(friend, friendSearchList))
+    } else {
+      addListContentPlaceholderText('Error loading please try again', friendSearchList)
     }
   } catch (error) {
-    console.error('Error loading friends list: ', error)
+    console.error('Error loading friends search list: ', error)
   }
 }
 
