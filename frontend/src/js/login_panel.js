@@ -2,7 +2,7 @@
 import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
 import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
 import { loadMainMenuPanel } from "./main_menu_panel.js";
-import { postRequest } from "./network_utils/api_requests.js";
+import { postRequest, setAccessToken } from "./network_utils/api_requests.js";
 import { isEnable2FAButtonClicked } from "./global_vars.js";
 import { loadMainMenuContent, loadPage } from "./router.js";
 
@@ -22,9 +22,12 @@ export async function handleLogin() {
   }
 
   try {
-    const response = await postRequest('/api/login/', loginInfo)
+    // const response = await postRequest('/api/login/', loginInfo)
+    const response = await postRequest('/api/token/', loginInfo)
 
-    if (response.success) {
+    console.log(response)
+    if (response) {
+      setAccessToken(response['access'])
       // await getIdToken(loginInfo);
 
       if (isEnable2FAButtonClicked) {
