@@ -7,6 +7,9 @@ const INPUTS = {
 var socket = null;
 var matchID = null;
 var connected = false;
+var prevticktime = performance.now();
+var tickavg = Array(100);
+var tickcount = 0;
 
 async function createMatch() {
 	const player1_uuid = document.getElementById('player1').value;
@@ -30,9 +33,25 @@ function connectToWebsocket() {
 		console.log('No match ID!');
 		return;
 	}
-	socket = new WebSocket(`ws://localhost:8000/ws/pong/${matchID}`);
+	socket = new WebSocket(`ws://localhost:8000/ws/pong/${matchID}?user=${document.getElementById('user').value}`);
 	socket.addEventListener('message', (e) => {
-		console.log(e.data);
+		const currenttime = performance.now();
+		// console.log(`${currenttime} - ${prevticktime} = ${currenttime - prevticktime}`);
+		tickavg[tickcount++] = currenttime - prevticktime;
+		prevticktime = currenttime;
+		if (tickcount >= tickavg.length)
+			tickcount = 0;
+
+		if (tickcount % 10 != 0)
+			return;
+
+		var tmpsum = 0;
+		for (const t of tickavg) {
+			tmpsum += t;
+		}
+		const tmpavg = tmpsum / tickavg.length;
+		document.getElementById('debugtickrate').textContent = `tick avg = ${tmpavg}\nfps = ${1 * 1000 / tmpavg}`
+		console.log('updated');
 	});
 }
 
