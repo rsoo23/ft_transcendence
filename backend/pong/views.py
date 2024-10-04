@@ -1,20 +1,22 @@
 import jwt
 import json
+from threading import Thread
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
 from .models import PongMatch
+from .game.main import main_loop
 from main.settings import JWT_SECRET_KEY
 
 # NOTE: This should be used in a "try except" block
 # Returns CustomUser model if the request has a valid token
 # Otherwise, raise an Exception
-def get_user_from_token(request):
-    if 'ID_Token' not in request.COOKIES:
+def get_user_from_token(cookies):
+    if 'ID_Token' not in cookies:
         raise Exception('ID_Token not found')
 
-    token = request.COOKIES['ID_Token']
+    token = cookies['ID_Token']
     if token == '':
         raise Exception('Invalid token value')
 
