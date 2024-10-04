@@ -7,7 +7,7 @@ import logging
 from time import sleep
 from multiprocessing import Process
 from threading import Thread, Lock
-from .game.engine import GameLogic
+from .game import GameLogic
 import asyncio
 from datetime import datetime
 
