@@ -1,10 +1,6 @@
 from django.urls import path
-from .views import (
-    send_friend_request,
-)
-
-app_name = 'friends_system'
+from .views import SendFriendRequestView
 
 urlpatterns = [
-    path('friend_request/', send_friend_request, name='friend-request'),
+    path('send_friend_request/', SendFriendRequestView.as_view(), name='send-friend-request'),
 ]

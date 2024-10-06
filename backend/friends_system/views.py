@@ -1,41 +1,39 @@
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
 import json
 
 from user_management.models import CustomUser
-from .models import FriendRequest
+from .serializers import FriendRequestSerializer
+from .models import FriendList, FriendRequest
 
-@csrf_exempt
-def send_friend_request(request):
-    user = request.user
-    payload = {}
-    if request.method == 'POST' and user.is_authenticated:
-        user_id = request.POST.get("receiver_user_id")
-        if user_id:
-            receiver = CustomUser.objects.get(pk=user_id)
-            try:
-                # get all friend requests (active or inactive)
-                friend_requests = FriendRequest.objects.filter(sender=user, receiver=receiver)
+from rest_framework import status
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 
-                # find if any of them are active
-                try:
-                    for request in friend_requests:
-                        if request.is_active:
-                            raise Exception("You already send them a friend request.")
-                    # if none are active, then create a new friend request
-                    friend_request = FriendRequest(sender=user, receiver=receiver)
-                    friend_request.save()
-                    payload['response'] = 'Friend request sent.'
+class SendFriendRequestView(APIView):
+    permission_classes = [IsAuthenticated]
 
-                except Exception as e:
-                    payload['response'] = str(e)
-            except FriendRequest.DoesNotExist:
-                # there are no friend requests found: create one
-                friend_request = FriendRequest(sender=user, receiver=receiver)
-                friend_request.save()
-                payload['response'] = 'Friend request sent.'
-        else:
-            payload['response'] = 'Unable to send a friend request.'
-    else:
-        payload['response'] = 'You must be authenticated to send a friend request.'
-    return HttpResponse(json.dumps(payload), content_type='application/json')
+    def post(self, request):
+        sender_id = request.user.id
+        receiver_id = request.data.get("receiver_id")
+        if not receiver_id:
+            return Response({"error": "Receiver user ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            receiver = CustomUser.objects.get(pk=receiver_id)
+        except CustomUser.DoesNotExist:
+            return Response({"error": "Receiver user not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        existing_request = FriendRequest.objects.filter(sender=request.user, receiver=receiver, is_active=True).first()
+        if existing_request:
+            return Response({"error": "An active friend request already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = FriendRequestSerializer(data={
+            "sender": sender_id,
+            "receiver": receiver_id
+        })
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Friend request sent successfully."}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
