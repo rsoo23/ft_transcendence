@@ -37,3 +37,21 @@ class SendFriendRequestView(APIView):
             serializer.save()
             return Response({"message": "Friend request sent successfully."}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Get all friend requests where the current user is the sender
+class GetSentFriendRequestsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        sent_requests = FriendRequest.objects.filter(sender=request.user, is_active=True)
+        serializer = FriendRequestSerializer(sent_requests, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+# Get all friend requests where the current user is the receiver
+class GetReceivedFriendRequestsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        received_requests = FriendRequest.objects.filter(receiver=request.user, is_active=True)
+        serializer = FriendRequestSerializer(received_requests, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
