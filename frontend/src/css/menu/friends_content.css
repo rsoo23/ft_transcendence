@@ -136,9 +136,9 @@
 
 .scrollable-container.friend-search {
   display: flex;
-  justify-content: center;
+  justify-content: start;
   gap: 0.3125rem;
-  padding: 1.25rem 1.25rem 1.25rem 1.25rem;
+  padding: 1rem 1.25rem 1.25rem 1.25rem;
   height: 100%;
   overflow-y: auto; 
 }
