@@ -1,7 +1,7 @@
 import json
 
 from user_management.models import CustomUser
-from .serializers import FriendRequestSerializer
+from .serializers import FriendRequestSerializer, FriendRequestCreateSerializer
 from .models import FriendList, FriendRequest
 
 from rest_framework import status
@@ -27,7 +27,7 @@ def send_friend_request(request):
     if existing_request:
         return Response({"error": "An active friend request already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
-    serializer = FriendRequestSerializer(data={
+    serializer = FriendRequestCreateSerializer(data={
         "sender": sender_id,
         "receiver": receiver_id
     })
