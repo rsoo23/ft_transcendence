@@ -40,6 +40,12 @@
   gap: 0.3125rem;
 }
 
+.friend-records {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125rem;
+}
+
 .friend-record {
   display: flex;
   justify-content: space-between;
