@@ -178,8 +178,7 @@ async function loadDynamicContent(contentName) {
       'confirm-user-profile-button',
       'user-profile-panel',
       () => {
-        loadPage('main_menu')
-        loadMainMenuContent('play')
+        loadPage('login')
       }
     )
 
