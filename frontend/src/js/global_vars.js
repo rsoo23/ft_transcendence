@@ -47,7 +47,7 @@ export function setHotbarSelected(key, state) {
   hotbarItems[key]['isSelected'] = state
 }
 
-export const friendRecordIconInfo = {
+export let friendRecordIconInfo = {
   'added': [
     {
       'icon-id': 'challenge-icon',
