@@ -69,7 +69,7 @@ class PlayerInput():
         self.input_lock.release()
 
 class GameLogic():
-    sec_per_frame = 1 / 30
+    sec_per_frame = 1 / 60
 
     def __init__(self):
         self.started = False

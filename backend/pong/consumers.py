@@ -8,8 +8,11 @@ from time import sleep
 from multiprocessing import Process
 from threading import Thread, Lock
 from .game import GameLogic
+from .server import ServerManager
 import asyncio
 from datetime import datetime
+
+server_manager = ServerManager()
 
 class PongConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -41,22 +44,17 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         # assign groups and set up user
         await self.channel_layer.group_add(self.group_match, self.channel_name)
+        server_manager.try_create_game(self.match_id, self.group_match)
+        # server_manager.start_game(self.match_id)
 
         if self.user_id == self.match_data.player1_uuid:
+            server_manager.update_player_consumer(self.match_id, 1, self)
             print('user is host')
             await self.channel_layer.group_add(self.group_host, self.channel_name)
-            self.input_lock = Lock()
-            self.input_buffer = {'player1': '', 'player2': ''}
-            self.game_info = GameLogic()
-            self.p1_channel = self.channel_name
-            self.p2_channel = ''
-            self.game_thread = Thread(target=asyncio.run, args=(self.pong_game_loop(),))
-            self.game_thread.start()
-            # in case someone joined earlier than the host, ask all users in the group to resend join message
-            await self.channel_layer.group_send(self.group_match, {'type': 'resend_player_join'})
 
         elif self.user_id == self.match_data.player2_uuid:
-            await self.channel_layer.group_send(self.group_host, {'type': 'receive.player.join', 'id': self.user_id, 'channel_name': self.channel_name})
+            server_manager.update_player_consumer(self.match_id, 2, self)
+            await self.channel_layer.group_send(self.group_host, {'type': 'receive.player.join', 'id': self.user_id})
 
         else:
             await self.close(code=3000, reason='not implemented yet')
@@ -70,15 +68,12 @@ class PongConsumer(AsyncWebsocketConsumer):
         if not hasattr(self, 'user_id'):
             return
 
-        # handle host disconnect
-        if hasattr(self, 'match_data') and self.user_id == self.match_data.player1_uuid:
-            print(self.input_lock.locked())
-            # NOTE: this is just a temporary way to stop the thread
-            self.game_info.ended = True
-            self.game_thread.join(10)
-
         await self.channel_layer.group_send(self.group_host, {'type': 'receive.player.leave', 'id': self.user_id})
         await self.channel_layer.group_discard(self.group_match, self.channel_name)
+
+        # stop and delete the server
+        loop = asyncio.get_running_loop()
+        loop.create_task(server_manager.close_game(self.match_id))
 
     async def receive(self, text_data):
         input_data = json.loads(text_data)
@@ -92,10 +87,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         )
 
     # pongmatch handlers
-    # expects: {}
-    async def resend_player_join(self, event):
-        await self.channel_layer.group_send(self.group_host, {'type': 'receive.player.join', 'id': self.user_id, 'channel_name': self.channel_name})
-
     async def send_player_update(self, event):
         await self.send(text_data='ticked!')
 
@@ -103,15 +94,10 @@ class PongConsumer(AsyncWebsocketConsumer):
     # expects: {'id': <int>}
     async def receive_player_join(self, event):
         player_uuid = event['id']
-        # if self.user_id == self.match_data.player1_uuid:
-        if self.user_id == self.match_data.player1_uuid and player_uuid == self.match_data.player2_uuid:
-            print('hi, this is your host speaking')
-            print(f'p2 ch name is {event['channel_name']}')
-            p2_channel = event['channel_name']
 
-        # if self.user_id == self.match_data.player2_uuid:
-        #     print('hi, this is your NOT host speaking')
-        #     print(self.channel_name)
+        if self.user_id == self.match_data.player2_uuid:
+            print('hi, this is your NOT host speaking')
+            print(self.channel_name)
 
         # print(f'user with {player_uuid} joined')
 
@@ -133,16 +119,4 @@ class PongConsumer(AsyncWebsocketConsumer):
             pass
 
         print(f'got {event['id']} from {event['id']}')
-
-    # game thread loop
-    # NOTE: this shouldn't be treated as a handler
-    async def pong_game_loop(self):
-        while self.game_info.ended == False:
-            await self.channel_layer.send(self.p1_channel, {'type': 'send.player.update'})
-            if self.p2_channel != '':
-                await self.channel_layer.send(self.p2_channel, {'type': 'send.player.update'})
-            # await self.channel_layer.group_send(self.group_host, {'type': 'send.player.update'})
-            sleep(GameLogic.sec_per_frame)
-
-        # self.game_info.tick()
 
