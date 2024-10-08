@@ -6,7 +6,6 @@ export function toggle2FAButton() {
   isEnable2FAButtonClicked = !isEnable2FAButtonClicked;
 }
 
-// ui state
 export let hotbarItems = {
   'play': {
     'name': 'play',
@@ -43,3 +42,50 @@ export let hotbarItems = {
 export function setHotbarSelected(key, state) {
   hotbarItems[key]['isSelected'] = state
 }
+
+export const friendRecordIconInfo = {
+  'added': [
+    {
+      'icon-id': 'challenge-icon',
+      'icon-name': 'play_circle',
+      'tooltip-text': 'Challenge'
+    },
+    {
+      'icon-id': 'chat-icon',
+      'icon-name': 'chat',
+      'tooltip-text': 'Chat'
+    },
+    {
+      'icon-id': 'block-icon',
+      'icon-name': 'block',
+      'tooltip-text': 'Block'
+    },
+  ],
+  'blocked': [
+    {
+      'icon-id': 'unblock-icon',
+      'icon-name': 'lock_reset',
+      'tooltip-text': 'Unblock'
+    }
+  ],
+  'sent-friend-request': [
+    {
+      'icon-id': 'cancel-icon',
+      'icon-name': 'close',
+      'tooltip-text': 'Cancel'
+    },
+  ],
+  'received-friend-request': [
+    {
+      'icon-id': 'decline-icon',
+      'icon-name': 'close',
+      'tooltip-text': 'Decline'
+    },
+    {
+      'icon-id': 'accept-icon',
+      'icon-name': 'check',
+      'tooltip-text': 'Accept'
+    },
+  ],
+}
+
