@@ -11,12 +11,17 @@ from .forms import CustomUserCreationForm
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-from rest_framework import viewsets
+from django.db import transaction
 from .models import CustomUser
+from friends_system.models import FriendList
+
 from .serializers import CustomUserSerializer
+
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+
 # CustomUserViewSet:
 # list()        for listing all users (GET /users/)
 # retrieve()    for getting a single user (GET /users/<id>/)
@@ -70,8 +75,10 @@ def register_view(request):
         data = json.loads(request.body)
         form = CustomUserCreationForm(data)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
+            with transaction.atomic():
+                user = form.save()
+                FriendList.objects.create(current_user=user)
+                login(request, user)
             return JsonResponse({'success': True})
         else:
             return JsonResponse({'success': False, 'errors': form.errors}, status=400)
