@@ -48,20 +48,19 @@ def get_non_friends(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def send_friend_request(request):
-    sender_id = request.user.id
     receiver_username = request.data.get("receiver_username")
     if not receiver_username:
         return Response({"error": "Receiver username is required."}, status=status.HTTP_400_BAD_REQUEST)
 
     receiver = get_object_or_404(CustomUser, username=receiver_username)
 
-    existing_request = FriendRequest.objects.filter(sender=request.user, receiver=receiver, is_active=True).exists()
-    if existing_request:
+    existing_active_request = FriendRequest.objects.filter(sender=request.user, receiver=receiver, is_active=True).exists()
+    if existing_active_request:
         return Response({"error": "An active friend request already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
     serializer = FriendRequestCreateSerializer(data={
-        "sender": sender_id,
-        "receiver": receiver_id
+        "sender": request.user.id,
+        "receiver": receiver.id
     })
     if serializer.is_valid():
         serializer.save()
