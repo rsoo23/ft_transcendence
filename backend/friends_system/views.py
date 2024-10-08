@@ -87,7 +87,6 @@ def get_received_friend_requests(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def cancel_friend_request(request):
-    sender_id = request.user.id
     receiver_username = request.data.get("receiver_username")
     if not receiver_username:
         return Response({"error": "Receiver username is required."}, status=status.HTTP_400_BAD_REQUEST)
@@ -99,3 +98,17 @@ def cancel_friend_request(request):
     friend_request.cancel()
     return Response({"message": "Friend request cancelled successfully."}, status=status.HTTP_200_OK)
 
+# Accept friend request
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def accept_friend_request(request):
+    sender_username = request.data.get("sender_username")
+    if not sender_username:
+        return Response({"error": "Sender username is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    sender = get_object_or_404(CustomUser, username=sender_username)
+
+    friend_request = get_object_or_404(FriendRequest, sender=sender, receiver=request.user, is_active=True)
+
+    friend_request.accept()
+    return Response({"message": "Friend request accepted successfully."}, status=status.HTTP_200_OK)
