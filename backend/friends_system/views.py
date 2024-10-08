@@ -13,9 +13,6 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-import logging
-logger = logging.getLogger(__name__)
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_non_friends(request):
@@ -33,12 +30,10 @@ def get_non_friends(request):
     # gets the ids of the receivers of requests sent by current user
     sent_requests = FriendRequest.objects.filter(sender=request.user, is_active=True)
     requests_receivers = sent_requests.values_list('receiver__id', flat=True)
-    logger.info(requests_receivers)
 
     # gets the ids of the request senders to current user
     received_requests = FriendRequest.objects.filter(receiver=request.user, is_active=True)
     requests_senders = received_requests.values_list('sender__id', flat=True)
-    logger.info(requests_senders)
 
     # exclude:
     # 1. all added friends
