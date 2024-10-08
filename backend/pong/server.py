@@ -2,7 +2,7 @@ from channels.layers import get_channel_layer
 from threading import Thread, Lock
 from asgiref.sync import async_to_sync
 from .game import GameLogic
-from time import sleep
+from time import sleep, time_ns
 
 class Match():
     def __init__(self, group_match):
@@ -94,12 +94,24 @@ class ServerManager():
             pass
 
     def main_loop(self, match_id):
+        accumulator_ms = 0
+        last_time_ms = time_ns() / 1000000
         i = 0
         match_info = self.matches[match_id]
+
         while match_info['game_info'].ended == False:
-            async_to_sync(match_info['p1_consumer'].send)(text_data='ticked!')
-            async_to_sync(match_info['p2_consumer'].send)(text_data='ticked!')
-            # async_to_sync(self.channel_layer.group_send)(match_info['group_match'], {'type': 'send.player.update'})
+            current_time_ms = time_ns() / 1000000
+            delta_time = current_time_ms - last_time_ms
+            last_time_ms = current_time_ms
+            accumulator_ms += delta_time
+
+            while accumulator_ms >= GameLogic.ms_per_frame:
+                msg = f'dt={delta_time}; acc={accumulator_ms}'
+                async_to_sync(match_info['p1_consumer'].send)(text_data=msg)
+                async_to_sync(match_info['p2_consumer'].send)(text_data=msg)
+                accumulator_ms -= GameLogic.ms_per_frame
+
+            # TODO: check if we need to actually implement a more precise sleep function
             sleep(GameLogic.sec_per_frame)
             i += 1
             if i == 10000:
