@@ -49,16 +49,13 @@ def get_non_friends(request):
 @permission_classes([IsAuthenticated])
 def send_friend_request(request):
     sender_id = request.user.id
-    receiver_id = request.data.get("receiver_id")
-    if not receiver_id:
-        return Response({"error": "Receiver user ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+    receiver_username = request.data.get("receiver_username")
+    if not receiver_username:
+        return Response({"error": "Receiver username is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-    try:
-        receiver = CustomUser.objects.get(pk=receiver_id)
-    except CustomUser.DoesNotExist:
-        return Response({"error": "Receiver user not found."}, status=status.HTTP_404_NOT_FOUND)
+    receiver = get_object_or_404(CustomUser, username=receiver_username)
 
-    existing_request = FriendRequest.objects.filter(sender=request.user, receiver=receiver, is_active=True).first()
+    existing_request = FriendRequest.objects.filter(sender=request.user, receiver=receiver, is_active=True).exists()
     if existing_request:
         return Response({"error": "An active friend request already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
