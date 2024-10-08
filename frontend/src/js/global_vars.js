@@ -52,43 +52,58 @@ export const friendRecordIconInfo = {
     {
       'icon-id': 'challenge-icon',
       'icon-name': 'play_circle',
-      'tooltip-text': 'Challenge'
+      'tooltip-id': 'challenge-tooltip',
+      'tooltip-text': 'Challenge',
     },
     {
       'icon-id': 'chat-icon',
       'icon-name': 'chat',
-      'tooltip-text': 'Chat'
+      'tooltip-id': 'chat-tooltip',
+      'tooltip-text': 'Chat',
     },
     {
       'icon-id': 'block-icon',
       'icon-name': 'block',
-      'tooltip-text': 'Block'
+      'tooltip-id': 'block-tooltip',
+      'tooltip-text': 'Block',
     },
   ],
   'blocked': [
     {
       'icon-id': 'unblock-icon',
       'icon-name': 'lock_reset',
-      'tooltip-text': 'Unblock'
+      'tooltip-id': 'unblock-tooltip',
+      'tooltip-text': 'Unblock',
     }
   ],
   'sent-friend-request': [
     {
       'icon-id': 'cancel-icon',
       'icon-name': 'close',
-      'tooltip-text': 'Cancel'
+      'tooltip-id': 'cancel-tooltip',
+      'tooltip-text': 'Cancel',
     },
   ],
   'received-friend-request': [
     {
       'icon-id': 'decline-icon',
       'icon-name': 'close',
-      'tooltip-text': 'Decline'
+      'tooltip-id': 'decline-tooltip',
+      'tooltip-text': 'Decline',
     },
     {
       'icon-id': 'accept-icon',
       'icon-name': 'check',
-      'tooltip-text': 'Accept'
+      'tooltip-id': 'accept-tooltip',
+      'tooltip-text': 'Accept',
+    },
+  ],
+  'not-added': [
+    {
+      'icon-id': 'send-friend-request-icon',
+      'icon-name': 'person_add',
+      'tooltip-id': 'send-friend-request--tooltip',
+      'tooltip-text': 'Send friend request',
     },
   ],
 }
