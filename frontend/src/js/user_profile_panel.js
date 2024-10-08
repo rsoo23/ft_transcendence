@@ -1,4 +1,4 @@
-import { MAX_AVATAR_FILE_SIZE } from "./constants.js"
+import { MAX_AVATAR_FILE_SIZE } from "./global_vars.js"
 
 export function setDefaultAvatar() {
   const avatar = document.querySelector('#user-profile-panel .avatar')
