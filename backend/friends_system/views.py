@@ -1,5 +1,7 @@
 import json
 
+from django.shortcuts import get_object_or_404
+
 from user_management.models import CustomUser
 from user_management.serializers import CustomUserSerializer
 from .serializers import FriendRequestSerializer, FriendRequestCreateSerializer
@@ -89,3 +91,20 @@ def get_received_friend_requests(request):
     received_requests = FriendRequest.objects.filter(receiver=request.user, is_active=True)
     serializer = FriendRequestSerializer(received_requests, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+# Cancel friend request that current user has sent
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def cancel_friend_request(request):
+    sender_id = request.user.id
+    receiver_username = request.data.get("receiver_username")
+    if not receiver_username:
+        return Response({"error": "Receiver username is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    receiver = get_object_or_404(CustomUser, username=receiver_username)
+
+    friend_request = get_object_or_404(FriendRequest, sender=request.user, receiver=receiver, is_active=True)
+
+    friend_request.cancel()
+    return Response({"message": "Friend request cancelled successfully."}, status=status.HTTP_200_OK)
+
