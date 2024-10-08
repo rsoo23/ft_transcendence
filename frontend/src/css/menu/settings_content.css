@@ -1,7 +1,38 @@
 
-#settings-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+#user-profile-settings-container {
+	width: 21rem;
+    height: 32rem;
+    border-radius: 40px;
+    padding: 1.5rem 1rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+.avatar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+}
+
+.avatar-text {
+    font-size: 18px;
+}
+
+.icon-group {
+	display: flex;
+	align-items: center;
+}
+
+.icon {
+    font-size: 24px;
+    margin-left: 10px;
+}
+
+.edit-icon {
+    font-size: 18px;
 }
