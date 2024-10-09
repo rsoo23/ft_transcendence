@@ -14,7 +14,6 @@ export async function getRequest(url, outputType = 'json') {
   });
   let data
 
-  console.log(accessToken)
   if (outputType === 'text') {
     data = await response.text()
   } else if (outputType === 'json') {
@@ -37,7 +36,6 @@ export async function postRequest(url, data) {
   });
   const responseData = await response.json();
 
-  console.log(accessToken)
   // console.log(responseData);
   return responseData
 }
