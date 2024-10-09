@@ -23,19 +23,6 @@ class FriendList(models.Model):
         if friend in self.blocked_friends.all():
             self.blocked_friends.remove(friend)
 
-    # def unfriend(self, removee):
-    #     # remove friend from remover's friend list
-    #     self.remove_friend(removee)
-    #
-    #     # remove friend from removee's friend list
-    #     removee_friend_list = FriendList.objects.get(user=removee)
-    #     removee_friend_list.remove_friend(self.user)
-
-    # def is_friend(self, friend):
-    #     if friend in self.friends.all():
-    #         return True
-    #     return False
-
     def __str__(self):
         return self.current_user.username
 
