@@ -52,12 +52,12 @@ class FriendRequest(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def accept(self):
-        receiver_friend_list = FriendList.objects.get(user=self.receiver)
+        receiver_friend_list = FriendList.objects.get(current_user=self.receiver)
         if not receiver_friend_list:
             return
         receiver_friend_list.add_friend(self.sender)
 
-        sender_friend_list = FriendList.objects.get(user=self.sender)
+        sender_friend_list = FriendList.objects.get(current_user=self.sender)
         if not sender_friend_list:
             return
         sender_friend_list.add_friend(self.receiver)
@@ -77,7 +77,6 @@ class FriendRequest(models.Model):
         '''
         self.is_active = False
         self.save()
-
 
     def __str__(self):
         return self.sender.username
