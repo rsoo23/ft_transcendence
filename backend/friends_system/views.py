@@ -128,3 +128,31 @@ def decline_friend_request(request):
     friend_request.decline()
     return Response({"message": "Friend request declined successfully."}, status=status.HTTP_200_OK)
 
+# Block friend
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def block_friend(request):
+    blocked_username = request.data.get("blocked_username")
+    if not blocked_username:
+        return Response({"error": "Blocked username is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    current_user_friend_list = get_object_or_404(FriendList, current_user=request.user)
+    friend = get_object_or_404(CustomUser, username=blocked_username)
+
+    current_user_friend_list.block_friend(friend)
+    return Response({"message": "Friend blocked successfully."}, status=status.HTTP_200_OK)
+
+# Unblock friend
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def unblock_friend(request):
+    unblocked_username = request.data.get("unblocked_username")
+    if not unblocked_username:
+        return Response({"error": "Unblocked username is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    current_user_friend_list = get_object_or_404(FriendList, current_user=request.user)
+    friend = get_object_or_404(CustomUser, username=unblocked_username)
+
+    current_user_friend_list.unblock_friend(friend)
+    return Response({"message": "Friend unblocked successfully."}, status=status.HTTP_200_OK)
+

@@ -7,6 +7,8 @@ from .views import (
     cancel_friend_request,
     accept_friend_request,
     decline_friend_request,
+    block_friend,
+    unblock_friend,
 )
 
 urlpatterns = [
@@ -17,4 +19,6 @@ urlpatterns = [
     path('cancel_friend_request/', cancel_friend_request, name='cancel-friend-request'),
     path('accept_friend_request/', accept_friend_request, name='accept-friend-request'),
     path('decline_friend_request/', decline_friend_request, name='decline-friend-request'),
+    path('block_friend/', block_friend, name='block_friend'),
+    path('unblock_friend/', unblock_friend, name='unblock_friend'),
 ]
