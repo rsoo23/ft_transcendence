@@ -83,6 +83,28 @@ def get_received_friend_requests(request):
     serializer = FriendRequestSerializer(received_requests, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+# Get all friends in current user's friend list
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_friends(request):
+    current_user_friend_list = get_object_or_404(FriendList, current_user=current_user)
+
+    friends = current_user_friend_list.friends.all()
+
+    serializer = CustomUserSerializer(friends, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+# Get all blocked friends in current user's friend list
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_blocked_friends(request):
+    current_user_friend_list = get_object_or_404(FriendList, current_user=current_user)
+
+    blocked_friends = current_user_friend_list.blocked_friends.all()
+
+    serializer = CustomUserSerializer(blocked_friends, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
 # Cancel friend request that current user has sent
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
