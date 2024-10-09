@@ -96,7 +96,6 @@ class ServerManager():
     def main_loop(self, match_id):
         accumulator_ms = 0
         last_time_ms = time_ns() / 1000000
-        i = 0
         match_info = self.matches[match_id]
 
         while match_info['game_info'].ended == False:
@@ -113,6 +112,3 @@ class ServerManager():
 
             # TODO: check if we need to actually implement a more precise sleep function
             sleep(GameLogic.sec_per_frame)
-            i += 1
-            if i == 10000:
-                break
