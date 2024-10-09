@@ -17,13 +17,11 @@ class FriendList(models.Model):
             self.friends.remove(friend)
 
     def block_friend(self, friend):
-        self.remove_friend(friend)
         self.blocked_friends.add(friend)
 
     def unblock_friend(self, friend):
         if friend in self.blocked_friends.all():
             self.blocked_friends.remove(friend)
-        add_friend(friend)
 
     # def unfriend(self, removee):
     #     # remove friend from remover's friend list
@@ -33,10 +31,10 @@ class FriendList(models.Model):
     #     removee_friend_list = FriendList.objects.get(user=removee)
     #     removee_friend_list.remove_friend(self.user)
 
-    def is_friend(self, friend):
-        if friend in self.friends.all():
-            return True
-        return False
+    # def is_friend(self, friend):
+    #     if friend in self.friends.all():
+    #         return True
+    #     return False
 
     def __str__(self):
         return self.current_user.username
