@@ -5,11 +5,18 @@
         <span class="avatar-text">Avatar</span>
 		<div class='icon-group'>
 		<img src='/static/images/kirby.png' alt='avatar' class='avatar'>
-        <span class="icon edit-icon">✏️</span>
+        <!-- <span class="icon edit-icon">✏️</span> -->
+		<i id="edit-icon" class="material-icons">edit_square</i>
 	</div>
     </div>
 	<div class="avatar-container">
         <span class="avatar-text">Username</span>
+		<div id="login-username-input-container">
+			<input id='login-username' autocomplete="off" type="text" class="input-field" name="login-username" placeholder="Username" required>
+			<div class="text-alert-container">
+			  <div class="text-alert"></div>
+			</div>
+		  </div>
 		<div class='icon-group'>
 	</div>
     </div>
