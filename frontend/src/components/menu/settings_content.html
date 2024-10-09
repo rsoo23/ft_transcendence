@@ -1,43 +1,31 @@
+<div id="profile-settings-container">
+	<h1 class="profile-settings-title">Profile Settings</h1>
+	<div class="profile-settings-grid">
+		<span class="profile-settings-label">Avatar</span>
+		<img src="/static/images/kirby.png" alt="avatar" class="profile-settings-avatar">
+		<i class="profile-settings-icon material-icons">edit_square</i>
 
-<div id='up-settings-container'>
-	<h1>Profile Settings</h1>
-	<div class="up-avatar-container">
-        <span class="up-avatar-text">Avatar</span>
-		<div class='up-icon-group'>
-		<img src='/static/images/kirby.png' alt='avatar' class='avatar'>
-        <!-- <span class="icon edit-icon">✏️</span> -->
-		<i id="edit-icon" class="material-icons">edit_square</i>
+		<span class="profile-settings-label">Username</span>
+		<input type="text" class="profile-settings-input" value="peiyun" placeholder="Username">
+		<i class="profile-settings-icon material-icons">edit</i>
+
+		<span class="profile-settings-label">Email</span>
+		<input type="email" class="profile-settings-input" value="peiyun@gmail.com" placeholder="Email">
+		<i class="profile-settings-icon material-icons">edit</i>
+
+		<span class="profile-settings-label">Password</span>
+		<input type="password" class="profile-settings-input" value="********" placeholder="Password">
+		<i class="profile-settings-icon material-icons">visibility</i>
+
+		<span class="profile-settings-label">2FA</span>
+		<div></div>
+		<label class="profile-settings-toggle-switch">
+			<input type="checkbox" class="profile-settings-toggle-input" checked>
+			<span class="profile-settings-slider"></span>
+		</label>
 	</div>
-    </div>
-	<div class="up-avatar-container">
-        <span class="up-avatar-text">Username</span>
-		<div id="login-username-input-container">
-			<input id='login-username' autocomplete="off" type="text" class="input-field" name="login-username" placeholder="Username" required>
-			<div class="text-alert-container">
-			  <div class="text-alert"></div>
-			</div>
-		  </div>
-		<div class='up-icon-group'>
+	<div class="profile-settings-button-group">
+		<button class="profile-settings-button">Save</button>
+		<button class="profile-settings-button">Logout</button>
 	</div>
-    </div>
-	<div class="up-avatar-container">
-        <span class="up-avatar-text">Email</span>
-		<div class='up-icon-group'>
-	</div>
-    </div>
-	<div class="up-avatar-container">
-        <span class="up-avatar-text">Password</span>
-		<div class='up-icon-group'>
-	</div>
-    </div>
-	<div class="up-avatar-container">
-		<div class='up-icon-group'>
-	</div>
-    </div>
-	<div class="up-avatar-container">
-		<span class="up-avatar-text">2FA</span>
-		<div class='up-icon-group'>
-	</div>
-    </div>
 </div>
-
