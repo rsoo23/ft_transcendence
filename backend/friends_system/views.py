@@ -91,6 +91,11 @@ def get_friends(request):
 
     friends = current_user_friend_list.friends.all()
 
+    blocked_friends = current_user_friend_list.blocked_friends.all()
+
+    # exclude all blocked friends
+    friends = friends.exclude(id__in=blocked_friends)
+
     serializer = CustomUserSerializer(friends, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
