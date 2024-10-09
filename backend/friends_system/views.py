@@ -87,7 +87,7 @@ def get_received_friend_requests(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_friends(request):
-    current_user_friend_list = get_object_or_404(FriendList, current_user=current_user)
+    current_user_friend_list = get_object_or_404(FriendList, current_user=request.user)
 
     friends = current_user_friend_list.friends.all()
 
@@ -98,7 +98,7 @@ def get_friends(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_blocked_friends(request):
-    current_user_friend_list = get_object_or_404(FriendList, current_user=current_user)
+    current_user_friend_list = get_object_or_404(FriendList, current_user=request.user)
 
     blocked_friends = current_user_friend_list.blocked_friends.all()
 
