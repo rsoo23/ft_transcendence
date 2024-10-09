@@ -1,5 +1,5 @@
 
-#user-profile-settings-container {
+#up-settings-container {
 	width: 100%;
     height: 32rem;
     border-radius: 40px;
@@ -11,23 +11,23 @@
     gap: 20px;
 }
 
-.avatar-container {
+.up-avatar-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
 }
 
-.avatar-text {
+.up-avatar-text {
     font-size: 18px;
 }
 
-.icon-group {
+.up-icon-group {
 	display: flex;
 	align-items: center;
 }
 
-.icon {
+.up-icon {
     font-size: 24px;
     margin-left: 10px;
 }
