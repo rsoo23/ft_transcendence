@@ -25,7 +25,7 @@ async function createMatch() {
 	document.getElementById('matchid').value = `${matchID}`;
 }
 
-var workerUI = new Worker('./static/js/game/Worker-UI.js', {type: 'module'});
+var workerUI = new Worker('./static/js/game/worker_ui.js', {type: 'module'});
 function initRendering() {
 	const canvas = document.getElementById('pongcanvas');
 	const offscreen = canvas.transferControlToOffscreen();
