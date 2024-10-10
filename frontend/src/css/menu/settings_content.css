@@ -18,6 +18,11 @@
     align-items: center;
 }
 
+.profile-settings-grid .profile-settings-avatar-cell {
+	display: flex;
+	justify-content: center;
+}
+
 .profile-settings-label {
     font-size: 18px;
 }
@@ -46,8 +51,8 @@
 }
 
 .profile-settings-avatar {
-    width: 50px;
-    height: 50px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     object-fit: cover;
 }
