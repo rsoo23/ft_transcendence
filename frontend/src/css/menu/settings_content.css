@@ -34,6 +34,15 @@
 .profile-settings-icon {
     font-size: 24px;
     cursor: pointer;
+	transition: color 0.2s ease;
+}
+
+.profile-settings-icon:hover {
+	color: var(--magenta-500);
+}
+
+.profile-settings-icon:active {
+	color: var(--magenta-700);
 }
 
 .profile-settings-avatar {
@@ -82,7 +91,7 @@
 }
 
 .profile-settings-toggle-input:checked + .profile-settings-slider {
-    background-color: #2196F3;
+    background-color: var(--teal-500);
 }
 
 .profile-settings-toggle-input:checked + .profile-settings-slider:before {
@@ -91,7 +100,7 @@
 
 .profile-settings-button-group {
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 1rem;
     margin-top: 2rem;
 }
@@ -104,4 +113,15 @@
     color: #fff;
     font-size: 16px;
     cursor: pointer;
+	transition: background-color 0.2s ease;
+	width: 100px;
+	height: 40px;
+}
+
+.profile-settings-button:hover {
+	background-color: var(--magenta-500);
+}
+
+.profile-settings-button:active {
+	background-color: var(--magenta-700);
 }
