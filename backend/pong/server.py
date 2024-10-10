@@ -4,17 +4,6 @@ from asgiref.sync import async_to_sync
 from .game import GameLogic
 from time import sleep, time_ns
 
-class Match():
-    def __init__(self, group_match):
-        self.game_info = GameLogic()
-        self.thread = Thread(target=self.main_loop)
-        self.group_match = group_match
-        self.p1_consumer = None
-        self.p2_consumer = None
-
-    def main_loop(self):
-        pass
-
 class ServerManager():
     def __init__(self):
         # supposedly, python's dicts are hashmaps, so this shouldn't be too bad
