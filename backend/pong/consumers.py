@@ -68,6 +68,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         if not hasattr(self, 'user_id'):
             return
 
+        print(f'{self.user_id}: i am disconnecting!')
         await self.channel_layer.group_send(self.group_host, {'type': 'receive.player.leave', 'id': self.user_id})
         await self.channel_layer.group_discard(self.group_match, self.channel_name)
 

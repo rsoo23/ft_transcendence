@@ -46,18 +46,23 @@ class ServerManager():
     # TODO: add another method that actually fits the note above
     # closes
     async def close_game(self, match_id):
+        print(f'ending game with id {match_id}!')
+        if match_id not in self.matches:
+            print(f'game with id {match_id} does not exist')
+            return
+
         match_info = self.matches[match_id]
         if match_info['thread'].is_alive():
             match_info['game_info'].ended = True
             match_info['thread'].join()
 
         if match_info['p1_consumer'] != None:
-            match_info['p1_consumer'].close()
+            await match_info['p1_consumer'].close()
 
         if match_info['p2_consumer'] != None:
-            match_info['p2_consumer'].close()
+            await match_info['p2_consumer'].close()
 
-        print('game ended!')
+        print(f'game with id {match_id} ended!')
         self.matches_lock.acquire()
         self.matches.pop(match_id)
         self.matches_lock.release()
