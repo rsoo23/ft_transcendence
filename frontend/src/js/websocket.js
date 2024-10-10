@@ -25,6 +25,19 @@ async function createMatch() {
 	document.getElementById('matchid').value = `${matchID}`;
 }
 
+var workerUI = new Worker('./static/js/game/Worker-UI.js', {type: 'module'});
+function initRendering() {
+	const canvas = document.getElementById('pongcanvas');
+	const offscreen = canvas.transferControlToOffscreen();
+	workerUI.postMessage({type: 'stop'});
+	workerUI.postMessage({type: 'updateCanvas', object: offscreen}, [offscreen]);
+	workerUI.postMessage({type: 'updateWindowSize', object: [window.innerWidth, window.innerHeight]});
+	workerUI.postMessage({type: 'start'});
+
+	// bindings
+	window.addEventListener('resize', () => workerUI.postMessage({type: 'updateWindowSize', object: [window.innerWidth, window.innerHeight]}));
+}
+
 function connectToWebsocket() {
 	if (socket != undefined)
 		socket.close();
@@ -33,8 +46,10 @@ function connectToWebsocket() {
 		console.log('No match ID!');
 		return;
 	}
+	initRendering();
 	socket = new WebSocket(`ws://localhost:8000/ws/pong/${matchID}?user=${document.getElementById('user').value}`);
 	socket.addEventListener('message', (e) => {
+		console.log(e.data);
 		const currenttime = performance.now();
 		// console.log(`${currenttime} - ${prevticktime} = ${currenttime - prevticktime}`);
 		tickavg[tickcount++] = currenttime - prevticktime;
@@ -42,6 +57,7 @@ function connectToWebsocket() {
 		if (tickcount >= tickavg.length)
 			tickcount = 0;
 
+		// console.log('ticked');
 		if (tickcount % 10 != 0)
 			return;
 
@@ -51,7 +67,12 @@ function connectToWebsocket() {
 		}
 		const tmpavg = tmpsum / tickavg.length;
 		document.getElementById('debugtickrate').textContent = `tick avg = ${tmpavg}\nfps = ${1 * 1000 / tmpavg}`
-		console.log('updated');
+		console.log('updated fps');
+	});
+
+	socket.addEventListener('close', (e) => {
+		console.log('connection closed');
+		document.getElementById('debugtickrate').textContent = 'connection closed';
 	});
 }
 
