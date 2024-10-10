@@ -46,8 +46,9 @@
 .profile-settings-toggle-switch {
     position: relative;
     display: inline-block;
-    width: 60px;
-    height: 34px;
+    width: 50px;
+    height: 24px;
+	vertical-align: middle;
 }
 
 .profile-settings-toggle-switch input {
@@ -71,10 +72,10 @@
 .profile-settings-slider:before {
     position: absolute;
     content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
+    height: 18px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
     background-color: white;
     transition: .4s;
     border-radius: 50%;
