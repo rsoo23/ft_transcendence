@@ -1,6 +1,6 @@
 // Web Worker for UI stuff
 // DO NOT LOAD THIS SCRIPT DIRECTLY
-import {Pos2D, RenderInfo} from './RenderInfo.js'
+import {Pos2D, RenderInfo} from './rendering.js'
 
 // import {DebugFrameInfo} from './DebugFrameInfo.js'
 // var debugData = new DebugFrameInfo();
