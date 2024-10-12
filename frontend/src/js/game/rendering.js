@@ -14,6 +14,10 @@ export class Pos2D
 	}
 }
 
+const SIZES = {
+	'paddle': new Pos2D(7, 45),
+	'ball': new Pos2D(7, 7),
+}
 
 // The main renderer, it does all the work :]
 // name might be outdated, but it works ig
@@ -78,11 +82,13 @@ export class RenderInfo
 		this.accumulator += dT;
 		const alpha = Math.min(this.accumulator / this.gameDeltaTime, 1);
 
-		for (const objStates of this.objectsToDraw)
+		for (const objInfo of this.objectsToDraw)
 		{
+			let objStates = objInfo.states
+			// console.log(objStates)
 			// idk why, but sometimes the objstate is null
-			if (objStates == null)
-				continue;
+			// if (objStates == null)
+			// 	continue;
 
 			let prevState = objStates[0];
 			let nextState = null;
@@ -92,18 +98,18 @@ export class RenderInfo
 			for (let i = 1; i < objStates.length; i++)
 			{
 				nextState = objStates[i];
-				if (nextState.timeframe >= alpha)
+				if (nextState.alpha >= alpha)
 					break;
 
 				prevState = nextState;
-				alphaAccumulator += nextState.timeframe - totalAlpha;
-				totalAlpha += nextState.timeframe;
+				alphaAccumulator += nextState.alpha - totalAlpha;
+				totalAlpha += nextState.alpha;
 			}
 
 			if (nextState == null)
 				continue;
 
-			const relativeAlpha = (alpha - alphaAccumulator) / (nextState.timeframe - alphaAccumulator);
+			const relativeAlpha = (alpha - alphaAccumulator) / (nextState.alpha - alphaAccumulator);
 			const lerp = (x0, x1, t) => (x0 * (1 - t)) + (x1 * t);
 
 			const debugMode = false;
@@ -125,9 +131,9 @@ export class RenderInfo
 				if (alphaAccumulator > 0 && debugMode)
 				{
 					console.log('======');
-					console.log('(' + alpha + ' - ' + alphaAccumulator + ') / (' + nextState.timeframe + ' - ' + alphaAccumulator + ') = ' + relativeAlpha);
-					console.log('scale ' + (nextState.timeframe - alphaAccumulator));
-					console.log('nextstate: ' + nextState.timeframe + '\nalphaAccumulator: ' + alphaAccumulator + '\nrelativeAlpha: ' + relativeAlpha);
+					console.log('(' + alpha + ' - ' + alphaAccumulator + ') / (' + nextState.alpha + ' - ' + alphaAccumulator + ') = ' + relativeAlpha);
+					console.log('scale ' + (nextState.alpha - alphaAccumulator));
+					console.log('nextstate: ' + nextState.alpha + '\nalphaAccumulator: ' + alphaAccumulator + '\nrelativeAlpha: ' + relativeAlpha);
 					console.log(interpPos);
 					console.log(nextState.pos);
 				}
@@ -135,7 +141,9 @@ export class RenderInfo
 			else
 				interpPos = nextState.pos;
 
-			this.fillRectScaled(interpPos.x, interpPos.y, nextState.size.x, nextState.size.y);
+			// this.fillRectScaled(interpPos.x, interpPos.y, nextState.size.x, nextState.size.y);
+			const objSize = SIZES[objInfo.name];
+			this.fillRectScaled(interpPos.x, interpPos.y, objSize.x, objSize.y);
 		}
 	}
 

@@ -52,7 +52,6 @@ function renderLoop()
 // Also, ensure that the type only uses one object
 // You can use an array or anything you want, just make sure it goes into the "object" variable
 onmessage = (e) => {
-	console.log(e);
 	switch (e.data.type)
 	{
 	// Type: updateCanvas

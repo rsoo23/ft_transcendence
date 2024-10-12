@@ -2,6 +2,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from threading import Lock
 from .serializers import ObjectStateSerializer
+import copy
 import logging
 
 class Vector2():
@@ -18,8 +19,7 @@ class ObjectState():
     # possible values are 0.0 - 1.0
     def append(self, pos, alpha):
         self.states.append({
-            'x': pos.x,
-            'y': pos.y,
+            'pos': copy.copy(pos),
             'alpha': alpha,
         })
 
