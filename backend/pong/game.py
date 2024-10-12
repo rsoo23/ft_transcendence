@@ -29,7 +29,7 @@ class Paddle():
         self.pos = Vector2(x, y)
 
     def tick(self, game_info):
-        states = ObjectState()
+        states = ObjectState('paddle')
         states.append(self.pos, 0.0)
 
         # TODO: get player input somehow
@@ -44,7 +44,7 @@ class Ball():
         self.pos = Vector2(x, y)
 
     def tick(self, game_info):
-        states = ObjectState()
+        states = ObjectState('ball')
         states.append(self.pos, 0.0)
 
         # TODO: get player input somehow
@@ -56,17 +56,24 @@ class PlayerInput():
     def __init__(self):
         # data race in my code? it's more likely than you think
         self.input_lock = Lock()
-        self.inputs = {}
+        self.inputs = {
+            'up': False,
+            'down': False,
+        }
 
-    def set_input(self, type, value):
+    def set_input(self, input_type, value):
         self.input_lock.acquire()
-        # TODO: do stuff
+        if type in self.inputs and isinstance(value, type(self.inputs[input_type])):
+            self.inputs[input_type] = value
+
         self.input_lock.release()
 
-    def get_input(self, type):
+    def get_input(self, input_type):
         self.input_lock.acquire()
-        # TODO: do stuff
+        value = self.inputs[input_type]
         self.input_lock.release()
+
+        return value
 
 class GameLogic():
     sec_per_frame = 1 / 60

@@ -48,17 +48,21 @@ class PongConsumer(AsyncWebsocketConsumer):
         # server_manager.start_game(self.match_id)
 
         if self.user_id == self.match_data.player1_uuid:
-            server_manager.update_player_consumer(self.match_id, 1, self)
+            self.player_num = 1
             print('user is host')
             await self.channel_layer.group_add(self.group_host, self.channel_name)
 
         elif self.user_id == self.match_data.player2_uuid:
-            server_manager.update_player_consumer(self.match_id, 2, self)
+            self.player_num = 2
             await self.channel_layer.group_send(self.group_host, {'type': 'receive.player.join', 'id': self.user_id})
 
         else:
+            self.player_num = 0
             await self.close(code=3000, reason='not implemented yet')
             return
+
+        if self.player_num != 0:
+            server_manager.update_player_consumer(self.match_id, self.player_num, self)
 
         print(f'user with {self.user_id} joined')
         await self.accept()
@@ -77,15 +81,11 @@ class PongConsumer(AsyncWebsocketConsumer):
         loop.create_task(server_manager.close_game(self.match_id))
 
     async def receive(self, text_data):
-        input_data = json.loads(text_data)
-        print(input_data)
-        await self.channel_layer.group_send(
-            self.group_host, {
-                'type': 'receive.player.input',
-                'id': self.user_id,
-                'input':  input_data['type'],
-            }
-        )
+        data = json.loads(text_data)
+        print(data)
+
+        if data['type'] == 'input':
+            server_manager.update_player_input(self.match_id, self.player_num, data['input'], data['value'])
 
     # pongmatch handlers
     async def send_player_update(self, event):
@@ -120,4 +120,3 @@ class PongConsumer(AsyncWebsocketConsumer):
             pass
 
         print(f'got {event['id']} from {event['id']}')
-

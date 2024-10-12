@@ -19,6 +19,7 @@ class ServerManager():
             return
 
         print(f'creating match with id {match_id}')
+        self.matches_lock.acquire()
         self.matches[match_id] = {
             'game_info': GameLogic(),
             'thread': Thread(target=self.main_loop, args=(match_id)),
@@ -26,10 +27,10 @@ class ServerManager():
             'p1_consumer': None,
             'p2_consumer': None,
         }
+        self.matches_lock.release()
 
     def start_game(self, match_id):
         self.matches[match_id]['thread'].start()
-        pass
 
     # NOTE: this forcifully ends the game, and the match is considered invalid
     # TODO: add another method that actually fits the note above
@@ -79,13 +80,11 @@ class ServerManager():
         # NOTE: idk if update_player_consumer should be initializing the game, but eh
         self.start_game(match_id)
 
-    def update_player_input(self, match_id, player_num):
+    def update_player_input(self, match_id, player_num, input_type, value):
         match_info = self.matches[match_id]
-        if player_num == 1:
-            pass
-
-        elif player_num == 2:
-            pass
+        game_info = match_info['game_info']
+        player_input = game_info.player_inputs[player_num - 1]
+        player_input.set_input(input_type, value)
 
     def main_loop(self, match_id):
         accumulator_ms = 0
