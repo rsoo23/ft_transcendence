@@ -1,8 +1,7 @@
 from channels.exceptions import AcceptConnection, DenyConnection
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from .models import PongMatch
 from .views import get_user_from_token
-import json
 import logging
 from time import sleep
 from multiprocessing import Process
@@ -14,7 +13,7 @@ from datetime import datetime
 
 server_manager = ServerManager()
 
-class PongConsumer(AsyncWebsocketConsumer):
+class PongConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.match_id = self.scope['url_route']['kwargs']['match_id']
         self.group_match = f'pongmatch-{self.match_id}'
@@ -80,16 +79,15 @@ class PongConsumer(AsyncWebsocketConsumer):
         loop = asyncio.get_running_loop()
         loop.create_task(server_manager.close_game(self.match_id))
 
-    async def receive(self, text_data):
-        data = json.loads(text_data)
-        print(data)
+    async def receive_json(self, content):
+        print(content)
 
-        if data['type'] == 'input':
-            server_manager.update_player_input(self.match_id, self.player_num, data['input'], data['value'])
+        if content['type'] == 'input':
+            server_manager.update_player_input(self.match_id, self.player_num, content['input'], content['value'])
 
     # pongmatch handlers
-    async def send_player_update(self, event):
-        await self.send(text_data='ticked!')
+    # async def send_player_update(self, event):
+    #     await self.send(text_data='ticked!')
 
     # ponghost handlers
     # expects: {'id': <int>}

@@ -3,7 +3,6 @@ from threading import Thread, Lock
 from asgiref.sync import async_to_sync
 from .game import GameLogic
 from time import sleep, time_ns
-import json
 
 class ServerManager():
     def __init__(self):
@@ -102,10 +101,10 @@ class ServerManager():
 
             while accumulator_ms >= GameLogic.ms_per_frame:
                 # msg = f'dt={delta_time}; acc={accumulator_ms}'
-                msg = json.dumps(match_info['game_info'].tick(GameLogic.sec_per_frame))
+                msg = match_info['game_info'].tick(GameLogic.sec_per_frame)
 
-                async_to_sync(match_info['p1_consumer'].send)(text_data=msg)
-                async_to_sync(match_info['p2_consumer'].send)(text_data=msg)
+                async_to_sync(match_info['p1_consumer'].send_json)(msg)
+                async_to_sync(match_info['p2_consumer'].send_json)(msg)
                 accumulator_ms -= GameLogic.ms_per_frame
 
             # TODO: check if we need to actually implement a more precise sleep function

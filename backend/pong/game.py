@@ -1,6 +1,7 @@
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from threading import Lock
+from .serializers import ObjectStateSerializer
 import logging
 
 class Vector2():
@@ -98,6 +99,6 @@ class GameLogic():
         for obj in self.objects:
             obj_state = obj.tick(self, dt)
             if obj_state != None:
-                states.append(obj_state)
+                states.append(ObjectStateSerializer(obj_state).data)
 
         return states
