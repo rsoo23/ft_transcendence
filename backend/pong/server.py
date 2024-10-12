@@ -90,7 +90,9 @@ class ServerManager():
     def main_loop(self, match_id):
         accumulator_ms = 0
         last_time_ms = time_ns() / 1000000
+        self.matches_lock.acquire()
         match_info = self.matches[match_id]
+        self.matches_lock.release()
 
         while match_info['game_info'].ended == False:
             current_time_ms = time_ns() / 1000000
