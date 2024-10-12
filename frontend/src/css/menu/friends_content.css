@@ -179,7 +179,8 @@
   height: 100%;
   width: 100%;
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
+  justify-content: flex-end;
   overflow-y: scroll;
   border-radius: 1rem;
   background-color: var(--charcoal-800);
