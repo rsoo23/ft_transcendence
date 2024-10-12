@@ -28,7 +28,7 @@ class Paddle():
     def __init__(self, x=0, y=0):
         self.pos = Vector2(x, y)
 
-    def tick(self, game_info):
+    def tick(self, game_info, dt):
         states = ObjectState('paddle')
         states.append(self.pos, 0.0)
 
@@ -43,7 +43,7 @@ class Ball():
     def __init__(self, x=0, y=0):
         self.pos = Vector2(x, y)
 
-    def tick(self, game_info):
+    def tick(self, game_info, dt):
         states = ObjectState('ball')
         states.append(self.pos, 0.0)
 
@@ -93,5 +93,11 @@ class GameLogic():
         # logging.info(f'created GameLogic')
 
     # returns an array of objects for the client to render
-    def tick(self):
-        return []
+    def tick(self, dt):
+        states = []
+        for obj in self.objects:
+            obj_state = obj.tick(self, dt)
+            if obj_state != None:
+                states.append(obj_state)
+
+        return states
