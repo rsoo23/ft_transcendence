@@ -49,7 +49,8 @@ function connectToWebsocket() {
 	initRendering();
 	socket = new WebSocket(`ws://localhost:8000/ws/pong/${matchID}?user=${document.getElementById('user').value}`);
 	socket.addEventListener('message', (e) => {
-		console.log(e.data);
+		workerUI.postMessage({type: 'updateObjectsToDraw', object: {states: JSON.parse(e.data), accumulator: 0}});
+		// console.log(e.data);
 		const currenttime = performance.now();
 		// console.log(`${currenttime} - ${prevticktime} = ${currenttime - prevticktime}`);
 		tickavg[tickcount++] = currenttime - prevticktime;
@@ -67,11 +68,12 @@ function connectToWebsocket() {
 		}
 		const tmpavg = tmpsum / tickavg.length;
 		document.getElementById('debugtickrate').textContent = `tick avg = ${tmpavg}\nfps = ${1 * 1000 / tmpavg}`
-		console.log('updated fps');
+		// console.log('updated fps');
 	});
 
 	socket.addEventListener('close', (e) => {
 		console.log('connection closed');
+		workerUI.postMessage({type: 'stop'});
 		document.getElementById('debugtickrate').textContent = 'connection closed';
 	});
 }
