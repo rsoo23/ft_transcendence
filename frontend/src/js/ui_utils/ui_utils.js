@@ -3,6 +3,7 @@ import { getRequest } from "../network_utils/api_requests.js";
 export async function addEventListenerTo(element, event, callback) {
   if (element) {
     element.addEventListener(event, (e) => {
+      e.preventDefault()
       callback()
     });
   } else {
