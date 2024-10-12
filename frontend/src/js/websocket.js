@@ -1,8 +1,8 @@
 import { postRequest } from './network_utils/api_requests.js';
 
 const INPUTS = {
-	38: 'moveUp',
-	40: 'moveDown',
+	38: 'up',
+	40: 'down',
 };
 var socket = null;
 var matchID = null;
@@ -81,8 +81,9 @@ function keyUpHandler(e) {
 		return;
 
 	socket.send(JSON.stringify({
-		'type': `+${INPUTS[e.keyCode]}`,
-		'user': `${document.getElementById('user').value}`,
+		'type':  'input',
+		'input': `${INPUTS[e.keyCode]}`,
+		'value': true,
 	}));
 }
 
@@ -91,8 +92,9 @@ function keyDownHandler(e) {
 		return;
 
 	socket.send(JSON.stringify({
-		'type': `-${INPUTS[e.keyCode]}`,
-		'user': `${document.getElementById('user').value}`,
+		'type': 'input',
+		'input': `${INPUTS[e.keyCode]}`,
+		'value': false,
 	}));
 }
 
