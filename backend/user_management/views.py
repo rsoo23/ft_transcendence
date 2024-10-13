@@ -91,7 +91,7 @@ def logout_view(request):
 	if request.method == 'POST':
 		logout(request)
 	# Django's built-in logout function - removes authenticated user from session, flushes session data, deletes session cookie
-		return JsonResponse({'message': 'Logged out successfully'})
+		return JsonResponse({'success': True})
 	else:
 		return JsonResponse({'error': 'Invalid request method'}, status=405)
 
