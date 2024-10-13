@@ -27,10 +27,7 @@ async function createMatch() {
 
 var workerUI = new Worker('./static/js/game/worker_ui.js', {type: 'module'});
 function initRendering() {
-	const canvas = document.getElementById('pongcanvas');
-	const offscreen = canvas.transferControlToOffscreen();
 	workerUI.postMessage({type: 'stop'});
-	workerUI.postMessage({type: 'updateCanvas', object: offscreen}, [offscreen]);
 	workerUI.postMessage({type: 'updateWindowSize', object: [window.innerWidth, window.innerHeight]});
 	workerUI.postMessage({type: 'start'});
 
@@ -109,6 +106,10 @@ document.addEventListener(
 		document.getElementById('websocket').onclick = connectToWebsocket;
 		document.getElementById('testmatch').onclick = createMatch;
 		document.getElementById('updatematchid').onclick = () => matchID = document.getElementById('matchid').value;
+
+		const canvas = document.getElementById('pongcanvas');
+		const offscreen = canvas.transferControlToOffscreen();
+		workerUI.postMessage({type: 'updateCanvas', object: offscreen}, [offscreen]);
 		console.log("this is working yes");
 	}
 );
