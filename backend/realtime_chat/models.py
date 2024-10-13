@@ -32,11 +32,18 @@ class Room(models.Model):
     def __str__(self):
         return f'{self.name}'
 
+class MessageManager(models.Manager):
+    def by_room(self, room):
+        query_set = Room.object.filter(room=room).order_by("-timestamp")
+        return query_set
+
 class Message(models.Model):
     user = models.ForeignKey(to=CustomUser, on_delete=models.CASCADE)
     room = models.ForeignKey(to=Room, on_delete=models.CASCADE)
     content = models.TextField(unique=False, blank=False)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    objects = MessageManager()
 
     def __str__(self):
         return self.content
