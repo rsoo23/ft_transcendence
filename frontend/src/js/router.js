@@ -8,6 +8,7 @@ import { handleSignup, initEnable2FAButton } from "./signup_panel.js"
 import { changeAvatar, initFileInput, setDefaultAvatar } from "./user_profile_panel.js";
 import { getRequest } from "./network_utils/api_requests.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
+import { setUserInfo, userInfo } from "./global_vars.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -184,6 +185,7 @@ async function loadDynamicContent(contentName) {
 
   } else if (contentName === 'main_menu') {
     initHotbar()
+    await loadUserInfo()
   } else if (contentName === 'friends') {
 
     await loadContentToTarget('menu/friend_list_panel.html', 'friends-container')
@@ -194,3 +196,17 @@ async function loadDynamicContent(contentName) {
   }
 }
 
+async function loadUserInfo() {
+  try {
+    const response = await getRequest('/api/users/current_user/')
+
+    console.log('userInfo: ', response)
+    if (response) {
+      setUserInfo(response)
+    } else {
+      console.error('Error: Failed to load userInfo')
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
