@@ -81,6 +81,7 @@ class ServerManager():
         self.start_game(match_id)
 
     def update_player_input(self, match_id, player_num, input_type, value):
+        print('updating player input')
         match_info = self.matches[match_id]
         game_info = match_info['game_info']
         player_input = game_info.player_inputs[player_num - 1]

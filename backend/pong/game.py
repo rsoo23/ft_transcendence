@@ -25,15 +25,25 @@ class ObjectState():
 
 class Paddle():
     size = Vector2(7, 45)
+    speed = 250
 
-    def __init__(self, x=0, y=0):
+    def __init__(self, x, y, player_num):
         self.pos = Vector2(x, y)
+        self.player_num = player_num
 
     def tick(self, game_info, dt):
         states = ObjectState('paddle')
         states.append(self.pos, 0.0)
 
-        # TODO: get player input somehow
+        player_input = game_info.player_inputs[self.player_num - 1]
+        if player_input.get_input('up'):
+            self.pos.y -= Paddle.speed * dt
+
+        if player_input.get_input('down'):
+            self.pos.y += Paddle.speed * dt
+
+        # clamp pos
+        self.pos.y = min(max(self.pos.y, 0), game_info.game_size.y - Paddle.size.y)
 
         states.append(self.pos, 1.0)
         return states
@@ -41,7 +51,7 @@ class Paddle():
 class Ball():
     size = Vector2(7, 7)
 
-    def __init__(self, x=0, y=0):
+    def __init__(self, x, y):
         self.pos = Vector2(x, y)
 
     def tick(self, game_info, dt):
@@ -64,8 +74,11 @@ class PlayerInput():
 
     def set_input(self, input_type, value):
         self.input_lock.acquire()
-        if type in self.inputs and isinstance(value, type(self.inputs[input_type])):
+        if input_type in self.inputs and isinstance(value, type(self.inputs[input_type])):
             self.inputs[input_type] = value
+
+        else:
+            print(f'unknown input {input_type} and value {value}')
 
         self.input_lock.release()
 
@@ -86,8 +99,8 @@ class GameLogic():
         self.player_inputs = [PlayerInput(), PlayerInput()]
         self.game_size = Vector2(400, 240)
         self.objects = [
-            Paddle(0, 0), # left paddle
-            Paddle(self.game_size.x - Paddle.size.x, 0), # right paddle
+            Paddle(0, 0, 1), # left paddle
+            Paddle(self.game_size.x - Paddle.size.x, 0, 2), # right paddle
         ]
         # async_to_sync(self.channel_layer.group_add)(self.group_host, self.channel_name)
         # logging.basicConfig(level=logging.INFO)
