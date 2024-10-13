@@ -4,6 +4,7 @@ from user_management.models import CustomUser
 class Room(models.Model):
     name = models.CharField(max_length=255, unique=True, blank=False,)
     users = models.ManyToManyField(to=CustomUser, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def join(self, user):
         '''
