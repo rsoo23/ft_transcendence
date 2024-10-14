@@ -165,8 +165,8 @@ def update_password(request):
 	else:
 		return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-@csrf_exempt
 @api_view(['POST'])
+@permission_classes(['IsAuthenticated'])
 # @parser_classes(['MultiPartParser, FormParser'])
 def upload_avatar_image(request):
     user = request.user
