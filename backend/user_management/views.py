@@ -12,7 +12,7 @@ from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from .serializers import UserAvatarImageSerializer
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, parser_classes, permission_classes
 from rest_framework.response import Response
 
 User = get_user_model()
@@ -98,9 +98,6 @@ def logout_view(request):
 	else:
 		return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-# def hello_world(request):
-#     return JsonResponse({'message': 'Hello, world!'})
-
 @csrf_exempt
 def update_password(request):
 	if request.method == 'POST':
@@ -129,19 +126,18 @@ def update_password(request):
 		else:
 			return JsonResponse({'error': 'Incorrect old password'}, status=400)
 
-		# print(user)
-		# print(user.password)
-		# return JsonResponse({'old_password is ': old_password, 'new_password is ': new_password, 'email is ': email})
 	else:
 		return JsonResponse({'error': 'Invalid request method'}, status=405)
 
+@csrf_exempt
 @api_view(['POST'])
+# @parser_classes(['MultiPartParser, FormParser'])
 def upload_avatar_image(request):
     user = request.user
     serializer = UserAvatarImageSerializer(user, data=request.data, partial=True)
 
     if serializer.is_valid():
         serializer.save()
-        return Response({"message": "Profile image updated successfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
