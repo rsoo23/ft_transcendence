@@ -270,6 +270,9 @@ function initFriendRecordIcon(icon, iconId, username) {
     case 'challenge-icon':
       break
     case 'chat-icon':
+      callback = (() => {
+        return async () => loadChatInterface(username)
+      })()
       break
     case 'block-icon':
       callback = async () => {
