@@ -1,14 +1,15 @@
+import { addMessage } from "./chat_utils.js";
 
-let chatSocket = null
+export let chatSocket = null
 
-function connect() {
-  const roomName = 'hello'
+export function connect(receiverUsername) {
+  console.log('receiverUsername: ', receiverUsername)
   chatSocket = new WebSocket(
     'ws://'
     + window.location.host
     + '/ws/chat/'
-    + roomName
-    + '/'
+    + receiverUsername
+    + '/',
   )
 
   chatSocket.onopen = function (e) {
@@ -19,19 +20,8 @@ function connect() {
     const data = JSON.parse(e.data);
     console.log(data)
 
-    switch (data.type) {
-      case "chat_message":
-        addMessage(data.user, '/static/images/kirby.png', data.message, data.datetime)
-        break;
-      case "private_message":
-        addMessage(data.user, '/static/images/kirby.png', data.message, data.datetime)
-        break;
-      case "private_message_delivered":
-        addMessage(data.user, '/static/images/kirby.png', data.message, data.datetime)
-        break;
-      default:
-        console.error("Unknown message type!");
-        break;
+    if (data) {
+      addMessage(data.sender_username, '/static/images/kirby.png', data.message, data.timestamp)
     }
 
     // scrollup function
@@ -39,10 +29,10 @@ function connect() {
 
   chatSocket.onclose = function (e) {
     console.error('WebSocket connection closed unexpectedly. Trying to reconnect in 2 seconds');
-    setTimeout(function () {
-      console.log("Reconnecting...")
-      connect()
-    }, 2000)
+    // setTimeout(function () {
+    //   console.log("Reconnecting...")
+    //   connect()
+    // }, 2000)
   };
 
   chatSocket.onerror = function (err) {
@@ -51,5 +41,3 @@ function connect() {
     chatSocket.close();
   }
 }
-
-connect()
