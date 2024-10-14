@@ -39,7 +39,7 @@ export function initFileInput() {
 
 export async function uploadAvatarImage() {
   try {
-    const response = await postRequest('/upload-avatar-image/', { 'avatar-img': imageToUpload })
+    const response = await postRequest('/api/upload_avatar_image/', { 'avatar-img': imageToUpload })
 
     if (response.ok) {
       return 'success'
