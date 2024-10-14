@@ -1,35 +1,51 @@
+import { userInfo } from "../global_vars.js";
+import { addEventListenerTo, loadContentToTarget } from "../ui_utils/ui_utils.js";
+import { chatSocket, connect } from "./websocket.js";
 
-let chatInput = document.getElementById('chat-input')
-let sendMessageButton = document.getElementById('send-message-button')
+// loads the chat interface containing the chat history and friend profile
+export async function loadChatInterface(username) {
+  console.log('Loading chat interface for: ', username)
+  await loadContentToTarget('menu/chat_interface.html', 'friends-content-container')
 
-// focus 'chat-input' when user opens the page
-chatInput.focus();
+  connect(username)
 
-// submit if the user presses the enter key
-chatInput.onkeyup = function (e) {
-  if (e.keyCode === 13) {  // enter key
-    sendMessageButton.click();
-  }
-};
+  let chatInput = document.getElementById('chat-input')
+  let sendMessageButton = document.getElementById('send-message-button')
 
-// clear the 'chatInput' and forward the message
-sendMessageButton.onclick = function () {
-  if (chatInput.value.length === 0) return;
+  // focus 'chat-input' when user opens the page
+  chatInput.focus();
+
+  // submit if the user presses the enter key
+  chatInput.onkeyup = function (e) {
+    if (e.key === 13) {  // enter key
+      sendMessageButton.click();
+    }
+  };
+
+  addEventListenerTo(
+    sendMessageButton,
+    'click',
+    () => {
+      console.log('message sending')
+      sendMessage(chatInput, username)
+    }
+  )
+}
+
+function sendMessage(chatInputElement) {
+  console.log('in sendMessage')
+  if (chatInputElement.value.length === 0) return;
   chatSocket.send(JSON.stringify({
-    "message": chatInput.value,
+    "message": chatInputElement.value,
+    "sender_username": userInfo.username,
   }));
-  const currentTime = new Date()
+  chatInputElement.value = "";
+}
 
-  addMessage('rsoo', '/static/image/kirby.png', chatInput.value, currentTime)
-  chatInput.value = "";
-};
-
-function addMessage(username, avatarUrl, message, datetime) {
-  // Create the main container div
+export function addMessage(username, avatarUrl, message, datetime) {
   const chatMessageContainer = document.createElement('div');
   chatMessageContainer.classList.add('chat-message-container');
 
-  // Create the avatar container
   const avatarContainer = document.createElement('div');
   avatarContainer.classList.add('avatar-container');
 
@@ -44,11 +60,9 @@ function addMessage(username, avatarUrl, message, datetime) {
   avatarContainer.appendChild(avatarImg);
   avatarContainer.appendChild(statusBadge);
 
-  // Create the message container
   const messageContainer = document.createElement('div');
   messageContainer.classList.add('message-container');
 
-  // Create user details div
   const userDetails = document.createElement('div');
   userDetails.classList.add('user-details');
 
@@ -63,15 +77,12 @@ function addMessage(username, avatarUrl, message, datetime) {
   userDetails.appendChild(userNamePara);
   userDetails.appendChild(dateTimePara);
 
-  // Append user details and message content to message container
   messageContainer.appendChild(userDetails);
   messageContainer.appendChild(document.createTextNode(message));
 
-  // Append avatarContainer and messageContainer to the main container
   chatMessageContainer.appendChild(avatarContainer);
   chatMessageContainer.appendChild(messageContainer);
 
-  // Append the newly created message div to the chat-messages container
   document.getElementById('chat-content-container').appendChild(chatMessageContainer);
 }
 

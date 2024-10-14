@@ -1,91 +1,88 @@
 import json
+import pytz
 
+from datetime import datetime
+
+from django.shortcuts import get_object_or_404
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 
 from .models import Room, Message
+from user_management.models import CustomUser
 
 class ChatConsumer(WebsocketConsumer):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(args, kwargs)
-        self.room_name = None
-        self.room_group_name = None
-        self.room = None
-        self.user = None
-        self.user_inbox = None
-
     def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = f'chat_{self.room_name}'
-        self.room = Room.objects.get(name=self.room_name)
-        self.user = self.scope['user']
-        self.user_inbox = f'inbox_{self.user.username}'
+        # self.sender_id = self.scope.get('user_id')
+        # self.user = self.scope['user']
+        # print(self.sender_id)
+        # self.receiver_username = self.scope['url_route']['kwargs']['receiver_username']
+        # self.sender = get_object_or_404(CustomUser, pk=self.sender_id)
+        # self.receiver = get_object_or_404(CustomUser, username=self.receiver_username)
+        # self.sender_username = self.sender.username
 
-        # connection has to be accepted
+        self.user = self.scope['user']
+        self.sender = self.user
+        self.sender_username = self.sender.username
+        self.receiver_username = self.scope['url_route']['kwargs']['receiver_username']
+
+        self.receiver = get_object_or_404(CustomUser, username=self.receiver_username)
+
+        # create the roon_name dynamically based on the sender's and receiver's username
+        if self.sender_username < self.receiver_username:
+            self.room_name = f'chat_{self.sender_username}_{self.receiver_username}'
+        else:
+            self.room_name = f'chat_{self.receiver_username}_{self.sender_username}'
+
+        # get or create a room
+        self.room, created = Room.objects.get_or_create(name=self.room_name)
+
+        # get the sender and receiver and add them to the room
+        self.room.users.add(self.sender, self.receiver)
+
+        async_to_sync(self.channel_layer.group_add)(
+            self.room_name,
+            self.channel_name,
+        )
         self.accept()
 
-        if self.user.is_authenticated:
-            # create a user inbox for private messages
-            async_to_sync(self.channel_layer.group_add)(
-                self.room_group_name,
-                self.channel_name,
-            )    
-
     def disconnect(self, close_code):
-        # delete a user inbox for private messages
         if self.user.is_authenticated:
             async_to_sync(self.channel_layer.group_discard)(
-                self.user_inbox,
+                self.room_name,
                 self.channel_name,
             )
 
     def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
+        sender_username = text_data_json['sender_username']
 
-        if not self.user.is_authenticated:
-            return
-
-        if message.startswith('/pm '):
-            split = message.split(' ', 2)
-            target = split[1]
-            target_msg = split[2]
+        if self.user.is_authenticated:
+            timezone = pytz.timezone('Asia/Singapore')
+            now = datetime.now(timezone)
+            timestamp = now.strftime('%d %b %Y - %H:%M'),
 
             # send private message to the target
             async_to_sync(self.channel_layer.group_send)(
-                f'inbox_{target}',
+                self.room_name,
                 {
                     'type': 'private_message',
-                    'user': self.user.username,
-                    'message': target_msg,
+                    'message': message,
+                    'sender_username': sender_username,
+                    'timestamp': timestamp,
                 }
             )
-            # send private message delivered to the user
-            self.send(json.dumps({
-                'type': 'private_message_delivered',
-                'target': target,
-                'message': target_msg,
-            }))
-            return
-
-        # send chat message event to the room
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'self': self.user.username,
-                'message': message,
-            }
-        )
-        Message.objects.create(user=self.user, room=self.room, content=message)
-
-    def chat_message(self, event):
-        self.send(text_data=json.dumps(event))
+            Message.objects.create(user=self.user, room=self.room, content=message)
 
     def private_message(self, event):
-        self.send(text_data=json.dumps(event))
+        message = event['message']
+        sender_username = event['sender_username']
+        timestamp = event['timestamp']
 
-    def private_message_delivered(self, event):
-        self.send(text_data=json.dumps(event))
+        # send the message to the Websocket client
+        self.send(text_data=json.dumps({
+            'message': message,
+            'sender_username': sender_username,
+            'timestamp': timestamp,
+        }))
 
