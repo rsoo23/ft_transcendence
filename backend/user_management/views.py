@@ -17,10 +17,12 @@ from friends_system.models import FriendList
 
 from .serializers import CustomUserSerializer
 
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # CustomUserViewSet:
 # list()        for listing all users (GET /users/)
@@ -45,6 +47,31 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         user = request.user
         serializer = self.get_serializer(user)
         return Response(serializer.data)
+
+class CookieTokenObtainPairView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == status.HTTP_200_OK:
+            # Set the JWT in a HttpOnly cookie
+            response.set_cookie(
+                key='access_token', 
+                value=response.data['access'], 
+                httponly=True, 
+                secure=False,  # Set True for HTTPS, False for HTTP development
+                samesite='Lax'
+            )
+            # Optionally add the refresh token in another cookie
+            response.set_cookie(
+                key='refresh_token', 
+                value=response.data['refresh'], 
+                httponly=True, 
+                secure=False,
+                samesite='Lax'
+            )
+            # Remove token from response body
+            response.data.pop('access')
+            response.data.pop('refresh')
+        return response
 
 User = get_user_model()
 

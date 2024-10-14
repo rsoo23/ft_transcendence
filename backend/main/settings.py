@@ -73,14 +73,18 @@ AUHENTICATION_BACKENDS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',  # Adjust permissions as needed
+        'rest_framework.permissions.IsAuthenticated',  # Adjust permissions as needed
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'utils.authentication.CustomAuthentication',
     ),
 }
 
 SIMPLE_JWT = {
+    'AUTH_COOKIE': 'access_token',  # Name of the cookie
+    'AUTH_COOKIE_HTTP_ONLY': True,  # Prevent JS access
+    'AUTH_COOKIE_SAMESITE': 'Lax',  # Protect against CSRF
+    'AUTH_COOKIE_SECURE': False,  # Use only for HTTPS in production
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
     'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
