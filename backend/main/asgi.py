@@ -19,12 +19,20 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "main.settings")
 django_asgi_app = get_asgi_application()
 
 from realtime_chat.routing import websocket_urlpatterns
+from realtime_chat.jwt_middleware import JWTAuthMiddleware
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,
-    "websocket": AllowedHostsOriginValidator(
-        AuthMiddlewareStack(URLRouter(websocket_urlpatterns))
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            websocket_urlpatterns
+        )
     ),
+    # "websocket": JWTAuthMiddleware(
+    #     URLRouter(
+    #         websocket_urlpatterns
+    #     )
+    # ),
 })
 
 ASGI_APPLICATION = 'realtime_chat.asgi.application'
