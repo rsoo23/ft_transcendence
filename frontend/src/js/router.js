@@ -7,6 +7,7 @@ import { handleLogin, handleForgotPassword } from "./login_panel.js";
 import { handleSignup, initEnable2FAButton } from "./signup_panel.js"
 import { changeAvatar, initFileInput, setDefaultAvatar } from "./user_profile_panel.js";
 import { initLogoutButton } from './logout.js';
+import { initSettingsPage } from "./update_username.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -192,7 +193,8 @@ async function loadDynamicContent(contentName) {
     initAddFriendButton()
 
   } else if (contentName == 'settings') {
+	initSettingsPage();
 	initLogoutButton();
-  }
+	}
 }
 
