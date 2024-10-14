@@ -6,6 +6,8 @@ import { loadToFriendsContainer, initAddFriendButton } from "./friends_content.j
 import { handleLogin, handleForgotPassword } from "./login_panel.js";
 import { handleSignup, initEnable2FAButton } from "./signup_panel.js"
 import { changeAvatar, initFileInput, setDefaultAvatar } from "./user_profile_panel.js";
+import { initLogoutButton } from './logout.js';
+import { initSettingsPage } from "./update_username.js";
 import { getRequest } from "./network_utils/api_requests.js";
 
 const routes = {
@@ -189,6 +191,9 @@ async function loadDynamicContent(contentName) {
     await loadToFriendsContainer('friend_list_panel.html')
     initAddFriendButton()
 
-  }
+  } else if (contentName == 'settings') {
+	initSettingsPage();
+	initLogoutButton();
+	}
 }
 
