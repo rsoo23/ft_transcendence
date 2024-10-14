@@ -1,4 +1,4 @@
-import { MAX_AVATAR_FILE_SIZE } from "./constants.js"
+import { MAX_AVATAR_FILE_SIZE } from "./global_vars.js"
 import { postRequest } from "./network_utils/api_requests.js"
 
 let imageToUpload
