@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta
 
 # because os.environ's exception isn't that descriptive
 def getenv_and_validate(name):
@@ -48,6 +49,7 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000'] # TODO
 # Application definition
 
 INSTALLED_APPS = [
+    'realtime_chat',
     'daphne',
     'rest_framework',
     'rest_framework_simplejwt',
@@ -58,8 +60,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 	'user_management',
-    'token_management'
+    'token_management',
+    'friends_system',
+    'channels',
 ]
+
+ASGI_APPLICATION='backend.asgi.application'
 
 AUHENTICATION_BACKENDS = [
 	'django.contrib.auth.backends.ModelBackend',
@@ -72,6 +78,15 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
+    'SLIDING_TOKEN_REFRESH_LIFETIME_LATE_USER': timedelta(days=1),
+    'SLIDING_TOKEN_LIFETIME_LATE_USER': timedelta(days=30),
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 MIDDLEWARE = [

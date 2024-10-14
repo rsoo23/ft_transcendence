@@ -14,6 +14,40 @@ from django.contrib.auth.password_validation import validate_password
 from .serializers import UserAvatarImageSerializer
 from rest_framework.decorators import api_view, parser_classes, permission_classes
 from rest_framework.response import Response
+from django.db import transaction
+from .models import CustomUser
+from friends_system.models import FriendList
+
+from .serializers import CustomUserSerializer
+
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
+# CustomUserViewSet:
+# list()        for listing all users (GET /users/)
+# retrieve()    for getting a single user (GET /users/<id>/)
+# create()      for adding a new user (POST /users/)
+# update()      partial_update() for updating users (PUT/PATCH /users/<id>/)
+# destroy()     for deleting a user (DELETE /users/<id>/)
+
+class CustomUserViewSet(viewsets.ModelViewSet):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthenticated]
+
+    # gets all users info excluding the current user
+    def get_queryset(self):
+        current_user = self.request.user
+        return CustomUser.objects.exclude(id=current_user.id)
+
+    # gets the current user's info
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def current_user(self, request):
+        user = request.user
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
 
 User = get_user_model()
 
@@ -44,8 +78,10 @@ def register_view(request):
         data = json.loads(request.body)
         form = CustomUserCreationForm(data)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
+            with transaction.atomic():
+                user = form.save()
+                FriendList.objects.create(current_user=user)
+                login(request, user)
             return JsonResponse({'success': True})
         else:
             return JsonResponse({'success': False, 'errors': form.errors}, status=400)

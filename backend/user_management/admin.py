@@ -8,6 +8,6 @@ class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
-    list_display = ["id", "two_factor_enabled", "two_factor_email", "username", "password", "email"]
+    list_display = ["id", "username", "email", "password", "two_factor_enabled", "two_factor_email"]
 
 admin.site.register(CustomUser, CustomUserAdmin)

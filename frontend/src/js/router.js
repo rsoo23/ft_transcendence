@@ -2,11 +2,12 @@ import { initHotbar, updateBorderColor, updateButtonState } from "./ui_utils/hot
 import { initLink } from "./ui_utils/link_utils.js";
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
-import { loadToFriendsContainer, initAddFriendButton } from "./friends_content.js"
+import { initAddFriendButton, loadFriendListContent } from "./friends_content.js"
 import { handleLogin, handleForgotPassword } from "./login_panel.js";
 import { handleSignup, initEnable2FAButton } from "./signup_panel.js"
 import { changeAvatar, initFileInput, setDefaultAvatar, uploadAvatarImage } from "./avatar_upload_panel.js";
 import { getRequest } from "./network_utils/api_requests.js";
+import { loadContentToTarget } from "./ui_utils/ui_utils.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -179,8 +180,7 @@ async function loadDynamicContent(contentName) {
         const result = await uploadAvatarImage()
 
         if (result === 'success') {
-          loadPage('main_menu')
-          loadMainMenuContent('play')
+          loadPage('login')
         }
       }
     )
@@ -189,8 +189,10 @@ async function loadDynamicContent(contentName) {
     initHotbar()
   } else if (contentName === 'friends') {
 
-    await loadToFriendsContainer('friend_list_panel.html')
+    await loadContentToTarget('menu/friend_list_panel.html', 'friends-container')
+    await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
     initAddFriendButton()
+    await loadFriendListContent()
 
   }
 }
