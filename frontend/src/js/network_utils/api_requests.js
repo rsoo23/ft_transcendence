@@ -1,16 +1,8 @@
 
-export let accessToken = ''
-
-export function setAccessToken(token) {
-  accessToken = token
-}
-
 export async function getRequest(url, outputType = 'json') {
   const response = await fetch(url, {
     method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
-    }
+    credentials: 'include',
   });
   let data
 
@@ -26,14 +18,26 @@ export async function getRequest(url, outputType = 'json') {
 }
 
 export async function postRequest(url, data) {
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data)
-  });
+  let response
+  if (url === '/api/token/') {
+    response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+  } else {
+    response = await fetch(url, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+  }
+
   const responseData = await response.json();
 
   // console.log(responseData);
@@ -43,8 +47,8 @@ export async function postRequest(url, data) {
 export async function putRequest(url, data) {
   const response = await fetch(url, {
     method: 'PUT',
+    credentials: 'include',
     headers: {
-      'Authorization': `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data)
@@ -58,10 +62,7 @@ export async function putRequest(url, data) {
 export async function deleteData(url) {
   const response = await fetch(url, {
     method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    }
+    credentials: 'include',
   });
   const responseData = await response.json();
 

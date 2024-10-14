@@ -1,7 +1,7 @@
 
 import { getColor } from "./ui_utils/color_utils.js";
 import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
-import { postRequest, setAccessToken } from "./network_utils/api_requests.js";
+import { postRequest } from "./network_utils/api_requests.js";
 import { isEnable2FAButtonClicked } from "./global_vars.js";
 
 export async function handleLogin() {
@@ -25,13 +25,7 @@ export async function handleLogin() {
 
     console.log(response)
     if (response) {
-      setAccessToken(response['access'])
-
-      if (isEnable2FAButtonClicked) {
-        return 'success-with-2fa'
-      }
       return 'success'
-
     } else {
       handleLoginErrors(inputContainers, response.errors)
     }
