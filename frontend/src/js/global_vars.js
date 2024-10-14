@@ -10,6 +10,12 @@ export function toggle2FAButton() {
   isEnable2FAButtonClicked = !isEnable2FAButtonClicked;
 }
 
+export let userInfo = {}
+
+export function setUserInfo(obj) {
+  userInfo = obj
+}
+
 export let hotbarItems = {
   'play': {
     'name': 'play',

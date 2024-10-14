@@ -3,6 +3,7 @@ import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js"
 import { getColor } from "./ui_utils/color_utils.js"
 import { getRequest, postRequest } from "./network_utils/api_requests.js"
 import { friendRecordIconInfo } from "./global_vars.js"
+import { loadChatInterface } from "./realtime_chat/chat_utils.js"
 
 export function initAddFriendButton() {
   const button = document.getElementById('add-friend-button')

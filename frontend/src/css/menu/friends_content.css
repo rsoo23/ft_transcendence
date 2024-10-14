@@ -179,7 +179,8 @@
   height: 100%;
   width: 100%;
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
+  justify-content: flex-end;
   overflow-y: scroll;
   overflow-x: hidden;
   border-radius: 1rem;
@@ -385,6 +386,17 @@
 
 #send-message-button {
   background-color: transparent;
+  border: none;
+  outline:none;
+}
+
+#send-message-button > i {
+  color: var(--charcoal-300);
+  transition: 0.2s;
+}
+
+#send-message-button > i:hover {
+  color: var(--charcoal-100);
 }
 
 #friends-content-container > .content {
