@@ -52,31 +52,28 @@ def register_view(request):
 @csrf_exempt
 def update_username(request):
 	# print("Request received~~~~~~~~~~~~", flush=True)
-	if request.method == 'POST':
-		data = json.loads(request.body)
-		old_username = data.get('old_username')
-		new_username = data.get('new_username')
-		
-		try:
-			user = User.objects.get(username=old_username)
-		except User.DoesNotExist:
-			return JsonResponse({'error': 'User does not exist'}, status=400)
-		
-		if User.objects.filter(username=new_username).exists():
-			return JsonResponse({'error': 'Username already exists'}, status=400)
-		
-		user.username = new_username
-		user.save()
-		return JsonResponse({'message': 'Username updated successfully'})
-	else:
-		return JsonResponse({'error': 'Invalid request method'}, status=405)
+    try:
+        data = json.loads(request.body)
+        new_username = data.get('new_username')
+        
+        if not new_username:
+            return JsonResponse({'status': 'error', 'message': 'New username is required'}, status=400)
+        
+        if User.objects.filter(username=new_username).exclude(pk=request.user.pk).exists():
+            return JsonResponse({'status': 'error', 'message': 'Username already exists'}, status=400)
+        
+        request.user.username = new_username
+        request.user.save()
+        return JsonResponse({'status': 'success', 'message': 'Username updated successfully'})
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'}, status=400)
 
 @csrf_exempt
 def logout_view(request):
 	if request.method == 'POST':
 		logout(request)
 	# Django's built-in logout function - removes authenticated user from session, flushes session data, deletes session cookie
-		return JsonResponse({'message': 'Logged out successfully'})
+		return JsonResponse({'success': True})
 	else:
 		return JsonResponse({'error': 'Invalid request method'}, status=405)
 

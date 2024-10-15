@@ -8,6 +8,8 @@ import { handleSignup } from "./signup_panel.js"
 import { changeAvatar, initFileInput, setDefaultAvatar } from "./user_profile_panel.js";
 import { handle2FA, initResendCodeButton } from "./2FA_panel.js";
 import { send_otp_2FA } from "./network_utils/2FA_utils.js";
+import { initLogoutButton } from './logout.js';
+import { initSettingsPage } from "./update_username.js";
 import { getRequest } from "./network_utils/api_requests.js";
 import { check_email } from "./forgot_password/get_email.js";
 import { verify_code } from "./forgot_password/verify_code.js";
@@ -26,9 +28,9 @@ const routes = {
   '/menu/friends': 'menu/friends_content.html',
   '/menu/how-to-play': 'menu/how_to_play_content.html',
   '/menu/settings': 'menu/settings_content.html',
-  '/forgot_password/get_email' : 'forgot_password/get_email.html',
-  '/forgot_password/verify_code' : 'forgot_password/verify_code.html',
-  '/forgot_password/change_password' : 'forgot_password/change_password.html'
+  '/forgot_password/get_email': 'forgot_password/get_email.html',
+  '/forgot_password/verify_code': 'forgot_password/verify_code.html',
+  '/forgot_password/change_password': 'forgot_password/change_password.html'
 }
 
 // manages back and forth history
@@ -172,9 +174,9 @@ async function loadDynamicContent(contentName) {
 
         loadPage('main_menu')
         if (contentName === '2fa_verify') {
-            loadMainMenuContent('play')
+          loadMainMenuContent('play')
         } else {
-            loadMainMenuContent('settings')
+          loadMainMenuContent('settings')
         }
       }
     )
