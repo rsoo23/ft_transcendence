@@ -159,7 +159,10 @@ async function loadDynamicContent(contentName) {
     if (contentName === '2fa_verify') {
       initBackButton(() => loadPage('login'))
     } else {
-      initBackButton(() => loadPage('main_menu'))
+      initBackButton(() => {
+        loadPage('main_menu')
+        loadMainMenuContent('settings')
+      })
     }
     initResendCodeButton(() => send_otp_2FA())
     initRandomColorButton(
@@ -227,7 +230,7 @@ async function loadDynamicContent(contentName) {
     initBackButton(() => loadPage('login'))
     initRandomColorButton(
       'submit-email-button',
-      'two-fa-panel',
+      'get-email-panel',
       async () => {
         const result = await check_email()
 
@@ -241,7 +244,7 @@ async function loadDynamicContent(contentName) {
     initBackButton(() => loadPage('forgot_password/get_email'))
     initRandomColorButton(
       'submit-code-button',
-      'two-fa-panel',
+      'get-email-panel',
       async () => {
         const result = await verify_code()
 
@@ -256,7 +259,7 @@ async function loadDynamicContent(contentName) {
     initTogglePasswordVisibilityIcon()
     initRandomColorButton(
       'confirm-signup-button',
-      'signup-panel',
+      'verify-code-panel',
       async () => {
         const result = await handle_change_password()
 
