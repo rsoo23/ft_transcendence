@@ -9,6 +9,7 @@ import { changeAvatar, initFileInput, setDefaultAvatar } from "./user_profile_pa
 import { initLogoutButton } from './logout.js';
 import { initSettingsPage } from "./update_username.js";
 import { getRequest } from "./network_utils/api_requests.js";
+import { initEmailSettings } from "./update_email.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -194,6 +195,7 @@ async function loadDynamicContent(contentName) {
   } else if (contentName == 'settings') {
 	initSettingsPage();
 	initLogoutButton();
+	initEmailSettings();
 	}
 }
 
