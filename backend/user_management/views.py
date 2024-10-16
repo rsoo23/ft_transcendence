@@ -129,3 +129,25 @@ def update_password(request):
 	else:
 		return JsonResponse({'error': 'Invalid request method'}, status=405)
 
+@csrf_exempt
+def update_email(request):
+    try:
+        data = json.loads(request.body)
+        new_email = data.get('new_email')
+
+        if not new_email:
+            return JsonResponse({'status': 'error', 'message': 'Email cannot be empty'}, status=400)
+
+        try:
+            user = request.user  # Assuming the user is authenticated - todo
+            if User.objects.filter(email=new_email).exclude(pk=user.pk).exists():
+                return JsonResponse({'status': 'error', 'message': 'Email already in use'}, status=400)
+
+            request.user.email = new_email
+            request.user.save()
+            return JsonResponse({'status': 'success', 'message': 'Email updated successfully'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
