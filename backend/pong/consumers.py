@@ -7,11 +7,9 @@ from time import sleep
 from multiprocessing import Process
 from threading import Thread, Lock
 from .game import GameLogic
-from .server import ServerManager
+from .server import server_manager
 import asyncio
 from datetime import datetime
-
-server_manager = ServerManager()
 
 class PongConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):

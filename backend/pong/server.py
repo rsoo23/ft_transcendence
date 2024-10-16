@@ -110,3 +110,5 @@ class ServerManager():
 
             # TODO: check if we need to actually implement a more precise sleep function
             sleep(GameLogic.sec_per_frame)
+
+server_manager = ServerManager()
