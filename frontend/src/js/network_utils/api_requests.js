@@ -27,7 +27,13 @@ export async function postRequest(url, data) {
       },
       body: JSON.stringify(data)
     });
-  } else {
+  } else if (url === '/api/upload_avatar_image/') {
+    response = await fetch(url, {
+      method: 'POST',
+      body: data
+    });
+  }
+  else {
     response = await fetch(url, {
       method: 'POST',
       credentials: 'include',

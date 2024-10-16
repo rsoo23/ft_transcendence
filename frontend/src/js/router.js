@@ -7,7 +7,7 @@ import { handleLogin, handleForgotPassword } from "./login_panel.js";
 import { handleSignup } from "./signup_panel.js"
 import { changeAvatar, initFileInput, setDefaultAvatar, uploadAvatarImage } from "./avatar_upload_panel.js";
 import { getRequest } from "./network_utils/api_requests.js";
-import { loadContentToTarget } from "./ui_utils/ui_utils.js";
+import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { setUserInfo, userInfo } from "./global_vars.js";
 
 const routes = {

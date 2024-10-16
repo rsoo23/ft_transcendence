@@ -1,4 +1,4 @@
-import { MAX_AVATAR_FILE_SIZE } from "./global_vars.js"
+import { MAX_AVATAR_FILE_SIZE, userInfo } from "./global_vars.js"
 import { postRequest } from "./network_utils/api_requests.js"
 
 let imageToUpload
@@ -39,7 +39,10 @@ export function initFileInput() {
 
 export async function uploadAvatarImage() {
   try {
-    const response = await postRequest('/api/upload_avatar_image/', { 'avatar-img': imageToUpload })
+    const formData = new FormData()
+    formData.append('avatar_img', imageToUpload)
+    formData.append('username', userInfo['username'])
+    const response = await postRequest('/api/upload_avatar_image/', formData)
 
     if (response.ok) {
       return 'success'
