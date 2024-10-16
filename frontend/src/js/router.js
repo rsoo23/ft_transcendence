@@ -5,7 +5,7 @@ import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.j
 import { initAddFriendButton, loadFriendListContent } from "./friends_content.js"
 import { handleLogin, handleForgotPassword } from "./login_panel.js";
 import { handleSignup } from "./signup_panel.js"
-import { changeAvatar, initFileInput, setDefaultAvatar, uploadAvatarImage } from "./avatar_upload_panel.js";
+import { changeAvatar, initFileInput, setDefaultAvatar, uploadAvatarImage } from "./settings.js";
 import { getRequest } from "./network_utils/api_requests.js";
 import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { setUserInfo, userInfo } from "./global_vars.js";
