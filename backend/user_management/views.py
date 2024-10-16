@@ -20,10 +20,13 @@ from friends_system.models import FriendList
 
 from .serializers import CustomUserSerializer
 
+from django.shortcuts import get_object_or_404
+
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -192,15 +195,19 @@ def update_password(request):
 	else:
 		return JsonResponse({'error': 'Invalid request method'}, status=405)
 
+@csrf_exempt
 @api_view(['POST'])
-@permission_classes(['IsAuthenticated'])
-# @parser_classes(['MultiPartParser, FormParser'])
+@parser_classes([MultiPartParser, FormParser])
+# @permission_classes([AllowAny])
 def upload_avatar_image(request):
-    user = request.user
+    print(request.data)
+    username = request.data.get('username')
+    user = get_object_or_404(CustomUser, username='username')
+
     serializer = UserAvatarImageSerializer(user, data=request.data, partial=True)
 
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({ "message": "Image uploaded successfully"}, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
