@@ -18,11 +18,6 @@
     align-items: center;
 }
 
-.profile-settings-grid .profile-settings-avatar-cell {
-	display: flex;
-	justify-content: center;
-}
-
 .profile-settings-label {
     font-size: 1.125rem;
 }
@@ -40,6 +35,18 @@
     font-size: 1.5rem;
     cursor: pointer;
 	transition: color 0.2s ease;
+}
+
+.profile-settings-avatar-cell {
+  display: flex;
+	justify-content: center;
+}
+
+#profile-settings-container .avatar-container {
+  width: 5rem;
+  height: 5rem;
+  background-color: white;
+  border-radius: 999rem;
 }
 
 .profile-settings-icon:hover {
