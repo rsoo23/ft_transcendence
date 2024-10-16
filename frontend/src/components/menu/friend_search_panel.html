@@ -6,24 +6,18 @@
   </button>
 </div>
 <div class='panel-content-container'>
-  <form id="friend-search-form">
-    <input type="text" class="input-field" name="friend-search" placeholder="Search for a friend">
-  </form>
   <div class='scrollable-container friend-search'>
-    <div class="friend-record">
-      <div class='avatar-section'>
-        <div class='avatar-container'>
-          <img src='/static/images/kirby.png' alt='avatar' class='avatar'>
-          <div class='status-badge'></div>
-        </div>
-        <div class='avatar-name'>player 1</div>
-      </div>
-      <div class='icons-section'>
-        <i id='add-person-icon' class='material-icons icon-with-tooltip'>
-          person_add
-          <div id='add-person-tooltip' class='icon-tooltip'>Send friend request</div>
-        </i>
-      </div>
+    <div class='friends-section sent-friend-requests'>
+      <div class='friend-state'>Sent Friend Requests</div>
+      <div class='friend-records'></div>
+    </div>
+    <div class='friends-section received-friend-requests'>
+      <div class='friend-state'>Received Friend Requests</div>
+      <div class='friend-records'></div>
+    </div>
+    <div class='friends-section not-added'>
+      <div class='friend-state'>Not Added</div>
+      <div class='friend-records'></div>
     </div>
   </div>
 </div>

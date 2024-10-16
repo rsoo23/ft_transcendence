@@ -2,19 +2,22 @@ import { initHotbar, updateBorderColor, updateButtonState } from "./ui_utils/hot
 import { initLink } from "./ui_utils/link_utils.js";
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
-import { loadToFriendsContainer, initAddFriendButton } from "./friends_content.js"
+import { initAddFriendButton, loadFriendListContent } from "./friends_content.js"
 import { handleLogin, handleForgotPassword } from "./login_panel.js";
-import { handleSignup, initEnable2FAButton } from "./signup_panel.js"
-import { changeAvatar, initFileInput, setDefaultAvatar } from "./user_profile_panel.js";
+import { handleSignup } from "./signup_panel.js"
+import { changeAvatar, initFileInput, setDefaultAvatar, uploadAvatarImage } from "./settings.js";
 import { initLogoutButton } from './logout.js';
 import { initSettingsPage } from "./update_username.js";
 import { getRequest } from "./network_utils/api_requests.js";
+import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js";
+import { setUserInfo, userInfo } from "./global_vars.js";
+import { initEditIcons } from "./settings.js";
 
 const routes = {
   '/start': 'start_panel.html',
   '/login': 'login_panel.html',
   '/signup': 'signup_panel.html',
-  '/user_profile': 'user_profile_panel.html',
+  '/avatar_upload': 'avatar_upload_panel.html',
   '/2fa': '2FA_panel.html',
   '/main_menu': 'menu/main_menu_panel.html',
   '/menu/play': 'menu/play_content.html',
@@ -138,11 +141,10 @@ async function loadDynamicContent(contentName) {
         const result = await handleSignup()
 
         if (result === 'success') {
-          loadPage('user_profile')
+          loadPage('login')
         }
       }
     )
-    initEnable2FAButton()
     initTogglePasswordVisibilityIcon()
 
   } else if (contentName === '2fa') {
@@ -157,43 +159,64 @@ async function loadDynamicContent(contentName) {
       }
     )
 
-  } else if (contentName === 'user_profile') {
+  } else if (contentName === 'avatar_upload') {
 
-    initBackButton(() => loadPage('signup'))
-    initFileInput()
-    initRandomColorButton(
-      'use-default-avatar-button',
-      'user-profile-panel',
-      () => {
-        setDefaultAvatar()
-      }
-    )
-    initRandomColorButton(
-      'change-avatar-button',
-      'user-profile-panel',
-      () => {
-        changeAvatar()
-      }
-    )
-    initRandomColorButton(
-      'confirm-user-profile-button',
-      'user-profile-panel',
-      () => {
-        loadPage('main_menu')
-        loadMainMenuContent('play')
-      }
-    )
+    // initFileInput()
+    // initRandomColorButton(
+    //   'use-default-avatar-button',
+    //   'avatar-upload-panel',
+    //   () => {
+    //     setDefaultAvatar()
+    //   }
+    // )
+    // initRandomColorButton(
+    //   'change-avatar-button',
+    //   'avatar-upload-panel',
+    //   () => {
+    //     changeAvatar()
+    //   }
+    // )
+    // initRandomColorButton(
+    //   'confirm-avatar-upload-button',
+    //   'avatar-upload-panel',
+    //   async () => {
+    //     const result = await uploadAvatarImage()
+    //
+    //     if (result === 'success') {
+    //       loadPage('login')
+    //     }
+    //   }
+    // )
 
   } else if (contentName === 'main_menu') {
     initHotbar()
+    await loadUserInfo()
   } else if (contentName === 'friends') {
 
-    await loadToFriendsContainer('friend_list_panel.html')
+    await loadContentToTarget('menu/friend_list_panel.html', 'friends-container')
+    await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
     initAddFriendButton()
+    await loadFriendListContent()
 
-  } else if (contentName == 'settings') {
-	initSettingsPage();
-	initLogoutButton();
-	}
+  } else if (contentName === 'settings') {
+    initFileInput()
+    initEditIcons()
+    initSettingsPage();
+    initLogoutButton();
+  }
 }
 
+async function loadUserInfo() {
+  try {
+    const response = await getRequest('/api/users/current_user/')
+
+    console.log('userInfo: ', response)
+    if (response) {
+      setUserInfo(response)
+    } else {
+      console.error('Error: Failed to load userInfo')
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}

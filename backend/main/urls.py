@@ -29,8 +29,13 @@ urlpatterns = [
     path('api/', include('user_management.urls')),
     path('api/token_management/', include('token_management.urls')),
     path('api/two_factor_auth/', include('two_factor_auth.urls')),
+    path('api/', include('friends_system.urls')),
     re_path(r'^.*$', serve, kwargs={
         'path': 'index.html',
         'document_root': os.path.join(settings.BASE_DIR, 'frontend'),
     }),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

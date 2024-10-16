@@ -1,10 +1,8 @@
 
-import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
+import { getColor } from "./ui_utils/color_utils.js";
 import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
-import { loadMainMenuPanel } from "./main_menu_panel.js";
 import { postRequest } from "./network_utils/api_requests.js";
 import { isEnable2FAButtonClicked } from "./global_vars.js";
-import { loadMainMenuContent, loadPage } from "./router.js";
 
 export async function handleLogin() {
   const inputContainers = {
@@ -22,31 +20,18 @@ export async function handleLogin() {
   }
 
   try {
-    const response = await postRequest('/api/login/', loginInfo)
+    // const response = await postRequest('/api/login/', loginInfo)
+    const response = await postRequest('/api/token/', loginInfo)
 
-    if (response.success) {
-      // await getIdToken(loginInfo);
-
-      if (isEnable2FAButtonClicked) {
-        return 'success-with-2fa'
-      }
+    console.log(response)
+    if (response) {
       return 'success'
-
     } else {
       handleLoginErrors(inputContainers, response.errors)
     }
   } catch (error) {
     console.error('Error:', error);
     return 'error'
-  }
-}
-
-async function getIdToken(loginInfo) {
-  try {
-    await postRequest('/token_management/create_token/', loginInfo)
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Token Creation Error');
   }
 }
 

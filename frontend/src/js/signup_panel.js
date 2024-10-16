@@ -1,76 +1,8 @@
 
-import { addEventListenerTo } from "./ui_utils/ui_utils.js";
-import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
-import { initTogglePasswordVisibilityIcon, resetInputField } from "./ui_utils/input_field_utils.js";
+import { getColor } from "./ui_utils/color_utils.js";
+import { resetInputField } from "./ui_utils/input_field_utils.js";
 import { postRequest } from "./network_utils/api_requests.js";
-import { isEnable2FAButtonClicked, toggle2FAButton } from "./global_vars.js";
 import { setInputFieldHint } from "./ui_utils/input_field_utils.js";
-import { loadMainMenuPanel } from "./main_menu_panel.js";
-import { loadMainMenuContent, loadPage } from "./router.js";
-
-export function initEnable2FAButton() {
-  const button = document.getElementById('enable-2fa-button')
-  let teal500 = getColor('teal', 500)
-  let teal700 = getColor('teal', 700)
-  let teal800 = getColor('teal', 800)
-  let charcoal100 = getColor('charcoal', 100)
-  let charcoal700 = getColor('charcoal', 700)
-
-  addEventListenerTo(
-    button,
-    'click',
-    () => {
-      if (!isEnable2FAButtonClicked) {
-        toggle2FAButton()
-        callback();
-      } else {
-        toggle2FAButton()
-        button.style.backgroundColor = charcoal700
-        button.style.color = charcoal100
-      }
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mouseover',
-    () => {
-      button.style.backgroundColor = teal500
-      button.style.color = teal800
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mouseout',
-    () => {
-      if (!isEnable2FAButtonClicked) {
-        button.style.backgroundColor = charcoal700
-        button.style.color = charcoal100
-      } else {
-        button.style.backgroundColor = teal500
-        button.style.color = teal800
-      }
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mousedown',
-    () => {
-      button.style.backgroundColor = teal700
-    }
-  )
-
-  addEventListenerTo(
-    button,
-    'mouseup',
-    () => {
-      button.style.backgroundColor = teal500
-      button.style.color = teal800
-    }
-  )
-}
 
 // password1: first password input
 // password2: password input confirmation
@@ -94,11 +26,6 @@ export async function handleSignup() {
   }
 
   try {
-    console.log('isEnable2FAButtonClicked: ', isEnable2FAButtonClicked)
-    if (isEnable2FAButtonClicked) {
-      send_2FA_code_email(document.getElementById('signup-email').value)
-    }
-
     const response = await postRequest('/api/register/', signupInfo)
 
     if (response.success) {
@@ -110,39 +37,6 @@ export async function handleSignup() {
   } catch (error) {
     console.error('Error:', error);
     return 'error'
-  }
-}
-
-async function handle2FA() {
-  const inputContainers = {
-    'username': document.getElementById('signup-username-input-container'),
-    'email': document.getElementById('signup-email-input-container'),
-    'password1': document.getElementById('signup-password-input-container'),
-    'password2': document.getElementById('signup-confirm-password-input-container')
-  }
-
-  const signupInfo = {
-    'username': document.getElementById('signup-username').value,
-    'email': document.getElementById('signup-email').value,
-    'password1': document.getElementById('signup-password').value,
-    'password2': document.getElementById('signup-password-confirmation').value
-  }
-
-  if (isInputEmpty(signupInfo, inputContainers)) {
-    return
-  }
-
-  try {
-    const response = await postRequest('/api/register/', signupInfo)
-
-    if (response.success) {
-      send_2FA_code_email(document.getElementById('signup-email').value)
-      load2FAPanel()
-    } else {
-      handleSignupErrors(inputContainers, response.errors)
-    }
-  } catch (error) {
-    console.error('Error:', error);
   }
 }
 

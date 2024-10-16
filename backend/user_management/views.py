@@ -11,6 +11,73 @@ from .forms import CustomUserCreationForm
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
+from .serializers import UserAvatarImageSerializer
+from rest_framework.decorators import api_view, parser_classes, permission_classes
+from rest_framework.response import Response
+from django.db import transaction
+from .models import CustomUser
+from friends_system.models import FriendList
+
+from .serializers import CustomUserSerializer
+
+from django.shortcuts import get_object_or_404
+
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
+
+# CustomUserViewSet:
+# list()        for listing all users (GET /users/)
+# retrieve()    for getting a single user (GET /users/<id>/)
+# create()      for adding a new user (POST /users/)
+# update()      partial_update() for updating users (PUT/PATCH /users/<id>/)
+# destroy()     for deleting a user (DELETE /users/<id>/)
+
+class CustomUserViewSet(viewsets.ModelViewSet):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthenticated]
+
+    # gets all users info excluding the current user
+    def get_queryset(self):
+        current_user = self.request.user
+        return CustomUser.objects.exclude(id=current_user.id)
+
+    # gets the current user's info
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def current_user(self, request):
+        user = request.user
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
+
+class CookieTokenObtainPairView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == status.HTTP_200_OK:
+            # Set the JWT in a HttpOnly cookie
+            response.set_cookie(
+                key='access_token', 
+                value=response.data['access'], 
+                httponly=True, 
+                secure=False,  # Set True for HTTPS, False for HTTP development
+                samesite='Lax'
+            )
+            # Optionally add the refresh token in another cookie
+            response.set_cookie(
+                key='refresh_token', 
+                value=response.data['refresh'], 
+                httponly=True, 
+                secure=False,
+                samesite='Lax'
+            )
+            # Remove token from response body
+            response.data.pop('access')
+            response.data.pop('refresh')
+        return response
 
 User = get_user_model()
 
@@ -41,8 +108,10 @@ def register_view(request):
         data = json.loads(request.body)
         form = CustomUserCreationForm(data)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
+            with transaction.atomic():
+                user = form.save()
+                FriendList.objects.create(current_user=user)
+                login(request, user)
             return JsonResponse({'success': True})
         else:
             return JsonResponse({'success': False, 'errors': form.errors}, status=400)
@@ -92,9 +161,6 @@ def logout_view(request):
 	else:
 		return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-# def hello_world(request):
-#     return JsonResponse({'message': 'Hello, world!'})
-
 @csrf_exempt
 def update_password(request):
 	if request.method == 'POST':
@@ -123,9 +189,22 @@ def update_password(request):
 		else:
 			return JsonResponse({'error': 'Incorrect old password'}, status=400)
 
-		# print(user)
-		# print(user.password)
-		# return JsonResponse({'old_password is ': old_password, 'new_password is ': new_password, 'email is ': email})
 	else:
 		return JsonResponse({'error': 'Invalid request method'}, status=405)
 
+@csrf_exempt
+@api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser])
+# @permission_classes([AllowAny])
+def upload_avatar_image(request):
+    print(request.data)
+    username = request.data.get('username')
+    user = get_object_or_404(CustomUser, username='username')
+
+    serializer = UserAvatarImageSerializer(user, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response({ "message": "Image uploaded successfully"}, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
