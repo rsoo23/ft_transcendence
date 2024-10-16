@@ -4,7 +4,7 @@ import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.j
 import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
 import { initAddFriendButton, loadFriendListContent } from "./friends_content.js"
 import { handleLogin, handleForgotPassword } from "./login_panel.js";
-import { handleSignup, initEnable2FAButton } from "./signup_panel.js"
+import { handleSignup } from "./signup_panel.js"
 import { changeAvatar, initFileInput, setDefaultAvatar, uploadAvatarImage } from "./avatar_upload_panel.js";
 import { getRequest } from "./network_utils/api_requests.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
@@ -138,11 +138,10 @@ async function loadDynamicContent(contentName) {
         const result = await handleSignup()
 
         if (result === 'success') {
-          loadPage('avatar_upload')
+          loadPage('login')
         }
       }
     )
-    initEnable2FAButton()
     initTogglePasswordVisibilityIcon()
 
   } else if (contentName === '2fa') {
