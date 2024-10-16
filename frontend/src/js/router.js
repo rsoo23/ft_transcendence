@@ -9,6 +9,7 @@ import { changeAvatar, initFileInput, setDefaultAvatar, uploadAvatarImage } from
 import { initLogoutButton } from './logout.js';
 import { initSettingsPage } from "./update_username.js";
 import { getRequest } from "./network_utils/api_requests.js";
+import { initEmailSettings } from "./update_email.js";
 import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { setUserInfo, userInfo } from "./global_vars.js";
 import { initEditIcons } from "./settings.js";
@@ -203,6 +204,7 @@ async function loadDynamicContent(contentName) {
     initEditIcons()
     initSettingsPage();
     initLogoutButton();
+    initEmailSettings();
   }
 }
 
