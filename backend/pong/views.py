@@ -5,8 +5,11 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
+from asgiref.sync import sync_to_async
 from .models import PongMatch
 from main.settings import JWT_SECRET_KEY
+from .server import server_manager
+import asyncio
 
 # NOTE: This should be used in a "try except" block
 # Returns CustomUser model if the request has a valid token
@@ -27,14 +30,37 @@ def get_user_from_token(cookies):
 
     return user
 
+# delete the match after 30 seconds if it hasn't actually started
+async def try_clean_match(match_id):
+    await asyncio.sleep(30)
+    if match_id not in server_manager.matches:
+        return
+
+    # just check the thread to see if the game is running
+    match_info = server_manager.matches[match_id]
+    if match_info['thread'].is_alive():
+        return
+
+    try:
+        match_db_info = [x async for x in PongMatch.objects.filter(id=match_id)][0]
+        await match_db_info.adelete()
+
+    except Exception:
+        pass
+
+    server_manager.close_game(match_id)
+    print(f'pong: Match with id {match_id} was deleted due to inactivity.')
+
 @csrf_exempt
-def create_match(request):
+async def create_match(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         try:
             user1 = data['player1_uuid']
             user2 = data['player2_uuid']
-            match = PongMatch.objects.create(player1_uuid=user1, player2_uuid=user2)
+            match = await sync_to_async(PongMatch.objects.create)(player1_uuid=user1, player2_uuid=user2)
+            server_manager.try_create_game(match.id, f'pongmatch-{match.id}')
+            asyncio.create_task(try_clean_match(match.id))
             return JsonResponse({
                 'success': True,
                 'match_id': match.id

@@ -13,7 +13,7 @@ from datetime import datetime
 
 class PongConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
-        self.match_id = self.scope['url_route']['kwargs']['match_id']
+        self.match_id = int(self.scope['url_route']['kwargs']['match_id'])
         self.group_match = f'pongmatch-{self.match_id}'
         self.group_host = f'pongmatch-{self.match_id}'
 
@@ -41,8 +41,6 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
         # assign groups and set up user
         await self.channel_layer.group_add(self.group_match, self.channel_name)
-        server_manager.try_create_game(self.match_id, self.group_match)
-        # server_manager.start_game(self.match_id)
 
         if self.user_id == self.match_data.player1_uuid:
             self.player_num = 1

@@ -22,7 +22,7 @@ class ServerManager():
         self.matches_lock.acquire()
         self.matches[match_id] = {
             'game_info': GameLogic(),
-            'thread': Thread(target=self.main_loop, args=(match_id)),
+            'thread': Thread(target=self.main_loop, args=(match_id,)),
             'group_match': group_match,
             'p1_consumer': None,
             'p2_consumer': None,
