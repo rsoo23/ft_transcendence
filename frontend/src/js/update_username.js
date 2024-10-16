@@ -2,13 +2,29 @@ import { postRequest } from "./network_utils/api_requests.js";
 
 export function initSettingsPage() {
     const saveButton = document.getElementById('save-button');
+	const usernameEditIcon = document.getElementById('username-edit-icon');
+    const usernameInput = document.getElementById('username-input');
+
     if (saveButton) {
-        saveButton.addEventListener('click', handleSaveSettings);
+        saveButton.addEventListener('click', () => handleSaveSettings(usernameInput));
+    }
+    if (usernameEditIcon) {
+        usernameEditIcon.addEventListener('click', () => toggleUsernameEdit(usernameInput));
     }
 }
 
-async function handleSaveSettings() {
-    const usernameInput = document.getElementById('username-input');
+function toggleUsernameEdit(usernameInput) {
+    usernameInput.disabled = !usernameInput.disabled;
+    if (!usernameInput.disabled) {
+        usernameInput.focus();
+    }
+}
+
+async function handleSaveSettings(usernameInput) {
+    if (usernameInput.disabled) {
+        return; // Don't update if the input is disabled
+    }
+
     const newUsername = usernameInput.value.trim();
 
     if (newUsername === '') {
@@ -21,7 +37,7 @@ async function handleSaveSettings() {
 
         if (response.status === 'success') {
             alert(response.message);
-			usernameInput.value = newUsername;
+            usernameInput.disabled = true;  // Disable the input after successful update
         } else {
             alert('Failed to update username: ' + response.message);
         }
