@@ -52,7 +52,7 @@ class ServerManager():
         if match_info['p2_consumer'] != None:
             await match_info['p2_consumer'].close()
 
-        self.delete_game(self, match_id)
+        self.delete_game(match_id)
         print(f'game with id {match_id} ended!')
 
     # deletes the game data from the array
