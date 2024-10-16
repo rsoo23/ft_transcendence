@@ -9,6 +9,7 @@ import { changeAvatar, initFileInput, setDefaultAvatar, uploadAvatarImage } from
 import { getRequest } from "./network_utils/api_requests.js";
 import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { setUserInfo, userInfo } from "./global_vars.js";
+import { initEditIcons } from "./settings.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -158,32 +159,32 @@ async function loadDynamicContent(contentName) {
 
   } else if (contentName === 'avatar_upload') {
 
-    initFileInput()
-    initRandomColorButton(
-      'use-default-avatar-button',
-      'avatar-upload-panel',
-      () => {
-        setDefaultAvatar()
-      }
-    )
-    initRandomColorButton(
-      'change-avatar-button',
-      'avatar-upload-panel',
-      () => {
-        changeAvatar()
-      }
-    )
-    initRandomColorButton(
-      'confirm-avatar-upload-button',
-      'avatar-upload-panel',
-      async () => {
-        const result = await uploadAvatarImage()
-
-        if (result === 'success') {
-          loadPage('login')
-        }
-      }
-    )
+    // initFileInput()
+    // initRandomColorButton(
+    //   'use-default-avatar-button',
+    //   'avatar-upload-panel',
+    //   () => {
+    //     setDefaultAvatar()
+    //   }
+    // )
+    // initRandomColorButton(
+    //   'change-avatar-button',
+    //   'avatar-upload-panel',
+    //   () => {
+    //     changeAvatar()
+    //   }
+    // )
+    // initRandomColorButton(
+    //   'confirm-avatar-upload-button',
+    //   'avatar-upload-panel',
+    //   async () => {
+    //     const result = await uploadAvatarImage()
+    //
+    //     if (result === 'success') {
+    //       loadPage('login')
+    //     }
+    //   }
+    // )
 
   } else if (contentName === 'main_menu') {
     initHotbar()
@@ -195,6 +196,9 @@ async function loadDynamicContent(contentName) {
     initAddFriendButton()
     await loadFriendListContent()
 
+  } else if (contentName === 'settings') {
+    initFileInput()
+    initEditIcons()
   }
 }
 
