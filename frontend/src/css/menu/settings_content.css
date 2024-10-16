@@ -37,6 +37,10 @@
 	transition: color 0.2s ease;
 }
 
+.edit-avatar-input {
+  display: none;
+}
+
 .profile-settings-avatar-cell {
   display: flex;
 	justify-content: center;
