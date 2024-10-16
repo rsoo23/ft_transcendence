@@ -52,11 +52,18 @@ class ServerManager():
         if match_info['p2_consumer'] != None:
             await match_info['p2_consumer'].close()
 
+        self.delete_game(self, match_id)
         print(f'game with id {match_id} ended!')
+
+    # deletes the game data from the array
+    def delete_game(self, match_id):
+        if match_id not in self.matches:
+            print(f'game with id {match_id} does not exist')
+            return
+
         self.matches_lock.acquire()
         self.matches.pop(match_id)
         self.matches_lock.release()
-        pass
 
     # idk if this is needed yet
     def get_game(self, match_id):
@@ -104,8 +111,16 @@ class ServerManager():
                 # msg = f'dt={delta_time}; acc={accumulator_ms}'
                 msg = match_info['game_info'].tick(GameLogic.sec_per_frame)
 
-                async_to_sync(match_info['p1_consumer'].send_json)(msg)
-                async_to_sync(match_info['p2_consumer'].send_json)(msg)
+                try:
+                    async_to_sync(match_info['p1_consumer'].send_json)(msg)
+                    async_to_sync(match_info['p2_consumer'].send_json)(msg)
+
+                except:
+                    print('unable to send message to socket, stopping thread')
+                    match_info['game_info'].ended = True
+                    self.delete_game(match_id)
+                    return
+
                 accumulator_ms -= GameLogic.ms_per_frame
 
             # TODO: check if we need to actually implement a more precise sleep function
