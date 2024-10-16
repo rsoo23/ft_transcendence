@@ -6,6 +6,8 @@ import { initAddFriendButton, loadFriendListContent } from "./friends_content.js
 import { handleLogin, handleForgotPassword } from "./login_panel.js";
 import { handleSignup } from "./signup_panel.js"
 import { changeAvatar, initFileInput, setDefaultAvatar, uploadAvatarImage } from "./settings.js";
+import { initLogoutButton } from './logout.js';
+import { initSettingsPage } from "./update_username.js";
 import { getRequest } from "./network_utils/api_requests.js";
 import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { setUserInfo, userInfo } from "./global_vars.js";
@@ -199,6 +201,8 @@ async function loadDynamicContent(contentName) {
   } else if (contentName === 'settings') {
     initFileInput()
     initEditIcons()
+    initSettingsPage();
+    initLogoutButton();
   }
 }
 
