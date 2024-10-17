@@ -1,40 +1,75 @@
 <div id="profile-settings-container">
-	<h1 class="profile-settings-title">Profile Settings</h1>
-	<div class="profile-settings-grid">
-		<!-- Avatar  -->
-		<span class="profile-settings-label">Avatar</span>
-		<div class="profile-settings-avatar-cell">
+  <h1 class="profile-settings-title">Profile Settings</h1>
+  <div class="profile-settings-grid">
+    <!-- Avatar  -->
+    <span class="profile-settings-label">Avatar</span>
+    <div class="profile-settings-avatar-cell">
       <div class="avatar-container">
-        <img src="/static/images/kirby.png" alt="avatar" class="profile-settings-avatar">
+        <img
+          src="/static/images/kirby.png"
+          alt="avatar"
+          class="profile-settings-avatar"
+        />
       </div>
-		</div>
-    <input type="file" accept="image/jpeg, image/png, image/jpg" class="edit-avatar-input">
-		<i class="profile-settings-icon edit-avatar-icon material-icons">edit</i>
+    </div>
+    <input
+      type="file"
+      accept="image/jpeg, image/png, image/jpg"
+      class="edit-avatar-input"
+    />
+    <i class="profile-settings-pencil-icon edit-avatar-icon material-icons"
+      >edit</i
+    >
 
-		<!-- Username  -->
-		<span class="profile-settings-label">Username</span>
-		<input id="username-input" type="text" class="profile-settings-input" value="peiyun" placeholder="Username" disabled>
-		<i id="username-edit-icon" class="profile-settings-icon material-icons">edit</i>
+    <!-- Username  -->
+    <span class="profile-settings-label">Username</span>
+    <input
+      id="username-input"
+      type="text"
+      class="profile-settings-input"
+      value="peiyun"
+      placeholder="Username"
+      disabled
+    />
+    <i
+      id="username-edit-icon"
+      class="profile-settings-pencil-icon material-icons"
+      >edit</i
+    >
 
-		<!-- Email  -->
-		<span class="profile-settings-label">Email</span>
-		<input id="email-input" type="email" class="profile-settings-input" value="peiyun@gmail.com" placeholder="Email" disabled>
-		<i id="email-edit-icon" class="profile-settings-icon material-icons">edit</i>
+    <!-- Email  -->
+    <span class="profile-settings-label">Email</span>
+    <input
+      id="email-input"
+      type="email"
+      class="profile-settings-input"
+      value="peiyun@gmail.com"
+      placeholder="Email"
+      disabled
+    />
+    <i id="email-edit-icon" class="profile-settings-pencil-icon material-icons"
+      >edit</i
+    >
 
-		<!-- Password  -->
-		<span class="profile-settings-label">Password</span>
-		<input type="password" class="profile-settings-input" value="********" placeholder="Password">
-		<i class="profile-settings-icon material-icons">edit</i>
+    <!-- Password  -->
+    <span class="profile-settings-label">Password</span>
+    <input
+      type="password"
+      class="profile-settings-input"
+      value="********"
+      placeholder="Password"
+    />
+    <i class="profile-settings-pencil-icon material-icons">edit</i>
 
-		<!-- 2FA  -->
-		<span class="profile-settings-label">2FA</span>
-		<label class="profile-settings-toggle-switch">
-			<input type="checkbox" class="profile-settings-toggle-input" checked>
-			<span class="profile-settings-slider"></span>
-		</label>
-		</div>
-	<div class="profile-settings-button-group">
-		<button id="save-button" class="profile-settings-button">Save</button>
-		<button id="logout-button" class="profile-settings-button">Logout</button>
-	</div>
+    <!-- 2FA  -->
+    <span class="profile-settings-label">2FA</span>
+    <label class="profile-settings-toggle-switch">
+      <input type="checkbox" class="profile-settings-toggle-input" checked />
+      <span class="profile-settings-slider"></span>
+    </label>
+  </div>
+  <div class="profile-settings-button-group">
+    <button id="save-button" class="profile-settings-button">Save</button>
+    <button id="logout-button" class="profile-settings-button">Logout</button>
+  </div>
 </div>
