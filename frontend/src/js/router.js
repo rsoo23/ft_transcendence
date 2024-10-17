@@ -1,9 +1,8 @@
 import { initHotbar, updateBorderColor, updateButtonState } from "./ui_utils/hotbar_utils.js";
-import { initLink } from "./ui_utils/link_utils.js";
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
 import { initAddFriendButton, loadFriendListContent } from "./friends_content.js"
-import { handleLogin, handleForgotPassword } from "./login_panel.js";
+import { handleLogin } from "./login_panel.js";
 import { handleSignup } from "./signup_panel.js"
 import { changeAvatar, initFileInput, setDefaultAvatar, uploadAvatarImage } from "./settings.js";
 import { initLogoutButton } from './logout.js';
@@ -115,19 +114,13 @@ async function loadDynamicContent(contentName) {
       async () => {
         const result = await handleLogin()
 
-        if (result === 'success-with-2fa') {
-          load2FAPanel()
-        } else if (result === 'success') {
+        if (result === 'success') {
           loadPage('main_menu')
           loadMainMenuContent('play')
         }
       }
     )
     initTogglePasswordVisibilityIcon()
-    initLink(
-      'forgot-password-link',
-      () => handleForgotPassword()
-    )
 
   } else if (contentName === 'signup') {
 
