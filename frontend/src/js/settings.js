@@ -23,16 +23,12 @@ export function setDefaultAvatar() {
 }
 
 export async function changeAvatar() {
-  // const imgUploadInput = document.querySelector('#avatar-upload-panel .img-upload-input')
   const imgUploadInput = document.querySelector('.edit-avatar-input')
 
   imgUploadInput.click()
 }
 
 export function initFileInput() {
-  // const imgUploadInput = document.querySelector('#avatar-upload-panel .img-upload-input')
-  // const avatar = document.querySelector('#avatar-upload-panel .avatar')
-
   const imgUploadInput = document.querySelector('#profile-settings-container .edit-avatar-input')
   const avatar = document.querySelector('#profile-settings-container .profile-settings-avatar')
 
