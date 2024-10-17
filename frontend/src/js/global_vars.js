@@ -3,13 +3,6 @@ export const ANIM_WAIT_DURATION = 550
 
 export const MAX_AVATAR_FILE_SIZE = 2000000
 
-export let isEnable2FAButtonClicked = false
-export let isSubmit2FAButtonClicked = false
-
-export function toggle2FAButton() {
-  isEnable2FAButtonClicked = !isEnable2FAButtonClicked;
-}
-
 export let userInfo = {}
 
 export function setUserInfo(obj) {
