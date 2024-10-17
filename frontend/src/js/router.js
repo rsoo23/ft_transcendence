@@ -12,6 +12,7 @@ import { initEmailSettings } from "./update_email.js";
 import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { setUserInfo, userInfo } from "./global_vars.js";
 import { initEditIcons } from "./settings.js";
+import { initPasswordSettings } from "./update_password.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -169,6 +170,7 @@ async function loadDynamicContent(contentName) {
     initSettingsPage();
     initLogoutButton();
     initEmailSettings();
+	initPasswordSettings();
   }
 }
 

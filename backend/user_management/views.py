@@ -163,34 +163,21 @@ def logout_view(request):
 
 @csrf_exempt
 def update_password(request):
-	if request.method == 'POST':
-		data = json.loads(request.body)
-		old_password = data.get('old_password')
-		new_password = data.get('new_password')
-		email = data.get('email')
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        new_password = data.get('new_password')
+        user = request.user  # Assuming the user is authenticated
 
-		try:
-			user = User.objects.get(email=email)
-		except User.DoesNotExist:
-			return JsonResponse({'error': 'User does not exist'}, status=400)
+        try:
+            validate_password(new_password, user=user)
+        except ValidationError as e:
+            return JsonResponse({'status': 'error', 'message': list(e.messages)}, status=400)
 
-		# Django's built-in check_password function
-        # old_password is the password entered by the user
-        # user.password is the hashed password stored in the database
-		if check_password(old_password, user.password):
-			# Django's built-in validate_password function
-			try:
-				validate_password(new_password, user=user) #user=user to check if password is similar user attributes like username and email
-			except ValidationError as e:
-				return JsonResponse({'error': list(e.messages)}, status=400)
-			user.set_password(new_password)
-			user.save()
-			return JsonResponse({'message': 'Password updated successfully'})
-		else:
-			return JsonResponse({'error': 'Incorrect old password'}, status=400)
-
-	else:
-		return JsonResponse({'error': 'Invalid request method'}, status=405)
+        user.set_password(new_password)
+        user.save()
+        return JsonResponse({'status': 'success', 'message': 'Password updated successfully'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
 @csrf_exempt
 def update_email(request):

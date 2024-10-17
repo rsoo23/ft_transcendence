@@ -18,7 +18,7 @@ urlpatterns = [
 	path('forgot_password/', views.forgot_password_view, name='forgot_password'),
 	path('update_username/', views.update_username, name='update_username'),
 	path('logout/', views.logout_view, name='logout'),
-	path('update-password/', views.update_password, name='update_password'),
+	path('update_password/', views.update_password, name='update_password'),
 	path('update_email/', views.update_email, name='update_email'),
     path('upload_avatar_image/', views.upload_avatar_image, name='upload_avatar_image'),
     path('', include(router.urls)),
