@@ -3,7 +3,7 @@ import { addEventListenerTo } from "./ui_utils.js";
 import { getColor, getRandomColor } from "./color_utils.js";
 import { hideTooltip, showTooltip } from "./tooltip_utils.js";
 import { loadContentToMainMenu } from "../router.js";
-import { hotbarItems, toggle2FAButton, setHotbarSelected } from "../global_vars.js";
+import { hotbarItems, setHotbarSelected } from "../global_vars.js";
 
 export function initHotbar() {
   Object.keys(hotbarItems).forEach(key => {
