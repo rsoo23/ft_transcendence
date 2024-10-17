@@ -1,9 +1,8 @@
 import { initHotbar, updateBorderColor, updateButtonState } from "./ui_utils/hotbar_utils.js";
-import { initLink } from "./ui_utils/link_utils.js";
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
 import { initAddFriendButton, loadFriendListContent } from "./friends_content.js"
-import { handleLogin, handleForgotPassword } from "./login_panel.js";
+import { handleLogin } from "./login_panel.js";
 import { handleSignup } from "./signup_panel.js"
 import { changeAvatar, initFileInput, setDefaultAvatar, uploadAvatarImage } from "./settings.js";
 import { initLogoutButton } from './logout.js';
@@ -116,19 +115,13 @@ async function loadDynamicContent(contentName) {
       async () => {
         const result = await handleLogin()
 
-        if (result === 'success-with-2fa') {
-          load2FAPanel()
-        } else if (result === 'success') {
+        if (result === 'success') {
           loadPage('main_menu')
           loadMainMenuContent('play')
         }
       }
     )
     initTogglePasswordVisibilityIcon()
-    initLink(
-      'forgot-password-link',
-      () => handleForgotPassword()
-    )
 
   } else if (contentName === 'signup') {
 
@@ -159,35 +152,6 @@ async function loadDynamicContent(contentName) {
         loadMainMenuContent('play')
       }
     )
-
-  } else if (contentName === 'avatar_upload') {
-
-    // initFileInput()
-    // initRandomColorButton(
-    //   'use-default-avatar-button',
-    //   'avatar-upload-panel',
-    //   () => {
-    //     setDefaultAvatar()
-    //   }
-    // )
-    // initRandomColorButton(
-    //   'change-avatar-button',
-    //   'avatar-upload-panel',
-    //   () => {
-    //     changeAvatar()
-    //   }
-    // )
-    // initRandomColorButton(
-    //   'confirm-avatar-upload-button',
-    //   'avatar-upload-panel',
-    //   async () => {
-    //     const result = await uploadAvatarImage()
-    //
-    //     if (result === 'success') {
-    //       loadPage('login')
-    //     }
-    //   }
-    // )
 
   } else if (contentName === 'main_menu') {
     initHotbar()

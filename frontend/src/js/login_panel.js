@@ -2,7 +2,6 @@
 import { getColor } from "./ui_utils/color_utils.js";
 import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
 import { postRequest } from "./network_utils/api_requests.js";
-import { isEnable2FAButtonClicked } from "./global_vars.js";
 
 export async function handleLogin() {
   const inputContainers = {
@@ -20,18 +19,34 @@ export async function handleLogin() {
   }
 
   try {
-    // const response = await postRequest('/api/login/', loginInfo)
-    const response = await postRequest('/api/token/', loginInfo)
+    const response = await postRequest('/api/login/', loginInfo)
 
     console.log(response)
-    if (response) {
-      return 'success'
+    if (response.success) {
+      const response = await retrieveTokens(loginInfo)
+
+      if (response === 'success') {
+        return 'success'
+      }
     } else {
       handleLoginErrors(inputContainers, response.errors)
+      return
     }
   } catch (error) {
     console.error('Error:', error);
     return 'error'
+  }
+}
+
+export async function retrieveTokens(loginInfo) {
+  try {
+    const response = await postRequest('/api/token/', loginInfo)
+
+    if (response) {
+      return 'success'
+    }
+  } catch (error) {
+    console.error('Error: cannot retrieve tokens ', error)
   }
 }
 
@@ -66,20 +81,3 @@ function handleLoginErrors(inputContainers, errors) {
   }
 }
 
-export async function handleForgotPassword() {
-  // const email = document.getElementById('email').value;
-  const email = 'rongjie.soo12@gmail.com'
-  try {
-    const response = await postRequest('/api/forgot_password/', { email })
-
-    if (response.success) {
-      alert('If an account exists with this email, password reset instructions have been sent.');
-      location.reload(); // Reload to show login form
-    } else {
-      alert('An error occurred. Please try again.');
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    alert('An error occurred. Please try again.');
-  }
-}
