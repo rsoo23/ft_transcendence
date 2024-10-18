@@ -100,8 +100,9 @@ class Ball():
         states = ObjectState('ball')
         states.append(self.pos, 0.0)
 
+        stop_on_next_loop = False
         to_travel = calc_travel_dist(self.vector, self.speed, Vector2(1, 1))
-        while to_travel.x != 0 or to_travel.y != 0:
+        while (to_travel.x != 0 or to_travel.y != 0) and not stop_on_next_loop:
             prev_pos = copy.copy(self.pos)
             self.pos.x += to_travel.x
             self.pos.y += to_travel.y
@@ -128,13 +129,17 @@ class Ball():
             if self.pos.x + Ball.size.x >= game_info.game_size.x or self.pos.x < 0:
                 # TODO: replace bounce with destroy logic
                 if self.vector.x < 0:
+                    game_info.score[0] += 1
                     self.pos.x = 0
 
                 else:
+                    game_info.score[1] += 1
                     self.pos.x = game_info.game_size.x - Ball.size.x
 
                 self.pos.y -= to_travel.y * get_remaining_dist_scale(to_travel, prev_pos, self.pos).x
-                self.vector.x *= -1
+                game_info.objects.append(BallTimer())
+                game_info.objects.remove(self)
+                stop_on_next_loop = True
                 bounced = True
 
             # check for horizontal walls
@@ -158,6 +163,22 @@ class Ball():
 
         states.append(self.pos, 1.0)
         return states
+
+# respawns the ball after 5 seconds
+class BallTimer():
+    def __init__(self):
+        self.time_elapsed = 0
+
+    def tick(self, game_info, dt):
+        self.time_elapsed += dt
+        if self.time_elapsed < 2.5:
+            return None
+
+        # TODO: randomize angle
+        new_ball = Ball(game_info.game_size.x / 2, game_info.game_size.y / 2, 1, math.sin(math.radians(45)), 200)
+        game_info.objects.append(new_ball)
+        game_info.objects.remove(self)
+        return None
 
 class PlayerInput():
     def __init__(self):
@@ -194,6 +215,7 @@ class GameLogic():
         self.ended = False
         self.player_inputs = [PlayerInput(), PlayerInput()]
         self.game_size = Vector2(400, 240)
+        self.score = [0, 0]
         self.objects = [
             Paddle(25, 0, 1), # left paddle
             Paddle(self.game_size.x - Paddle.size.x - 25, 0, 2), # right paddle
@@ -206,7 +228,8 @@ class GameLogic():
     # returns an array of objects for the client to render
     def tick(self, dt):
         states = []
-        for obj in self.objects:
+        objlist = self.objects.copy() # this is done to prevent processing new objects created in the same tick
+        for obj in objlist:
             obj_state = obj.tick(self, dt)
             if obj_state != None:
                 states.append(ObjectStateSerializer(obj_state).data)
