@@ -166,7 +166,7 @@ def update_password(request):
 	if request.method == 'POST':
 		data = json.loads(request.body)
 		new_password = data.get('new_password')
-		user = request.user  # Assuming the user is authenticated
+		user = request.user
 
 		if check_password(new_password, user.password):
 			return JsonResponse({'status': 'error', 'message': 'New password cannot be the same as the old password'}, status=400)
