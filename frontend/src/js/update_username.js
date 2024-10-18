@@ -17,7 +17,7 @@ export async function initSettingsPage() {
 
 async function setCurrentUsername(usernameInput) {
 	try {
-		const response = await getRequest('/api/current_username/');
+		const response = await getRequest('/api/current_username_email/');
 		if (response.username) {
 			usernameInput.value = response.username;
 		}

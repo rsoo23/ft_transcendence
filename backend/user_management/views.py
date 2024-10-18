@@ -223,7 +223,7 @@ def upload_avatar_image(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def current_username(request):
+def current_username_email(request):
      user = request.user
      return Response({
         'username': user.username,
