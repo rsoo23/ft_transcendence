@@ -21,5 +21,6 @@ urlpatterns = [
 	path('update_password/', views.update_password, name='update_password'),
 	path('update_email/', views.update_email, name='update_email'),
     path('upload_avatar_image/', views.upload_avatar_image, name='upload_avatar_image'),
+	path('current_username/', views.current_username, name='current_username'),
     path('', include(router.urls)),
 ]

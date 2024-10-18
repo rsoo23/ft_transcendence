@@ -221,3 +221,11 @@ def upload_avatar_image(request):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def current_username(request):
+     user = request.user
+     return Response({
+        'username': user.username,
+        'email': user.email,
+	 })
