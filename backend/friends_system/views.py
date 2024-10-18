@@ -40,7 +40,12 @@ def get_non_friends(request):
     # 2. receivers of current user's friend request
     # 3. senders of friend request to current user
     # 4. current user
-    non_friends = all_users.exclude(id__in=friends).exclude(id__in=requests_receivers).exclude(id__in=requests_senders).exclude(id=current_user.id)
+    # 5. is staff (admin)
+    non_friends = all_users.exclude(id__in=friends)\
+                            .exclude(id__in=requests_receivers)\
+                            .exclude(id__in=requests_senders)\
+                            .exclude(id=current_user.id)\
+                            .exclude(is_staff=True)
 
     serializer = CustomUserSerializer(non_friends, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
