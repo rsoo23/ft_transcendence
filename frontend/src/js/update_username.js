@@ -1,9 +1,11 @@
-import { postRequest } from "./network_utils/api_requests.js";
+import { postRequest, getRequest } from "./network_utils/api_requests.js";
 
-export function initSettingsPage() {
+export async function initSettingsPage() {
     const saveButton = document.getElementById('save-button');
 	const usernameEditIcon = document.getElementById('username-edit-icon');
     const usernameInput = document.getElementById('username-input');
+
+    await setCurrentUsername(usernameInput);
 
     if (saveButton) {
         saveButton.addEventListener('click', () => handleSaveSettings(usernameInput));
@@ -11,6 +13,18 @@ export function initSettingsPage() {
     if (usernameEditIcon) {
         usernameEditIcon.addEventListener('click', () => toggleUsernameEdit(usernameInput));
     }
+}
+
+async function setCurrentUsername(usernameInput) {
+	try {
+		const response = await getRequest('/api/current_username/');
+		if (response.username) {
+			usernameInput.value = response.username;
+		}
+	}
+	catch (error) {
+		console.error('Error fetching current username:', error);
+	}
 }
 
 function toggleUsernameEdit(usernameInput) {
