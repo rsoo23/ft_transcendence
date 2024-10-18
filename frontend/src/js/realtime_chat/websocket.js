@@ -3,7 +3,12 @@ import { addMessage } from "./chat_utils.js";
 export let chatSocket = null
 
 export function connect(receiverUsername) {
-  console.log('receiverUsername: ', receiverUsername)
+  // check if there's already an existing WebSocket
+  if (chatSocket && (chatSocket.readyState === WebSocket.OPEN || chatSocket.readyState === WebSocket.CONNECTING)) {
+    console.log('WebSocket is already open or connecting')
+    return
+  }
+
   chatSocket = new WebSocket(
     'ws://'
     + window.location.host
@@ -29,10 +34,10 @@ export function connect(receiverUsername) {
 
   chatSocket.onclose = function (e) {
     console.error('WebSocket connection closed unexpectedly. Trying to reconnect in 2 seconds');
-    // setTimeout(function () {
-    //   console.log("Reconnecting...")
-    //   connect()
-    // }, 2000)
+    setTimeout(function () {
+      console.log("Reconnecting...")
+      connect()
+    }, 2000)
   };
 
   chatSocket.onerror = function (err) {
