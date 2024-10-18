@@ -14,9 +14,17 @@ export class Pos2D
 	}
 }
 
-const SIZES = {
-	'paddle': new Pos2D(7, 45),
-	'ball': new Pos2D(7, 7),
+const STYLES = {
+	'paddle': {
+		'shape': 'rect',
+		'filled': true,
+		'size': new Pos2D(7, 45),
+	},
+	'ball': {
+		'shape': 'circle',
+		'fillColour': '#ffffff',
+		'radius': 3.5,
+	},
 }
 
 // The main renderer, it does all the work :]
@@ -142,9 +150,41 @@ export class RenderInfo
 				interpPos = nextState.pos;
 
 			// this.fillRectScaled(interpPos.x, interpPos.y, nextState.size.x, nextState.size.y);
-			const objSize = SIZES[objInfo.name];
-			this.fillRectScaled(interpPos.x, interpPos.y, objSize.x, objSize.y);
+			const objStyle = STYLES[objInfo.name];
+			this.ctx.save();
+			this.ctx.beginPath();
+			switch (objStyle.shape)
+			{
+			case 'rect':
+				this.fillRectScaled(interpPos.x, interpPos.y, objStyle.size.x, objStyle.size.y);
+				break;
+
+			case 'circle':
+				this.ctx.fillStyle = 'white'
+				this.arcScaled(interpPos.x + objStyle.radius, interpPos.y + objStyle.radius, objStyle.radius, 0, 2 * Math.PI);
+				this.ctx.fill();
+				break;
+
+			default:
+				console.log(`unknown shape "${objStyle.shape}"`);
+				break;
+			}
+
+			this.ctx.closePath();
+			this.ctx.restore();
 		}
+	}
+
+	arcScaled(x, y, radius, startAngle, endAngle, counterclockwise=false)
+	{
+		this.ctx.arc(
+			x * this.windowScale.x + this.windowPadding.x,
+			y * this.windowScale.y + this.windowPadding.y,
+			radius * this.windowScale.x,
+			startAngle,
+			endAngle,
+			counterclockwise
+		);
 	}
 
 	drawLineScaled(x0, y0, x1, y1)
