@@ -11,6 +11,9 @@ from main.settings import JWT_SECRET_KEY
 from .server import server_manager
 import asyncio
 
+# this is used to prevent a task getting deleted mid-execution
+background_tasks = set()
+
 # NOTE: This should be used in a "try except" block
 # Returns CustomUser model if the request has a valid token
 # Otherwise, raise an Exception
@@ -60,7 +63,9 @@ async def create_match(request):
             user2 = data['player2_uuid']
             match = await sync_to_async(PongMatch.objects.create)(player1_uuid=user1, player2_uuid=user2)
             server_manager.try_create_game(match.id, f'pongmatch-{match.id}')
-            asyncio.create_task(try_clean_match(match.id))
+            task = asyncio.create_task(try_clean_match(match.id))
+            background_tasks.add(task)
+            task.add_done_callback(background_tasks.discard)
             return JsonResponse({
                 'success': True,
                 'match_id': match.id
