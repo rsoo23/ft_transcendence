@@ -20,7 +20,6 @@ async function setCurrentUsername(usernameInput) {
 		const response = await getRequest('/api/current_username/');
 		if (response.username) {
 			usernameInput.value = response.username;
-			// usernameInput.placeholder = response.username;
 		}
 	}
 	catch (error) {
