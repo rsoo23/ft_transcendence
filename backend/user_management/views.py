@@ -90,11 +90,14 @@ def login_view(request):
 
         user = authenticate(request, username=username, password=password)
 
+        errors = {}
         if user is not None:
+            if user.is_staff:
+                errors['username'] = ['Admin cannot login']
+                return JsonResponse({'success': False, 'errors': errors})
             login(request, user)
             return JsonResponse({'success': True})
         else:
-            errors = {}
             if not User.objects.filter(username=username).exists():
                 errors['username'] = ['User does not exist: please sign up']
             else:
