@@ -50,9 +50,11 @@ class ChatConsumer(WebsocketConsumer):
         sender_username = text_data_json['sender_username']
 
         if self.user.is_authenticated:
+            new_message = Message.objects.create(user=self.user, room=self.room, content=message)
+
             timezone = pytz.timezone('Asia/Singapore')
-            now = datetime.now(timezone)
-            timestamp = now.strftime('%d %b %Y - %H:%M')
+            localized_timestamp = new_message.timestamp.astimezone(timezone)
+            formatted_timestamp = localized_timestamp.strftime('%d %b %Y - %H:%M')
 
             # send private message to the target
             async_to_sync(self.channel_layer.group_send)(
@@ -61,10 +63,9 @@ class ChatConsumer(WebsocketConsumer):
                     'type': 'private_message',
                     'message': message,
                     'sender_username': sender_username,
-                    'timestamp': timestamp,
+                    'timestamp': formatted_timestamp,
                 }
             )
-            Message.objects.create(user=self.user, room=self.room, content=message)
 
     def private_message(self, event):
         message = event['message']
