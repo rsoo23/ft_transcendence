@@ -24,7 +24,7 @@ def get_chat_messages(request):
     room = get_object_or_404(Room, name=room_name)
 
     # get the all the messages in this room
-    messages = Message.objects.filter(room=room).order_by("-timestamp")
+    messages = Message.objects.filter(room=room)
 
     # serialize the messages
     serializer = MessageSerializer(messages, many=True)
