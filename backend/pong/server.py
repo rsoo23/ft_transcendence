@@ -14,12 +14,13 @@ class ServerManager():
 
     # will do nothing if game already exists
     def try_create_game(self, match_id, group_match):
+        self.matches_lock.acquire()
         if match_id in self.matches:
             print(f'match with id {match_id} already exists!')
+            self.matches_lock.release()
             return
 
         print(f'creating match with id {match_id}')
-        self.matches_lock.acquire()
         self.matches[match_id] = {
             'game_info': GameLogic(),
             'thread': Thread(target=self.main_loop, args=(match_id,)),
@@ -34,11 +35,13 @@ class ServerManager():
 
     # NOTE: this forcifully ends the game, and the match is considered invalid
     # TODO: add another method that actually fits the note above
-    # closes
+    # closes the game normally
     async def close_game(self, match_id):
+        self.matches_lock.acquire()
         print(f'ending game with id {match_id}!')
         if match_id not in self.matches:
             print(f'game with id {match_id} does not exist')
+            self.matches_lock.release()
             return
 
         match_info = self.matches[match_id]
@@ -52,16 +55,18 @@ class ServerManager():
         if match_info['p2_consumer'] != None:
             await match_info['p2_consumer'].close()
 
-        self.delete_game(match_id)
+        self.matches.pop(match_id)
         print(f'game with id {match_id} ended!')
+        self.matches_lock.release()
 
     # deletes the game data from the array
     def delete_game(self, match_id):
+        self.matches_lock.acquire()
         if match_id not in self.matches:
             print(f'game with id {match_id} does not exist')
+            self.matches_lock.release()
             return
 
-        self.matches_lock.acquire()
         self.matches.pop(match_id)
         self.matches_lock.release()
 
@@ -118,12 +123,17 @@ class ServerManager():
                 except:
                     print('unable to send message to socket, stopping thread')
                     match_info['game_info'].ended = True
-                    self.delete_game(match_id)
-                    return
+                    # self.delete_game(match_id)
+                    break
 
                 accumulator_ms -= GameLogic.ms_per_frame
 
             # TODO: check if we need to actually implement a more precise sleep function
             sleep(GameLogic.sec_per_frame)
+
+        # disconnect consumers just in case
+        async_to_sync(match_info['p1_consumer'].close)()
+        async_to_sync(match_info['p2_consumer'].close)()
+        print('game closed :>')
 
 server_manager = ServerManager()

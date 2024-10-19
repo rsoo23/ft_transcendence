@@ -125,9 +125,8 @@ class Ball():
                 self.vector.x *= -1
                 bounced = True
 
-            # check for vertical walls
+            # check for vertical walls, if hit, score a point for one side
             if self.pos.x + Ball.size.x >= game_info.game_size.x or self.pos.x < 0:
-                # TODO: replace bounce with destroy logic
                 if self.vector.x < 0:
                     game_info.score[0] += 1
                     self.pos.x = 0
@@ -137,7 +136,12 @@ class Ball():
                     self.pos.x = game_info.game_size.x - Ball.size.x
 
                 self.pos.y -= to_travel.y * get_remaining_dist_scale(to_travel, prev_pos, self.pos).x
-                game_info.objects.append(BallTimer())
+                if game_info.score[0] >= game_info.win_score or game_info.score[1] >= game_info.win_score:
+                    game_info.ended = True
+
+                else:
+                    game_info.objects.append(BallTimer())
+
                 game_info.objects.remove(self)
                 stop_on_next_loop = True
                 bounced = True
@@ -216,6 +220,7 @@ class GameLogic():
         self.player_inputs = [PlayerInput(), PlayerInput()]
         self.game_size = Vector2(400, 240)
         self.score = [0, 0]
+        self.win_score = 5
         self.objects = [
             Paddle(25, 0, 1), # left paddle
             Paddle(self.game_size.x - Paddle.size.x - 25, 0, 2), # right paddle
