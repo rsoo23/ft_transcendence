@@ -15,7 +15,6 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.match_id = int(self.scope['url_route']['kwargs']['match_id'])
         self.group_match = f'pongmatch-{self.match_id}'
-        self.group_host = f'pongmatch-{self.match_id}'
 
         # get user id
         try:
@@ -45,11 +44,9 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
         if self.user_id == self.match_data.player1_uuid:
             self.player_num = 1
             print('user is host')
-            await self.channel_layer.group_add(self.group_host, self.channel_name)
 
         elif self.user_id == self.match_data.player2_uuid:
             self.player_num = 2
-            await self.channel_layer.group_send(self.group_host, {'type': 'receive.player.join', 'id': self.user_id})
 
         else:
             self.player_num = 0
@@ -68,7 +65,6 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
             return
 
         print(f'{self.user_id}: i am disconnecting!')
-        await self.channel_layer.group_send(self.group_host, {'type': 'receive.player.leave', 'id': self.user_id})
         await self.channel_layer.group_discard(self.group_match, self.channel_name)
 
         # stop and delete the server
@@ -80,37 +76,3 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
         if content['type'] == 'input':
             server_manager.update_player_input(self.match_id, self.player_num, content['input'], content['value'])
-
-    # pongmatch handlers
-    # async def send_player_update(self, event):
-    #     await self.send(text_data='ticked!')
-
-    # ponghost handlers
-    # expects: {'id': <int>}
-    async def receive_player_join(self, event):
-        player_uuid = event['id']
-
-        if self.user_id == self.match_data.player2_uuid:
-            print('hi, this is your NOT host speaking')
-            print(self.channel_name)
-
-        # print(f'user with {player_uuid} joined')
-
-    # expects: {'id': <int>}
-    async def receive_player_leave(self, event):
-        player_uuid = event['id']
-        if event['id'] == self.match_data.player1_uuid:
-            print('host left')
-
-        print(f'user with {player_uuid} left')
-
-    # expects: {'id': <int>, 'input': <string>}
-    async def receive_player_input(self, event):
-        # TODO: put this check somewhere better
-        if event['id'] == self.match_data.player1_uuid:
-            pass
-
-        elif event['id'] == self.match_data.player2_uuid:
-            pass
-
-        print(f'got {event['id']} from {event['id']}')

@@ -113,7 +113,6 @@ class ServerManager():
             accumulator_ms += delta_time
 
             while accumulator_ms >= GameLogic.ms_per_frame:
-                # msg = f'dt={delta_time}; acc={accumulator_ms}'
                 msg = match_info['game_info'].tick(GameLogic.sec_per_frame)
 
                 try:
@@ -123,7 +122,6 @@ class ServerManager():
                 except:
                     print('unable to send message to socket, stopping thread')
                     match_info['game_info'].ended = True
-                    # self.delete_game(match_id)
                     break
 
                 accumulator_ms -= GameLogic.ms_per_frame

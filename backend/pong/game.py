@@ -215,7 +215,6 @@ class GameLogic():
     ms_per_frame = sec_per_frame * 1000
 
     def __init__(self):
-        self.started = False
         self.ended = False
         self.player_inputs = [PlayerInput(), PlayerInput()]
         self.game_size = Vector2(400, 240)
@@ -226,9 +225,6 @@ class GameLogic():
             Paddle(self.game_size.x - Paddle.size.x - 25, 0, 2), # right paddle
             Ball(self.game_size.x / 2, self.game_size.y / 2, 1, math.sin(math.radians(45)), 200),
         ]
-        # async_to_sync(self.channel_layer.group_add)(self.group_host, self.channel_name)
-        # logging.basicConfig(level=logging.INFO)
-        # logging.info(f'created GameLogic')
 
     # returns an array of objects for the client to render
     def tick(self, dt):
