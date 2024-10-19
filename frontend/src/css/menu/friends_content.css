@@ -181,12 +181,16 @@
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
-  overflow-x: hidden;
   border-radius: 1rem;
   background-color: var(--charcoal-800);
   padding: 1rem;
   gap: 1rem;
   box-sizing: border-box;
+}
+
+.message-content {
+  word-wrap: break-word;
+  max-width: 100%;
 }
 
 #chat-content-container::-webkit-scrollbar {
@@ -287,9 +291,8 @@
 
   font-size: 1rem;
   font-weight: 600;
-  word-wrap: break-word;
 
-  width: 20rem;
+  width: 19rem;
 }
 
 .user-details {

@@ -100,11 +100,16 @@ export function addMessage(username, avatarUrl, message, datetime) {
   dateTimePara.classList.add('message-datetime');
   dateTimePara.textContent = datetime;
 
+  const messageContent = document.createElement('div')
+  messageContent.classList.add('message-content')
+  messageContent.textContent = message
+
   userDetails.appendChild(userNamePara);
   userDetails.appendChild(dateTimePara);
 
   messageContainer.appendChild(userDetails);
-  messageContainer.appendChild(document.createTextNode(message));
+  messageContainer.appendChild(messageContent)
+  // messageContainer.appendChild(document.createTextNode(message));
 
   chatMessageContainer.appendChild(avatarContainer);
   chatMessageContainer.appendChild(messageContainer);
