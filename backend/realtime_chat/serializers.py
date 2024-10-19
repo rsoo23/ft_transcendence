@@ -1,3 +1,5 @@
+import pytz
+
 from rest_framework import serializers
 from .models import Message
 
@@ -16,5 +18,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
     def get_timestamp(self, obj):
         original_timestamp = obj.timestamp
+        timezone = pytz.timezone('Asia/Singapore')  # Use the desired time zone, e.g., UTC+8
+        localized_timestamp = original_timestamp.astimezone(timezone)
 
-        return original_timestamp.strftime('%d %b %Y - %H:%M')
+        return localized_timestamp.strftime('%d %b %Y - %H:%M')
