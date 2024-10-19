@@ -1,11 +1,14 @@
 import { userInfo } from "../global_vars.js";
+import { getRequest } from "../network_utils/api_requests.js";
 import { addEventListenerTo, loadContentToTarget } from "../ui_utils/ui_utils.js";
-import { chatSocket, connect } from "./websocket.js";
+import { chatSocket } from "./websocket.js";
+import { connect } from "./websocket.js";
 
 // loads the chat interface containing the chat history and friend profile
 export async function loadChatInterface(username) {
-  console.log('Loading chat interface for: ', username)
   await loadContentToTarget('menu/chat_interface.html', 'friends-content-container')
+
+  await loadChatMessages(username)
 
   connect(username)
 
@@ -30,6 +33,22 @@ export async function loadChatInterface(username) {
       sendMessage(chatInput, username)
     }
   )
+}
+
+async function loadChatMessages(username) {
+  try {
+    const response = await getRequest(`/api/chat_messages/?receiver_username=${username}`)
+
+    console.log('chat messages: ', response)
+    if (response.detail === 'No Room matches the given query.') {
+      return
+    } else if (response) {
+      response.map(message => addMessage(message.sender_username, '/static/images/kirby.png', message.content, message.timestamp))
+    }
+  } catch (error) {
+    console.error('Error in loadChatMessages: ', error)
+  }
+
 }
 
 function sendMessage(chatInputElement) {
