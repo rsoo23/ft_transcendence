@@ -117,8 +117,8 @@ async function loadDynamicContent(contentName) {
         const result = await handleLogin()
 
         if (result === 'success') {
-          loadPage('main_menu')
-          loadMainMenuContent('play')
+          await loadPage('main_menu')
+          await loadMainMenuContent('play')
         }
       }
     )
@@ -148,9 +148,9 @@ async function loadDynamicContent(contentName) {
     initRandomColorButton(
       'confirm-2fa-button',
       'two-fa-panel',
-      () => {
-        loadPage('main_menu')
-        loadMainMenuContent('play')
+      async () => {
+        await loadPage('main_menu')
+        await loadMainMenuContent('play')
       }
     )
 
