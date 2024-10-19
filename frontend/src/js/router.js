@@ -29,7 +29,7 @@ const routes = {
 }
 
 // manages back and forth history
-window.addEventListener('popstate', (event) => {
+window.addEventListener('popstate', async (event) => {
   const path = window.location.pathname;
   const urlSegments = path.split('/')
   const lastUrlSegment = urlSegments.pop()
@@ -37,8 +37,8 @@ window.addEventListener('popstate', (event) => {
   if (path.startsWith('/menu')) {
     loadContentToMainMenu(lastUrlSegment);
   } else if (path.startsWith('/main_menu')) {
-    loadPage('main_menu');
-    loadMainMenuContent('play');
+    await loadPage('main_menu');
+    await loadMainMenuContent('play');
   } else {
     loadContent(lastUrlSegment);
   }
@@ -170,7 +170,7 @@ async function loadDynamicContent(contentName) {
     initSettingsPage();
     initLogoutButton();
     initEmailSettings();
-	initPasswordSettings();
+    initPasswordSettings();
   }
 }
 
