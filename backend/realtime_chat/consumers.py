@@ -12,14 +12,6 @@ from user_management.models import CustomUser
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
-        # self.sender_id = self.scope.get('user_id')
-        # self.user = self.scope['user']
-        # print(self.sender_id)
-        # self.receiver_username = self.scope['url_route']['kwargs']['receiver_username']
-        # self.sender = get_object_or_404(CustomUser, pk=self.sender_id)
-        # self.receiver = get_object_or_404(CustomUser, username=self.receiver_username)
-        # self.sender_username = self.sender.username
-
         self.user = self.scope['user']
         self.sender = self.user
         self.sender_username = self.sender.username
@@ -60,7 +52,7 @@ class ChatConsumer(WebsocketConsumer):
         if self.user.is_authenticated:
             timezone = pytz.timezone('Asia/Singapore')
             now = datetime.now(timezone)
-            timestamp = now.strftime('%d %b %Y - %H:%M'),
+            timestamp = now.strftime('%d %b %Y - %H:%M')
 
             # send private message to the target
             async_to_sync(self.channel_layer.group_send)(
