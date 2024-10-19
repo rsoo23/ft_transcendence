@@ -2,8 +2,7 @@ import { userInfo } from "../global_vars.js";
 import { getRequest } from "../network_utils/api_requests.js";
 import { scrollToBottom } from "../ui_utils/scroll.js";
 import { addEventListenerTo, loadContentToTarget } from "../ui_utils/ui_utils.js";
-import { chatSocket } from "./websocket.js";
-import { connect } from "./websocket.js";
+import { chatSocket, connectChat } from "./websocket.js";
 
 // loads the chat interface containing the chat history and friend profile
 export async function loadChatInterface(username) {
@@ -15,7 +14,7 @@ export async function loadChatInterface(username) {
   scrollToBottom('chat-content-container')
 
   // connect to websocket
-  connect(username)
+  connectChat(username)
 
   let chatInput = document.getElementById('chat-input')
   let sendMessageButton = document.getElementById('send-message-button')

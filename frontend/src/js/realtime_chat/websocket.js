@@ -2,7 +2,7 @@ import { addMessage } from "./chat_utils.js";
 
 export let chatSocket = null
 
-export function connect(receiverUsername) {
+export function connectChat(receiverUsername) {
   // check if there's already an existing WebSocket
   if (chatSocket && (chatSocket.readyState === WebSocket.OPEN || chatSocket.readyState === WebSocket.CONNECTING)) {
     console.log('WebSocket is already open or connecting')
@@ -28,8 +28,6 @@ export function connect(receiverUsername) {
     if (data) {
       addMessage(data.sender_username, '/static/images/kirby.png', data.message, data.timestamp)
     }
-
-    // scrollup function
   };
 
   chatSocket.onclose = function (e) {
