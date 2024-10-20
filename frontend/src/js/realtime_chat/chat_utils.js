@@ -1,17 +1,17 @@
 import { userInfo } from "../global_vars.js";
 import { getRequest } from "../network_utils/api_requests.js";
 import { scrollToBottom } from "../ui_utils/scroll.js";
-import { addEventListenerTo, loadContentToTarget } from "../ui_utils/ui_utils.js";
+import { addEventListenerTo, addTextPlaceholder, loadContentToTarget } from "../ui_utils/ui_utils.js";
 import { chatSocket, connectChat } from "./websocket.js";
+
+let hasMessages = false
 
 // loads the chat interface containing the chat history and friend profile
 export async function loadChatInterface(username) {
   await loadContentToTarget('menu/chat_interface.html', 'friends-content-container')
 
-  // load all messages and scroll down
+  // load all messages
   await loadChatMessages(username)
-
-  scrollToBottom('chat-content-container')
 
   // connect to websocket
   connectChat(username)
@@ -47,8 +47,13 @@ async function loadChatMessages(username) {
     console.log('chat messages: ', response)
     if (response.detail === 'No Room matches the given query.') {
       return
-    } else if (response) {
+    } else if (response.length === 0) {
+      hasMessages = false
+      addTextPlaceholder('chat-content-container', 'No chat messages yet')
+    } else if (response.length > 0) {
+      hasMessages = true
       response.map(message => addMessage(message.sender_username, '/static/images/kirby.png', message.content, message.timestamp))
+      scrollToBottom('chat-content-container')
     }
   } catch (error) {
     console.error('Error in loadChatMessages: ', error)
@@ -108,12 +113,20 @@ export function addMessage(username, avatarUrl, message, datetime) {
 
   messageContainer.appendChild(userDetails);
   messageContainer.appendChild(messageContent)
-  // messageContainer.appendChild(document.createTextNode(message));
 
   chatMessageContainer.appendChild(avatarContainer);
   chatMessageContainer.appendChild(messageContainer);
 
-  document.getElementById('chat-content-container').appendChild(chatMessageContainer);
+  const chatContentContainer = document.getElementById('chat-content-container')
+
+  if (!hasMessages) {
+    chatContentContainer.replaceChildren(chatMessageContainer);
+    chatContentContainer.style.justifyContent = ''
+    chatContentContainer.style.alignItems = ''
+    hasMessages = true
+  } else {
+    chatContentContainer.appendChild(chatMessageContainer);
+  }
 
   scrollToBottom('chat-content-container')
 }
