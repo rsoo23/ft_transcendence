@@ -13,6 +13,8 @@ import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js"
 import { setUserInfo, userInfo } from "./global_vars.js";
 import { initEditIcons } from "./settings.js";
 import { initPasswordSettings } from "./update_password.js";
+import { closeChatSocket } from "./realtime_chat/websocket.js";
+import { setInFriendsPage } from "./realtime_chat/chat_utils.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -41,6 +43,11 @@ window.addEventListener('popstate', async (event) => {
     await loadMainMenuContent('play');
   } else {
     loadContent(lastUrlSegment);
+  }
+
+  if (!path.startsWith('/menu/friends')) {
+    setInFriendsPage(false)
+    closeChatSocket()
   }
 });
 
@@ -71,6 +78,10 @@ export async function loadContentToMainMenu(contentName) {
 
     document.querySelector('#main-menu-panel > .content-container').innerHTML = html;
 
+    if (contentName !== 'friends') {
+      setInFriendsPage(false)
+      closeChatSocket()
+    }
     updateBorderColor(contentName)
     updateButtonState(contentName)
     loadDynamicContent(contentName)

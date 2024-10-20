@@ -4,10 +4,17 @@ import { scrollToBottom } from "../ui_utils/scroll.js";
 import { addEventListenerTo, addTextPlaceholder, loadContentToTarget } from "../ui_utils/ui_utils.js";
 import { chatSocket, connectChat } from "./websocket.js";
 
+export let inFriendsPage = true
 let hasMessages = false
+
+export function setInFriendsPage(state) {
+  inFriendsPage = state
+}
 
 // loads the chat interface containing the chat history and friend profile
 export async function loadChatInterface(username) {
+  setInFriendsPage(true)
+
   await loadContentToTarget('menu/chat_interface.html', 'friends-content-container')
 
   // load all messages
