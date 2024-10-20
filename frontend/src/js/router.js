@@ -103,85 +103,25 @@ export async function loadMainMenuContent(contentName) {
 // - loads dynamic content after loading content to main menu
 // - initializes event listeners for any ui components
 async function loadDynamicContent(contentName) {
-  if (contentName === 'start') {
-
-    initRandomColorButton(
-      'login-button',
-      'start-page-panel',
-      () => loadPage('login')
-    )
-    initRandomColorButton(
-      'signup-button',
-      'start-page-panel',
-      () => loadPage('signup')
-    )
-
-  } else if (contentName === 'login') {
-
-    initBackButton(
-      () => loadPage('start')
-    )
-    initRandomColorButton(
-      'confirm-login-button',
-      'login-panel',
-      async () => {
-        const result = await handleLogin()
-
-        if (result === 'success') {
-          await loadPage('main_menu')
-          await loadMainMenuContent('play')
-        }
-      }
-    )
-    initTogglePasswordVisibilityIcon()
-
-  } else if (contentName === 'signup') {
-
-    initBackButton(
-      () => loadPage('start')
-    )
-    initRandomColorButton(
-      'confirm-signup-button',
-      'signup-panel',
-      async () => {
-        const result = await handleSignup()
-
-        if (result === 'success') {
-          loadPage('login')
-        }
-      }
-    )
-    initTogglePasswordVisibilityIcon()
-
-  } else if (contentName === '2fa') {
-
-    initBackButton(() => loadPage('login'))
-    initRandomColorButton(
-      'confirm-2fa-button',
-      'two-fa-panel',
-      async () => {
-        await loadPage('main_menu')
-        await loadMainMenuContent('play')
-      }
-    )
-
-  } else if (contentName === 'main_menu') {
-    initHotbar()
-    await loadUserInfo()
-  } else if (contentName === 'friends') {
-
-    await loadContentToTarget('menu/friend_list_panel.html', 'friends-container')
-    await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
-    initAddFriendButton()
-    await loadFriendListContent()
-
-  } else if (contentName === 'settings') {
-    initFileInput()
-    initEditIcons()
-    initSettingsPage();
-    initLogoutButton();
-    initEmailSettings();
-    initPasswordSettings();
+  switch (contentName) {
+    case 'start':
+      initStartPage()
+      break
+    case 'login':
+      initLoginPage()
+      break
+    case 'signup':
+      initSignupPage()
+      break
+    case 'main_menu':
+      initMainMenuPage()
+      break
+    case 'friends':
+      initFriendsPage()
+      break
+    case 'settings':
+      initSettingsPage()
+      break
   }
 }
 
@@ -198,4 +138,75 @@ async function loadUserInfo() {
   } catch (error) {
     console.error(error)
   }
+}
+
+async function initStartPage() {
+  initRandomColorButton(
+    'login-button',
+    'start-page-panel',
+    () => loadPage('login')
+  )
+  initRandomColorButton(
+    'signup-button',
+    'start-page-panel',
+    () => loadPage('signup')
+  )
+}
+
+async function initLoginPage() {
+  initBackButton(
+    () => loadPage('start')
+  )
+  initRandomColorButton(
+    'confirm-login-button',
+    'login-panel',
+    async () => {
+      const result = await handleLogin()
+
+      if (result === 'success') {
+        await loadPage('main_menu')
+        await loadMainMenuContent('play')
+      }
+    }
+  )
+  initTogglePasswordVisibilityIcon()
+}
+
+async function initSignupPage() {
+  initBackButton(
+    () => loadPage('start')
+  )
+  initRandomColorButton(
+    'confirm-signup-button',
+    'signup-panel',
+    async () => {
+      const result = await handleSignup()
+
+      if (result === 'success') {
+        loadPage('login')
+      }
+    }
+  )
+  initTogglePasswordVisibilityIcon()
+}
+
+async function initMainMenuPage() {
+  initHotbar()
+  await loadUserInfo()
+}
+
+async function initFriendsPage() {
+  await loadContentToTarget('menu/friend_list_panel.html', 'friends-container')
+  await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
+  initAddFriendButton()
+  await loadFriendListContent()
+}
+
+async function initSettingsPage() {
+  initFileInput()
+  initEditIcons()
+  initSettingsPage();
+  initLogoutButton();
+  initEmailSettings();
+  initPasswordSettings();
 }
