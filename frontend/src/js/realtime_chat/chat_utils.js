@@ -1,4 +1,4 @@
-import { userInfo } from "../global_vars.js";
+import { currentUserInfo } from "../global_vars.js";
 import { getRequest } from "../network_utils/api_requests.js";
 import { scrollToBottom } from "../ui_utils/scroll.js";
 import { addEventListenerTo, addTextPlaceholder, loadContentToTarget } from "../ui_utils/ui_utils.js";
@@ -72,7 +72,7 @@ function sendMessage(chatInputElement) {
     JSON.stringify(
       {
         "message": chatInputElement.value,
-        "sender_username": userInfo.username,
+        "sender_username": currentUserInfo.username,
       }
     )
   );

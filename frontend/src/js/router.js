@@ -6,15 +6,15 @@ import { handleLogin } from "./login_panel.js";
 import { handleSignup } from "./signup_panel.js"
 import { changeAvatar, initFileInput, setDefaultAvatar, uploadAvatarImage } from "./settings.js";
 import { initLogoutButton } from './logout.js';
-import { initSettingsPage } from "./update_username.js";
 import { getRequest } from "./network_utils/api_requests.js";
 import { initEmailSettings } from "./update_email.js";
 import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js";
-import { setUserInfo, userInfo } from "./global_vars.js";
+import { setCurrentUserInfo } from "./global_vars.js";
 import { initEditIcons } from "./settings.js";
 import { initPasswordSettings } from "./update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { setInFriendsPage } from "./realtime_chat/chat_utils.js";
+import { initUsernameSettings } from "./update_username.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -125,13 +125,27 @@ async function loadDynamicContent(contentName) {
   }
 }
 
-async function loadUserInfo() {
+async function loadCurrentUserInfo() {
   try {
     const response = await getRequest('/api/users/current_user/')
 
     console.log('userInfo: ', response)
     if (response) {
-      setUserInfo(response)
+      setCurrentUserInfo(response)
+    } else {
+      console.error('Error: Failed to load userCurrentInfo')
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+async function loadUsersInfo() {
+  try {
+    const response = await getRequest('/api/users/')
+
+    console.log('usersInfo: ', response)
+    if (response) {
     } else {
       console.error('Error: Failed to load userInfo')
     }
@@ -192,7 +206,8 @@ async function initSignupPage() {
 
 async function initMainMenuPage() {
   initHotbar()
-  await loadUserInfo()
+  await loadCurrentUserInfo()
+  await loadUsersInfo()
 }
 
 async function initFriendsPage() {
@@ -205,7 +220,7 @@ async function initFriendsPage() {
 async function initSettingsPage() {
   initFileInput()
   initEditIcons()
-  initSettingsPage();
+  initUsernameSettings();
   initLogoutButton();
   initEmailSettings();
   initPasswordSettings();
