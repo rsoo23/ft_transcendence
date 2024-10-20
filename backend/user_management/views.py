@@ -45,7 +45,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     # gets all users info excluding the current user
     def get_queryset(self):
         current_user = self.request.user
-        return CustomUser.objects.exclude(id=current_user.id)
+        return CustomUser.objects.exclude(id=current_user.id).exclude(is_staff=True)
 
     # gets the current user's info
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
