@@ -51,7 +51,8 @@ async def try_clean_match(match_id):
     except Exception:
         pass
 
-    server_manager.close_game(match_id)
+    loop = asyncio.get_running_loop()
+    await loop.run_in_executor(None, server_manager.close_game, match_id)
     print(f'pong: Match with id {match_id} was deleted due to inactivity.')
 
 @csrf_exempt

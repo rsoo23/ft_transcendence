@@ -67,9 +67,8 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
         print(f'{self.user_id}: i am disconnecting!')
         await self.channel_layer.group_discard(self.group_match, self.channel_name)
 
-        # stop and delete the server
         loop = asyncio.get_running_loop()
-        loop.create_task(server_manager.close_game(self.match_id))
+        await loop.run_in_executor(None, server_manager.stop_game, self.match_id)
 
     async def receive_json(self, content):
         print(content)
