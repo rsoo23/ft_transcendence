@@ -4,6 +4,7 @@ import { getColor } from "./ui_utils/color_utils.js"
 import { getRequest, postRequest } from "./network_utils/api_requests.js"
 import { friendRecordIconInfo, getUserId } from "./global_vars.js"
 import { loadChatInterface } from "./realtime_chat/chat_utils.js"
+import { closeChatSocket } from "./realtime_chat/websocket.js"
 
 export function initAddFriendButton() {
   const button = document.getElementById('add-friend-button')
@@ -278,6 +279,9 @@ function initFriendRecordIcon(icon, iconId, userId) {
         try {
           const response = await postRequest('/api/block_friend/', { blocked_id: userId })
           await loadFriendListContent()
+
+          await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
+          closeChatSocket()
 
           console.log(response)
         } catch (error) {

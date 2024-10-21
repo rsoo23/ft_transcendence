@@ -47,20 +47,11 @@ export function connectChat(receiverId) {
   };
 
   chatSocket.onclose = function (e) {
-    if (inFriendsPage) {
-      console.error('WebSocket connection closed unexpectedly. Trying to reconnect in 2 seconds');
-      setTimeout(function () {
-        console.log("Reconnecting...")
-        connectChat(selectedUserId)
-      }, 2000)
-    } else {
-      console.log('WebSocket connection closed');
-    }
+    console.log('WebSocket connection closed');
   };
 
   chatSocket.onerror = function (err) {
-    console.log("WebSocket encountered an error: " + err.message);
-    console.log("Closing the socket.");
+    console.error("WebSocket encountered an error: " + err.message);
     chatSocket.close();
   }
 }
