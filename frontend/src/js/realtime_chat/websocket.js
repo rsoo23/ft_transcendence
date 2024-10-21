@@ -1,24 +1,40 @@
 import { addMessage, inFriendsPage } from "./chat_utils.js";
 
 export let chatSocket = null
+let selectedUserId = -1
 
 export function connectChat(receiverId) {
-  // check if there's already an existing WebSocket
-  if (chatSocket && (chatSocket.readyState === WebSocket.OPEN || chatSocket.readyState === WebSocket.CONNECTING)) {
+  // return if:
+  // - already an existing WebSocket that is in the state OPEN / CONNECTING
+  // AND
+  // - the same user is selected
+  if (chatSocket &&
+    (chatSocket.readyState === WebSocket.OPEN || chatSocket.readyState === WebSocket.CONNECTING) &&
+    selectedUserId === receiverId
+  ) {
     console.log('WebSocket is already open or connecting')
     return
   }
 
-  chatSocket = new WebSocket(
-    'ws://'
-    + window.location.host
-    + '/ws/chat/'
-    + receiverId
-    + '/',
-  )
+  // close chatSocket if:
+  // - already an existing WebSocket that is in the state (check done in closeChatSocket function)
+  // AND
+  // - a different user is selected
+  // this is to allow for a new WebSocket connection to a different room to open
+  if (selectedUserId !== receiverId) {
+    closeChatSocket()
+    console.log('Closed WebSocket')
+  }
+
+  selectedUserId = receiverId
+
+  // open a new WebSocket
+  const webSocketUrl = 'ws://' + window.location.host + '/ws/chat/' + selectedUserId + '/'
+
+  chatSocket = new WebSocket(webSocketUrl)
 
   chatSocket.onopen = function (e) {
-    console.log("Successfully connected to the WebSocket.");
+    console.log("Successfully connected to the WebSocket: ", webSocketUrl);
   }
 
   chatSocket.onmessage = function (e) {
@@ -35,7 +51,7 @@ export function connectChat(receiverId) {
       console.error('WebSocket connection closed unexpectedly. Trying to reconnect in 2 seconds');
       setTimeout(function () {
         console.log("Reconnecting...")
-        connectChat(receiverId)
+        connectChat(selectedUserId)
       }, 2000)
     } else {
       console.log('WebSocket connection closed');
