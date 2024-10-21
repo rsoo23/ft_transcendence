@@ -53,11 +53,11 @@ def get_non_friends(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def send_friend_request(request):
-    receiver_username = request.data.get("receiver_username")
-    if not receiver_username:
-        return Response({"error": "Receiver username is required."}, status=status.HTTP_400_BAD_REQUEST)
+    receiver_id = request.data.get("receiver_id")
+    if not receiver_id:
+        return Response({"error": "Receiver id is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-    receiver = get_object_or_404(CustomUser, username=receiver_username)
+    receiver = get_object_or_404(CustomUser, pk=receiver_id)
 
     existing_active_request = FriendRequest.objects.filter(sender=request.user, receiver=receiver, is_active=True).exists()
     if existing_active_request:
@@ -119,11 +119,11 @@ def get_blocked_friends(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def cancel_friend_request(request):
-    receiver_username = request.data.get("receiver_username")
-    if not receiver_username:
-        return Response({"error": "Receiver username is required."}, status=status.HTTP_400_BAD_REQUEST)
+    receiver_id = request.data.get("receiver_id")
+    if not receiver_id:
+        return Response({"error": "Receiver id is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-    receiver = get_object_or_404(CustomUser, username=receiver_username)
+    receiver = get_object_or_404(CustomUser, pk=receiver_id)
 
     friend_request = get_object_or_404(FriendRequest, sender=request.user, receiver=receiver, is_active=True)
 
@@ -134,11 +134,11 @@ def cancel_friend_request(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def accept_friend_request(request):
-    sender_username = request.data.get("sender_username")
-    if not sender_username:
-        return Response({"error": "Sender username is required."}, status=status.HTTP_400_BAD_REQUEST)
+    sender_id = request.data.get("sender_id")
+    if not sender_id:
+        return Response({"error": "Sender sender_id is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-    sender = get_object_or_404(CustomUser, username=sender_username)
+    sender = get_object_or_404(CustomUser, pk=sender_id)
 
     friend_request = get_object_or_404(FriendRequest, sender=sender, receiver=request.user, is_active=True)
 
@@ -149,11 +149,11 @@ def accept_friend_request(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def decline_friend_request(request):
-    sender_username = request.data.get("sender_username")
-    if not sender_username:
-        return Response({"error": "Sender username is required."}, status=status.HTTP_400_BAD_REQUEST)
+    sender_id = request.data.get("sender_id")
+    if not sender_id:
+        return Response({"error": "Sender id is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-    sender = get_object_or_404(CustomUser, username=sender_username)
+    sender = get_object_or_404(CustomUser, pk=sender_id)
 
     friend_request = get_object_or_404(FriendRequest, sender=sender, receiver=request.user, is_active=True)
 
@@ -164,12 +164,12 @@ def decline_friend_request(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def block_friend(request):
-    blocked_username = request.data.get("blocked_username")
-    if not blocked_username:
-        return Response({"error": "Blocked username is required."}, status=status.HTTP_400_BAD_REQUEST)
+    blocked_id = request.data.get("blocked_id")
+    if not blocked_id:
+        return Response({"error": "Blocked id is required."}, status=status.HTTP_400_BAD_REQUEST)
 
     current_user_friend_list = get_object_or_404(FriendList, current_user=request.user)
-    friend = get_object_or_404(CustomUser, username=blocked_username)
+    friend = get_object_or_404(CustomUser, pk=blocked_id)
 
     current_user_friend_list.block_friend(friend)
     return Response({"message": "Friend blocked successfully."}, status=status.HTTP_200_OK)
@@ -178,12 +178,12 @@ def block_friend(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def unblock_friend(request):
-    unblocked_username = request.data.get("unblocked_username")
-    if not unblocked_username:
-        return Response({"error": "Unblocked username is required."}, status=status.HTTP_400_BAD_REQUEST)
+    unblocked_id = request.data.get("unblocked_id")
+    if not unblocked_id:
+        return Response({"error": "Unblocked id is required."}, status=status.HTTP_400_BAD_REQUEST)
 
     current_user_friend_list = get_object_or_404(FriendList, current_user=request.user)
-    friend = get_object_or_404(CustomUser, username=unblocked_username)
+    friend = get_object_or_404(CustomUser, pk=unblocked_id)
 
     current_user_friend_list.unblock_friend(friend)
     return Response({"message": "Friend unblocked successfully."}, status=status.HTTP_200_OK)

@@ -2,7 +2,7 @@ import { addMessage, inFriendsPage } from "./chat_utils.js";
 
 export let chatSocket = null
 
-export function connectChat(receiverUsername) {
+export function connectChat(receiverId) {
   // check if there's already an existing WebSocket
   if (chatSocket && (chatSocket.readyState === WebSocket.OPEN || chatSocket.readyState === WebSocket.CONNECTING)) {
     console.log('WebSocket is already open or connecting')
@@ -13,7 +13,7 @@ export function connectChat(receiverUsername) {
     'ws://'
     + window.location.host
     + '/ws/chat/'
-    + receiverUsername
+    + receiverId
     + '/',
   )
 
@@ -35,7 +35,7 @@ export function connectChat(receiverUsername) {
       console.error('WebSocket connection closed unexpectedly. Trying to reconnect in 2 seconds');
       setTimeout(function () {
         console.log("Reconnecting...")
-        connectChat()
+        connectChat(receiverId)
       }, 2000)
     } else {
       console.log('WebSocket connection closed');

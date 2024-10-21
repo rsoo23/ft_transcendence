@@ -15,6 +15,15 @@ export function setUsersInfo(obj) {
   usersInfo = obj
 }
 
+export function getUserId(username) {
+  for (const user of usersInfo) {
+    if (user.username === username) {
+      return user.id
+    }
+  }
+  return (-1)
+}
+
 export let hotbarItems = {
   'play': {
     'name': 'play',

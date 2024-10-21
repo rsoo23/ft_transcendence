@@ -12,16 +12,16 @@ export function setInFriendsPage(state) {
 }
 
 // loads the chat interface containing the chat history and friend profile
-export async function loadChatInterface(username) {
+export async function loadChatInterface(userId) {
   setInFriendsPage(true)
 
   await loadContentToTarget('menu/chat_interface.html', 'friends-content-container')
 
-  // load all messages
-  await loadChatMessages(username)
-
   // connect to websocket
-  connectChat(username)
+  connectChat(userId)
+
+  // load all messages
+  await loadChatMessages(userId)
 
   let chatInput = document.getElementById('chat-input')
   let sendMessageButton = document.getElementById('send-message-button')
@@ -47,9 +47,9 @@ export async function loadChatInterface(username) {
   )
 }
 
-async function loadChatMessages(username) {
+async function loadChatMessages(userId) {
   try {
-    const response = await getRequest(`/api/chat_messages/?receiver_username=${username}`)
+    const response = await getRequest(`/api/chat_messages/?receiver_id=${userId}`)
 
     console.log('chat messages: ', response)
     if (response.detail === 'No Room matches the given query.') {
@@ -72,7 +72,7 @@ function sendMessage(chatInputElement) {
     JSON.stringify(
       {
         "message": chatInputElement.value,
-        "sender_username": currentUserInfo.username,
+        "sender_id": currentUserInfo.id,
       }
     )
   );

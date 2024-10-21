@@ -9,7 +9,7 @@ import { initLogoutButton } from './logout.js';
 import { getRequest } from "./network_utils/api_requests.js";
 import { initEmailSettings } from "./update_email.js";
 import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js";
-import { setCurrentUserInfo } from "./global_vars.js";
+import { setCurrentUserInfo, setUsersInfo } from "./global_vars.js";
 import { initEditIcons } from "./settings.js";
 import { initPasswordSettings } from "./update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
@@ -146,6 +146,7 @@ async function loadUsersInfo() {
 
     console.log('usersInfo: ', response)
     if (response) {
+      setUsersInfo(response)
     } else {
       console.error('Error: Failed to load userInfo')
     }
