@@ -1,7 +1,7 @@
 from channels.layers import get_channel_layer
 from threading import Thread, Lock
 from asgiref.sync import async_to_sync
-from .game import GameLogic
+from .game.logic import GameLogic
 from .models import PongMatch
 from time import sleep, time_ns
 import asyncio

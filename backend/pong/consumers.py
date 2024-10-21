@@ -3,13 +3,8 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from .models import PongMatch
 from .views import get_user_from_token
 import logging
-from time import sleep
-from multiprocessing import Process
-from threading import Thread, Lock
-from .game import GameLogic
 from .server import server_manager
 import asyncio
-from datetime import datetime
 
 class PongConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
