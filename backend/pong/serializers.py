@@ -7,6 +7,7 @@ class Vector2Serializer(serializers.Serializer):
 class StateSerializer(serializers.Serializer):
     pos = Vector2Serializer()
     alpha = serializers.IntegerField()
+    info = serializers.JSONField()
 
 class ObjectStateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100)

@@ -13,10 +13,11 @@ class ObjectState():
 
     # alpha is used for interpolation
     # possible values are 0.0 - 1.0
-    def append(self, pos, alpha):
+    def append(self, pos, alpha, info={}):
         self.states.append({
             'pos': copy.copy(pos),
             'alpha': alpha,
+            'info': info,
         })
 
 class PlayerInput():

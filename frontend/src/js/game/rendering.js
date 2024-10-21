@@ -25,6 +25,9 @@ const STYLES = {
 		'fillColour': '#ffffff',
 		'radius': 3.5,
 	},
+	'score': {
+		'shape': 'text',
+	}
 }
 
 // The main renderer, it does all the work :]
@@ -80,9 +83,6 @@ export class RenderInfo
 			this.gameSize.x / 2, 0,
 			this.gameSize.x / 2, this.gameSize.y
 		);
-		// score
-		this.ctx.fillText("" + this.gameScore[0], this.gameSize.x / 2 - 100, 100);
-		this.ctx.fillText("" + this.gameScore[1], this.gameSize.x / 2 + 100, 100);
 		this.ctx.stroke();
 		this.ctx.restore();
 
@@ -163,6 +163,12 @@ export class RenderInfo
 				this.ctx.fillStyle = 'white'
 				this.arcScaled(interpPos.x + objStyle.radius, interpPos.y + objStyle.radius, objStyle.radius, 0, 2 * Math.PI);
 				this.ctx.fill();
+				break;
+
+			case 'text':
+				// score
+				this.ctx.fillText("" + nextState.info['score'], interpPos.x, interpPos.y);
+				this.ctx.stroke()
 				break;
 
 			default:
