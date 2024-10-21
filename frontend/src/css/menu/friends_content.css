@@ -69,6 +69,8 @@
 
 .friend-record .avatar-name {
   font-size: 1rem;
+  max-width: 6.5rem;
+  overflow-x: hidden;
 }
 
 .friend-record .avatar-container {

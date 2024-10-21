@@ -31,3 +31,8 @@ export function addTextPlaceholder(elementId, text) {
   element.style.alignItems = 'center'
 }
 
+export function truncateString(string, maxLength) {
+  if (string.length > maxLength) {
+    return string.slice(0, maxLength) + '..'
+  }
+}

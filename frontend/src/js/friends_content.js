@@ -1,5 +1,5 @@
 
-import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js"
+import { addEventListenerTo, loadContentToTarget, truncateString } from "./ui_utils/ui_utils.js"
 import { getColor } from "./ui_utils/color_utils.js"
 import { getRequest, postRequest } from "./network_utils/api_requests.js"
 import { friendRecordIconInfo, getUserId } from "./global_vars.js"
@@ -231,7 +231,7 @@ function createFriendRecord(username, iconsInfo) {
 
   const avatarName = document.createElement('div');
   avatarName.className = 'avatar-name';
-  avatarName.textContent = username;
+  avatarName.textContent = truncateString(username, 9);
 
   const iconsSection = document.createElement('div');
   iconsSection.className = 'icons-section';
