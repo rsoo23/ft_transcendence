@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 
 from .models import Room, Message
 from user_management.models import CustomUser
+from friends_system.models import FriendList
 from .serializers import MessageSerializer
 
 from rest_framework import status
@@ -34,3 +35,19 @@ def get_chat_messages(request):
     serializer = MessageSerializer(messages, many=True)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def is_friend_blocked(request):
+    sender = request.user
+
+    receiver_id = request.query_params.get('receiver_id')
+    receiver = get_object_or_404(CustomUser, pk=receiver_id)
+
+    receiver_friend_list = get_object_or_404(FriendList, current_user=receiver)
+
+    if (receiver_friend_list.is_blocked_friend(sender)):
+        return Response({ "is_blocked": "true" }, status=status.HTTP_403_FORBIDDEN)
+
+    return Response({ "is_blocked": "false" }, status=status.HTTP_200_OK)
+

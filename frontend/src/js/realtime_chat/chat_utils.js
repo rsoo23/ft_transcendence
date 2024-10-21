@@ -17,12 +17,54 @@ export async function loadChatInterface(userId) {
 
   await loadContentToTarget('menu/chat_interface.html', 'friends-content-container')
 
-  // connect to websocket
+  if (await isFriendBlocked(userId)) {
+    return
+  }
+
+  // connect to chat websocket
   connectChat(userId)
 
   // load all messages
   await loadChatMessages(userId)
 
+  initChatInput()
+}
+
+async function isFriendBlocked(userId) {
+  try {
+    const response = await getRequest(`/api/is_friend_blocked/?receiver_id=${userId}`)
+
+    console.log('is friend ', userId, ' blocked: ', response.is_blocked)
+    if (response.is_blocked === 'true') {
+      return true
+    }
+    return false
+  } catch (error) {
+    console.error('Error in isFriendBlocked: ', error)
+  }
+}
+
+async function loadChatMessages(userId) {
+  try {
+    const response = await getRequest(`/api/chat_messages/?receiver_id=${userId}`)
+
+    console.log('chat messages: ', response)
+    if (response.detail === 'No Room matches the given query.') {
+      return
+    } else if (response.length === 0) {
+      hasMessages = false
+      addTextPlaceholder('chat-content-container', 'No chat messages yet')
+    } else if (response.length > 0) {
+      hasMessages = true
+      response.map(message => addMessage(message.sender_username, '/static/images/kirby.png', message.content, message.timestamp))
+      scrollToBottom('chat-content-container')
+    }
+  } catch (error) {
+    console.error('Error in loadChatMessages: ', error)
+  }
+}
+
+function initChatInput() {
   let chatInput = document.getElementById('chat-input')
   let sendMessageButton = document.getElementById('send-message-button')
 
@@ -45,26 +87,6 @@ export async function loadChatInterface(userId) {
       }
     }
   )
-}
-
-async function loadChatMessages(userId) {
-  try {
-    const response = await getRequest(`/api/chat_messages/?receiver_id=${userId}`)
-
-    console.log('chat messages: ', response)
-    if (response.detail === 'No Room matches the given query.') {
-      return
-    } else if (response.length === 0) {
-      hasMessages = false
-      addTextPlaceholder('chat-content-container', 'No chat messages yet')
-    } else if (response.length > 0) {
-      hasMessages = true
-      response.map(message => addMessage(message.sender_username, '/static/images/kirby.png', message.content, message.timestamp))
-      scrollToBottom('chat-content-container')
-    }
-  } catch (error) {
-    console.error('Error in loadChatMessages: ', error)
-  }
 }
 
 function sendMessage(chatInputElement) {
