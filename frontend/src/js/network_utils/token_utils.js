@@ -1,9 +1,8 @@
-import { getRequest, postRequest } from "./api_requests.js";
+import { postRequest } from "./api_requests.js";
 
 export async function verifyToken() {
-  const response = await getRequest('/api/token_management/verify_token')
-  const status = await response.json();
-  return (status.success);
+  const response = await fetch('/api/token/verify/', { method: 'POST' })
+  return response.ok
 }
 
 export async function send_2FA_code_email(email) {

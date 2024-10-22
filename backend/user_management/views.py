@@ -27,7 +27,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # CustomUserViewSet:
@@ -78,6 +78,16 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             response.data.pop('access')
             response.data.pop('refresh')
         return response
+
+class CookieTokenVerifyView(TokenVerifyView):
+    def post(self, request, *args, **kwargs):
+        try:
+            request.data['token'] = request.COOKIES.get('access_token')
+
+        except Exception:
+            pass
+
+        return super().post(request, *args, **kwargs)
 
 User = get_user_model()
 
