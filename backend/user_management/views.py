@@ -64,22 +64,17 @@ def move_token_to_cookie(response):
         samesite='Lax'
     )
     # Optionally add the refresh token in another cookie
-    if 'refresh' in response.data:
-        response.set_cookie(
-            key='refresh_token',
-            value=response.data['refresh'],
-            httponly=True,
-            secure=False,
-            samesite='Lax'
-        )
+    response.set_cookie(
+        key='refresh_token',
+        value=response.data['refresh'],
+        httponly=True,
+        secure=False,
+        samesite='Lax'
+    )
 
     # Remove token from response body
-    try:
-        response.data.pop('access')
-        response.data.pop('refresh')
-
-    except Exception:
-        pass
+    response.data.pop('access')
+    response.data.pop('refresh')
 
 class CookieTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
