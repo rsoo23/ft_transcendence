@@ -1,11 +1,10 @@
-import { hideMainMenuOverlay, showMainMenuOverlay } from "../ui_utils/overlay_utils.js";
+import { hideOverlay, showOverlay } from "../ui_utils/overlay_utils.js";
 import { addMessage, inFriendsPage } from "./chat_utils.js";
 
 export let chatSocket = null
 let selectedUserId = -1
 let reconnectAttempts = 0;
 let maxReconnectAttempts = 5;
-let isReconnecting = false
 
 export function connectChat(receiverId) {
   // return if:
@@ -40,7 +39,7 @@ export function connectChat(receiverId) {
   chatSocket.onopen = function (e) {
     console.log("Successfully connected to the chat socket: ", webSocketUrl);
     reconnectAttempts = 0
-    hideMainMenuOverlay()
+    hideOverlay('main-menu-overlay')
   }
 
   chatSocket.onmessage = function (e) {
@@ -65,7 +64,7 @@ export function connectChat(receiverId) {
   };
 
   chatSocket.onerror = function (err) {
-    console.error("Chat socket encountered an error: " + err.message);
+    console.error("Chat socket encountered an error: " + err);
     chatSocket.close();
   }
 }
@@ -81,15 +80,19 @@ export function closeChatSocket() {
 // - prevents overwhelming a system / server
 function reconnectChatSocket(selectedUserId) {
   if (reconnectAttempts < maxReconnectAttempts) {
+    const maxBackoff = 30000
+    const reconnectWait = Math.min(1000 * Math.pow(2, reconnectAttempts), maxBackoff)
+
     setTimeout(() => {
       console.log('Reconnecting... Attempt ', reconnectAttempts)
 
       reconnectAttempts++
-      isReconnecting = true
+      showOverlay('main-menu-overlay', 'Reconnecting...')
+
       connectChat(selectedUserId)
-      showMainMenuOverlay('Reconnecting...')
-    }, Math.min(1000 * Math.pow(2, reconnectAttempts), 30000));
+    }, reconnectWait);
   } else {
     alert('Max reconnect attempts reached. Unable to reconnect. Please refresh the page or try again later.')
   }
 }
+
