@@ -71,9 +71,8 @@
 .profile-settings-toggle-switch {
   position: relative;
   display: inline-block;
-  width: 3.125rem;
+  width: 3rem;
   height: 1.5rem;
-  vertical-align: middle;
 }
 
 .profile-settings-toggle-switch input {
@@ -91,16 +90,16 @@
   bottom: 0;
   background-color: #ccc;
   transition: 0.4s;
-  border-radius: 2.125rem;
+  border-radius: 1.5rem;
 }
 
 .profile-settings-slider:before {
   position: absolute;
   content: "";
-  height: 1.125rem;
+  height: 1.25rem;
   width: 1.25rem;
-  left: 0.1875rem;
-  bottom: 0.1875rem;
+  left: 0.125rem;
+  bottom: 0.125rem;
   background-color: white;
   transition: 0.4s;
   border-radius: 50%;
@@ -111,7 +110,18 @@
 }
 
 .profile-settings-toggle-input:checked + .profile-settings-slider:before {
-  transform: translateX(26px);
+	transform: translateX(1.5rem);
+  }
+.profile-settings-toggle-input:focus + .profile-settings-slider {
+  box-shadow: 0 0 0.0625rem var(--teal-500);
+}
+
+.profile-settings-slider.round {
+	border-radius: 2.125rem;
+}
+
+.profile-settings-slider.round:before {
+	border-radius: 50%;
 }
 
 .profile-settings-button-group {

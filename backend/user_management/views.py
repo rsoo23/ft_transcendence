@@ -166,21 +166,24 @@ def logout_view(request):
 
 @csrf_exempt
 def update_password(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        new_password = data.get('new_password')
-        user = request.user  # Assuming the user is authenticated
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		new_password = data.get('new_password')
+		user = request.user
 
-        try:
-            validate_password(new_password, user=user)
-        except ValidationError as e:
-            return JsonResponse({'status': 'error', 'message': list(e.messages)}, status=400)
+		if check_password(new_password, user.password):
+			return JsonResponse({'status': 'error', 'message': 'New password cannot be the same as the old password'}, status=400)
 
-        user.set_password(new_password)
-        user.save()
-        return JsonResponse({'status': 'success', 'message': 'Password updated successfully'})
-    else:
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+		try:
+			validate_password(new_password, user=user)
+		except ValidationError as e:
+			return JsonResponse({'status': 'error', 'message': list(e.messages)}, status=400)
+
+		user.set_password(new_password)
+		user.save()
+		return JsonResponse({'status': 'success', 'message': 'Password updated successfully'})
+	else:
+		return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
 @csrf_exempt
 def update_email(request):
@@ -221,3 +224,11 @@ def upload_avatar_image(request):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def current_username_email(request):
+     user = request.user
+     return Response({
+        'username': user.username,
+        'email': user.email,
+	 })

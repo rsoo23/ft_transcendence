@@ -1,4 +1,4 @@
-import { postRequest } from "./network_utils/api_requests.js";
+import { postRequest, getRequest } from "./network_utils/api_requests.js";
 
 export function initUsernameSettings() {
   const saveButton = document.getElementById('save-button');
@@ -10,6 +10,18 @@ export function initUsernameSettings() {
   }
   if (usernameEditIcon) {
     usernameEditIcon.addEventListener('click', () => toggleUsernameEdit(usernameInput));
+  }
+}
+
+async function setCurrentUsername(usernameInput) {
+  try {
+    const response = await getRequest('/api/current_username_email/');
+    if (response.username) {
+      usernameInput.value = response.username;
+    }
+  }
+  catch (error) {
+    console.error('Error fetching current username:', error);
   }
 }
 

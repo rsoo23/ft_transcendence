@@ -1,9 +1,11 @@
-import { postRequest } from "./network_utils/api_requests.js";
+import { postRequest, getRequest } from "./network_utils/api_requests.js";
 
-export function initEmailSettings() {
+export async function initEmailSettings() {
     const saveButton = document.getElementById('save-button');
     const emailEditIcon = document.getElementById('email-edit-icon');
     const emailInput = document.getElementById('email-input');
+
+    await setCurrentEmail(emailInput);
 
     if (saveButton) {
         saveButton.addEventListener('click', () => handleSaveEmail(emailInput));
@@ -11,6 +13,17 @@ export function initEmailSettings() {
     if (emailEditIcon) {
         emailEditIcon.addEventListener('click', () => toggleEmailEdit(emailInput));
     }
+}
+
+async function setCurrentEmail(emailInput) {
+	try {
+		const response = await getRequest('/api/current_username_email/');
+		if (response.email) {
+			emailInput.value = response.email;
+		}
+	} catch (error) {
+		console.error('Error fetching current email:', error);
+	}
 }
 
 function toggleEmailEdit(emailInput) {
