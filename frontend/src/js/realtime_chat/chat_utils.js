@@ -18,6 +18,7 @@ export async function loadChatInterface(userId) {
   await loadContentToTarget('menu/chat_interface.html', 'friends-content-container')
 
   if (await isFriendBlocked(userId)) {
+    showBlockedOverlay()
     return
   }
 
@@ -42,6 +43,12 @@ async function isFriendBlocked(userId) {
   } catch (error) {
     console.error('Error in isFriendBlocked: ', error)
   }
+}
+
+function showBlockedOverlay() {
+  const overlay = document.querySelector('.blocked-overlay')
+
+  overlay.style.display = 'flex'
 }
 
 async function loadChatMessages(userId) {
