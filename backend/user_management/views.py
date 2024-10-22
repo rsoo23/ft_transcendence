@@ -27,7 +27,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # CustomUserViewSet:
@@ -54,30 +54,65 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(user)
         return Response(serializer.data)
 
+def move_token_to_cookie(response):
+    # Set the JWT in a HttpOnly cookie
+    response.set_cookie(
+        key='access_token',
+        value=response.data['access'],
+        httponly=True,
+        secure=False,  # Set True for HTTPS, False for HTTP development
+        samesite='Lax'
+    )
+    # Optionally add the refresh token in another cookie
+    if 'refresh' in response.data:
+        response.set_cookie(
+            key='refresh_token',
+            value=response.data['refresh'],
+            httponly=True,
+            secure=False,
+            samesite='Lax'
+        )
+
+    # Remove token from response body
+    try:
+        response.data.pop('access')
+        response.data.pop('refresh')
+
+    except Exception:
+        pass
+
 class CookieTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         if response.status_code == status.HTTP_200_OK:
-            # Set the JWT in a HttpOnly cookie
-            response.set_cookie(
-                key='access_token', 
-                value=response.data['access'], 
-                httponly=True, 
-                secure=False,  # Set True for HTTPS, False for HTTP development
-                samesite='Lax'
-            )
-            # Optionally add the refresh token in another cookie
-            response.set_cookie(
-                key='refresh_token', 
-                value=response.data['refresh'], 
-                httponly=True, 
-                secure=False,
-                samesite='Lax'
-            )
-            # Remove token from response body
-            response.data.pop('access')
-            response.data.pop('refresh')
+            move_token_to_cookie(response)
+
         return response
+
+class CookieTokenRefreshView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        try:
+            request.data['access'] = request.COOKIES.get('access_token')
+            request.data['refresh'] = request.COOKIES.get('refresh_token')
+
+        except Exception:
+            pass
+
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == status.HTTP_200_OK:
+            move_token_to_cookie(response)
+
+        return response
+
+class CookieTokenVerifyView(TokenVerifyView):
+    def post(self, request, *args, **kwargs):
+        try:
+            request.data['token'] = request.COOKIES.get('access_token')
+
+        except Exception:
+            pass
+
+        return super().post(request, *args, **kwargs)
 
 User = get_user_model()
 
@@ -157,12 +192,27 @@ def update_username(request):
 
 @csrf_exempt
 def logout_view(request):
-	if request.method == 'POST':
-		logout(request)
-	# Django's built-in logout function - removes authenticated user from session, flushes session data, deletes session cookie
-		return JsonResponse({'success': True})
-	else:
-		return JsonResponse({'error': 'Invalid request method'}, status=405)
+    if request.method == 'POST':
+        # Django's built-in logout function - removes authenticated user from session, flushes session data, deletes session cookie
+        logout(request)
+        response = JsonResponse({'success': True})
+        response.set_cookie(
+            key='access_token',
+            value='',
+            httponly=True,
+            secure=False,  # Set True for HTTPS, False for HTTP development
+            samesite='Lax'
+        )
+        response.set_cookie(
+            key='refresh_token',
+            value='',
+            httponly=True,
+            secure=False,  # Set True for HTTPS, False for HTTP development
+            samesite='Lax'
+        )
+        return response
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
 def update_password(request):

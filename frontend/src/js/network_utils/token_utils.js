@@ -1,9 +1,19 @@
-import { getRequest, postRequest } from "./api_requests.js";
+import { postRequest } from "./api_requests.js";
 
 export async function verifyToken() {
-  const response = await getRequest('/api/token_management/verify_token')
-  const status = await response.json();
-  return (status.success);
+  const response = await fetch('/api/token/verify/', { method: 'POST' })
+  if (!response.ok)
+    console.log('token: could not verify token!')
+
+  return response.ok
+}
+
+export async function refreshToken() {
+  const response = await fetch('/api/token/refresh/', { method: 'POST' })
+  if (!response.ok)
+    console.log('token: could not refresh token!')
+
+  return response.ok
 }
 
 export async function send_2FA_code_email(email) {
