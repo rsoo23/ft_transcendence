@@ -190,7 +190,7 @@ async function initLoginPage() {
   const form = document.getElementById('login-form')
   form.onsubmit = (e) => {
     e.preventDefault()
-    doRegister()
+    doLogin()
   }
 }
 
