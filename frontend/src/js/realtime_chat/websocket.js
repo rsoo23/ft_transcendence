@@ -1,9 +1,11 @@
+import { hideMainMenuOverlay, showMainMenuOverlay } from "../ui_utils/overlay_utils.js";
 import { addMessage, inFriendsPage } from "./chat_utils.js";
 
 export let chatSocket = null
 let selectedUserId = -1
 let reconnectAttempts = 0;
 let maxReconnectAttempts = 5;
+let isReconnecting = false
 
 export function connectChat(receiverId) {
   // return if:
@@ -38,6 +40,7 @@ export function connectChat(receiverId) {
   chatSocket.onopen = function (e) {
     console.log("Successfully connected to the chat socket: ", webSocketUrl);
     reconnectAttempts = 0
+    hideMainMenuOverlay()
   }
 
   chatSocket.onmessage = function (e) {
@@ -73,15 +76,18 @@ export function closeChatSocket() {
   }
 }
 
-// - implements exponential backoff where the wait tsime between network request
+// - implements exponential backoff where the wait time between network request
 // retries increases exponentially
 // - prevents overwhelming a system / server
 function reconnectChatSocket(selectedUserId) {
   if (reconnectAttempts < maxReconnectAttempts) {
     setTimeout(() => {
-      reconnectAttempts++
       console.log('Reconnecting... Attempt ', reconnectAttempts)
+
+      reconnectAttempts++
+      isReconnecting = true
       connectChat(selectedUserId)
+      showMainMenuOverlay('Reconnecting...')
     }, Math.min(1000 * Math.pow(2, reconnectAttempts), 30000));
   } else {
     alert('Max reconnect attempts reached. Unable to reconnect. Please refresh the page or try again later.')

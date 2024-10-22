@@ -1,5 +1,6 @@
 import { currentUserInfo } from "../global_vars.js";
 import { getRequest } from "../network_utils/api_requests.js";
+import { showOverlay } from "../ui_utils/overlay_utils.js";
 import { scrollToBottom } from "../ui_utils/scroll.js";
 import { addEventListenerTo, addTextPlaceholder, loadContentToTarget } from "../ui_utils/ui_utils.js";
 import { chatSocket, connectChat } from "./websocket.js";
@@ -18,7 +19,7 @@ export async function loadChatInterface(userId) {
   await loadContentToTarget('menu/chat_interface.html', 'friends-content-container')
 
   if (await isFriendBlocked(userId)) {
-    showBlockedOverlay()
+    showOverlay('blocked-overlay', 'You are blocked by this user')
     return
   }
 
@@ -43,12 +44,6 @@ async function isFriendBlocked(userId) {
   } catch (error) {
     console.error('Error in isFriendBlocked: ', error)
   }
-}
-
-function showBlockedOverlay() {
-  const overlay = document.querySelector('.blocked-overlay')
-
-  overlay.style.display = 'flex'
 }
 
 async function loadChatMessages(userId) {
