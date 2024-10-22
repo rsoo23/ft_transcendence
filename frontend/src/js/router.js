@@ -169,40 +169,54 @@ async function initStartPage() {
 }
 
 async function initLoginPage() {
+  const doLogin = async () => {
+    const result = await handleLogin()
+
+    if (result === 'success') {
+      loadPage('main_menu')
+      loadMainMenuContent('play')
+    }
+  }
+
   initBackButton(
     () => loadPage('start')
   )
   initRandomColorButton(
     'confirm-login-button',
     'login-panel',
-    async () => {
-      const result = await handleLogin()
-
-      if (result === 'success') {
-        await loadPage('main_menu')
-        await loadMainMenuContent('play')
-      }
-    }
+    doLogin
   )
   initTogglePasswordVisibilityIcon()
+  const form = document.getElementById('login-form')
+  form.onsubmit = (e) => {
+    e.preventDefault()
+    doRegister()
+  }
 }
 
 async function initSignupPage() {
+  const doRegister = async () => {
+    const result = await handleSignup()
+
+    if (result === 'success') {
+      loadPage('login')
+    }
+  }
+
   initBackButton(
     () => loadPage('start')
   )
   initRandomColorButton(
     'confirm-signup-button',
     'signup-panel',
-    async () => {
-      const result = await handleSignup()
-
-      if (result === 'success') {
-        loadPage('login')
-      }
-    }
+    doRegister
   )
   initTogglePasswordVisibilityIcon()
+  const form = document.getElementById('signup-form')
+  form.onsubmit = (e) => {
+    e.preventDefault()
+    doRegister()
+  }
 }
 
 async function initMainMenuPage() {

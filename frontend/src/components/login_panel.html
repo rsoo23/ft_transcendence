@@ -14,7 +14,7 @@
           <span style="color: var(--magenta-500)">n</span>
         </h1>
       </div>
-      <form id="login-form">
+      <form id="login-form" novalidate>
         <div id="login-username-input-container">
           <input id='login-username' autocomplete="off" type="text" class="input-field" name="login-username" placeholder="Username" required>
           <div class="text-alert-container">
@@ -31,6 +31,7 @@
             <a id='forgot-password-link'>Forgot Password?</a>
           </div>
         </div>
+        <input type="submit" style="height: 0; padding: 0; border: 0;">
       </form>
     </div>
   <button id="confirm-login-button" class="button button-md">Login</button>
