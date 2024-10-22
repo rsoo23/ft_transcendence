@@ -45,7 +45,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     # gets all users info excluding the current user
     def get_queryset(self):
         current_user = self.request.user
-        return CustomUser.objects.exclude(id=current_user.id)
+        return CustomUser.objects.exclude(id=current_user.id).exclude(is_staff=True)
 
     # gets the current user's info
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
@@ -90,11 +90,14 @@ def login_view(request):
 
         user = authenticate(request, username=username, password=password)
 
+        errors = {}
         if user is not None:
+            if user.is_staff:
+                errors['username'] = ['Admin cannot login']
+                return JsonResponse({'success': False, 'errors': errors})
             login(request, user)
             return JsonResponse({'success': True})
         else:
-            errors = {}
             if not User.objects.filter(username=username).exists():
                 errors['username'] = ['User does not exist: please sign up']
             else:

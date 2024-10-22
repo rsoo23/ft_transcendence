@@ -3,10 +3,25 @@ export const ANIM_WAIT_DURATION = 550
 
 export const MAX_AVATAR_FILE_SIZE = 2000000
 
-export let userInfo = {}
+export let currentUserInfo = {}
 
-export function setUserInfo(obj) {
-  userInfo = obj
+export function setCurrentUserInfo(obj) {
+  currentUserInfo = obj
+}
+
+export let usersInfo = {}
+
+export function setUsersInfo(obj) {
+  usersInfo = obj
+}
+
+export function getUserId(username) {
+  for (const user of usersInfo) {
+    if (user.username === username) {
+      return user.id
+    }
+  }
+  return (-1)
 }
 
 export let hotbarItems = {

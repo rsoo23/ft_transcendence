@@ -12,22 +12,19 @@ from user_management.models import CustomUser
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
-        # self.sender_id = self.scope.get('user_id')
-        # self.user = self.scope['user']
-        # print(self.sender_id)
-        # self.receiver_username = self.scope['url_route']['kwargs']['receiver_username']
-        # self.sender = get_object_or_404(CustomUser, pk=self.sender_id)
-        # self.receiver = get_object_or_404(CustomUser, username=self.receiver_username)
-        # self.sender_username = self.sender.username
+        self.sender = self.scope['user']
 
-        self.user = self.scope['user']
-        self.sender = self.user
+        if not self.sender.is_authenticated:
+            self.close()
+            return
+
+        self.receiver_id = self.scope['url_route']['kwargs']['receiver_id']
+        self.receiver = get_object_or_404(CustomUser, pk=self.receiver_id)
+
         self.sender_username = self.sender.username
-        self.receiver_username = self.scope['url_route']['kwargs']['receiver_username']
+        self.receiver_username = self.receiver.username
 
-        self.receiver = get_object_or_404(CustomUser, username=self.receiver_username)
-
-        # create the roon_name dynamically based on the sender's and receiver's username
+        # create the room_name dynamically based on the sender's and receiver's username
         if self.sender_username < self.receiver_username:
             self.room_name = f'chat_{self.sender_username}_{self.receiver_username}'
         else:
@@ -46,33 +43,39 @@ class ChatConsumer(WebsocketConsumer):
         self.accept()
 
     def disconnect(self, close_code):
-        if self.user.is_authenticated:
-            async_to_sync(self.channel_layer.group_discard)(
-                self.room_name,
-                self.channel_name,
-            )
+        async_to_sync(self.channel_layer.group_discard)(
+            self.room_name,
+            self.channel_name,
+        )
 
     def receive(self, text_data=None, bytes_data=None):
+        if not self.sender.is_authenticated:
+            self.close()
+            return
+
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-        sender_username = text_data_json['sender_username']
+        sender_id = text_data_json['sender_id']
 
-        if self.user.is_authenticated:
-            timezone = pytz.timezone('Asia/Singapore')
-            now = datetime.now(timezone)
-            timestamp = now.strftime('%d %b %Y - %H:%M'),
+        sender = get_object_or_404(CustomUser, pk=sender_id)
+        sender_username = sender.username
 
-            # send private message to the target
-            async_to_sync(self.channel_layer.group_send)(
-                self.room_name,
-                {
-                    'type': 'private_message',
-                    'message': message,
-                    'sender_username': sender_username,
-                    'timestamp': timestamp,
-                }
-            )
-            Message.objects.create(user=self.user, room=self.room, content=message)
+        new_message = Message.objects.create(user=self.sender, room=self.room, content=message)
+
+        timezone = pytz.timezone('Asia/Singapore')
+        localized_timestamp = new_message.timestamp.astimezone(timezone)
+        formatted_timestamp = localized_timestamp.strftime('%d %b %Y - %H:%M')
+
+        # send private message to the target
+        async_to_sync(self.channel_layer.group_send)(
+            self.room_name,
+            {
+                'type': 'private_message',
+                'message': message,
+                'sender_username': sender_username,
+                'timestamp': formatted_timestamp,
+            }
+        )
 
     def private_message(self, event):
         message = event['message']

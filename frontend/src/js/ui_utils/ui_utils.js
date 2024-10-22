@@ -21,3 +21,19 @@ export async function loadContentToTarget(path, elementId) {
   }
 }
 
+export function addTextPlaceholder(elementId, text) {
+  const element = document.getElementById(elementId)
+  const textContainer = document.createElement('div');
+
+  textContainer.textContent = text
+  element.appendChild(textContainer)
+  element.style.justifyContent = 'center'
+  element.style.alignItems = 'center'
+}
+
+export function truncateString(string, maxLength) {
+  if (string.length > maxLength) {
+    return string.slice(0, maxLength) + '..'
+  }
+  return string
+}

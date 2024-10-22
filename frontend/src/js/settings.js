@@ -1,5 +1,5 @@
 import { addEventListenerTo } from "./ui_utils/ui_utils.js";
-import { MAX_AVATAR_FILE_SIZE, userInfo } from "./global_vars.js";
+import { MAX_AVATAR_FILE_SIZE, currentUserInfo } from "./global_vars.js";
 import { postRequest } from "./network_utils/api_requests.js";
 
 export function initEditIcons() {
@@ -57,7 +57,7 @@ export async function uploadAvatarImage() {
   try {
     const formData = new FormData();
     formData.append("avatar_img", imageToUpload);
-    formData.append("username", userInfo["username"]);
+    formData.append("username", currentUserInfo["username"]);
     const response = await postRequest("/api/upload_avatar_image/", formData);
 
     if (response.ok) {

@@ -6,13 +6,15 @@ import { handleLogin } from "./login_panel.js";
 import { handleSignup } from "./signup_panel.js"
 import { changeAvatar, initFileInput, setDefaultAvatar, uploadAvatarImage } from "./settings.js";
 import { initLogoutButton } from './logout.js';
-import { initSettingsPage } from "./update_username.js";
 import { getRequest } from "./network_utils/api_requests.js";
 import { initEmailSettings } from "./update_email.js";
 import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js";
-import { setUserInfo, userInfo } from "./global_vars.js";
+import { setCurrentUserInfo, setUsersInfo } from "./global_vars.js";
 import { initEditIcons } from "./settings.js";
 import { initPasswordSettings } from "./update_password.js";
+import { closeChatSocket } from "./realtime_chat/websocket.js";
+import { setInFriendsPage } from "./realtime_chat/chat_utils.js";
+import { initUsernameSettings } from "./update_username.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -29,7 +31,7 @@ const routes = {
 }
 
 // manages back and forth history
-window.addEventListener('popstate', (event) => {
+window.addEventListener('popstate', async (event) => {
   const path = window.location.pathname;
   const urlSegments = path.split('/')
   const lastUrlSegment = urlSegments.pop()
@@ -37,10 +39,15 @@ window.addEventListener('popstate', (event) => {
   if (path.startsWith('/menu')) {
     loadContentToMainMenu(lastUrlSegment);
   } else if (path.startsWith('/main_menu')) {
-    loadPage('main_menu');
-    loadMainMenuContent('play');
+    await loadPage('main_menu');
+    await loadMainMenuContent('play');
   } else {
     loadContent(lastUrlSegment);
+  }
+
+  if (!path.startsWith('/menu/friends')) {
+    setInFriendsPage(false)
+    closeChatSocket()
   }
 });
 
@@ -71,6 +78,10 @@ export async function loadContentToMainMenu(contentName) {
 
     document.querySelector('#main-menu-panel > .content-container').innerHTML = html;
 
+    if (contentName !== 'friends') {
+      setInFriendsPage(false)
+      closeChatSocket()
+    }
     updateBorderColor(contentName)
     updateButtonState(contentName)
     loadDynamicContent(contentName)
@@ -92,99 +103,126 @@ export async function loadMainMenuContent(contentName) {
 // - loads dynamic content after loading content to main menu
 // - initializes event listeners for any ui components
 async function loadDynamicContent(contentName) {
-  if (contentName === 'start') {
-
-    initRandomColorButton(
-      'login-button',
-      'start-page-panel',
-      () => loadPage('login')
-    )
-    initRandomColorButton(
-      'signup-button',
-      'start-page-panel',
-      () => loadPage('signup')
-    )
-
-  } else if (contentName === 'login') {
-
-    initBackButton(
-      () => loadPage('start')
-    )
-    initRandomColorButton(
-      'confirm-login-button',
-      'login-panel',
-      async () => {
-        const result = await handleLogin()
-
-        if (result === 'success') {
-          loadPage('main_menu')
-          loadMainMenuContent('play')
-        }
-      }
-    )
-    initTogglePasswordVisibilityIcon()
-
-  } else if (contentName === 'signup') {
-
-    initBackButton(
-      () => loadPage('start')
-    )
-    initRandomColorButton(
-      'confirm-signup-button',
-      'signup-panel',
-      async () => {
-        const result = await handleSignup()
-
-        if (result === 'success') {
-          loadPage('login')
-        }
-      }
-    )
-    initTogglePasswordVisibilityIcon()
-
-  } else if (contentName === '2fa') {
-
-    initBackButton(() => loadPage('login'))
-    initRandomColorButton(
-      'confirm-2fa-button',
-      'two-fa-panel',
-      () => {
-        loadPage('main_menu')
-        loadMainMenuContent('play')
-      }
-    )
-
-  } else if (contentName === 'main_menu') {
-    initHotbar()
-    await loadUserInfo()
-  } else if (contentName === 'friends') {
-
-    await loadContentToTarget('menu/friend_list_panel.html', 'friends-container')
-    await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
-    initAddFriendButton()
-    await loadFriendListContent()
-
-  } else if (contentName === 'settings') {
-    initFileInput()
-    initEditIcons()
-    initSettingsPage();
-    initLogoutButton();
-    initEmailSettings();
-	initPasswordSettings();
+  switch (contentName) {
+    case 'start':
+      initStartPage()
+      break
+    case 'login':
+      initLoginPage()
+      break
+    case 'signup':
+      initSignupPage()
+      break
+    case 'main_menu':
+      initMainMenuPage()
+      break
+    case 'friends':
+      initFriendsPage()
+      break
+    case 'settings':
+      initSettingsPage()
+      break
   }
 }
 
-async function loadUserInfo() {
+async function loadCurrentUserInfo() {
   try {
     const response = await getRequest('/api/users/current_user/')
 
     console.log('userInfo: ', response)
     if (response) {
-      setUserInfo(response)
+      setCurrentUserInfo(response)
+    } else {
+      console.error('Error: Failed to load userCurrentInfo')
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+async function loadUsersInfo() {
+  try {
+    const response = await getRequest('/api/users/')
+
+    console.log('usersInfo: ', response)
+    if (response) {
+      setUsersInfo(response)
     } else {
       console.error('Error: Failed to load userInfo')
     }
   } catch (error) {
     console.error(error)
   }
+}
+
+async function initStartPage() {
+  initRandomColorButton(
+    'login-button',
+    'start-page-panel',
+    () => loadPage('login')
+  )
+  initRandomColorButton(
+    'signup-button',
+    'start-page-panel',
+    () => loadPage('signup')
+  )
+}
+
+async function initLoginPage() {
+  initBackButton(
+    () => loadPage('start')
+  )
+  initRandomColorButton(
+    'confirm-login-button',
+    'login-panel',
+    async () => {
+      const result = await handleLogin()
+
+      if (result === 'success') {
+        await loadPage('main_menu')
+        await loadMainMenuContent('play')
+      }
+    }
+  )
+  initTogglePasswordVisibilityIcon()
+}
+
+async function initSignupPage() {
+  initBackButton(
+    () => loadPage('start')
+  )
+  initRandomColorButton(
+    'confirm-signup-button',
+    'signup-panel',
+    async () => {
+      const result = await handleSignup()
+
+      if (result === 'success') {
+        loadPage('login')
+      }
+    }
+  )
+  initTogglePasswordVisibilityIcon()
+}
+
+async function initMainMenuPage() {
+  initHotbar()
+  await loadCurrentUserInfo()
+  await loadUsersInfo()
+}
+
+async function initFriendsPage() {
+  await loadContentToTarget('menu/friend_list_panel.html', 'friends-container')
+  await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
+  initAddFriendButton()
+  await loadFriendListContent()
+}
+
+async function initSettingsPage() {
+  initFileInput()
+  initEditIcons()
+  initUsernameSettings();
+  initLogoutButton();
+  initEmailSettings();
+  initPasswordSettings();
 }

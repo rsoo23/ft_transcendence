@@ -1,9 +1,10 @@
 
-import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js"
+import { addEventListenerTo, loadContentToTarget, truncateString } from "./ui_utils/ui_utils.js"
 import { getColor } from "./ui_utils/color_utils.js"
 import { getRequest, postRequest } from "./network_utils/api_requests.js"
-import { friendRecordIconInfo } from "./global_vars.js"
+import { friendRecordIconInfo, getUserId } from "./global_vars.js"
 import { loadChatInterface } from "./realtime_chat/chat_utils.js"
+import { closeChatSocket } from "./realtime_chat/websocket.js"
 
 export function initAddFriendButton() {
   const button = document.getElementById('add-friend-button')
@@ -138,7 +139,6 @@ async function loadSentFriendRequestsToList(endpoint, targetList) {
   try {
     const response = await getRequest(endpoint)
 
-    console.log(response)
     if (response.length === 0) {
       addListContentPlaceholderText('No requests sent', targetList)
     } else if (response.length > 0) {
@@ -160,7 +160,6 @@ async function loadReceivedFriendRequestsToList(endpoint, targetList) {
   try {
     const response = await getRequest(endpoint)
 
-    console.log(response)
     if (response.length === 0) {
       addListContentPlaceholderText('No requests received', targetList)
     } else if (response.length > 0) {
@@ -212,6 +211,7 @@ function addListContentPlaceholderText(labelText, targetList) {
 
 function createFriendRecord(username, iconsInfo) {
   const avatarImageUrl = '/static/images/kirby.png'
+  const userId = getUserId(username)
 
   const friendRecord = document.createElement('div');
   friendRecord.className = 'friend-record';
@@ -232,7 +232,7 @@ function createFriendRecord(username, iconsInfo) {
 
   const avatarName = document.createElement('div');
   avatarName.className = 'avatar-name';
-  avatarName.textContent = username;
+  avatarName.textContent = truncateString(username, 9);
 
   const iconsSection = document.createElement('div');
   iconsSection.className = 'icons-section';
@@ -250,8 +250,7 @@ function createFriendRecord(username, iconsInfo) {
 
     icon.appendChild(tooltip);
     iconsSection.appendChild(icon);
-
-    initFriendRecordIcon(icon, iconInfo['icon-id'], username)
+    initFriendRecordIcon(icon, iconInfo['icon-id'], userId)
   })
 
   avatarContainer.appendChild(avatarImage);
@@ -264,7 +263,7 @@ function createFriendRecord(username, iconsInfo) {
   return friendRecord
 }
 
-function initFriendRecordIcon(icon, iconId, username) {
+function initFriendRecordIcon(icon, iconId, userId) {
   let callback
 
   switch (iconId) {
@@ -272,14 +271,17 @@ function initFriendRecordIcon(icon, iconId, username) {
       break
     case 'chat-icon':
       callback = (() => {
-        return async () => loadChatInterface(username)
+        return async () => loadChatInterface(userId)
       })()
       break
     case 'block-icon':
       callback = async () => {
         try {
-          const response = await postRequest('/api/block_friend/', { blocked_username: username })
+          const response = await postRequest('/api/block_friend/', { blocked_id: userId })
           await loadFriendListContent()
+
+          await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
+          closeChatSocket()
 
           console.log(response)
         } catch (error) {
@@ -290,7 +292,7 @@ function initFriendRecordIcon(icon, iconId, username) {
     case 'unblock-icon':
       callback = async () => {
         try {
-          const response = await postRequest('/api/unblock_friend/', { unblocked_username: username })
+          const response = await postRequest('/api/unblock_friend/', { unblocked_id: userId })
           await loadFriendListContent()
 
           console.log(response)
@@ -302,7 +304,7 @@ function initFriendRecordIcon(icon, iconId, username) {
     case 'cancel-icon':
       callback = async () => {
         try {
-          const response = await postRequest('/api/cancel_friend_request/', { receiver_username: username })
+          const response = await postRequest('/api/cancel_friend_request/', { receiver_id: userId })
           await loadFriendSearchContent()
 
           console.log(response)
@@ -314,7 +316,7 @@ function initFriendRecordIcon(icon, iconId, username) {
     case 'decline-icon':
       callback = async () => {
         try {
-          const response = await postRequest('/api/decline_friend_request/', { sender_username: username })
+          const response = await postRequest('/api/decline_friend_request/', { sender_id: userId })
           await loadFriendSearchContent()
 
           console.log(response)
@@ -326,7 +328,7 @@ function initFriendRecordIcon(icon, iconId, username) {
     case 'accept-icon':
       callback = async () => {
         try {
-          const response = await postRequest('/api/accept_friend_request/', { sender_username: username })
+          const response = await postRequest('/api/accept_friend_request/', { sender_id: userId })
           await loadFriendSearchContent()
 
           console.log(response)
@@ -338,7 +340,7 @@ function initFriendRecordIcon(icon, iconId, username) {
     case 'send-friend-request-icon':
       callback = async () => {
         try {
-          const response = await postRequest('/api/send_friend_request/', { receiver_username: username })
+          const response = await postRequest('/api/send_friend_request/', { receiver_id: userId })
           await loadFriendSearchContent()
 
           console.log(response)
