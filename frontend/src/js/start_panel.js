@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function initializeApp() {
   if (await verifyToken()) {
-    loadPage('main_menu')
+    await loadPage('main_menu')
     loadMainMenuContent('play')
     return
   }
