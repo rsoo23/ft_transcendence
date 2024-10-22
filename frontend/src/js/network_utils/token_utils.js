@@ -2,6 +2,17 @@ import { postRequest } from "./api_requests.js";
 
 export async function verifyToken() {
   const response = await fetch('/api/token/verify/', { method: 'POST' })
+  if (!response.ok)
+    console.log('token: could not verify token!')
+
+  return response.ok
+}
+
+export async function refreshToken() {
+  const response = await fetch('/api/token/refresh/', { method: 'POST' })
+  if (!response.ok)
+    console.log('token: could not refresh token!')
+
   return response.ok
 }
 
