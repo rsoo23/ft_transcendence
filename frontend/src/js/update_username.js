@@ -1,9 +1,11 @@
 import { postRequest, getRequest } from "./network_utils/api_requests.js";
 
-export function initUsernameSettings() {
+export async function initUsernameSettings() {
   const saveButton = document.getElementById('save-button');
   const usernameEditIcon = document.getElementById('username-edit-icon');
   const usernameInput = document.getElementById('username-input');
+
+  await setCurrentUsername(usernameInput);
 
   if (saveButton) {
     saveButton.addEventListener('click', () => handleSaveSettings(usernameInput));
