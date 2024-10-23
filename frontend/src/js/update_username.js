@@ -1,29 +1,20 @@
-import { postRequest, getRequest } from "./network_utils/api_requests.js";
+import { postRequest } from "./network_utils/api_requests.js";
+import { currentUserInfo } from "./global_vars.js";
 
 export async function initUsernameSettings() {
   const saveButton = document.getElementById('save-button');
   const usernameEditIcon = document.getElementById('username-edit-icon');
   const usernameInput = document.getElementById('username-input');
 
-  await setCurrentUsername(usernameInput);
+  if (currentUserInfo && currentUserInfo.username) {
+    usernameInput.value = currentUserInfo.username;
+  }
 
   if (saveButton) {
     saveButton.addEventListener('click', () => handleSaveSettings(usernameInput));
   }
   if (usernameEditIcon) {
     usernameEditIcon.addEventListener('click', () => toggleUsernameEdit(usernameInput));
-  }
-}
-
-async function setCurrentUsername(usernameInput) {
-  try {
-    const response = await getRequest('/api/current_username_email/');
-    if (response.username) {
-      usernameInput.value = response.username;
-    }
-  }
-  catch (error) {
-    console.error('Error fetching current username:', error);
   }
 }
 
@@ -36,7 +27,7 @@ function toggleUsernameEdit(usernameInput) {
 
 async function handleSaveSettings(usernameInput) {
   if (usernameInput.disabled) {
-    return; // Don't update if the input is disabled
+    return;
   }
 
   const newUsername = usernameInput.value.trim();
@@ -51,7 +42,7 @@ async function handleSaveSettings(usernameInput) {
 
     if (response.status === 'success') {
       alert(response.message);
-      usernameInput.disabled = true;  // Disable the input after successful update
+      usernameInput.disabled = true;
     } else {
       alert('Failed to update username: ' + response.message);
     }

@@ -27,7 +27,7 @@ function togglePasswordEdit(newPasswordInput, confirmPasswordInput) {
 
 async function handleSavePassword(newPasswordInput, confirmPasswordInput) {
     if (newPasswordInput.disabled) {
-        return; // Don't update if the inputs are disabled
+        return;
     }
 
     const newPassword = newPasswordInput.value.trim();
@@ -42,8 +42,6 @@ async function handleSavePassword(newPasswordInput, confirmPasswordInput) {
         alert('Passwords do not match');
         return;
     }
-
-    // You might want to add more password validation here
 
     try {
         const response = await postRequest('/api/update_password/', { new_password: newPassword });
