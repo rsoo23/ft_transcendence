@@ -1,6 +1,6 @@
-import { addEventListenerTo } from "./ui_utils/ui_utils.js";
-import { MAX_AVATAR_FILE_SIZE, currentUserInfo } from "./global_vars.js";
-import { postRequest } from "./network_utils/api_requests.js";
+import { addEventListenerTo } from "../ui_utils/ui_utils.js";
+import { MAX_AVATAR_FILE_SIZE, currentUserInfo } from "../global_vars.js";
+import { postRequest } from "../network_utils/api_requests.js";
 
 export function initEditIcons() {
   const editAvatarIcon = document.querySelector(
