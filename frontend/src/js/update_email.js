@@ -1,4 +1,4 @@
-import { postRequest, getRequest } from "./network_utils/api_requests.js";
+import { postRequest } from "./network_utils/api_requests.js";
 import { currentUserInfo } from "./global_vars.js";
 
 export async function initEmailSettings() {
