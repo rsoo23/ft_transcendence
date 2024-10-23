@@ -2,16 +2,28 @@ import { postRequest } from "./api_requests.js";
 
 export async function verifyToken() {
   const response = await fetch('/api/token/verify/', { method: 'POST' })
-  if (!response.ok)
-    console.log('token: could not verify token!')
+  if (!response.ok) {
+    const contents = await response.json()
+    if ('detail' in contents) {
+      console.log(`token: ${contents.detail}`)
+    } else if (response.status != 500) {
+      console.log('token: no access token found in local storage')
+    }
+  }
 
   return response.ok
 }
 
 export async function refreshToken() {
   const response = await fetch('/api/token/refresh/', { method: 'POST' })
-  if (!response.ok)
-    console.log('token: could not refresh token!')
+  if (!response.ok) {
+    const contents = await response.json()
+    if ('detail' in contents) {
+      console.log(`token: ${contents.detail}`)
+    } else if (response.status != 500) {
+      console.log('token: no refresh token found in local storage')
+    }
+  }
 
   return response.ok
 }
