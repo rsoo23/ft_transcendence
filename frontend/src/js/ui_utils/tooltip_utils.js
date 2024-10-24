@@ -6,7 +6,6 @@ export function showTooltip(element) {
   }
 
   element.style.opacity = '1'
-  element.style.visibility = 'visible'
 }
 
 export function hideTooltip(element) {
@@ -16,5 +15,4 @@ export function hideTooltip(element) {
   }
 
   element.style.opacity = '0'
-  element.style.visibility = 'hidden'
 }
