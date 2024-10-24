@@ -1,6 +1,7 @@
 import json
 import jwt
-import pyotp
+import secrets
+import string
 
 from main.settings import JWT_SECRET_KEY
 
@@ -11,6 +12,8 @@ from user_management.emails import send_email
 from django.http import JsonResponse
 from .forms import CustomUserCreationForm
 from django.contrib.auth.forms import SetPasswordForm
+from two_factor_auth.views import generate_otp, verify_otp
+from django.core.cache import cache
 
 
 User = get_user_model()
@@ -99,8 +102,11 @@ def verify_change_password_code(request):
             return JsonResponse({'success' : False, 'Error': 'Email_Token Not Found'}, status=401)
         email = decoded_token['email']
         User = get_user_model().objects.get(email=email)
-        totp = pyotp.TOTP(User.base32_secret)
-        if totp.verify(code):
+        if cache.get(User.base32_secret):
+            otp = cache.get(User.base32_secret)
+        else:
+            return JsonResponse({'success' : False, 'Status' : f'Forgot password Code Timeout'}, status=401)
+        if verify_otp(otp, code):
             return JsonResponse({'success' : True, 'Status' : 'Forgot password Code Verified'}, status=200)
         else:
             return JsonResponse({'success' : False, 'Status' : f'Forgot password code is Wrong'},status=401)
@@ -115,15 +121,13 @@ def send_otp_forgot_password(request):
             return JsonResponse({'success' : False, 'Error': 'Email_Token Not Found'}, status=401)
         email = decoded_token['email']
         User = get_user_model().objects.get(email=email)
+        alphabet = string.ascii_letters + string.digits
         if not User.base32_secret:
-            secret = pyotp.random_base32()
+            secret = ''.join(secrets.choice(alphabet) for i in range(8))
             User.base32_secret = secret
             User.save()
-            totp = pyotp.TOTP(User.base32_secret)
-            otp = totp.now()
-        else:
-            totp = pyotp.TOTP(User.base32_secret) 
-            otp = totp.now()
+        otp = generate_otp()
+        cache.set(User.base32_secret, otp, timeout=30)
         send_email(email, otp)
         return JsonResponse({'success' : True, 'Status' : 'Change password Token sent to :' + email})
     return JsonResponse({'error': 'Invalid request method'}, status=405)
