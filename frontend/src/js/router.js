@@ -4,13 +4,12 @@ import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.j
 import { initAddFriendButton, loadFriendListContent } from "./friends_content.js"
 import { handleLogin } from "./login_panel.js";
 import { handleSignup } from "./signup_panel.js"
-import { changeAvatar, initFileInput, setDefaultAvatar, uploadAvatarImage } from "./settings/upload_avatar.js";
+import { initAvatarUpload } from "./settings/upload_avatar.js";
 import { initLogoutButton } from './settings/logout.js';
 import { getRequest } from "./network_utils/api_requests.js";
 import { initEmailSettings } from "./settings/update_email.js";
 import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { setCurrentUserInfo, setUsersInfo } from "./global_vars.js";
-import { initEditIcons } from "./settings/upload_avatar.js";
 import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { setInFriendsPage } from "./realtime_chat/chat_utils.js";
@@ -233,8 +232,7 @@ async function initFriendsPage() {
 }
 
 async function initSettingsPage() {
-  initFileInput()
-  initEditIcons()
+  initAvatarUpload();
   initUsernameSettings();
   initLogoutButton();
   initEmailSettings();

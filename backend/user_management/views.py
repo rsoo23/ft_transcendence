@@ -255,16 +255,25 @@ def update_email(request):
 
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
-# @permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def upload_avatar_image(request):
-    print(request.data)
-    username = request.data.get('username')
-    user = get_object_or_404(CustomUser, username='username')
-
-    serializer = UserAvatarImageSerializer(user, data=request.data, partial=True)
-
-    if serializer.is_valid():
-        serializer.save()
-        return Response({ "message": "Image uploaded successfully"}, status=status.HTTP_200_OK)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        # Since we're using IsAuthenticated, we can get the user directly
+        user = request.user
+        
+        if 'avatar_img' not in request.FILES:
+            return Response({"error": "No image file provided"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        serializer = UserAvatarImageSerializer(user, data={'avatar_img': request.FILES['avatar_img']}, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "message": "Image uploaded successfully",
+                "avatar_url": request.build_absolute_uri(user.avatar_img.url) if user.avatar_img else None
+            }, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
