@@ -106,6 +106,7 @@
   height: 100%;
 
   display: flex;
+  visibility: hidden;
   flex-direction: column;
   justify-content: space-around;
 
