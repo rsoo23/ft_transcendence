@@ -1,6 +1,6 @@
 import { addEventListenerTo } from "../ui_utils/ui_utils.js";
 import { MAX_AVATAR_FILE_SIZE } from "../global_vars.js";
-import { postRequest } from "../network_utils/api_requests.js";
+import { getRequest, postRequest } from "../network_utils/api_requests.js";
 
 let imageToUpload = null;
 
@@ -91,18 +91,9 @@ async function uploadAvatarImage() {
 	const avatar = document.querySelector("#profile-settings-container .profile-settings-avatar");
 	
 	try {
-	  const response = await fetch('/api/get_avatar_image/', {
-		method: 'GET',
-		credentials: 'include',
-	  });
-	  
-	  if (response.ok) {
-		const blob = await response.blob();
-		const imageUrl = URL.createObjectURL(blob);
-		avatar.src = imageUrl;
-	  } else {
-		setDefaultAvatar();
-	  }
+	  const response = await getRequest('/api/get_avatar_image/', 'blob'); // Binary Large Object - image data
+	  const imageUrl = URL.createObjectURL(response);
+	  avatar.src = imageUrl;
 	} catch (error) {
 	  console.error('Error loading avatar:', error);
 	  setDefaultAvatar();
