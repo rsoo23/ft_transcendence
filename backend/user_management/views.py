@@ -2,9 +2,9 @@ from django.contrib.auth.forms import UserCreationForm, PasswordResetForm, Authe
 from django.contrib.auth import authenticate, login, get_user_model, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, get_user_model
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-import json
+import json, os
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from .forms import CustomUserCreationForm
@@ -19,8 +19,6 @@ from .models import CustomUser
 from friends_system.models import FriendList
 
 from .serializers import CustomUserSerializer
-
-from django.shortcuts import get_object_or_404
 
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -255,16 +253,48 @@ def update_email(request):
 
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
-# @permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def upload_avatar_image(request):
-    print(request.data)
-    username = request.data.get('username')
-    user = get_object_or_404(CustomUser, username='username')
+    try:
+        # Since we're using IsAuthenticated, we can get the user directly
+        user = request.user
+        
+        if 'avatar_img' not in request.FILES:
+            return Response({"error": "No image file provided"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        serializer = UserAvatarImageSerializer(user, data={'avatar_img': request.FILES['avatar_img']}, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "message": "Image uploaded successfully",
+                "avatar_url": request.build_absolute_uri(user.avatar_img.url) if user.avatar_img else None
+            }, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    serializer = UserAvatarImageSerializer(user, data=request.data, partial=True)
-
-    if serializer.is_valid():
-        serializer.save()
-        return Response({ "message": "Image uploaded successfully"}, status=status.HTTP_200_OK)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_avatar_image(request):
+    """
+    Returns the user's avatar image if it exists, otherwise returns default avatar
+    """
+    user = request.user
+    
+    if user.avatar_img and user.avatar_img.name:
+        try:
+            return HttpResponse(user.avatar_img, content_type='image/jpeg')
+        except:
+            # If there's any error reading the file, fall back to default
+            pass
+            
+    # Return default avatar
+    default_avatar_path = os.path.join(settings.STATIC_ROOT, 'images', 'kirby.png')
+    try:
+        with open(default_avatar_path, 'rb') as f:
+            return HttpResponse(f.read(), content_type='image/png')
+    except:
+        return HttpResponse(status=404)

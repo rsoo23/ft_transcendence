@@ -1,72 +1,103 @@
 import { addEventListenerTo } from "../ui_utils/ui_utils.js";
-import { MAX_AVATAR_FILE_SIZE, currentUserInfo } from "../global_vars.js";
-import { postRequest } from "../network_utils/api_requests.js";
+import { MAX_AVATAR_FILE_SIZE } from "../global_vars.js";
+import { getRequest, postRequest } from "../network_utils/api_requests.js";
 
-export function initEditIcons() {
-  const editAvatarIcon = document.querySelector(
-    ".profile-settings-pencil-icon.edit-avatar-icon"
-  );
+let imageToUpload = null;
 
+export function initAvatarUpload() {
+  const editAvatarIcon = document.querySelector(".profile-settings-pencil-icon.edit-avatar-icon");
+  const imgUploadInput = document.querySelector("#profile-settings-container .edit-avatar-input");
+  const avatar = document.querySelector("#profile-settings-container .profile-settings-avatar");
+  const saveButton = document.getElementById('save-button');
+
+  loadUserAvatar();
+
+  // Add click handler for edit icon
   addEventListenerTo(editAvatarIcon, "click", () => {
-    changeAvatar();
+    imgUploadInput.click();
   });
+
+  // Handle file selection
+  imgUploadInput.addEventListener("change", function() {
+    const file = this.files[0];
+    if (!file) return;
+
+    if (file.size > MAX_AVATAR_FILE_SIZE) {
+      alert("Image size must be less than 2MB");
+      this.value = ''; // Clear the input
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      alert("Please select an image file");
+      this.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      avatar.src = reader.result;
+      imageToUpload = file;
+    };
+    reader.onerror = () => {
+      alert("Error reading file");
+      this.value = '';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Handle save button click
+  if (saveButton) {
+    addEventListenerTo(saveButton, "click", async () => {
+      if (imageToUpload) {
+        await uploadAvatarImage();
+      }
+    });
+  }
 }
 
-let imageToUpload;
-
-export function setDefaultAvatar() {
-  const avatar = document.querySelector(
-    "#profile-settings-container .profile-settings-avatar"
-  );
-
+function setDefaultAvatar() {
+  const avatar = document.querySelector("#profile-settings-container .profile-settings-avatar");
   avatar.src = "/static/images/kirby.png";
 }
 
-export async function changeAvatar() {
-  const imgUploadInput = document.querySelector(".edit-avatar-input");
-
-  imgUploadInput.click();
-}
-
-export function initFileInput() {
-  const imgUploadInput = document.querySelector(
-    "#profile-settings-container .edit-avatar-input"
-  );
-  const avatar = document.querySelector(
-    "#profile-settings-container .profile-settings-avatar"
-  );
-
-  imgUploadInput.addEventListener("change", function () {
-    const image = this.files[0];
-
-    if (image.size > MAX_AVATAR_FILE_SIZE) {
-      alert("Image size more than 10MB");
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      const imgUrl = reader.result;
-      avatar.src = imgUrl;
-    };
-    reader.readAsDataURL(image);
-    imageToUpload = image;
-  });
-}
-
-export async function uploadAvatarImage() {
-  try {
-    const formData = new FormData();
-    formData.append("avatar_img", imageToUpload);
-    formData.append("username", currentUserInfo["username"]);
-    const response = await postRequest("/api/upload_avatar_image/", formData);
-
-    if (response.ok) {
-      return "success";
-    } else {
-      alert("Error uploading image to server");
-      return "failure";
-    }
-  } catch (error) {
-    console.error("Error uploading image: ", error);
+async function uploadAvatarImage() {
+	if (!imageToUpload) {
+	  return;
+	}
+  
+	try {
+	  const formData = new FormData();
+	  formData.append("avatar_img", imageToUpload);
+  
+	  const response = await postRequest('/api/upload_avatar_image/', formData);
+	  //formData usually used for file uploads (key-value pairs)
+  
+	  if (response.message) {
+		alert("Avatar uploaded successfully!");
+		imageToUpload = null; // Clear the pending upload
+		return "success";
+	  } else {
+		alert(response.error || "Error uploading avatar");
+		return "failure";
+	  }
+	} catch (error) {
+	  console.error("Error uploading avatar:", error);
+	  alert("Error uploading avatar. Please try again.");
+	  return "failure";
+	}
   }
-}
+
+  export async function loadUserAvatar() {
+	const avatar = document.querySelector("#profile-settings-container .profile-settings-avatar");
+	
+	try {
+	  const response = await getRequest('/api/get_avatar_image/', 'blob'); // Binary Large Object - image data
+	  const imageUrl = URL.createObjectURL(response);
+	  avatar.src = imageUrl;
+	} catch (error) {
+	  console.error('Error loading avatar:', error);
+	  setDefaultAvatar();
+	}
+  }
+  

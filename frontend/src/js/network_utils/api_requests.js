@@ -9,7 +9,9 @@ export async function getRequest(url, outputType = 'json') {
   if (outputType === 'text') {
     data = await response.text()
   } else if (outputType === 'json') {
-    data = await response.json();
+    data = await response.json(); 
+  } else if (outputType === 'blob') {
+	data = await response.blob();
   } else {
     throw new Error('Invalid outputType. Please use "json" or "text".');
   }
