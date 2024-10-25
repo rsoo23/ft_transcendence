@@ -10,10 +10,7 @@ export function initAvatarUpload() {
   const avatar = document.querySelector("#profile-settings-container .profile-settings-avatar");
   const saveButton = document.getElementById('save-button');
 
-  // Initialize with default avatar if needed
-  if (!avatar.src) {
-    setDefaultAvatar();
-  }
+  loadUserAvatar();
 
   // Add click handler for edit icon
   addEventListenerTo(editAvatarIcon, "click", () => {
@@ -59,7 +56,7 @@ export function initAvatarUpload() {
   }
 }
 
-export function setDefaultAvatar() {
+function setDefaultAvatar() {
   const avatar = document.querySelector("#profile-settings-container .profile-settings-avatar");
   avatar.src = "/static/images/kirby.png";
 }
@@ -89,3 +86,26 @@ async function uploadAvatarImage() {
 	  return "failure";
 	}
   }
+
+  export async function loadUserAvatar() {
+	const avatar = document.querySelector("#profile-settings-container .profile-settings-avatar");
+	
+	try {
+	  const response = await fetch('/api/get_avatar_image/', {
+		method: 'GET',
+		credentials: 'include',
+	  });
+	  
+	  if (response.ok) {
+		const blob = await response.blob();
+		const imageUrl = URL.createObjectURL(blob);
+		avatar.src = imageUrl;
+	  } else {
+		setDefaultAvatar();
+	  }
+	} catch (error) {
+	  console.error('Error loading avatar:', error);
+	  setDefaultAvatar();
+	}
+  }
+  

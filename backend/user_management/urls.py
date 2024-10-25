@@ -23,5 +23,6 @@ urlpatterns = [
 	path('update_password/', views.update_password, name='update_password'),
 	path('update_email/', views.update_email, name='update_email'),
     path('upload_avatar_image/', views.upload_avatar_image, name='upload_avatar_image'),
+	path('get_avatar_image/', views.get_avatar_image, name='get_avatar_image'),
     path('', include(router.urls)),
 ]

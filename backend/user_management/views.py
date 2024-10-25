@@ -2,9 +2,9 @@ from django.contrib.auth.forms import UserCreationForm, PasswordResetForm, Authe
 from django.contrib.auth import authenticate, login, get_user_model, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, get_user_model
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-import json
+import json, os
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from .forms import CustomUserCreationForm
@@ -19,8 +19,6 @@ from .models import CustomUser
 from friends_system.models import FriendList
 
 from .serializers import CustomUserSerializer
-
-from django.shortcuts import get_object_or_404
 
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -277,3 +275,26 @@ def upload_avatar_image(request):
         
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_avatar_image(request):
+    """
+    Returns the user's avatar image if it exists, otherwise returns default avatar
+    """
+    user = request.user
+    
+    if user.avatar_img and user.avatar_img.name:
+        try:
+            return HttpResponse(user.avatar_img, content_type='image/jpeg')
+        except:
+            # If there's any error reading the file, fall back to default
+            pass
+            
+    # Return default avatar
+    default_avatar_path = os.path.join(settings.STATIC_ROOT, 'images', 'kirby.png')
+    try:
+        with open(default_avatar_path, 'rb') as f:
+            return HttpResponse(f.read(), content_type='image/png')
+    except:
+        return HttpResponse(status=404)
