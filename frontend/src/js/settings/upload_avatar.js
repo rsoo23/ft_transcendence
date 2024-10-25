@@ -71,6 +71,7 @@ async function uploadAvatarImage() {
 	  formData.append("avatar_img", imageToUpload);
   
 	  const response = await postRequest('/api/upload_avatar_image/', formData);
+	  //formData usually used for file uploads (key-value pairs)
   
 	  if (response.message) {
 		alert("Avatar uploaded successfully!");
