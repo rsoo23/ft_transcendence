@@ -14,6 +14,7 @@ import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { setInFriendsPage } from "./realtime_chat/chat_utils.js";
 import { initUsernameSettings } from "./settings/update_username.js";
+import { createMatch, joinMatch } from "./game/api.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -26,7 +27,8 @@ const routes = {
   '/menu/stats': 'menu/stats_content.html',
   '/menu/friends': 'menu/friends_content.html',
   '/menu/how-to-play': 'menu/how_to_play_content.html',
-  '/menu/settings': 'menu/settings_content.html'
+  '/menu/settings': 'menu/settings_content.html',
+  '/game': 'game.html',
 }
 
 // manages back and forth history
@@ -115,6 +117,9 @@ async function loadDynamicContent(contentName) {
     case 'main_menu':
       initMainMenuPage()
       break
+    case 'play':
+      initPlayPage()
+      break
     case 'friends':
       initFriendsPage()
       break
@@ -172,7 +177,7 @@ async function initLoginPage() {
     const result = await handleLogin()
 
     if (result === 'success') {
-      loadPage('main_menu')
+      await loadPage('main_menu')
       loadMainMenuContent('play')
     }
   }
@@ -222,6 +227,31 @@ async function initMainMenuPage() {
   initHotbar()
   await loadCurrentUserInfo()
   await loadUsersInfo()
+}
+
+async function initPlayPage() {
+  initRandomColorButton(
+    'testmatch',
+    'play-container',
+    async () => {
+      const player1_uuid = document.getElementById('player1').value
+      const player2_uuid = document.getElementById('player2').value
+      const matchID = await createMatch(player1_uuid, player2_uuid)
+      if (matchID != null) {
+        document.getElementById('matchid').value = matchID
+      }
+    }
+  )
+  initRandomColorButton(
+    'websocket',
+    'play-container',
+    async () => {
+      const matchID = document.getElementById('matchid').value
+      const userID = document.getElementById('user').value
+      await loadPage('game')
+      joinMatch(matchID, userID)
+    }
+  )
 }
 
 async function initFriendsPage() {

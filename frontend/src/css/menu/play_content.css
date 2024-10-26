@@ -1,7 +1,12 @@
 
 #play-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  /* justify-content: center; */
+  /* align-items: center; */
   width: 100%;
+}
+
+.play-block-container {
+  display: block;
+  padding: 1rem;
 }
