@@ -31,12 +31,12 @@ urlpatterns = [
     path('api/two_factor_auth/', include('two_factor_auth.urls')),
     path('api/', include('friends_system.urls')),
     path('api/', include('realtime_chat.urls')),
+    path('api/pong/', include('pong.urls')),
     re_path(r'^.*$', serve, kwargs={
         'path': 'index.html',
         'document_root': os.path.join(settings.BASE_DIR, 'frontend'),
     }),
     path('test', TemplateView.as_view(template_name='websockettest.html'), name='websockettest'),
-    path('pong/', include('pong.urls')),
 ]
 
 if settings.DEBUG:
