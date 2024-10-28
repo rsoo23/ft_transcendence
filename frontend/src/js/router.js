@@ -230,28 +230,28 @@ async function initMainMenuPage() {
 }
 
 async function initPlayPage() {
-  initRandomColorButton(
-    'testmatch',
-    'play-container',
-    async () => {
-      const player1_uuid = document.getElementById('player1').value
-      const player2_uuid = document.getElementById('player2').value
-      const matchID = await createMatch(player1_uuid, player2_uuid)
-      if (matchID != null) {
-        document.getElementById('matchid').value = matchID
-      }
-    }
-  )
-  initRandomColorButton(
-    'websocket',
-    'play-container',
-    async () => {
-      const matchID = document.getElementById('matchid').value
-      const userID = document.getElementById('user').value
-      await loadPage('game')
-      joinMatch(matchID, userID)
-    }
-  )
+  // initRandomColorButton(
+  //   'testmatch',
+  //   'play-container',
+  //   async () => {
+  //     const player1_uuid = document.getElementById('player1').value
+  //     const player2_uuid = document.getElementById('player2').value
+  //     const matchID = await createMatch(player1_uuid, player2_uuid)
+  //     if (matchID != null) {
+  //       document.getElementById('matchid').value = matchID
+  //     }
+  //   }
+  // )
+  // initRandomColorButton(
+  //   'websocket',
+  //   'play-container',
+  //   async () => {
+  //     const matchID = document.getElementById('matchid').value
+  //     const userID = document.getElementById('user').value
+  //     await loadPage('game')
+  //     joinMatch(matchID, userID)
+  //   }
+  // )
 }
 
 async function initFriendsPage() {
