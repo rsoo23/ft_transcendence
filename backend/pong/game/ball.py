@@ -76,7 +76,21 @@ class Ball():
                     self.pos.x = paddle.pos.x - Ball.size.x
 
                 self.pos.y -= to_travel.y * get_remaining_dist_scale(to_travel, prev_pos, self.pos).x
-                self.vector.x *= -1
+
+                # next bounce angle
+                ball_rel_pos = self.pos.y + (Ball.size.y / 2) - paddle.pos.y
+                new_angle = -60 + max(min(120 * (ball_rel_pos / Paddle.size.y), 120), 0)
+
+                # no shooting in a straight line
+                min_angle = 10
+                new_angle = max(new_angle, min_angle) if new_angle >= 0 else min(new_angle, -min_angle)
+
+                if self.vector.x > 0:
+                    new_angle = 180 - new_angle
+
+                new_rads = math.radians(new_angle)
+                self.vector.x = math.cos(new_rads)
+                self.vector.y = math.sin(new_rads)
                 bounced = True
 
             # check for vertical walls, if hit, score a point for one side
@@ -133,7 +147,7 @@ class BallTimer():
             return None
 
         # TODO: randomize angle
-        new_ball = Ball(game_info.game_size.x / 2, game_info.game_size.y / 2, 1, math.sin(math.radians(45)), 200)
+        new_ball = Ball(game_info.game_size.x / 2, game_info.game_size.y / 2, math.cos(math.radians(45)), math.sin(math.radians(45)), 200)
         game_info.objects.append(new_ball)
         game_info.objects.remove(self)
         return None

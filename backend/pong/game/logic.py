@@ -28,7 +28,7 @@ class GameLogic():
         self.objects = [
             Paddle(25, 0, 1), # left paddle
             Paddle(self.game_size.x - Paddle.size.x - 25, 0, 2), # right paddle
-            Ball(self.game_size.x / 2, self.game_size.y / 2, 1, math.sin(math.radians(45)), 200),
+            Ball(self.game_size.x / 2, self.game_size.y / 2, math.cos(math.radians(45)), math.sin(math.radians(45)), 200),
             PongScore(self.game_size.x / 2 - 20, 30, 0),
             PongScore(self.game_size.x / 2 + 20, 30, 1),
         ]
