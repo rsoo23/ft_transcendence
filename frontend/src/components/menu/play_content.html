@@ -14,30 +14,29 @@
       <span style="color: var(--blue-500)">g</span>
     </h1>
   </div>
-  <div class='play-block-container'>
-    <div class='play-gamemode-container'>
+  <div id='playtype' class='play-block-container'>
+    <button id='localplay' class='play-gamemode-container'>
       <i style='color: var(--blue-500)' class='material-icons'>keyboard</i>
       <h1>Local Play</h1>
-      <p>A classic 1v1 pong match on the same keyboard</p>
-      <div class='play-block-button-container'>
-        <button>Host tournament</button>
-      </div>
-    </div>
-    <div class='play-gamemode-container'>
+      <p>Play locally against other players on the same keyboard</p>
+    </button>
+    <button id='onlineplay' class='play-gamemode-container'>
       <i style='color: var(--teal-500)' class='material-icons'>search</i>
       <h1>Online Play</h1>
-      <p>A classic 1v1 pong match on the internet</p>
-      <div class='play-block-button-container'>
-        <p>button</p>
-      </div>
-    </div>
-    <div class='play-gamemode-container'>
+      <p>Play against other players online</p>
+    </button>
+  </div>
+  <div id='gamemode' style='left: 100rem; opacity: 0; visibility: hidden;' class='play-block-container'>
+    <button id='gamemodeback' class='material-icons'>arrow_back</button>
+    <button id='quickplay' class='play-gamemode-container'>
+      <i style='color: var(--orange-500)' class='material-icons'>play_circle</i>
+      <h1>Classic</h1>
+      <p>Play a classic 1v1 game of Pong</p>
+    </button>
+    <button id='tournament' class='play-gamemode-container'>
       <i style='color: var(--yellow-500)' class='material-icons'>emoji_events</i>
       <h1>Tournament</h1>
       <p>Play against multiple players in a classic tournament bracket</p>
-      <div class='play-block-button-container'>
-        <p>button</p>
-      </div>
-    </div>
+    </button>
   </div>
 </div>

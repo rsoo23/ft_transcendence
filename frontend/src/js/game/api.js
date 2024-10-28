@@ -4,6 +4,11 @@ import { loadPage, loadMainMenuContent } from '../router.js'
 import { PONG_INPUTS } from '../global_vars.js'
 
 var matchSocket = null
+var localPlay = false
+
+export function setLocalPlayMode(bool) {
+  localPlay = bool
+}
 
 export async function createMatch(player1ID, player2ID) {
   const response = await postRequest('/api/pong/create-match/', {

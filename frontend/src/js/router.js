@@ -14,7 +14,7 @@ import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { setInFriendsPage } from "./realtime_chat/chat_utils.js";
 import { initUsernameSettings } from "./settings/update_username.js";
-import { createMatch, joinMatch } from "./game/api.js";
+import { setLocalPlayMode, createMatch, joinMatch } from "./game/api.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -119,6 +119,9 @@ async function loadDynamicContent(contentName) {
       break
     case 'play':
       initPlayPage()
+      break
+    case 'gamemode':
+      initGamemodePage()
       break
     case 'friends':
       initFriendsPage()
@@ -230,6 +233,43 @@ async function initMainMenuPage() {
 }
 
 async function initPlayPage() {
+  const playTypeButtons = document.getElementById('playtype')
+  const playTypeRect = playTypeButtons.getBoundingClientRect()
+  const gamemodeButtons = document.getElementById('gamemode')
+  const gamemodeRect = gamemodeButtons.getBoundingClientRect()
+  gamemodeButtons.style.top = `-${gamemodeRect.top - playTypeRect.top}px`
+
+  const moveToGamemodeButtons = () => {
+    playTypeButtons.style.left = '-100rem'
+    playTypeButtons.style.opacity = '0'
+    playTypeButtons.style.visibility = 'hidden'
+    gamemodeButtons.style.left = '0'
+    gamemodeButtons.style.opacity = '1'
+    gamemodeButtons.style.visibility = 'visible'
+  }
+  const moveToPlayTypeButtons = () => {
+    playTypeButtons.style.left = '0'
+    playTypeButtons.style.opacity = '1'
+    playTypeButtons.style.visibility = 'visible'
+    gamemodeButtons.style.left = '100rem'
+    gamemodeButtons.style.opacity = '0'
+    gamemodeButtons.style.visibility = 'hidden'
+  }
+  document.getElementById('localplay').onclick = () => {
+    setLocalPlayMode(true)
+    moveToGamemodeButtons()
+  }
+  document.getElementById('onlineplay').onclick = () => {
+    setLocalPlayMode(false)
+    moveToGamemodeButtons()
+  }
+  document.getElementById('gamemodeback').onclick = () => moveToPlayTypeButtons()
+  document.getElementById('quickplay').onclick = () => {
+    alert('not implemented yet :[')
+  }
+  document.getElementById('tournament').onclick = () => {
+    alert('not implemented yet :[')
+  }
   // initRandomColorButton(
   //   'testmatch',
   //   'play-container',
