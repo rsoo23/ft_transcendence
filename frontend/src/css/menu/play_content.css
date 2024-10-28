@@ -28,7 +28,7 @@
   width: 65%;
   height: 75%;
   align-items: stretch;
-  transition: visibility 0.75s, left 0.75s, opacity 0.75s;
+  transition: visibility 0.75s, left 0.75s ease-in-out, opacity 0.75s ease-in-out;
 }
 
 #gamemodeback {
