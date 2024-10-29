@@ -14,7 +14,7 @@ import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { setInFriendsPage } from "./realtime_chat/chat_utils.js";
 import { initUsernameSettings } from "./settings/update_username.js";
-import { setLocalPlayMode, createMatch, joinMatch } from "./game/api.js";
+import { setLocalPlayMode, getLocalPlayMode, createMatch, joinMatch } from "./game/api.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -233,28 +233,50 @@ async function initMainMenuPage() {
 }
 
 async function initPlayPage() {
+  const moveAToB = (e1, e2) => {
+    const e1Rect = e1.getBoundingClientRect()
+    const e2Rect = e2.getBoundingClientRect()
+    e1.style.top = `-${e1Rect.top - e2Rect.top}px`
+  }
+
   const playTypeButtons = document.getElementById('playtype')
-  const playTypeRect = playTypeButtons.getBoundingClientRect()
   const gamemodeButtons = document.getElementById('gamemode')
-  const gamemodeRect = gamemodeButtons.getBoundingClientRect()
-  gamemodeButtons.style.top = `-${gamemodeRect.top - playTypeRect.top}px`
+  const gameSelectDiv = document.getElementById('play-select-container')
+  const gameSettingsDiv = document.getElementById('play-settings-container')
+  moveAToB(gamemodeButtons, playTypeButtons)
+  moveAToB(gameSettingsDiv, gameSelectDiv)
+
+  const moveToLeft = (element) => {
+    element.style.left = '-100rem'
+    element.style.opacity = '0'
+    element.style.visibility = 'hidden'
+  }
+  const moveToCenter = (element) => {
+    element.style.left = '0'
+    element.style.opacity = '1'
+    element.style.visibility = 'visible'
+  }
+  const moveToRight = (element) => {
+    element.style.left = '100rem'
+    element.style.opacity = '0'
+    element.style.visibility = 'hidden'
+  }
 
   const moveToGamemodeButtons = () => {
-    playTypeButtons.style.left = '-100rem'
-    playTypeButtons.style.opacity = '0'
-    playTypeButtons.style.visibility = 'hidden'
-    gamemodeButtons.style.left = '0'
-    gamemodeButtons.style.opacity = '1'
-    gamemodeButtons.style.visibility = 'visible'
+    moveToLeft(playTypeButtons)
+    moveToCenter(gamemodeButtons)
   }
   const moveToPlayTypeButtons = () => {
-    playTypeButtons.style.left = '0'
-    playTypeButtons.style.opacity = '1'
-    playTypeButtons.style.visibility = 'visible'
-    gamemodeButtons.style.left = '100rem'
-    gamemodeButtons.style.opacity = '0'
-    gamemodeButtons.style.visibility = 'hidden'
+    moveToCenter(playTypeButtons)
+    moveToRight(gamemodeButtons)
   }
+
+  const moveToGameSettings = () => {
+    moveToLeft(gameSelectDiv)
+    moveToCenter(gameSettingsDiv)
+  }
+
+  // first page
   document.getElementById('localplay').onclick = () => {
     setLocalPlayMode(true)
     moveToGamemodeButtons()
@@ -263,35 +285,42 @@ async function initPlayPage() {
     setLocalPlayMode(false)
     moveToGamemodeButtons()
   }
+
+  // second page
   document.getElementById('gamemodeback').onclick = () => moveToPlayTypeButtons()
-  document.getElementById('quickplay').onclick = () => {
-    alert('not implemented yet :[')
+  document.getElementById('quickplay').onclick = async () => {
+    if (getLocalPlayMode()) {
+      await loadContentToTarget('menu/gamemode_content.html', 'play-settings-container')
+    } else {
+      await loadContentToTarget('menu/multiplayer_test.html', 'play-settings-container')
+      initRandomColorButton(
+        'testmatch',
+        'play-container',
+        async () => {
+          const player1_uuid = document.getElementById('player1').value
+          const player2_uuid = document.getElementById('player2').value
+          const matchID = await createMatch(player1_uuid, player2_uuid)
+          if (matchID != null) {
+            document.getElementById('matchid').value = matchID
+          }
+        }
+      )
+      initRandomColorButton(
+        'websocket',
+        'play-container',
+        async () => {
+          const matchID = document.getElementById('matchid').value
+          const userID = document.getElementById('user').value
+          await loadPage('game')
+          joinMatch(matchID, userID)
+        }
+      )
+    }
+    moveToGameSettings()
   }
   document.getElementById('tournament').onclick = () => {
     alert('not implemented yet :[')
   }
-  // initRandomColorButton(
-  //   'testmatch',
-  //   'play-container',
-  //   async () => {
-  //     const player1_uuid = document.getElementById('player1').value
-  //     const player2_uuid = document.getElementById('player2').value
-  //     const matchID = await createMatch(player1_uuid, player2_uuid)
-  //     if (matchID != null) {
-  //       document.getElementById('matchid').value = matchID
-  //     }
-  //   }
-  // )
-  // initRandomColorButton(
-  //   'websocket',
-  //   'play-container',
-  //   async () => {
-  //     const matchID = document.getElementById('matchid').value
-  //     const userID = document.getElementById('user').value
-  //     await loadPage('game')
-  //     joinMatch(matchID, userID)
-  //   }
-  // )
 }
 
 async function initFriendsPage() {

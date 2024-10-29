@@ -10,6 +10,10 @@ export function setLocalPlayMode(bool) {
   localPlay = bool
 }
 
+export function getLocalPlayMode() {
+  return localPlay
+}
+
 export async function createMatch(player1ID, player2ID) {
   const response = await postRequest('/api/pong/create-match/', {
     'player1_uuid': player1ID,

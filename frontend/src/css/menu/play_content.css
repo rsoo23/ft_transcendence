@@ -8,6 +8,14 @@
   overflow: hidden;
 }
 
+#play-container #play-select-container, #play-container #play-settings-container {
+  position: relative;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  transition: visibility 0.75s, left 0.75s ease-in-out, opacity 0.75s ease-in-out;
+}
+
 .play-container-title {
   display: block;
   margin-left: auto;
@@ -50,7 +58,7 @@
   display: flex;
   justify-content: center;
   flex-flow: column;
-  gaps: 0;
+  gap: 0;
   box-sizing: border-box;
 
   width: 100%;
