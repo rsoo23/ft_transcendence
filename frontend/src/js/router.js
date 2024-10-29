@@ -14,7 +14,7 @@ import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { setInFriendsPage } from "./realtime_chat/chat_utils.js";
 import { initUsernameSettings } from "./settings/update_username.js";
-import { setLocalPlayMode, getLocalPlayMode, clearPanelBacklog, goToNextPanel, goToPreviousPanel, loadMultiplayerTest } from "./play_panel.js";
+import { setLocalPlayMode, getLocalPlayMode, clearPanelBacklog, goToNextPanel, goToPreviousPanel, loadMultiplayerTest, startLocalGame } from "./play_panel.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -262,6 +262,7 @@ async function initPlayPage() {
     if (getLocalPlayMode()) {
       await loadContentToTarget('menu/play_settings_content.html', 'play-settings-container')
       document.getElementById('settingsback').onclick = () => goToPreviousPanel(gameSettingsDiv)
+      document.getElementById('start-game').onclick = () => startLocalGame()
       goToNextPanel(gameSelectDiv, gameSettingsDiv)
       return
     }

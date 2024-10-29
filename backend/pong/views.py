@@ -1,5 +1,5 @@
 import json
-from threading import Thread
+from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from asgiref.sync import sync_to_async
@@ -34,24 +34,22 @@ async def try_clean_match(match_id):
 
 @csrf_exempt
 async def create_match(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        try:
-            user1 = data['player1_uuid']
-            user2 = data['player2_uuid']
-            match = await sync_to_async(PongMatch.objects.create)(player1_uuid=user1, player2_uuid=user2)
-            server_manager.try_create_game(match.id, f'pongmatch-{match.id}')
-            task = asyncio.create_task(try_clean_match(match.id))
-            background_tasks.add(task)
-            task.add_done_callback(background_tasks.discard)
-            return JsonResponse({
-                'success': True,
-                'match_id': match.id
-            })
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-        except Exception as error:
-            return JsonResponse({'success': False, 'Error': str(error)}, status=401)
+    data = json.loads(request.body)
+    try:
+        user1 = data['player1_uuid']
+        user2 = data['player2_uuid']
+        match = await sync_to_async(PongMatch.objects.create)(player1_uuid=user1, player2_uuid=user2, local=data['local'])
+        server_manager.try_create_game(match.id, f'pongmatch-{match.id}', data['local'])
+        task = asyncio.create_task(try_clean_match(match.id))
+        background_tasks.add(task)
+        task.add_done_callback(background_tasks.discard)
+        return JsonResponse({
+            'success': True,
+            'match_id': match.id
+        })
 
-    return JsonResponse({
-        'error': 'Invalid request method',
-    })
+    except Exception as error:
+        return JsonResponse({'success': False, 'Error': str(error)}, status=401)

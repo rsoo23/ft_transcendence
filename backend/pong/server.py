@@ -17,7 +17,7 @@ class ServerManager():
         self.channel_layer = get_channel_layer()
 
     # will do nothing if game already exists
-    def try_create_game(self, match_id, group_match):
+    def try_create_game(self, match_id, group_match, local):
         with self.matches_lock:
             if match_id in self.matches:
                 print(f'match with id {match_id} already exists!')
@@ -28,6 +28,7 @@ class ServerManager():
                 'game_info': GameLogic(),
                 'thread': Thread(target=self.main_loop, args=(match_id,)),
                 'group_match': group_match,
+                'local': local,
                 'p1_consumer': None,
                 'p2_consumer': None,
             }
@@ -132,7 +133,7 @@ class ServerManager():
         else:
             return
 
-        if match_info['p1_consumer'] == None or match_info['p2_consumer'] == None:
+        if match_info['p1_consumer'] == None or (match_info['local'] == False and match_info['p2_consumer'] == None):
             return
 
         # NOTE: idk if update_player_consumer should be initializing the game, but eh
@@ -163,8 +164,10 @@ class ServerManager():
                 msg = match_info['game_info'].tick(GameLogic.sec_per_frame)
 
                 try:
-                    async_to_sync(match_info['p1_consumer'].send_json)(msg)
-                    async_to_sync(match_info['p2_consumer'].send_json)(msg)
+                    if match_info['p1_consumer'] != None:
+                        async_to_sync(match_info['p1_consumer'].send_json)(msg)
+                    if match_info['p2_consumer'] != None:
+                        async_to_sync(match_info['p2_consumer'].send_json)(msg)
 
                 except:
                     print('unable to send message to socket, stopping thread')

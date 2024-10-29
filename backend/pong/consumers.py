@@ -34,10 +34,10 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
         # assign groups and set up user
         await self.channel_layer.group_add(self.group_match, self.channel_name)
+        self.local_game = self.match_data.local
 
         if self.user_id == self.match_data.player1_uuid:
             self.player_num = 1
-            print('user is host')
 
         elif self.user_id == self.match_data.player2_uuid:
             self.player_num = 2
@@ -68,4 +68,12 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
         print(content)
 
         if content['type'] == 'input':
-            server_manager.update_player_input(self.match_id, self.player_num, content['input'], content['value'])
+            if self.local_game:
+                player_num = 2 if content['input'].find('p2', 0, 2) != -1 else 1
+                if player_num == 2:
+                    content['input'] = content['input'][2:]
+
+            else:
+                player_num = self.player_num
+
+            server_manager.update_player_input(self.match_id, player_num, content['input'], content['value'])

@@ -65,3 +65,13 @@ export async function loadMultiplayerTest() {
     }
   )
 }
+
+export async function startLocalGame() {
+  const matchID = await createMatch(2, 2, getLocalPlayMode())
+  if (matchID == null) {
+    return
+  }
+
+  await loadPage('game')
+  joinMatch(matchID, 0)
+}
