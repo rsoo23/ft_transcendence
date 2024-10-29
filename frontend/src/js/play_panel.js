@@ -2,6 +2,7 @@ import { initRandomColorButton } from "./ui_utils/button_utils.js"
 import { createMatch, joinMatch } from "./game/api.js";
 import { loadPage } from "./router.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
+import { getRequest } from "./network_utils/api_requests.js";
 
 // FILO array
 var panelBacklog = Array()
@@ -67,11 +68,17 @@ export async function loadMultiplayerTest() {
 }
 
 export async function startLocalGame() {
-  const matchID = await createMatch(2, 2, getLocalPlayMode())
+  let matchID = null
+  try {
+    const user = await getRequest('/api/users/current_user/')
+    matchID = await createMatch(user['id'], 0, getLocalPlayMode())
+  } catch (error) {
+    console.error('Encountered error: ', error)
+  }
+
   if (matchID == null) {
     return
   }
-
   await loadPage('game')
   joinMatch(matchID, 0)
 }
