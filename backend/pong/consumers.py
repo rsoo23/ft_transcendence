@@ -1,7 +1,8 @@
-from channels.exceptions import AcceptConnection, DenyConnection
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from .models import PongMatch
-from .views import get_user_from_token
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import AccessToken
+from asgiref.sync import sync_to_async
 import logging
 from .server import server_manager
 import asyncio
@@ -13,10 +14,9 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
         # get user id
         try:
-            # self.user_id = get_user_from_token()
-            query_string = self.scope['query_string'].split(b'&')
-            queries = dict(i.split(b'=') for i in query_string)
-            self.user_id = int(queries[b'user'])
+            token = AccessToken(self.scope['cookies']['access_token'])
+            user = await sync_to_async(JWTAuthentication().get_user)(token)
+            self.user_id = user.id
 
         except Exception as e:
             print('Exception while trying to get user_id: ' + str(e))
@@ -25,7 +25,6 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
         # check if PongMatch exists and hasn't ended
         try:
-            # print(self.scope)
             self.match_data = await PongMatch.objects.aget(id=self.match_id, ended=False)
 
         except Exception as e:

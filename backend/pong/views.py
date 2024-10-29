@@ -1,37 +1,14 @@
-import jwt
 import json
 from threading import Thread
-from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
 from .models import PongMatch
-from main.settings import JWT_SECRET_KEY
 from .server import server_manager
 import asyncio
 
 # this is used to prevent a task getting deleted mid-execution
 background_tasks = set()
-
-# NOTE: This should be used in a "try except" block
-# Returns CustomUser model if the request has a valid token
-# Otherwise, raise an Exception
-def get_user_from_token(cookies):
-    if 'ID_Token' not in cookies:
-        raise Exception('ID_Token not found')
-
-    token = cookies['ID_Token']
-    if token == '':
-        raise Exception('Invalid token value')
-
-    decoded_jwt = jwt.decode(token, JWT_SECRET_KEY, algorithms='HS256')
-    user_model = get_user_model()
-    user = user_model.objects.filter(username=decoded_jwt['username'])
-    if not user.exists():
-        raise Exception('Token bearer not found')
-
-    return user
 
 # delete the match after 30 seconds if it hasn't actually started
 async def try_clean_match(match_id):
