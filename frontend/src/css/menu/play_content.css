@@ -39,7 +39,7 @@
   transition: visibility 0.75s, left 0.75s ease-in-out, opacity 0.75s ease-in-out;
 }
 
-#gamemodeback {
+.play-back-button {
   position: absolute;
   top: 40%;
   left: -10%;
@@ -50,7 +50,7 @@
   cursor: pointer;
 }
 
-#gamemodeback:hover {
+.play-back-button:hover {
   background-color: var(--charcoal-700);
 }
 

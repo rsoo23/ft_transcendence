@@ -15,6 +15,8 @@
         <span style="color: var(--blue-500)">g</span>
       </h1>
     </div>
+
+    <!-- first page -->
     <div id='playtype' class='play-block-container'>
       <button id='localplay' class='play-gamemode-container'>
         <i style='color: var(--blue-500)' class='material-icons'>keyboard</i>
@@ -27,8 +29,10 @@
         <p>Play against other players online</p>
       </button>
     </div>
+
+    <!-- gamemode page -->
     <div id='gamemode' style='left: 100rem; opacity: 0; visibility: hidden;' class='play-block-container'>
-      <button id='gamemodeback' class='material-icons'>arrow_back</button>
+      <button id='gamemodeback' class='material-icons play-back-button'>arrow_back</button>
       <button id='quickplay' class='play-gamemode-container'>
         <i style='color: var(--orange-500)' class='material-icons'>play_circle</i>
         <h1>Classic</h1>
@@ -40,6 +44,23 @@
         <p>Play against multiple players in a classic tournament bracket</p>
       </button>
     </div>
+
+    <!-- online only page -->
+    <div id='hostjoin' style='left: 100rem; opacity: 0; visibility: hidden;' class='play-block-container'>
+      <button id='hostjoinback' class='material-icons play-back-button'>arrow_back</button>
+      <button id='host' class='play-gamemode-container'>
+        <i style='color: var(--magenta-500)' class='material-icons'>dns</i>
+        <h1>Host</h1>
+        <p>Host a game with your own rules</p>
+      </button>
+      <button id='join' class='play-gamemode-container'>
+        <i style='color: var(--chilled-gray-500)' class='material-icons'>people</i>
+        <h1>Join</h1>
+        <p>Join a public game</p>
+      </button>
+    </div>
   </div>
+
+  <!-- load settings here -->
   <div id='play-settings-container' style='left: 100rem; opacity: 0; visibility: hidden'></div>
 </div>
