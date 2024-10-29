@@ -261,6 +261,7 @@ async function initPlayPage() {
   document.getElementById('quickplay').onclick = async () => {
     if (getLocalPlayMode()) {
       await loadContentToTarget('menu/play_settings_content.html', 'play-settings-container')
+      document.getElementById('settingsback').onclick = () => goToPreviousPanel(gameSettingsDiv)
       goToNextPanel(gameSelectDiv, gameSettingsDiv)
       return
     }
