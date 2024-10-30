@@ -70,8 +70,12 @@ class FriendsSystemConsumer(WebsocketConsumer):
                 serializer.save()
                 self.send_to_target_channel(
                     receiver_id,
-                    'friend_request_acknowledge',
+                    'friend_request_received',
                     f'{self.current_user} sent you a friend request'
+                )
+                self.send_to_client_channel(
+                    'friend_request_sent',
+                    f'Sent friend request to {receiver.username}'
                 )
 
     def cancel_friend_request(self, receiver_id):
@@ -83,8 +87,12 @@ class FriendsSystemConsumer(WebsocketConsumer):
 
         self.send_to_target_channel(
             receiver_id,
-            'friend_request_acknowledge',
+            'friend_request_received_cancelled',
             f'{self.current_user} cancelled their friend request'
+        )
+        self.send_to_client_channel(
+            'friend_request_sent_cancelled',
+            f'Cancelled friend request to {receiver.username}'
         )
 
     def accept_friend_request(self, sender_id):
@@ -95,8 +103,12 @@ class FriendsSystemConsumer(WebsocketConsumer):
         friend_request.accept()
         self.send_to_target_channel(
             sender_id,
-            'friend_request_acknowledge',
+            'friend_request_sent_accepted',
             f'{self.current_user} accepted your friend request'
+        )
+        self.send_to_client_channel(
+            'friend_request_received_accepted',
+            f'Accepted friend request from {sender.username}'
         )
 
     def decline_friend_request(self, sender_id):
@@ -107,8 +119,12 @@ class FriendsSystemConsumer(WebsocketConsumer):
         friend_request.decline()
         self.send_to_target_channel(
             sender_id,
-            'friend_request_acknowledge',
+            'friend_request_sent_declined',
             f'{self.current_user} declined your friend request'
+        )
+        self.send_to_client_channel(
+            'friend_request_received_declined',
+            f'Declined friend request from {sender.username}'
         )
 
     def block_friend(self, blocked_id):
@@ -118,8 +134,12 @@ class FriendsSystemConsumer(WebsocketConsumer):
         current_user_friend_list.block_friend(friend)
         self.send_to_target_channel(
             blocked_id,
-            'friend_request_acknowledge',
+            'blocked_by_friend',
             f'{self.current_user} blocked you'
+        )
+        self.send_to_client_channel(
+            'block_friend',
+            f'Successfully blocked {friend.username}'
         )
 
     def unblock_friend(self, unblocked_id):
@@ -129,25 +149,54 @@ class FriendsSystemConsumer(WebsocketConsumer):
         current_user_friend_list.unblock_friend(friend)
         self.send_to_target_channel(
             unblocked_id,
-            'friend_request_acknowledge',
+            'unblocked_by_friend',
             f'{self.current_user} unblocked you'
         )
+        self.send_to_client_channel(
+            'unblock_friend',
+            f'Successfully unblocked {friend.username}'
+        )
 
-    def send_to_target_channel(self, target_id, type, message):
+    def send_to_target_channel(self, target_id, action, message):
         target_channel = cache.get(f'{target_id}')
         if target_channel:
             async_to_sync(self.channel_layer.send)(
                 target_channel,
                 {
-                    'type': type,
+                    'type': 'action_send',
+                    'action': action,
+                    'sender_id': self.current_user_id,
                     'message': message,
                 }
             )
 
-    def friend_request_acknowledge(self, event):
+    def send_to_client_channel(self, action, message):
+        async_to_sync(self.channel_layer.send)(
+            self.channel_name,
+            {
+                'type': 'action_acknowledge',
+                'action': action,
+                'message': message,
+            }
+        )
+
+    def action_send(self, event):
         message = event['message']
+        action = event['action']
+        sender_id = event['sender_id']
 
         self.send(text_data=json.dumps({
+            'action': action,
+            'message': message,
+            'sender_id': sender_id,
+        }))
+
+    def action_acknowledge(self, event):
+        message = event['message']
+        action = event['action']
+
+        self.send(text_data=json.dumps({
+            'action': action,
             'message': message,
         }))
 
