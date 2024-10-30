@@ -122,3 +122,9 @@ export let friendRecordIconInfo = {
   ],
 }
 
+export const PONG_INPUTS = {
+  38: 'up',
+  40: 'down',
+  87: 'p2up',
+  83: 'p2down',
+}

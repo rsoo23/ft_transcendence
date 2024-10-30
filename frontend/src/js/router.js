@@ -14,6 +14,7 @@ import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { setInFriendsPage } from "./realtime_chat/chat_utils.js";
 import { initUsernameSettings } from "./settings/update_username.js";
+import { setLocalPlayMode, getLocalPlayMode, clearPanelBacklog, goToNextPanel, goToPreviousPanel, loadMultiplayerTest, startLocalGame } from "./play_panel.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -26,7 +27,8 @@ const routes = {
   '/menu/stats': 'menu/stats_content.html',
   '/menu/friends': 'menu/friends_content.html',
   '/menu/how-to-play': 'menu/how_to_play_content.html',
-  '/menu/settings': 'menu/settings_content.html'
+  '/menu/settings': 'menu/settings_content.html',
+  '/game': 'game.html',
 }
 
 // manages back and forth history
@@ -115,6 +117,9 @@ async function loadDynamicContent(contentName) {
     case 'main_menu':
       initMainMenuPage()
       break
+    case 'play':
+      initPlayPage()
+      break
     case 'friends':
       initFriendsPage()
       break
@@ -172,7 +177,7 @@ async function initLoginPage() {
     const result = await handleLogin()
 
     if (result === 'success') {
-      loadPage('main_menu')
+      await loadPage('main_menu')
       loadMainMenuContent('play')
     }
   }
@@ -222,6 +227,59 @@ async function initMainMenuPage() {
   initHotbar()
   await loadCurrentUserInfo()
   await loadUsersInfo()
+}
+
+async function initPlayPage() {
+  clearPanelBacklog()
+  const moveAToB = (e1, e2) => {
+    const e1Rect = e1.getBoundingClientRect()
+    const e2Rect = e2.getBoundingClientRect()
+    e1.style.top = `-${e1Rect.top - e2Rect.top}px`
+  }
+
+  const playTypeButtons = document.getElementById('playtype')
+  const gamemodeButtons = document.getElementById('gamemode')
+  const hostJoinButtons = document.getElementById('hostjoin')
+  const gameSelectDiv = document.getElementById('play-select-container')
+  const gameSettingsDiv = document.getElementById('play-settings-container')
+  moveAToB(gamemodeButtons, playTypeButtons)
+  moveAToB(hostJoinButtons, playTypeButtons)
+  moveAToB(gameSettingsDiv, gameSelectDiv)
+
+  // first page
+  document.getElementById('localplay').onclick = () => {
+    setLocalPlayMode(true)
+    goToNextPanel(playTypeButtons, gamemodeButtons)
+  }
+  document.getElementById('onlineplay').onclick = () => {
+    setLocalPlayMode(false)
+    goToNextPanel(playTypeButtons, gamemodeButtons)
+  }
+
+  // second page
+  document.getElementById('gamemodeback').onclick = () => goToPreviousPanel(gamemodeButtons)
+  document.getElementById('quickplay').onclick = async () => {
+    if (getLocalPlayMode()) {
+      await loadContentToTarget('menu/play_settings_content.html', 'play-settings-container')
+      document.getElementById('settingsback').onclick = () => goToPreviousPanel(gameSettingsDiv)
+      document.getElementById('start-game').onclick = () => startLocalGame()
+      goToNextPanel(gameSelectDiv, gameSettingsDiv)
+      return
+    }
+
+    goToNextPanel(gamemodeButtons, hostJoinButtons)
+  }
+  document.getElementById('tournament').onclick = () => {
+    alert('not implemented yet :[')
+  }
+
+  // third page (online only)
+  document.getElementById('hostjoinback').onclick = () => goToPreviousPanel(hostJoinButtons)
+  document.getElementById('host').onclick = () => {
+    loadMultiplayerTest()
+    goToNextPanel(gameSelectDiv, gameSettingsDiv)
+  }
+  document.getElementById('join').onclick = () => alert('not implemented')
 }
 
 async function initFriendsPage() {

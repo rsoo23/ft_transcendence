@@ -1,7 +1,143 @@
 
 #play-container {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+}
+
+#play-container #play-select-container, #play-container #play-settings-container {
+  position: relative;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  transition: visibility 0.75s, left 0.75s ease-in-out, opacity 0.75s ease-in-out;
+}
+
+.play-container-title {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  height: 25%;
+}
+
+.play-block-container {
+  /* box-sizing: border-box; */
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  top: 0px;
+  left: 0px;
+  display: flex;
+  gap: 1rem;
+  width: 65%;
+  height: 75%;
+  align-items: stretch;
+  transition: visibility 0.75s, left 0.75s ease-in-out, opacity 0.75s ease-in-out;
+}
+
+.play-back-button {
+  position: absolute;
+  top: 40%;
+  left: -10%;
+  background-color: var(--charcoal-800);
+  padding: 1rem;
+  border: 0;
+  border-radius: 3rem;
+  cursor: pointer;
+}
+
+.play-back-button:hover {
+  background-color: var(--charcoal-700);
+}
+
+.play-gamemode-container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  flex-flow: column;
+  gap: 0;
+  box-sizing: border-box;
+
   width: 100%;
+  padding: 1rem;
+  cursor: pointer;
+  text-align: center;
+
+  border: 0;
+  border-radius: 3rem;
+  background-color: var(--charcoal-800);
+  transition: background-color 0.15s;
+}
+
+.play-gamemode-container:hover {
+  background-color: var(--charcoal-700);
+}
+
+.play-gamemode-container i {
+  font-size: 6.5rem;
+}
+
+.play-gamemode-container h1 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+#play-settings-container {
+  margin-left: 3rem;
+  margin-right: 3rem;
+}
+
+.play-settings-title {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+}
+
+.play-settings-title h1 {
+  display: inline-block;
+  font-size: 2rem;
+}
+
+.play-settings-back-button {
+  background-color: var(--charcoal-800);
+  padding: 1rem;
+  margin-top: 0.2rem;
+  margin-right: 1rem;
+  border: 0;
+  border-radius: 3rem;
+  cursor: pointer;
+}
+
+.play-settings-back-button:hover {
+  background-color: var(--charcoal-700);
+}
+
+.play-settings-inline-flex {
+  display: inline-flex;
+  align-items: center;
+}
+
+#play-settings-container div form {
+  display: grid;
+}
+
+#play-settings-container div form p {
+  font-size: 1rem;
+}
+
+#play-settings-container div form select {
+  background-color: var(--charcoal-800);
+  padding: 1rem;
+  margin-left: 1rem;
+  border: 0;
+  border-radius: 3rem;
+  cursor: pointer;
+}
+
+#play-settings-container div form select:hover {
+  background-color: var(--charcoal-700);
 }

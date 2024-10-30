@@ -63,9 +63,8 @@ INSTALLED_APPS = [
     'token_management',
     'friends_system',
     'channels',
+    'pong',
 ]
-
-ASGI_APPLICATION='backend.asgi.application'
 
 AUHENTICATION_BACKENDS = [
 	'django.contrib.auth.backends.ModelBackend',
