@@ -33,15 +33,15 @@ export async function joinMatch(matchID, userID) {
   await createSocket(matchID)
 }
 
+// TODO: maybe adjust this to handle bad latency too?
 async function checkSocket() {
-  if (performance.now() - prevMessageRecv < 500) {
+  if (performance.now() - prevMessageRecv < 200) {
     socketChecker = setTimeout(checkSocket, 100)
     return
   }
 
   socketChecker = null
   if (matchSocket == undefined || matchSocket.readyState >= 2) {
-    console.log('bye bye')
     return
   }
 

@@ -126,9 +126,25 @@ class ServerManager():
             return
 
         if player_num == 1:
+            try:
+                if match_info['p1_consumer'] != None:
+                    match_info['p1_consumer'].player_num = 0
+                    async_to_sync(match_info['p1_consumer'].close)()
+
+            except Exception:
+                pass
+
             match_info['p1_consumer'] = consumer
 
         elif player_num == 2:
+            try:
+                if match_info['p2_consumer'] != None:
+                    match_info['p2_consumer'].player_num = 0
+                    async_to_sync(match_info['p2_consumer'].close)()
+
+            except Exception:
+                pass
+
             match_info['p2_consumer'] = consumer
 
         else:
