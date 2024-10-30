@@ -1,5 +1,5 @@
 import { hideOverlay, showOverlay } from "../ui_utils/overlay_utils.js";
-import { addMessage, inFriendsPage } from "./chat_utils.js";
+import { addMessage } from "./chat_utils.js";
 
 export let chatSocket = null
 let selectedUserId = -1

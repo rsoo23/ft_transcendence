@@ -43,3 +43,26 @@
   z-index: 10;
   box-sizing: border-box;
 }
+
+#notification-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  width: 0rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  opacity: 100%;
+  top: 1rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+  z-index: 20;
+
+  transition: 0.2s;
+  transition-timing-function: ease-in-out;
+
+  cursor: pointer;
+  pointer-events: none;
+}
+

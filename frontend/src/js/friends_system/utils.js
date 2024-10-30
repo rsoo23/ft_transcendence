@@ -285,40 +285,22 @@ function initFriendRecordIcon(icon, iconId, userId) {
       })()
       break
     case 'send-friend-request-icon':
-      callback = async () => {
-        sendToFriendSystemSocket({ action: 'send_friend_request', receiver_id: userId })
-        await loadFriendSearchPanel()
-      }
+      callback = async () => sendToFriendSystemSocket({ action: 'send_friend_request', receiver_id: userId })
       break
     case 'cancel-icon':
-      callback = async () => {
-        sendToFriendSystemSocket({ action: 'cancel_friend_request', receiver_id: userId })
-        await loadFriendSearchPanel()
-      }
+      callback = async () => sendToFriendSystemSocket({ action: 'cancel_friend_request', receiver_id: userId })
       break
     case 'decline-icon':
-      callback = async () => {
-        sendToFriendSystemSocket({ action: 'decline_friend_request', sender_id: userId })
-        await loadFriendSearchPanel()
-      }
+      callback = async () => sendToFriendSystemSocket({ action: 'decline_friend_request', sender_id: userId })
       break
     case 'accept-icon':
-      callback = async () => {
-        sendToFriendSystemSocket({ action: 'accept_friend_request', sender_id: userId })
-        await loadFriendSearchPanel()
-      }
+      callback = async () => sendToFriendSystemSocket({ action: 'accept_friend_request', sender_id: userId })
       break
     case 'block-icon':
-      callback = async () => {
-        sendToFriendSystemSocket({ action: 'block_friend', blocked_id: userId })
-        await loadFriendListPanel()
-      }
+      callback = async () => sendToFriendSystemSocket({ action: 'block_friend', blocked_id: userId })
       break
     case 'unblock-icon':
-      callback = async () => {
-        sendToFriendSystemSocket({ action: 'unblock_friend', unblocked_id: userId })
-        await loadFriendListPanel()
-      }
+      callback = async () => sendToFriendSystemSocket({ action: 'unblock_friend', unblocked_id: userId })
       break
     default:
       console.error("Error: Invalid iconId ", iconId)

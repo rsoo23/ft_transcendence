@@ -1,3 +1,6 @@
+import { currentChatUserId } from "../realtime_chat/chat_utils.js";
+import { initFriendsPage } from "../router.js";
+import { sendNotification } from "../ui_utils/notification_utils.js";
 import { hideOverlay, showOverlay } from "../ui_utils/overlay_utils.js";
 import { currentFriendListState, FRIEND_LIST_STATE, loadFriendListContent, loadFriendListPanel, loadFriendSearchContent, loadFriendSearchPanel } from "./utils.js";
 
@@ -30,14 +33,7 @@ export function connectFriendSystemSocket() {
     const data = JSON.parse(e.data);
     console.log(data)
 
-    // if (data.action === 'send_friend_request') {
-    // } else if (data.action === 'cancel_friend_request') {
-    // } else if (data.action === 'accept_friend_request') {
-    // } else if (data.action === 'decline_friend_request') {
-    // } else if (data.action === 'block_friend') {
-    // } else if (data.action === 'unblock_friend') {
-    // }
-    // await loadFriendListContent()
+    handleNotifications(data)
 
     if (currentFriendListState === FRIEND_LIST_STATE.SHOWING_FRIEND_LIST) {
       await loadFriendListPanel()
@@ -88,6 +84,36 @@ function reconnectFriendSystemSocket() {
     }, reconnectWait);
   } else {
     alert('Max reconnect attempts reached. Unable to reconnect. Please refresh the page or try again later.')
+  }
+}
+
+async function handleNotifications(data) {
+  if (data.action === 'friend_request_received') {
+    sendNotification('blue', data.message, async () => initFriendsPage(FRIEND_LIST_STATE.SHOWING_FRIEND_SEARCH_LIST))
+    await loadFriendSearchPanel()
+  } else if (data.action === 'friend_request_received_cancelled') {
+    sendNotification('magenta', data.message, async () => initFriendsPage(FRIEND_LIST_STATE.SHOWING_FRIEND_SEARCH_LIST))
+    await loadFriendSearchPanel()
+  } else if (data.action === 'friend_request_sent_accepted') {
+    sendNotification('teal', data.message, async () => initFriendsPage(FRIEND_LIST_STATE.SHOWING_FRIEND_SEARCH_LIST))
+    await loadFriendSearchPanel()
+  } else if (data.action === 'friend_request_sent_declined') {
+    sendNotification('magenta', data.message, async () => initFriendsPage(FRIEND_LIST_STATE.SHOWING_FRIEND_SEARCH_LIST))
+    await loadFriendSearchPanel()
+  } else if (data.action === 'blocked_by_friend') {
+    sendNotification('magenta', data.message, async () => initFriendsPage(FRIEND_LIST_STATE.SHOWING_FRIEND_LIST))
+    if (data.sender_id === currentChatUserId) {
+      showOverlay('blocked-overlay', 'You are blocked by this user')
+    }
+    await loadFriendListPanel()
+  } else if (data.action === 'unblocked_by_friend') {
+    sendNotification('blue', data.message, async () => initFriendsPage(FRIEND_LIST_STATE.SHOWING_FRIEND_LIST))
+    if (data.sender_id === currentChatUserId) {
+      hideOverlay('blocked-overlay', 'You are blocked by this user')
+    }
+    await loadFriendListPanel()
+  } else {
+    sendNotification('teal', data.message, null)
   }
 }
 

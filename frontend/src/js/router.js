@@ -1,18 +1,17 @@
 import { initHotbar, updateBorderColor, updateButtonState } from "./ui_utils/hotbar_utils.js";
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
-import { initAddFriendButton, loadFriendListContent, loadFriendListPanel } from "./friends_system/utils.js"
+import { FRIEND_LIST_STATE, loadFriendListPanel, loadFriendSearchPanel } from "./friends_system/utils.js"
 import { handleLogin } from "./login_panel.js";
 import { handleSignup } from "./signup_panel.js"
 import { initAvatarUpload } from "./settings/upload_avatar.js";
 import { initLogoutButton } from './settings/logout.js';
 import { getRequest } from "./network_utils/api_requests.js";
 import { initEmailSettings } from "./settings/update_email.js";
-import { addEventListenerTo, loadContentToTarget } from "./ui_utils/ui_utils.js";
+import { loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { setCurrentUserInfo, setUsersInfo } from "./global_vars.js";
 import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
-import { setInFriendsPage } from "./realtime_chat/chat_utils.js";
 import { initUsernameSettings } from "./settings/update_username.js";
 import { closeFriendSystemSocket, connectFriendSystemSocket } from "./friends_system/websocket.js";
 
@@ -46,7 +45,6 @@ window.addEventListener('popstate', async (event) => {
   }
 
   if (!path.startsWith('/menu/friends')) {
-    setInFriendsPage(false)
     closeChatSocket()
     closeFriendSystemSocket()
   }
@@ -80,7 +78,6 @@ export async function loadContentToMainMenu(contentName) {
     document.querySelector('#main-menu-panel > .content-container').innerHTML = html;
 
     if (contentName !== 'friends') {
-      setInFriendsPage(false)
       closeChatSocket()
       closeFriendSystemSocket()
     }
@@ -227,8 +224,12 @@ async function initMainMenuPage() {
   await loadUsersInfo()
 }
 
-async function initFriendsPage() {
-  await loadFriendListPanel()
+export async function initFriendsPage(state = FRIEND_LIST_STATE.SHOWING_FRIEND_LIST) {
+  if (state === FRIEND_LIST_STATE.SHOWING_FRIEND_LIST) {
+    await loadFriendListPanel()
+  } else if (state === FRIEND_LIST_STATE.SHOWING_FRIEND_SEARCH_LIST) {
+    await loadFriendSearchPanel()
+  }
   await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
   connectFriendSystemSocket()
 }
