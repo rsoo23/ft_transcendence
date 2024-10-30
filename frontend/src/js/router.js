@@ -14,7 +14,7 @@ import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { setInFriendsPage } from "./realtime_chat/chat_utils.js";
 import { initUsernameSettings } from "./settings/update_username.js";
-import { setLocalPlayMode, getLocalPlayMode, clearPanelBacklog, goToNextPanel, goToPreviousPanel, loadMultiplayerTest, startLocalGame } from "./play_panel.js";
+import { setLocalPlayMode, getLocalPlayMode, initPanelBacklog, setCurrentPanel, setCurrentDiv, loadMultiplayerTest, startLocalGame } from "./play_panel.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -230,7 +230,6 @@ async function initMainMenuPage() {
 }
 
 async function initPlayPage() {
-  clearPanelBacklog()
   const moveAToB = (e1, e2) => {
     const e1Rect = e1.getBoundingClientRect()
     const e2Rect = e2.getBoundingClientRect()
@@ -245,39 +244,44 @@ async function initPlayPage() {
   moveAToB(gamemodeButtons, playTypeButtons)
   moveAToB(hostJoinButtons, playTypeButtons)
   moveAToB(gameSettingsDiv, gameSelectDiv)
+  initPanelBacklog(
+    [playTypeButtons, gamemodeButtons, hostJoinButtons],
+    [gameSelectDiv, gameSettingsDiv],
+    playTypeButtons
+  )
 
   // first page
   document.getElementById('localplay').onclick = () => {
     setLocalPlayMode(true)
-    goToNextPanel(playTypeButtons, gamemodeButtons)
+    setCurrentPanel(playTypeButtons, gamemodeButtons)
   }
   document.getElementById('onlineplay').onclick = () => {
     setLocalPlayMode(false)
-    goToNextPanel(playTypeButtons, gamemodeButtons)
+    setCurrentPanel(playTypeButtons, gamemodeButtons)
   }
 
   // second page
-  document.getElementById('gamemodeback').onclick = () => goToPreviousPanel(gamemodeButtons)
+  document.getElementById('gamemodeback').onclick = () => setCurrentPanel(gamemodeButtons, playTypeButtons)
   document.getElementById('quickplay').onclick = async () => {
     if (getLocalPlayMode()) {
       await loadContentToTarget('menu/play_settings_content.html', 'play-settings-container')
-      document.getElementById('settingsback').onclick = () => goToPreviousPanel(gameSettingsDiv)
+      document.getElementById('settingsback').onclick = () => setCurrentDiv(gameSettingsDiv, gameSelectDiv)
       document.getElementById('start-game').onclick = () => startLocalGame()
-      goToNextPanel(gameSelectDiv, gameSettingsDiv)
+      setCurrentDiv(gameSelectDiv, gameSettingsDiv)
       return
     }
 
-    goToNextPanel(gamemodeButtons, hostJoinButtons)
+    setCurrentPanel(gamemodeButtons, hostJoinButtons)
   }
   document.getElementById('tournament').onclick = () => {
     alert('not implemented yet :[')
   }
 
   // third page (online only)
-  document.getElementById('hostjoinback').onclick = () => goToPreviousPanel(hostJoinButtons)
+  document.getElementById('hostjoinback').onclick = () => setCurrentPanel(hostJoinButtons, gamemodeButtons)
   document.getElementById('host').onclick = () => {
     loadMultiplayerTest()
-    goToNextPanel(gameSelectDiv, gameSettingsDiv)
+    setCurrentDiv(gameSelectDiv, gameSettingsDiv)
   }
   document.getElementById('join').onclick = () => alert('not implemented')
 }
