@@ -19,7 +19,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
             self.user_id = user.id
 
         except Exception as e:
-            print('Exception while trying to get user_id: ' + str(e))
+            print(f'Exception while trying to get user_id: {type(e)} {str(e)}')
             await self.close(code=3000, reason='Invalid JWT')
             return
 
@@ -48,7 +48,8 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
             return
 
         if self.player_num != 0:
-            server_manager.update_player_consumer(self.match_id, self.player_num, self)
+            loop = asyncio.get_running_loop()
+            await loop.run_in_executor(None, server_manager.update_player_consumer, self.match_id, self.player_num, self)
 
         print(f'user with {self.user_id} joined')
         await self.accept()
@@ -58,11 +59,14 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
         if not hasattr(self, 'user_id'):
             return
 
-        print(f'{self.user_id}: i am disconnecting!')
+        print(f'{self.user_id}: i am disconnecting! status {code}')
         await self.channel_layer.group_discard(self.group_match, self.channel_name)
 
+        if not hasattr(self, 'player_num'):
+            return
+
         loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, server_manager.stop_game, self.match_id)
+        await loop.run_in_executor(None, server_manager.remove_player_consumer, self.match_id, self.player_num)
 
     async def receive_json(self, content):
         print(content)

@@ -4,6 +4,7 @@ import { loadPage, loadMainMenuContent } from '../router.js'
 import { PONG_INPUTS } from '../global_vars.js'
 
 var matchSocket = null
+var inMatchID = 0
 
 export async function createMatch(player1ID, player2ID, local) {
   const response = await postRequest('/api/pong/create-match/', {
@@ -19,27 +20,66 @@ export async function createMatch(player1ID, player2ID, local) {
   return response['match_id']
 }
 
+var prevMessageRecv = 0
+var socketChecker = null
+
 // TODO: delete userid
 export async function joinMatch(matchID, userID) {
-  if (matchSocket != undefined)
+  if (matchSocket != undefined) {
   	matchSocket.close()
+  }
 
   initRenderer()
-  matchSocket = new WebSocket(`ws://localhost:8000/ws/pong/${matchID}?user=${userID}`)
+  await createSocket(matchID)
+}
+
+async function checkSocket() {
+  if (performance.now() - prevMessageRecv < 500) {
+    socketChecker = setTimeout(checkSocket, 100)
+    return
+  }
+
+  socketChecker = null
+  if (matchSocket == undefined || matchSocket.readyState >= 2) {
+    console.log('bye bye')
+    return
+  }
+
+  console.log('connection might be stuck, reconnecting')
+  matchSocket.onclose = () => {}
+  matchSocket.close()
+  await createSocket(inMatchID)
+}
+
+async function createSocket(matchID) {
+  inMatchID = matchID
+  matchSocket = new WebSocket(`ws://localhost:8000/ws/pong/${matchID}`)
   matchSocket.onmessage = (e) => {
+    prevMessageRecv = performance.now()
     const gameData = JSON.parse(e.data)
     updateRenderer(gameData)
   }
 
   matchSocket.onclose = async (e) => {
-    console.log('connection closed')
+    try {
+      clearTimeout(socketChecker)
+    } catch (e) {
+      console.log(e)
+    }
+    console.log(`connection closed, reason: ${e.code}: ${e.reason}`)
     stopRenderer()
     window.onkeydown = null
     window.onkeyup = null
+    matchSocket = null
 
     // TODO: go to match end or something
     await loadPage('main_menu')
     loadMainMenuContent('play')
+  }
+
+  matchSocket.onopen = () => {
+    prevMessageRecv = performance.now()
+    socketChecker = setTimeout(checkSocket, 1000)
   }
 
   window.onkeydown = (e) => {
