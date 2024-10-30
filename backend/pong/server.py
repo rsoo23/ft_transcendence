@@ -208,9 +208,14 @@ class ServerManager():
                 accumulator_ms += delta_time
                 pause_ms = 0
 
+            # run game logic
+            msg = None
             while accumulator_ms >= GameLogic.ms_per_frame:
                 msg = match_info['game_info'].tick(GameLogic.sec_per_frame)
+                accumulator_ms -= GameLogic.ms_per_frame
 
+            # send message to clients :]
+            if msg != None:
                 try:
                     if match_info['p1_consumer'] != None:
                         async_to_sync(match_info['p1_consumer'].send_json)(msg)
@@ -220,11 +225,8 @@ class ServerManager():
                 except:
                     print('unable to send message to socket, pausing')
                     match_info['paused'] = True
-                    break
 
-                accumulator_ms -= GameLogic.ms_per_frame
-
-            # TODO: check if we need to actually implement a more precise sleep function
+            # NOTE: we don't need a precise sleep function because the accumulator already accounts for sleep inaccuracy :>
             sleep(GameLogic.sec_per_frame)
 
         self.close_game(match_id)
