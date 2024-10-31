@@ -9,19 +9,15 @@ import asyncio
 
 class PongConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
+        # check user
+        if self.scope['user'] is None:
+            print(f'PongConsumer: User not authenticated.')
+            await self.close(code=3000, reason='Not Authenticated')
+            return
+
+        self.user_id = self.scope['user'].id
         self.match_id = int(self.scope['url_route']['kwargs']['match_id'])
         self.group_match = f'pongmatch-{self.match_id}'
-
-        # get user id
-        try:
-            token = AccessToken(self.scope['cookies']['access_token'])
-            user = await sync_to_async(JWTAuthentication().get_user)(token)
-            self.user_id = user.id
-
-        except Exception as e:
-            print(f'Exception while trying to get user_id: {type(e)} {str(e)}')
-            await self.close(code=3000, reason='Invalid JWT')
-            return
 
         # check if PongMatch exists and hasn't ended
         try:
