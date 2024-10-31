@@ -66,7 +66,7 @@ INSTALLED_APPS = [
     'pong',
 ]
 
-AUHENTICATION_BACKENDS = [
+AUTHENTICATION_BACKENDS = [
 	'django.contrib.auth.backends.ModelBackend',
 ]
 
