@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta
 
 # because os.environ's exception isn't that descriptive
 def getenv_and_validate(name):
@@ -51,6 +52,7 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000'] # TODO
 # Application definition
 
 INSTALLED_APPS = [
+    'realtime_chat',
     'daphne',
     'rest_framework',
     'rest_framework_simplejwt',
@@ -61,7 +63,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 	'user_management',
-    'token_management'
+    'token_management',
+    'friends_system',
+    'channels',
+    'pong',
 ]
 
 AUHENTICATION_BACKENDS = [
@@ -70,11 +75,21 @@ AUHENTICATION_BACKENDS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',  # Adjust permissions as needed
+        'rest_framework.permissions.IsAuthenticated',  # Adjust permissions as needed
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'utils.authentication.CustomAuthentication',
     ),
+}
+
+SIMPLE_JWT = {
+    'AUTH_COOKIE': 'access_token',  # Name of the cookie
+    'AUTH_COOKIE_HTTP_ONLY': True,  # Prevent JS access
+    'AUTH_COOKIE_SAMESITE': 'Lax',  # Protect against CSRF
+    'AUTH_COOKIE_SECURE': False,  # Use only for HTTPS in production
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ROTATE_REFRESH_TOKENS': True,
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 MIDDLEWARE = [
@@ -176,7 +191,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Singapore'
 
 USE_I18N = True
 
@@ -185,12 +200,15 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-
 STATIC_URL = '/static/'
 STATIC_ROOT = './static'
 STATICFILES_DIRS = [
 	os.path.join(BASE_DIR, 'frontend', 'src'),
 ]
+
+# Media files images etc.
+MEDIA_URL = '/media/'  # URL to access media files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Where uploaded media files will be stored
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

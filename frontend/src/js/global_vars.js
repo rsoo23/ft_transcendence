@@ -1,4 +1,29 @@
-// ui state
+
+export const ANIM_WAIT_DURATION = 550
+
+export const MAX_AVATAR_FILE_SIZE = 2000000
+
+export let currentUserInfo = {}
+
+export function setCurrentUserInfo(obj) {
+  currentUserInfo = obj
+}
+
+export let usersInfo = {}
+
+export function setUsersInfo(obj) {
+  usersInfo = obj
+}
+
+export function getUserId(username) {
+  for (const user of usersInfo) {
+    if (user.username === username) {
+      return user.id
+    }
+  }
+  return (-1)
+}
+
 export let hotbarItems = {
   'play': {
     'name': 'play',
@@ -34,4 +59,72 @@ export let hotbarItems = {
 
 export function setHotbarSelected(key, state) {
   hotbarItems[key]['isSelected'] = state
+}
+
+export let friendRecordIconInfo = {
+  'added': [
+    {
+      'icon-id': 'challenge-icon',
+      'icon-name': 'play_circle',
+      'tooltip-id': 'challenge-tooltip',
+      'tooltip-text': 'Challenge',
+    },
+    {
+      'icon-id': 'chat-icon',
+      'icon-name': 'chat',
+      'tooltip-id': 'chat-tooltip',
+      'tooltip-text': 'Chat',
+    },
+    {
+      'icon-id': 'block-icon',
+      'icon-name': 'block',
+      'tooltip-id': 'block-tooltip',
+      'tooltip-text': 'Block',
+    },
+  ],
+  'blocked': [
+    {
+      'icon-id': 'unblock-icon',
+      'icon-name': 'lock_reset',
+      'tooltip-id': 'unblock-tooltip',
+      'tooltip-text': 'Unblock',
+    }
+  ],
+  'sent-friend-request': [
+    {
+      'icon-id': 'cancel-icon',
+      'icon-name': 'close',
+      'tooltip-id': 'cancel-tooltip',
+      'tooltip-text': 'Cancel',
+    },
+  ],
+  'received-friend-request': [
+    {
+      'icon-id': 'decline-icon',
+      'icon-name': 'close',
+      'tooltip-id': 'decline-tooltip',
+      'tooltip-text': 'Decline',
+    },
+    {
+      'icon-id': 'accept-icon',
+      'icon-name': 'check',
+      'tooltip-id': 'accept-tooltip',
+      'tooltip-text': 'Accept',
+    },
+  ],
+  'not-added': [
+    {
+      'icon-id': 'send-friend-request-icon',
+      'icon-name': 'person_add',
+      'tooltip-id': 'send-friend-request--tooltip',
+      'tooltip-text': 'Send friend request',
+    },
+  ],
+}
+
+export const PONG_INPUTS = {
+  38: 'up',
+  40: 'down',
+  87: 'p2up',
+  83: 'p2down',
 }

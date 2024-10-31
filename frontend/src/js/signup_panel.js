@@ -1,10 +1,8 @@
 
-import { addEventListenerTo } from "./ui_utils/ui_utils.js";
-import { getColor, getRandomColor } from "./ui_utils/color_utils.js";
-import { initTogglePasswordVisibilityIcon, resetInputField } from "./ui_utils/input_field_utils.js";
+import { getColor } from "./ui_utils/color_utils.js";
+import { resetInputField } from "./ui_utils/input_field_utils.js";
 import { postRequest } from "./network_utils/api_requests.js";
 import { setInputFieldHint } from "./ui_utils/input_field_utils.js";
-import { getIdToken } from "./network_utils/token_utils.js"
 
 // password1: first password input
 // password2: password input confirmation
@@ -31,7 +29,6 @@ export async function handleSignup() {
     const response = await postRequest('/api/register/', signupInfo)
 
     if (response.success) {
-      await getIdToken(signupInfo);
       return 'success'
     } else {
       handleSignupErrors(inputContainers, response.errors)

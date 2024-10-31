@@ -1,21 +1,17 @@
-
-import { loadContent, loadPage } from "./router.js";
+import { verifyToken, refreshToken } from "./network_utils/token_utils.js";
+import { loadPage, loadMainMenuContent } from "./router.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   initializeApp()
 })
 
 async function initializeApp() {
-  // try {
-  //   const isTokenValid = await verifyToken();
-  //   if (isTokenValid) {
-  //     loadMainMenuPanel();
-  //   } else {
-  //     loadStartPanel();
-  //   }
-  // } catch (error) {
-  //   console.error('Error during app initialization:', error);
-  //   loadStartPanel();
-  // }
+  if (await verifyToken()) {
+    await refreshToken()
+    await loadPage('main_menu')
+    loadMainMenuContent('play')
+    return
+  }
+
   loadPage('start')
 }

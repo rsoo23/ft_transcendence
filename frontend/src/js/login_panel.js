@@ -2,9 +2,7 @@
 import { getColor } from "./ui_utils/color_utils.js";
 import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
 import { postRequest, getRequest } from "./network_utils/api_requests.js";
-// import { load2FAPanel } from "./2FA_panel.js";
 import { getIdToken } from "./network_utils/token_utils.js"
-// import { send_otp_2FA } from "./network_utils/2FA_utils.js";
 
 export async function handleLogin() {
   const inputContainers = {
@@ -24,20 +22,32 @@ export async function handleLogin() {
   try {
     const response = await postRequest('/api/login/', loginInfo)
 
+    console.log(response)
     if (response.success) {
-      await getIdToken(loginInfo)
+      const response = await retrieveTokens(loginInfo)
 
-      if (await status_2FA()) {
-        return 'success-with-2fa'
+      if (response === 'success') {
+        return 'success'
       }
-      return 'success'
-
     } else {
       handleLoginErrors(inputContainers, response.errors)
+      return
     }
   } catch (error) {
     console.error('Error:', error);
     return 'error'
+  }
+}
+
+export async function retrieveTokens(loginInfo) {
+  try {
+    const response = await postRequest('/api/token/', loginInfo)
+
+    if (response) {
+      return 'success'
+    }
+  } catch (error) {
+    console.error('Error: cannot retrieve tokens ', error)
   }
 }
 
@@ -80,4 +90,3 @@ async function status_2FA() {
   else
     return false
 }
-
