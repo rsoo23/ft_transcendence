@@ -76,4 +76,5 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
             else:
                 player_num = self.player_num
 
-            server_manager.update_player_input(self.match_id, player_num, content['input'], content['value'])
+            loop = asyncio.get_running_loop()
+            await loop.run_in_executor(None, server_manager.update_player_input, self.match_id, player_num, content['input'], content['value'])

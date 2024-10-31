@@ -179,7 +179,10 @@ class ServerManager():
 
     def update_player_input(self, match_id, player_num, input_type, value):
         print('updating player input')
-        match_info = self.matches[match_id]
+        match_info = self.get_game(match_id)
+        if match_info == None:
+            return
+
         game_info = match_info['game_info']
         player_input = game_info.player_inputs[player_num - 1]
         player_input.set_input(input_type, value)
