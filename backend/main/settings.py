@@ -80,11 +80,6 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    # 'AUTH_COOKIE': 'access_token',  # Name of the cookie
-    # 'AUTH_COOKIE_HTTP_ONLY': True,  # Prevent JS access
-    # 'AUTH_COOKIE_SAMESITE': 'Lax',  # Protect against CSRF
-    # 'AUTH_COOKIE_SECURE': False,  # Use only for HTTPS in production
-
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'ROTATE_REFRESH_TOKENS': True,
 

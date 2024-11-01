@@ -87,7 +87,7 @@ class CookieTokenRefreshView(TokenRefreshView):
 
         return response
 
-class CookieTokenVerifyView(TokenVerifyView):
+class HeaderTokenVerifyView(TokenVerifyView):
     def post(self, request, *args, **kwargs):
         try:
             request.data['token'] = request.headers.get('Authorization').replace('Bearer ', '')
