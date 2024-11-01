@@ -48,7 +48,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
             await loop.run_in_executor(None, server_manager.update_player_consumer, self.match_id, self.player_num, self)
 
         print(f'user with {self.user_id} joined')
-        await self.accept()
+        await self.accept('Authorization')
 
     async def disconnect(self, code):
         # if the user_id attribute failed to exist, then the init didn't get that far
