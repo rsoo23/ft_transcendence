@@ -130,6 +130,9 @@ async function loadDynamicContent(contentName) {
     case 'play':
       initPlayPage()
       break
+    case 'game':
+      // TODO: move game stuff here
+      break
     case 'friends':
       initFriendsPage()
       break
