@@ -15,11 +15,13 @@ background_tasks = set()
 # delete the match after 30 seconds if it hasn't actually started
 async def try_clean_match(match_id):
     await asyncio.sleep(30)
-    if match_id not in server_manager.matches:
+
+    loop = asyncio.get_running_loop()
+    match_info = await loop.run_in_executor(None, server_manager.get_game, match_id)
+    if match_info == None:
         return
 
     # just check the thread to see if the game is running
-    match_info = server_manager.matches[match_id]
     if match_info['thread'].is_alive():
         return
 
