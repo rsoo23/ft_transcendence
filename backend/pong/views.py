@@ -36,6 +36,17 @@ async def try_clean_match(match_id):
     await loop.run_in_executor(None, server_manager.close_game, match_id)
     print(f'pong: Match with id {match_id} was deleted due to inactivity.')
 
+async def create_match_and_game(user1, user2, local):
+    match = await sync_to_async(PongMatch.objects.create)(player1_uuid=user1, player2_uuid=user2, local=local)
+    loop = asyncio.get_running_loop()
+    await loop.run_in_executor(None, server_manager.try_create_game, match.id, f'pongmatch-{match.id}', local)
+
+    task = asyncio.create_task(try_clean_match(match.id))
+    background_tasks.add(task)
+    task.add_done_callback(background_tasks.discard)
+
+    return match
+
 @csrf_exempt
 @api_view(['POST'])
 @parser_classes([JSONParser])
@@ -44,11 +55,7 @@ async def create_match(request):
     try:
         user1 = request.data['player1_uuid']
         user2 = request.data['player2_uuid']
-        match = await sync_to_async(PongMatch.objects.create)(player1_uuid=user1, player2_uuid=user2, local=request.data['local'])
-        server_manager.try_create_game(match.id, f'pongmatch-{match.id}', request.data['local'])
-        task = asyncio.create_task(try_clean_match(match.id))
-        background_tasks.add(task)
-        task.add_done_callback(background_tasks.discard)
+        match = await create_match_and_game(user1, user2, request.data['local'])
         return JsonResponse({
             'success': True,
             'match_id': match.id
