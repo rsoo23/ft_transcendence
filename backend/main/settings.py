@@ -37,6 +37,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = getenv_and_validate('DJANGO_SECRET_KEY')
 JWT_SECRET_KEY = getenv_and_validate('DJANGO_JWT_SECRET_KEY')
 
+BOT_GOOGLE_EMAIL = getenv_and_validate('BOT_GOOGLE_EMAIL')  # The email you setup to send the email using app password
+BOT_GOOGLE_EMAIL_APP_PASSWORD = getenv_and_validate('BOT_GOOGLE_EMAIL_APP_PASSWORD')  # The app password you generated
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 if os.getenv('DJANGO_DEBUG', 'false').lower() in ['false', '']:
@@ -63,9 +66,8 @@ INSTALLED_APPS = [
     'token_management',
     'friends_system',
     'channels',
+    'pong',
 ]
-
-ASGI_APPLICATION='backend.asgi.application'
 
 AUHENTICATION_BACKENDS = [
 	'django.contrib.auth.backends.ModelBackend',
@@ -214,3 +216,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Where uploaded media files will 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'user_management.CustomUser'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}

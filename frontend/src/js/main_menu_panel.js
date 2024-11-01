@@ -18,4 +18,3 @@ export async function loadMainMenuPanel() {
     console.error('Error loading Main Menu Panel :', error)
   }
 }
-

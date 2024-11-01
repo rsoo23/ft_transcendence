@@ -14,7 +14,7 @@ class CustomUserAdmin(UserAdmin):
         "email",
         "password",
         "two_factor_enabled",
-        "two_factor_email",
+        "base32_secret",
         "avatar_img",
     ]
 

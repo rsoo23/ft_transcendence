@@ -12,15 +12,15 @@ def user_avatar_path(instance, filename):
 # Override the save and delete method in the Custom User model to delete the old avatar 
 class CustomUser(AbstractUser):
     two_factor_enabled = models.BooleanField(default=False)
-    two_factor_email = models.CharField(null=True, default="", max_length=30, blank=True)
+    base32_secret = models.CharField(max_length=32, blank=True, null=True)
     email = models.EmailField(unique=True)
     avatar_img = models.ImageField(
-        upload_to=user_avatar_path,
-        null=True,
-        blank=True,
-        validators=[
-            FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif'])
-        ]
+    upload_to=user_avatar_path,
+    null=True,
+    blank=True,
+    validators=[
+        FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif'])
+    ]
     )
 
     def save(self, *args, **kwargs):

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="module" src="static/js/websocket.js"></script>
+	<title>websocket test</title>
+</head>
+<body>
+	p1:<input id="player1" type="number"></input>
+	</br>
+	p2:<input id="player2" type="number"></input>
+	</br>
+	<button id="testmatch">create match</button>
+	</br>
+	match id: <input placeholder="N/A" id="matchid"></input>
+	<button id="updatematchid">update match id</button>
+	</br>
+	your uuid:<input id="user" type="text"></input>
+	<button id="websocket">connect to websocket</button>
+	<pre id='debugtickrate'></pre>
+	<pre id='debugrenderrate'></pre>
+	<canvas id="pongcanvas" style="background: black;"></canvas>
+</body>
+</html>
