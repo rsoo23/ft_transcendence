@@ -30,21 +30,25 @@ function setCurrentElement(element, pastCurrentElement, oldCurrentElement, curre
     element.style.transition = '0'
   }
 
+  let buttons = element.querySelectorAll('button')
   if (element != currentElement && !pastCurrentElement) {
-    element.style.left = '-100rem'
-    element.style.opacity = '0'
-    element.style.visibility = 'hidden'
-    element.style.pointerEvents = 'none'
+    element.style.setProperty('left', '-100rem')
+    element.style.setProperty('opacity', '0')
+    element.style.setProperty('visibility', 'hidden', 'important')
+    element.style.setProperty('pointer-events', 'none', 'important')
+    buttons.forEach((b) => b.disabled = true)
   } else if (element == currentElement) {
-    element.style.left = '0'
-    element.style.opacity = '1'
-    element.style.visibility = 'visible'
-    element.style.pointerEvents = 'auto'
+    element.style.setProperty('left', '0')
+    element.style.setProperty('opacity', '1')
+    element.style.setProperty('visibility', 'visible', 'important')
+    element.style.setProperty('pointer-events', 'auto', 'important')
+    buttons.forEach((b) => b.disabled = false)
   } else {
-    element.style.left = '100rem'
-    element.style.opacity = '0'
-    element.style.visibility = 'hidden'
-    element.style.pointerEvents = 'none'
+    element.style.setProperty('left', '100rem')
+    element.style.setProperty('opacity', '0')
+    element.style.setProperty('visibility', 'hidden', 'important')
+    element.style.setProperty('pointer-events', 'none', 'important')
+    buttons.forEach((b) => b.disabled = true)
   }
 }
 
