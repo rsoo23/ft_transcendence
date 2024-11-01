@@ -61,17 +61,20 @@ export async function refreshToken() {
   return response.ok
 }
 
-export async function send_2FA_code_email(email) {
+export async function getIdToken(loginInfo) {
   try {
-    const response = await postRequest('/api/two_factor_auth/email_2FA_send_code/', { email })
-
-    if (response.success) {
-      alert('2FA code sent to email: ' + email);
-    } else {
-      alert('An error occurred. Please try again.');
-    }
+    await postRequest('/api/token_management/create_token/', loginInfo)
   } catch (error) {
     console.error('Error:', error);
-    alert('An error occurred. Please try again.');
+    alert('ID Token Creation Error');
+  }
+}
+
+export async function getEmailToken(email) {
+  try {
+    await postRequest('/api/token_management/create_email_token/', email)
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Email Token Creation Error');
   }
 }

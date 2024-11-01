@@ -1,7 +1,7 @@
 
 import { getColor } from "./ui_utils/color_utils.js";
 import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
-import { postRequest } from "./network_utils/api_requests.js";
+import { postRequest, getRequest } from "./network_utils/api_requests.js";
 import { retrieveTokens } from "./network_utils/token_utils.js";
 
 export async function handleLogin() {
@@ -70,3 +70,11 @@ function handleLoginErrors(inputContainers, errors) {
   }
 }
 
+async function status_2FA() {
+  const response = await getRequest('/api/two_factor_auth/status_2FA/')
+  console.log(response.success)
+  if (response.success)
+    return true
+  else
+    return false
+}
