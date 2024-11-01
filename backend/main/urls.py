@@ -32,7 +32,14 @@ urlpatterns = [
     path('api/', include('friends_system.urls')),
     path('api/', include('realtime_chat.urls')),
     path('api/pong/', include('pong.urls')),
-    re_path(r'^.*$', serve, kwargs={
+    
+	# Serve media files
+    re_path(r'^media/(?P<path>.*)$', serve, {
+        'document_root': settings.MEDIA_ROOT,
+    }),
+	
+	# Handle frontend routes
+	re_path(r'^.*$', serve, kwargs={
         'path': 'index.html',
         'document_root': os.path.join(settings.BASE_DIR, 'frontend'),
     }),
