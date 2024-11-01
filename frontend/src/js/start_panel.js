@@ -6,8 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
 })
 
 async function initializeApp() {
+  await refreshToken()
   if (await verifyToken()) {
-    await refreshToken()
     await loadPage('main_menu')
     loadMainMenuContent('play')
     return

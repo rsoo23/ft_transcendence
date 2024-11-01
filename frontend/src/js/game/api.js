@@ -1,4 +1,5 @@
 import { postRequest } from '../network_utils/api_requests.js'
+import { getAccessToken } from '../network_utils/token_utils.js'
 import { initRenderer, stopRenderer, updateRenderer } from './worker_ui_handler.js'
 import { loadPage, loadMainMenuContent } from '../router.js'
 import { PONG_INPUTS } from '../global_vars.js'
@@ -53,7 +54,10 @@ async function checkSocket() {
 
 async function createSocket(matchID) {
   inMatchID = matchID
-  matchSocket = new WebSocket(`ws://localhost:8000/ws/pong/${matchID}`)
+  matchSocket = new WebSocket(
+    `ws://localhost:8000/ws/pong/${matchID}`,
+    ['Authorization', getAccessToken()]
+  )
   matchSocket.onmessage = (e) => {
     prevMessageRecv = performance.now()
     const gameData = JSON.parse(e.data)

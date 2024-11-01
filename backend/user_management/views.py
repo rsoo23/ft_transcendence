@@ -55,14 +55,6 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 def move_token_to_cookie(response):
     # Set the JWT in a HttpOnly cookie
     response.set_cookie(
-        key='access_token',
-        value=response.data['access'],
-        httponly=True,
-        secure=False,  # Set True for HTTPS, False for HTTP development
-        samesite='Lax'
-    )
-    # Optionally add the refresh token in another cookie
-    response.set_cookie(
         key='refresh_token',
         value=response.data['refresh'],
         httponly=True,
@@ -71,7 +63,6 @@ def move_token_to_cookie(response):
     )
 
     # Remove token from response body
-    response.data.pop('access')
     response.data.pop('refresh')
 
 class CookieTokenObtainPairView(TokenObtainPairView):
@@ -85,7 +76,6 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 class CookieTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
         try:
-            request.data['access'] = request.COOKIES.get('access_token')
             request.data['refresh'] = request.COOKIES.get('refresh_token')
 
         except Exception:
@@ -100,7 +90,7 @@ class CookieTokenRefreshView(TokenRefreshView):
 class CookieTokenVerifyView(TokenVerifyView):
     def post(self, request, *args, **kwargs):
         try:
-            request.data['token'] = request.COOKIES.get('access_token')
+            request.data['token'] = request.headers.get('Authorization').replace('Bearer ', '')
 
         except Exception:
             pass
@@ -189,13 +179,6 @@ def logout_view(request):
         # Django's built-in logout function - removes authenticated user from session, flushes session data, deletes session cookie
         logout(request)
         response = JsonResponse({'success': True})
-        response.set_cookie(
-            key='access_token',
-            value='',
-            httponly=True,
-            secure=False,  # Set True for HTTPS, False for HTTP development
-            samesite='Lax'
-        )
         response.set_cookie(
             key='refresh_token',
             value='',

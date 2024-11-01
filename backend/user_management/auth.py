@@ -1,4 +1,3 @@
-from main.settings import SIMPLE_JWT
 from channels.auth import UserLazyObject
 from channels.middleware import BaseMiddleware
 from channels.sessions import CookieMiddleware
@@ -18,16 +17,23 @@ def get_user(access_token):
 
 class JWTAuthMiddleware(BaseMiddleware):
     def populate_scope(self, scope):
-        if 'cookies' not in scope or SIMPLE_JWT['AUTH_COOKIE'] not in scope['cookies']:
+        if 'Authorization' not in scope['subprotocols']:
             raise ValueError(
-                'JWTAuthMiddleware could not find "access_token" in cookies.'
+                'JWTAuthMiddleware could not find "Authorization" in scope.'
             )
+        if len(scope['subprotocols']) != 2:
+            raise ValueError(
+                'JWTAuthMiddleware invalid amount of subprotocols in scope.'
+            )
+
+        if 'token' not in scope:
+            scope['token'] = scope['subprotocols'][1]
 
         if 'user' not in scope:
             scope['user'] = UserLazyObject()
 
     async def resolve_scope(self, scope):
-        scope['user']._wrapped = await sync_to_async(get_user)(scope['cookies'][SIMPLE_JWT['AUTH_COOKIE']])
+        scope['user']._wrapped = await sync_to_async(get_user)(scope['token'])
 
     async def __call__(self, scope, receive, send):
         scope = dict(scope)
