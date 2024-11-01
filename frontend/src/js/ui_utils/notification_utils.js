@@ -1,53 +1,80 @@
 import { getColor } from "./color_utils.js"
 import { addEventListenerTo } from "./ui_utils.js"
 
-export function sendNotification(color, text, callback) {
+const NOTIFICATION_DURATION = 2000
+let notificationQueue = []
+
+export function queueNotification(color, text, callback) {
+  notificationQueue.push({ color, text, callback })
+  processNotificationQueue()
+}
+
+// the shift method uses FIFO, pushing out the first notification from notificationQueue
+function processNotificationQueue() {
+  if (notificationQueue.length === 0) return;
+
   const notificationContainer = document.getElementById('notification-container')
+  const { color, text, callback } = notificationQueue.shift();
+  const notification = createNotification(color, text, () => callback);
 
-  notificationContainer.style.pointerEvents = 'auto'
+  notificationContainer.appendChild(notification)
+  setTimeout(() => {
+    notification.style.opacity = '0%'
+    notification.style.pointerEvents = 'auto'
 
-  notificationContainer.style.opacity = '100%'
-  notificationContainer.style.backgroundColor = getColor(color, 500)
-  notificationContainer.style.color = getColor(color, 200)
+    setTimeout(() => {
+      notificationContainer.firstChild.remove()
+    }, 200)
 
-  notificationContainer.style.width = '20rem';
-  notificationContainer.innerHTML = text
+  }, NOTIFICATION_DURATION)
+}
+
+export function createNotification(color, text, callback) {
+  const notification = document.createElement('div')
+
+  notification.classList.add('notification')
+
+  notification.style.pointerEvents = 'auto'
+
+  notification.style.opacity = '100%'
+  notification.style.backgroundColor = getColor(color, 500)
+  notification.style.color = getColor(color, 200)
+
+  notification.style.width = '20rem';
+  notification.innerHTML = text
 
   addEventListenerTo(
-    notificationContainer,
-    'mouseover',
+    notification,
+    'mous',
     () => {
-      notificationContainer.style.backgroundColor = getColor(color, 700)
-      notificationContainer.style.color = getColor(color, 400)
+      notification.style.backgroundColor = getColor(color, 700)
+      notification.style.color = getColor(color, 400)
     }
   )
 
   addEventListenerTo(
-    notificationContainer,
+    notification,
     'mouseout',
     () => {
-      notificationContainer.style.backgroundColor = getColor(color, 500)
-      notificationContainer.style.color = getColor(color, 200)
+      notification.style.backgroundColor = getColor(color, 500)
+      notification.style.color = getColor(color, 200)
     }
   )
 
   addEventListenerTo(
-    notificationContainer,
+    notification,
     'mousedown',
     () => {
-      notificationContainer.style.backgroundColor = getColor(color, 800)
-      notificationContainer.style.color = getColor(color, 600)
+      notification.style.backgroundColor = getColor(color, 800)
+      notification.style.color = getColor(color, 600)
     }
   )
 
   addEventListenerTo(
-    notificationContainer,
+    notification,
     'mouseup',
     async () => callback()
   )
 
-  setTimeout(() => {
-    notificationContainer.style.opacity = '0%'
-    notificationContainer.style.pointerEvents = 'auto'
-  }, 2000)
+  return notification
 }

@@ -46,19 +46,28 @@
 
 #notification-container {
   display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  position: absolute;
+  top: 1rem;
+  z-index: 20;
+  transition: 0.2s;
+}
+
+.notification {
+  display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
   width: 0rem;
   height: 2.5rem;
   border-radius: 0.75rem;
   opacity: 100%;
-  top: 1rem;
   box-sizing: border-box;
   overflow: hidden;
   white-space: nowrap;
-  z-index: 20;
 
+  /*transform: translateY(0);*/
   transition: 0.2s;
   transition-timing-function: ease-in-out;
 
