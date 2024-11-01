@@ -151,3 +151,12 @@
 .profile-settings-button:active {
   background-color: var(--magenta-700);
 }
+
+#enable-2fa-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: var(--blue-500);
+  transition: 0.3s;
+}
