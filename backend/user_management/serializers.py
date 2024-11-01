@@ -23,7 +23,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
             'date_joined',
             'last_login',
             'two_factor_enabled',
-            'two_factor_email',
             'groups',
             'user_permissions'
         ]
