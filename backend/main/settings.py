@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'daphne',
     'rest_framework',
     'rest_framework_simplejwt',
+    'adrf',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

@@ -1,5 +1,7 @@
-import json
-from rest_framework.decorators import api_view
+from adrf.decorators import api_view
+from rest_framework.decorators import permission_classes, parser_classes
+from rest_framework.parsers import JSONParser
+from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from asgiref.sync import sync_to_async
@@ -33,16 +35,15 @@ async def try_clean_match(match_id):
     print(f'pong: Match with id {match_id} was deleted due to inactivity.')
 
 @csrf_exempt
+@api_view(['POST'])
+@parser_classes([JSONParser])
+@permission_classes([IsAuthenticated])
 async def create_match(request):
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
-
-    data = json.loads(request.body)
     try:
-        user1 = data['player1_uuid']
-        user2 = data['player2_uuid']
-        match = await sync_to_async(PongMatch.objects.create)(player1_uuid=user1, player2_uuid=user2, local=data['local'])
-        server_manager.try_create_game(match.id, f'pongmatch-{match.id}', data['local'])
+        user1 = request.data['player1_uuid']
+        user2 = request.data['player2_uuid']
+        match = await sync_to_async(PongMatch.objects.create)(player1_uuid=user1, player2_uuid=user2, local=request.data['local'])
+        server_manager.try_create_game(match.id, f'pongmatch-{match.id}', request.data['local'])
         task = asyncio.create_task(try_clean_match(match.id))
         background_tasks.add(task)
         task.add_done_callback(background_tasks.discard)
