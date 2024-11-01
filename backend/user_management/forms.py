@@ -1,7 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 from .models import CustomUser
-from django.contrib.auth import get_user_model
 
 class CustomUserCreationForm(UserCreationForm):
 
@@ -11,15 +10,15 @@ class CustomUserCreationForm(UserCreationForm):
         self.fields['username'].label = 'username'
         self.fields['email'].label = 'email'
         self.fields['two_factor_enabled'].label = False
+        self.fields['base32_secret'].label = ""
 
     class Meta:
         model = CustomUser
-        fields = ("username", "password1", "email", "two_factor_enabled")
+        fields = ("username", "password1", "email", "two_factor_enabled", "base32_secret")
 
 
 class CustomUserChangeForm(UserChangeForm):
 
     class Meta(UserChangeForm.Meta):
         model = CustomUser
-        fields = ("two_factor_enabled",)
-
+        fields = ("two_factor_enabled", "base32_secret")

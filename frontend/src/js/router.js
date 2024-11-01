@@ -2,6 +2,11 @@ import { initHotbar, updateBorderColor, updateButtonState } from "./ui_utils/hot
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
 import { FRIEND_LIST_STATE, loadFriendListPanel, loadFriendSearchPanel } from "./friends_system/utils.js"
+import { handle2FA, initResendCodeButton } from "./2FA_panel.js";
+import { send_otp_2FA } from "./network_utils/2FA_utils.js";
+import { check_email } from "./forgot_password/get_email.js";
+import { verify_code } from "./forgot_password/verify_code.js";
+import { handle_change_password } from "./forgot_password/change_password.js";
 import { handleLogin } from "./login_panel.js";
 import { handleSignup } from "./signup_panel.js"
 import { initAvatarUpload } from "./settings/upload_avatar.js";
@@ -14,19 +19,26 @@ import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { initUsernameSettings } from "./settings/update_username.js";
 import { closeFriendSystemSocket, connectFriendSystemSocket } from "./friends_system/websocket.js";
+import { setLocalPlayMode, getLocalPlayMode, clearPanelBacklog, goToNextPanel, goToPreviousPanel, loadMultiplayerTest, startLocalGame } from "./play_panel.js";
+import { initLink } from "./ui_utils/link_utils.js";
 
 const routes = {
   '/start': 'start_panel.html',
   '/login': 'login_panel.html',
   '/signup': 'signup_panel.html',
-  '/avatar_upload': 'avatar_upload_panel.html',
-  '/2fa': '2FA_panel.html',
+  '/user_profile': 'user_profile_panel.html',
+  '/2fa_verify': '2FA_panel.html',
+  '/2fa_enable': '2FA_panel.html',
   '/main_menu': 'menu/main_menu_panel.html',
   '/menu/play': 'menu/play_content.html',
   '/menu/stats': 'menu/stats_content.html',
   '/menu/friends': 'menu/friends_content.html',
   '/menu/how-to-play': 'menu/how_to_play_content.html',
-  '/menu/settings': 'menu/settings_content.html'
+  '/menu/settings': 'menu/settings_content.html',
+  '/forgot_password/get_email': 'forgot_password/get_email.html',
+  '/forgot_password/verify_code': 'forgot_password/verify_code.html',
+  '/forgot_password/change_password': 'forgot_password/change_password.html',
+  '/game': 'game.html',
 }
 
 // manages back and forth history
@@ -115,12 +127,41 @@ async function loadDynamicContent(contentName) {
     case 'main_menu':
       initMainMenuPage()
       break
+    case 'play':
+      initPlayPage()
+      break
     case 'friends':
       initFriendsPage()
+      break
+    case 'stats':
+      initStatsPage()
+      break
+    case 'how-to-play':
+      initHowToPlayPage()
       break
     case 'settings':
       initSettingsPage()
       break
+    case 'forgot_password/get_email':
+      initGetEmailPage()
+      break
+    case 'forgot_password/verify_code':
+      initVerifyCodePage()
+      break
+    case 'forgot_password/change_password':
+      initChangePasswordPage()
+      break
+    case 'forgot_password/change_password':
+      initChangePasswordPage()
+      break
+    case '2fa_verify':
+      init2FAPages(contentName)
+      break
+    case '2fa_enable':
+      init2FAPages(contentName)
+      break
+    default:
+      console.error('Error: invalid contentName')
   }
 }
 
@@ -171,8 +212,10 @@ async function initLoginPage() {
   const doLogin = async () => {
     const result = await handleLogin()
 
-    if (result === 'success') {
-      loadPage('main_menu')
+    if (result === 'success-with-2fa') {
+      loadPage('2fa_verify')
+    } else if (result === 'success') {
+      await loadPage('main_menu')
       loadMainMenuContent('play')
     }
   }
@@ -186,7 +229,13 @@ async function initLoginPage() {
     doLogin
   )
   initTogglePasswordVisibilityIcon()
+  initLink(
+    'forgot-password-link',
+    () => loadPage('forgot_password/get_email')
+  )
+
   const form = document.getElementById('login-form')
+
   form.onsubmit = (e) => {
     e.preventDefault()
     doLogin()
@@ -224,15 +273,73 @@ async function initMainMenuPage() {
   await loadUsersInfo()
 }
 
+async function initPlayPage() {
+  clearPanelBacklog()
+  const moveAToB = (e1, e2) => {
+    const e1Rect = e1.getBoundingClientRect()
+    const e2Rect = e2.getBoundingClientRect()
+    e1.style.top = `-${e1Rect.top - e2Rect.top}px`
+  }
+
+  const playTypeButtons = document.getElementById('playtype')
+  const gamemodeButtons = document.getElementById('gamemode')
+  const hostJoinButtons = document.getElementById('hostjoin')
+  const gameSelectDiv = document.getElementById('play-select-container')
+  const gameSettingsDiv = document.getElementById('play-settings-container')
+  moveAToB(gamemodeButtons, playTypeButtons)
+  moveAToB(hostJoinButtons, playTypeButtons)
+  moveAToB(gameSettingsDiv, gameSelectDiv)
+
+  // first page
+  document.getElementById('localplay').onclick = () => {
+    setLocalPlayMode(true)
+    goToNextPanel(playTypeButtons, gamemodeButtons)
+  }
+  document.getElementById('onlineplay').onclick = () => {
+    setLocalPlayMode(false)
+    goToNextPanel(playTypeButtons, gamemodeButtons)
+  }
+
+  // second page
+  document.getElementById('gamemodeback').onclick = () => goToPreviousPanel(gamemodeButtons)
+  document.getElementById('quickplay').onclick = async () => {
+    if (getLocalPlayMode()) {
+      await loadContentToTarget('menu/play_settings_content.html', 'play-settings-container')
+      document.getElementById('settingsback').onclick = () => goToPreviousPanel(gameSettingsDiv)
+      document.getElementById('start-game').onclick = () => startLocalGame()
+      goToNextPanel(gameSelectDiv, gameSettingsDiv)
+      return
+    }
+
+    goToNextPanel(gamemodeButtons, hostJoinButtons)
+  }
+  document.getElementById('tournament').onclick = () => {
+    alert('not implemented yet :[')
+  }
+
+  // third page (online only)
+  document.getElementById('hostjoinback').onclick = () => goToPreviousPanel(hostJoinButtons)
+  document.getElementById('host').onclick = () => {
+    loadMultiplayerTest()
+    goToNextPanel(gameSelectDiv, gameSettingsDiv)
+  }
+  document.getElementById('join').onclick = () => alert('not implemented')
+}
+
+async function initStatsPage() { }
+
 export async function initFriendsPage(state = FRIEND_LIST_STATE.SHOWING_FRIEND_LIST) {
   if (state === FRIEND_LIST_STATE.SHOWING_FRIEND_LIST) {
     await loadFriendListPanel()
   } else if (state === FRIEND_LIST_STATE.SHOWING_FRIEND_SEARCH_LIST) {
     await loadFriendSearchPanel()
   }
+
   await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
   connectFriendSystemSocket()
 }
+
+async function initHowToPlayPage() { }
 
 async function initSettingsPage() {
   initAvatarUpload();
@@ -240,4 +347,86 @@ async function initSettingsPage() {
   initLogoutButton();
   initEmailSettings();
   initPasswordSettings();
+}
+
+function initGetEmailPage() {
+  initBackButton(() => loadPage('login'))
+  initRandomColorButton(
+    'submit-email-button',
+    'get-email-panel',
+    async () => {
+      const result = await check_email()
+
+      if (result === 'error') {
+        return
+      }
+      loadPage('forgot_password/verify_code')
+    }
+  )
+}
+
+function initVerifyCodePage() {
+  initBackButton(() => loadPage('forgot_password/get_email'))
+  initRandomColorButton(
+    'submit-code-button',
+    'verify-code-panel',
+    async () => {
+      const result = await verify_code()
+
+      if (result === 'error') {
+        return
+      }
+      loadPage('forgot_password/change_password')
+    }
+  )
+}
+
+function initChangePasswordPage() {
+  initBackButton(() => loadPage('forgot_password/verify_code'))
+  initTogglePasswordVisibilityIcon()
+  initRandomColorButton(
+    'confirm-signup-button',
+    'verify-code-panel',
+    async () => {
+      const result = await handle_change_password()
+
+      if (result === 'error') {
+        return
+      }
+      loadPage('login')
+    }
+  )
+}
+
+function init2FAPages(contentName) {
+  if (contentName === '2fa_verify' || contentName === '2fa_enable') {
+    send_otp_2FA()
+    if (contentName === '2fa_verify') {
+      initBackButton(() => loadPage('login'))
+    } else {
+      initBackButton(() => {
+        loadPage('main_menu')
+        loadMainMenuContent('settings')
+      })
+    }
+    initResendCodeButton(() => send_otp_2FA())
+    initRandomColorButton(
+      'submit-2fa-button',
+      'two-fa-panel',
+      async () => {
+        const result = await handle2FA()
+
+        if (result === 'error') {
+          return
+        }
+
+        loadPage('main_menu')
+        if (contentName === '2fa_verify') {
+          loadMainMenuContent('play')
+        } else {
+          loadMainMenuContent('settings')
+        }
+      }
+    )
+  }
 }

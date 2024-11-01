@@ -16,21 +16,23 @@ from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
 from django.urls import path
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "main.settings")
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
 
-django_asgi_app = get_asgi_application()
-
-# from realtime_chat.jwt_middleware import JWTAuthMiddleware
+from pong.routing import websocket_urlpatterns as pong_urlpatterns
+from realtime_chat.jwt_middleware import JWTAuthMiddleware
 from realtime_chat.consumers import ChatConsumer
 from friends_system.consumers import FriendsSystemConsumer
 
 application = ProtocolTypeRouter({
-    "http": django_asgi_app,
-    "websocket": AuthMiddlewareStack(
-        URLRouter([
-            path("ws/chat/<int:receiver_id>/", ChatConsumer.as_asgi()),
-            path("ws/friends_system/", FriendsSystemConsumer.as_asgi()),
-        ])
+    'http': get_asgi_application(),
+    'websocket': AllowedHostsOriginValidator(
+        AuthMiddlewareStack(
+            URLRouter([
+                path("ws/chat/<int:receiver_id>/", ChatConsumer.as_asgi()),
+                path("ws/friends_system/", FriendsSystemConsumer.as_asgi()),
+            ] + pong_urlpatterns
+            )
+        )
     ),
     # "websocket": JWTAuthMiddleware(
     #     URLRouter(

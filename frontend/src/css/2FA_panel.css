@@ -67,3 +67,15 @@
   justify-content: flex-end; 
 }
 
+#resend-code-button {
+  background: none;
+  color: white;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  font-size: 12px;
+  cursor: pointer;
+  display: block;
+  text-align: left;
+  margin-top: 5px;
+}

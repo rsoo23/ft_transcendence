@@ -1,10 +1,19 @@
+import json, os, jwt, secrets, string
+
+from main.settings import JWT_SECRET_KEY
+
+from user_management.emails import send_email
+
+from django.contrib.auth.forms import SetPasswordForm
+from two_factor_auth.views import generate_otp, verify_otp
+from django.core.cache import cache
+
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm, AuthenticationForm
 from django.contrib.auth import authenticate, login, get_user_model, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, get_user_model
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-import json, os
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from .forms import CustomUserCreationForm
@@ -149,22 +158,6 @@ def register_view(request):
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
-def forgot_password_view(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        form = PasswordResetForm(data)
-        if form.is_valid():
-            form.save(
-                request=request,
-                use_https=request.is_secure(), 
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                email_template_name='registration/password_reset_email.html'
-            )
-            return JsonResponse({"success": True})
-        return JsonResponse({"success": False, "error": "Invalid email"}, status=400)
-    return JsonResponse({"success": False, "error": "Invalid method"}, status=405)
-
-@csrf_exempt
 def update_username(request):
 	# print("Request received~~~~~~~~~~~~", flush=True)
     try:
@@ -206,6 +199,78 @@ def logout_view(request):
         return response
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def email_exist(request):
+    if request.method == 'PUT':
+        data = json.loads(request.body)
+        email = data.get('email')
+        if get_user_model().objects.filter(email=email).exists():
+            return JsonResponse({'success' : True, 'Status' : 'User with email: ' + email + 'is found'}, status=200)
+        else :
+            return JsonResponse({'success' : False, 'Status' : 'NO user with email: {' + email + '} is found'},status=401)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def verify_change_password_code(request):
+    if request.method == 'PUT':
+        data = json.loads(request.body)
+        code = data.get('code')
+        if 'Email_Token' in request.COOKIES :
+            decoded_token = jwt.decode(request.COOKIES['Email_Token'], JWT_SECRET_KEY, algorithms="HS256")
+        else :
+            return JsonResponse({'success' : False, 'Error': 'Email_Token Not Found'}, status=401)
+        email = decoded_token['email']
+        User = get_user_model().objects.get(email=email)
+        if cache.get(User.base32_secret):
+            otp = cache.get(User.base32_secret)
+        else:
+            return JsonResponse({'success' : False, 'Status' : f'Forgot password Code Timeout'}, status=401)
+        if verify_otp(otp, code):
+            return JsonResponse({'success' : True, 'Status' : 'Forgot password Code Verified'}, status=200)
+        else:
+            return JsonResponse({'success' : False, 'Status' : f'Forgot password code is Wrong'},status=401)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def send_otp_forgot_password(request):
+    if request.method == 'POST':
+        if 'Email_Token' in request.COOKIES :
+            decoded_token = jwt.decode(request.COOKIES['Email_Token'], JWT_SECRET_KEY, algorithms="HS256")
+        else :
+            return JsonResponse({'success' : False, 'Error': 'Email_Token Not Found'}, status=401)
+        email = decoded_token['email']
+        User = get_user_model().objects.get(email=email)
+        alphabet = string.ascii_letters + string.digits
+        if not User.base32_secret:
+            secret = ''.join(secrets.choice(alphabet) for i in range(8))
+            User.base32_secret = secret
+            User.save()
+        otp = generate_otp()
+        cache.set(User.base32_secret, otp, timeout=30)
+        send_email(email, otp)
+        return JsonResponse({'success' : True, 'Status' : 'Change password Token sent to :' + email})
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def change_password_view(request):
+    if request.method == 'POST':
+        if 'Email_Token' in request.COOKIES :
+            decoded_token = jwt.decode(request.COOKIES['Email_Token'], JWT_SECRET_KEY, algorithms="HS256")
+        else :
+            return JsonResponse({'success' : False, 'Error': 'Email_Token Not Found'}, status=401)
+        email = decoded_token['email']
+        user = get_user_model().objects.get(email=email)
+        data = json.loads(request.body)
+        form = SetPasswordForm(data=data, user=user)
+        if form.is_valid():
+            form.save()
+            response = JsonResponse({'success': True, 'message': 'Password Changed !'})
+            response.delete_cookie('Email_Token')
+            return response
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 @csrf_exempt
 def update_password(request):
@@ -258,21 +323,21 @@ def upload_avatar_image(request):
     try:
         # Since we're using IsAuthenticated, we can get the user directly
         user = request.user
-        
+
         if 'avatar_img' not in request.FILES:
             return Response({"error": "No image file provided"}, status=status.HTTP_400_BAD_REQUEST)
-            
+
         serializer = UserAvatarImageSerializer(user, data={'avatar_img': request.FILES['avatar_img']}, partial=True)
-        
+
         if serializer.is_valid():
             serializer.save()
             return Response({
                 "message": "Image uploaded successfully",
                 "avatar_url": request.build_absolute_uri(user.avatar_img.url) if user.avatar_img else None
             }, status=status.HTTP_200_OK)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
