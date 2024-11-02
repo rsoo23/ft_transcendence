@@ -81,15 +81,24 @@
   object-fit: cover;
   width: 2.5rem;
   height: 2.5rem;
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 0.15rem;
+  border-color: var(--charcoal-100);
+  border-radius: 50%;
 }
 
 .friend-record .status-badge {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 0.15rem;
+  border-color: var(--charcoal-100);
   border-radius: 50%;
   position: absolute;
-  right: 0.25rem;
-  bottom: 0.25rem;
+  right: 0.05rem;
+  bottom: 0.05rem;
   background-color: var(--teal-500)
 }
 
