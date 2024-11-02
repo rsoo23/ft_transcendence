@@ -1,10 +1,34 @@
 
-import { addEventListenerTo, loadContentToTarget, truncateString } from "./ui_utils/ui_utils.js"
-import { getColor } from "./ui_utils/color_utils.js"
-import { getRequest, postRequest } from "./network_utils/api_requests.js"
-import { friendRecordIconInfo, getUserId } from "./global_vars.js"
-import { loadChatInterface } from "./realtime_chat/chat_utils.js"
-import { closeChatSocket } from "./realtime_chat/websocket.js"
+import { addEventListenerTo, loadContentToTarget, truncateString } from "../ui_utils/ui_utils.js"
+import { getColor } from "../ui_utils/color_utils.js"
+import { getRequest, postRequest } from "../network_utils/api_requests.js"
+import { friendRecordIconInfo, getUserId } from "../global_vars.js"
+import { friendsSystemSocket } from "./websocket.js"
+import { loadChatInterface } from "../realtime_chat/chat_utils.js"
+import { loadUsersInfo } from "../router.js"
+
+export const FRIEND_LIST_STATE = {
+  SHOWING_FRIEND_LIST: 0,
+  SHOWING_FRIEND_SEARCH_LIST: 1,
+}
+
+export let currentFriendListState = FRIEND_LIST_STATE.SHOWING_FRIEND_LIST
+
+export async function loadFriendListPanel() {
+  await loadUsersInfo()
+  currentFriendListState = FRIEND_LIST_STATE.SHOWING_FRIEND_LIST
+  await loadContentToTarget('menu/friend_list_panel.html', 'friends-container')
+  initAddFriendButton()
+  await loadFriendListContent()
+}
+
+export async function loadFriendSearchPanel() {
+  await loadUsersInfo()
+  currentFriendListState = FRIEND_LIST_STATE.SHOWING_FRIEND_SEARCH_LIST
+  await loadContentToTarget('menu/friend_search_panel.html', 'friends-container')
+  initCloseSearchFriendButton()
+  await loadFriendSearchContent()
+}
 
 export function initAddFriendButton() {
   const button = document.getElementById('add-friend-button')
@@ -14,11 +38,7 @@ export function initAddFriendButton() {
   addEventListenerTo(
     button,
     'click',
-    async () => {
-      await loadContentToTarget('menu/friend_search_panel.html', 'friends-container')
-      initCloseSearchFriendButton()
-      await loadFriendSearchContent()
-    }
+    async () => loadFriendSearchPanel()
   )
 
   addEventListenerTo(
@@ -66,11 +86,7 @@ export function initCloseSearchFriendButton() {
   addEventListenerTo(
     button,
     'click',
-    async () => {
-      await loadContentToTarget('menu/friend_list_panel.html', 'friends-container')
-      initAddFriendButton()
-      await loadFriendListContent()
-    }
+    async () => loadFriendListPanel()
   )
 
   addEventListenerTo(
@@ -117,11 +133,21 @@ export async function loadFriendListContent() {
   friendsList.innerHTML = ''
   blockedList.innerHTML = ''
 
-  await loadUsersToList('/api/friends/', friendsList, friendRecordIconInfo['added'])
-  await loadUsersToList('/api/blocked_friends/', blockedList, friendRecordIconInfo['blocked'])
+  await loadFriendRecordsToList(
+    '/api/friends/',
+    friendsList,
+    friendRecordIconInfo['added'],
+    'You have no friends'
+  )
+  await loadFriendRecordsToList(
+    '/api/blocked_friends/',
+    blockedList,
+    friendRecordIconInfo['blocked'],
+    'You have no blocked friends'
+  )
 }
 
-async function loadFriendSearchContent() {
+export async function loadFriendSearchContent() {
   const sentFriendRequestsList = document.querySelector('.friends-section.sent-friend-requests .friend-records')
   const receivedFriendRequestsList = document.querySelector('.friends-section.received-friend-requests .friend-records')
   const notAddedList = document.querySelector('.friends-section.not-added .friend-records')
@@ -130,24 +156,34 @@ async function loadFriendSearchContent() {
   receivedFriendRequestsList.innerHTML = ''
   notAddedList.innerHTML = ''
 
-  await loadSentFriendRequestsToList('/api/sent_friend_requests/', sentFriendRequestsList)
-  await loadReceivedFriendRequestsToList('/api/received_friend_requests/', receivedFriendRequestsList)
-  await loadUsersToList('/api/non_friends/', notAddedList, friendRecordIconInfo['not-added'])
+  await loadFriendRecordsToList(
+    '/api/sent_friend_requests/',
+    sentFriendRequestsList,
+    friendRecordIconInfo['sent-friend-request'],
+    'No requests sent'
+  )
+  await loadFriendRecordsToList(
+    '/api/received_friend_requests/',
+    receivedFriendRequestsList,
+    friendRecordIconInfo['received-friend-request'],
+    'No requests received'
+  )
+  await loadFriendRecordsToList(
+    '/api/non_friends/',
+    notAddedList,
+    friendRecordIconInfo['not-added'],
+    'No users found'
+  )
 }
 
-async function loadSentFriendRequestsToList(endpoint, targetList) {
+async function loadFriendRecordsToList(endpoint, targetList, iconsInfo, placeholderText) {
   try {
     const response = await getRequest(endpoint)
 
     if (response.length === 0) {
-      addListContentPlaceholderText('No requests sent', targetList)
+      addListContentPlaceholderText(placeholderText, targetList)
     } else if (response.length > 0) {
-      response.map(friend => {
-        let friendRecordInstance = createFriendRecord(friend.receiver_username, friendRecordIconInfo['sent-friend-request'])
-
-        targetList.appendChild(friendRecordInstance)
-      })
-      targetList.style.justifyContent = 'flex-start'
+      renderFriendRecords(endpoint, response, targetList, iconsInfo)
     } else {
       addListContentPlaceholderText('Error loading please try again', targetList)
     }
@@ -156,47 +192,21 @@ async function loadSentFriendRequestsToList(endpoint, targetList) {
   }
 }
 
-async function loadReceivedFriendRequestsToList(endpoint, targetList) {
-  try {
-    const response = await getRequest(endpoint)
+function renderFriendRecords(endpoint, friends, targetList, iconsInfo) {
+  friends.map(friend => {
+    let friendRecordInstance
 
-    if (response.length === 0) {
-      addListContentPlaceholderText('No requests received', targetList)
-    } else if (response.length > 0) {
-      response.map(friend => {
-        let friendRecordInstance = createFriendRecord(friend.sender_username, friendRecordIconInfo['received-friend-request'])
-
-        targetList.appendChild(friendRecordInstance)
-      })
-      targetList.style.justifyContent = 'flex-start'
+    if (endpoint === '/api/sent_friend_requests/') {
+      friendRecordInstance = createFriendRecord(friend.receiver_username, iconsInfo)
+    } else if (endpoint === '/api/received_friend_requests/') {
+      friendRecordInstance = createFriendRecord(friend.sender_username, iconsInfo)
     } else {
-      addListContentPlaceholderText('Error loading please try again', targetList)
+      friendRecordInstance = createFriendRecord(friend.username, iconsInfo)
     }
-  } catch (error) {
-    console.error('Error loading: ', error)
-  }
-}
 
-async function loadUsersToList(endpoint, targetList, iconsInfo) {
-  try {
-    const response = await getRequest(endpoint)
-
-    console.log(response)
-    if (response.length === 0) {
-      addListContentPlaceholderText('No users found', targetList)
-    } else if (response.length > 0) {
-      response.map(friend => {
-        let friendRecordInstance = createFriendRecord(friend.username, iconsInfo)
-
-        targetList.appendChild(friendRecordInstance)
-      })
-      targetList.style.justifyContent = 'flex-start'
-    } else {
-      addListContentPlaceholderText('Error loading please try again', targetList)
-    }
-  } catch (error) {
-    console.error('Error loading: ', error)
-  }
+    targetList.appendChild(friendRecordInstance)
+  })
+  targetList.style.justifyContent = 'flex-start'
 }
 
 function addListContentPlaceholderText(labelText, targetList) {
@@ -274,81 +284,23 @@ function initFriendRecordIcon(icon, iconId, userId) {
         return async () => loadChatInterface(userId)
       })()
       break
-    case 'block-icon':
-      callback = async () => {
-        try {
-          const response = await postRequest('/api/block_friend/', { blocked_id: userId })
-          await loadFriendListContent()
-
-          await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
-          closeChatSocket()
-
-          console.log(response)
-        } catch (error) {
-          console.error('Error :', error)
-        }
-      }
-      break
-    case 'unblock-icon':
-      callback = async () => {
-        try {
-          const response = await postRequest('/api/unblock_friend/', { unblocked_id: userId })
-          await loadFriendListContent()
-
-          console.log(response)
-        } catch (error) {
-          console.error('Error :', error)
-        }
-      }
+    case 'send-friend-request-icon':
+      callback = async () => sendToFriendSystemSocket({ action: 'send_friend_request', receiver_id: userId })
       break
     case 'cancel-icon':
-      callback = async () => {
-        try {
-          const response = await postRequest('/api/cancel_friend_request/', { receiver_id: userId })
-          await loadFriendSearchContent()
-
-          console.log(response)
-        } catch (error) {
-          console.error('Error :', error)
-        }
-      }
+      callback = async () => sendToFriendSystemSocket({ action: 'cancel_friend_request', receiver_id: userId })
       break
     case 'decline-icon':
-      callback = async () => {
-        try {
-          const response = await postRequest('/api/decline_friend_request/', { sender_id: userId })
-          await loadFriendSearchContent()
-
-          console.log(response)
-        } catch (error) {
-          console.error('Error :', error)
-        }
-      }
+      callback = async () => sendToFriendSystemSocket({ action: 'decline_friend_request', sender_id: userId })
       break
     case 'accept-icon':
-      callback = async () => {
-        try {
-          const response = await postRequest('/api/accept_friend_request/', { sender_id: userId })
-          await loadFriendSearchContent()
-
-          console.log(response)
-        } catch (error) {
-          console.error('Error :', error)
-        }
-      }
+      callback = async () => sendToFriendSystemSocket({ action: 'accept_friend_request', sender_id: userId })
       break
-    case 'send-friend-request-icon':
-      callback = async () => {
-        try {
-          const response = await postRequest('/api/send_friend_request/', { receiver_id: userId })
-          await loadFriendSearchContent()
-
-          console.log(response)
-
-        } catch (error) {
-          console.error('Error :', error)
-        }
-      }
+    case 'block-icon':
+      callback = async () => sendToFriendSystemSocket({ action: 'block_friend', blocked_id: userId })
+      break
+    case 'unblock-icon':
+      callback = async () => sendToFriendSystemSocket({ action: 'unblock_friend', unblocked_id: userId })
       break
     default:
       console.error("Error: Invalid iconId ", iconId)
@@ -358,5 +310,9 @@ function initFriendRecordIcon(icon, iconId, userId) {
     'click',
     callback
   )
+}
+
+function sendToFriendSystemSocket(info) {
+  friendsSystemSocket.send(JSON.stringify(info));
 }
 

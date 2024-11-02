@@ -1,12 +1,12 @@
 import { initHotbar, updateBorderColor, updateButtonState } from "./ui_utils/hotbar_utils.js";
 import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
 import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
+import { FRIEND_LIST_STATE, loadFriendListPanel, loadFriendSearchPanel } from "./friends_system/utils.js"
 import { handle2FA, initResendCodeButton } from "./2FA_panel.js";
 import { send_otp_2FA } from "./network_utils/2FA_utils.js";
 import { check_email } from "./forgot_password/get_email.js";
 import { verify_code } from "./forgot_password/verify_code.js";
 import { handle_change_password } from "./forgot_password/change_password.js";
-import { initAddFriendButton, loadFriendListContent } from "./friends_content.js"
 import { handleLogin } from "./login_panel.js";
 import { handleSignup } from "./signup_panel.js"
 import { initAvatarUpload } from "./settings/upload_avatar.js";
@@ -17,8 +17,8 @@ import { loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { setCurrentUserInfo, setUsersInfo } from "./global_vars.js";
 import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
-import { setInFriendsPage } from "./realtime_chat/chat_utils.js";
 import { initUsernameSettings } from "./settings/update_username.js";
+import { closeFriendSystemSocket, connectFriendSystemSocket } from "./friends_system/websocket.js";
 import { setLocalPlayMode, getLocalPlayMode, initPanelBacklog, setCurrentPanel, setCurrentDiv, loadMultiplayerTest, startLocalGame } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
 
@@ -57,8 +57,8 @@ window.addEventListener('popstate', async (event) => {
   }
 
   if (!path.startsWith('/menu/friends')) {
-    setInFriendsPage(false)
     closeChatSocket()
+    closeFriendSystemSocket()
   }
 });
 
@@ -90,8 +90,8 @@ export async function loadContentToMainMenu(contentName) {
     document.querySelector('#main-menu-panel > .content-container').innerHTML = html;
 
     if (contentName !== 'friends') {
-      setInFriendsPage(false)
       closeChatSocket()
+      closeFriendSystemSocket()
     }
     updateBorderColor(contentName)
     updateButtonState(contentName)
@@ -183,7 +183,7 @@ async function loadCurrentUserInfo() {
   }
 }
 
-async function loadUsersInfo() {
+export async function loadUsersInfo() {
   try {
     const response = await getRequest('/api/users/')
 
@@ -335,11 +335,15 @@ async function initPlayPage() {
 
 async function initStatsPage() { }
 
-async function initFriendsPage() {
-  await loadContentToTarget('menu/friend_list_panel.html', 'friends-container')
+export async function initFriendsPage(state = FRIEND_LIST_STATE.SHOWING_FRIEND_LIST) {
+  if (state === FRIEND_LIST_STATE.SHOWING_FRIEND_LIST) {
+    await loadFriendListPanel()
+  } else if (state === FRIEND_LIST_STATE.SHOWING_FRIEND_SEARCH_LIST) {
+    await loadFriendSearchPanel()
+  }
+
   await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
-  initAddFriendButton()
-  await loadFriendListContent()
+  connectFriendSystemSocket()
 }
 
 async function initHowToPlayPage() { }

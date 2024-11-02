@@ -50,28 +50,6 @@ def get_non_friends(request):
     serializer = CustomUserSerializer(non_friends, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def send_friend_request(request):
-    receiver_id = request.data.get("receiver_id")
-    if not receiver_id:
-        return Response({"error": "Receiver id is required."}, status=status.HTTP_400_BAD_REQUEST)
-
-    receiver = get_object_or_404(CustomUser, pk=receiver_id)
-
-    existing_active_request = FriendRequest.objects.filter(sender=request.user, receiver=receiver, is_active=True).exists()
-    if existing_active_request:
-        return Response({"error": "An active friend request already exists."}, status=status.HTTP_400_BAD_REQUEST)
-
-    serializer = FriendRequestCreateSerializer(data={
-        "sender": request.user.id,
-        "receiver": receiver.id
-    })
-    if serializer.is_valid():
-        serializer.save()
-        return Response({"message": "Friend request sent successfully."}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 # Get all friend requests where the current user is the sender
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -114,77 +92,4 @@ def get_blocked_friends(request):
 
     serializer = CustomUserSerializer(blocked_friends, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
-
-# Cancel friend request that current user has sent
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def cancel_friend_request(request):
-    receiver_id = request.data.get("receiver_id")
-    if not receiver_id:
-        return Response({"error": "Receiver id is required."}, status=status.HTTP_400_BAD_REQUEST)
-
-    receiver = get_object_or_404(CustomUser, pk=receiver_id)
-
-    friend_request = get_object_or_404(FriendRequest, sender=request.user, receiver=receiver, is_active=True)
-
-    friend_request.cancel()
-    return Response({"message": "Friend request cancelled successfully."}, status=status.HTTP_200_OK)
-
-# Accept friend request
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def accept_friend_request(request):
-    sender_id = request.data.get("sender_id")
-    if not sender_id:
-        return Response({"error": "Sender sender_id is required."}, status=status.HTTP_400_BAD_REQUEST)
-
-    sender = get_object_or_404(CustomUser, pk=sender_id)
-
-    friend_request = get_object_or_404(FriendRequest, sender=sender, receiver=request.user, is_active=True)
-
-    friend_request.accept()
-    return Response({"message": "Friend request accepted successfully."}, status=status.HTTP_200_OK)
-
-# Decline friend request
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def decline_friend_request(request):
-    sender_id = request.data.get("sender_id")
-    if not sender_id:
-        return Response({"error": "Sender id is required."}, status=status.HTTP_400_BAD_REQUEST)
-
-    sender = get_object_or_404(CustomUser, pk=sender_id)
-
-    friend_request = get_object_or_404(FriendRequest, sender=sender, receiver=request.user, is_active=True)
-
-    friend_request.decline()
-    return Response({"message": "Friend request declined successfully."}, status=status.HTTP_200_OK)
-
-# Block friend
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def block_friend(request):
-    blocked_id = request.data.get("blocked_id")
-    if not blocked_id:
-        return Response({"error": "Blocked id is required."}, status=status.HTTP_400_BAD_REQUEST)
-
-    current_user_friend_list = get_object_or_404(FriendList, current_user=request.user)
-    friend = get_object_or_404(CustomUser, pk=blocked_id)
-
-    current_user_friend_list.block_friend(friend)
-    return Response({"message": "Friend blocked successfully."}, status=status.HTTP_200_OK)
-
-# Unblock friend
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def unblock_friend(request):
-    unblocked_id = request.data.get("unblocked_id")
-    if not unblocked_id:
-        return Response({"error": "Unblocked id is required."}, status=status.HTTP_400_BAD_REQUEST)
-
-    current_user_friend_list = get_object_or_404(FriendList, current_user=request.user)
-    friend = get_object_or_404(CustomUser, pk=unblocked_id)
-
-    current_user_friend_list.unblock_friend(friend)
-    return Response({"message": "Friend unblocked successfully."}, status=status.HTTP_200_OK)
 
