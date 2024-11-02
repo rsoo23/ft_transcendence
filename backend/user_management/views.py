@@ -54,6 +54,11 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         current_user = self.request.user
         return CustomUser.objects.exclude(id=current_user.id).exclude(is_staff=True)
 
+    def retrieve(self, request, pk=None):
+        user = CustomUser.objects.get(id=pk)
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
+
     # gets the current user's info
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def current_user(self, request):
