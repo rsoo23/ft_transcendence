@@ -64,6 +64,10 @@
 .profile-settings-avatar {
   width: 5rem;
   height: 5rem;
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 0.25rem;
+  border-color: var(--charcoal-100);
   border-radius: 50%;
   object-fit: cover;
 }
