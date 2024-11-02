@@ -23,7 +23,7 @@ class FriendsSystemConsumer(WebsocketConsumer):
 
         cache.set(f'{self.current_user_id}', self.channel_name)
 
-        self.accept()
+        self.accept('Authorization')
 
     def disconnect(self, close_code):
         cache.delete(f'{self.current_user_id}')

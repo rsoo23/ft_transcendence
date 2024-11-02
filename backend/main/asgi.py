@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.0/howto/deployment/asgi/
 
 import os
 
-from channels.auth import AuthMiddlewareStack
+from user_management.auth import JWTAuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 
@@ -26,19 +26,13 @@ from friends_system.consumers import FriendsSystemConsumer
 application = ProtocolTypeRouter({
     'http': get_asgi_application(),
     'websocket': AllowedHostsOriginValidator(
-        AuthMiddlewareStack(
+        JWTAuthMiddlewareStack(
             URLRouter([
                 path("ws/chat/<int:receiver_id>/", ChatConsumer.as_asgi()),
                 path("ws/friends_system/", FriendsSystemConsumer.as_asgi()),
-            ] + pong_urlpatterns
-            )
+            ] + pong_urlpatterns)
         )
     ),
-    # "websocket": JWTAuthMiddleware(
-    #     URLRouter(
-    #         websocket_urlpatterns
-    #     )
-    # ),
 })
 
 ASGI_APPLICATION = 'main.asgi.application'

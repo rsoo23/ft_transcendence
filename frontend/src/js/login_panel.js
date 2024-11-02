@@ -2,7 +2,7 @@
 import { getColor } from "./ui_utils/color_utils.js";
 import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils.js";
 import { postRequest, getRequest } from "./network_utils/api_requests.js";
-import { getIdToken } from "./network_utils/token_utils.js"
+import { retrieveTokens } from "./network_utils/token_utils.js";
 
 export async function handleLogin() {
   const inputContainers = {
@@ -36,18 +36,6 @@ export async function handleLogin() {
   } catch (error) {
     console.error('Error:', error);
     return 'error'
-  }
-}
-
-export async function retrieveTokens(loginInfo) {
-  try {
-    const response = await postRequest('/api/token/', loginInfo)
-
-    if (response) {
-      return 'success'
-    }
-  } catch (error) {
-    console.error('Error: cannot retrieve tokens ', error)
   }
 }
 

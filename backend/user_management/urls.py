@@ -5,7 +5,7 @@ from .views import (
     CustomUserViewSet,
     CookieTokenObtainPairView,
     CookieTokenRefreshView,
-    CookieTokenVerifyView,
+    HeaderTokenVerifyView,
 )
 
 router = DefaultRouter()
@@ -14,7 +14,7 @@ router.register(r'users', CustomUserViewSet)
 urlpatterns = [
     path('token/', CookieTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', CookieTokenRefreshView.as_view(), name='token_refresh'),
-    path('token/verify/', CookieTokenVerifyView.as_view(), name='token_verify'),
+    path('token/verify/', HeaderTokenVerifyView.as_view(), name='token_verify'),
     path('login/', views.login_view, name='login'),
     path('register/', views.register_view, name='register'),
 	path('update_username/', views.update_username, name='update_username'),

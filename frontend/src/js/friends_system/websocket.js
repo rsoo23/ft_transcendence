@@ -1,8 +1,9 @@
+import { getAccessToken } from "../network_utils/token_utils.js";
 import { currentChatUserId } from "../realtime_chat/chat_utils.js";
 import { initFriendsPage } from "../router.js";
 import { queueNotification } from "../ui_utils/notification_utils.js";
 import { hideOverlay, showOverlay } from "../ui_utils/overlay_utils.js";
-import { currentFriendListState, FRIEND_LIST_STATE, loadFriendListContent, loadFriendListPanel, loadFriendSearchContent, loadFriendSearchPanel } from "./utils.js";
+import { currentFriendListState, FRIEND_LIST_STATE, loadFriendListPanel, loadFriendSearchPanel } from "./utils.js";
 
 export let friendsSystemSocket = null
 let reconnectAttempts = 0;
@@ -21,7 +22,7 @@ export function connectFriendSystemSocket() {
 
   // open a new WebSocket
   const webSocketUrl = 'ws://' + window.location.host + '/ws/friends_system/'
-  friendsSystemSocket = new WebSocket(webSocketUrl)
+  friendsSystemSocket = new WebSocket(webSocketUrl, ['Authorization', getAccessToken()])
 
   friendsSystemSocket.onopen = function (e) {
     console.log("Successfully connected to the friend system socket: ", webSocketUrl);

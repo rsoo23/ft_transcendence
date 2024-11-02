@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'daphne',
     'rest_framework',
     'rest_framework_simplejwt',
+    'adrf',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -69,7 +70,7 @@ INSTALLED_APPS = [
     'pong',
 ]
 
-AUHENTICATION_BACKENDS = [
+AUTHENTICATION_BACKENDS = [
 	'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -78,18 +79,16 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',  # Adjust permissions as needed
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'utils.authentication.CustomAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
 
 SIMPLE_JWT = {
-    'AUTH_COOKIE': 'access_token',  # Name of the cookie
-    'AUTH_COOKIE_HTTP_ONLY': True,  # Prevent JS access
-    'AUTH_COOKIE_SAMESITE': 'Lax',  # Protect against CSRF
-    'AUTH_COOKIE_SECURE': False,  # Use only for HTTPS in production
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'ROTATE_REFRESH_TOKENS': True,
-    "AUTH_HEADER_TYPES": ("Bearer",),
+
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
 }
 
 MIDDLEWARE = [
