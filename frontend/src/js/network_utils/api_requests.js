@@ -1,8 +1,12 @@
+import { getAccessToken } from "./token_utils.js"
 
 export async function getRequest(url, outputType = 'json') {
   const response = await fetch(url, {
     method: 'GET',
     credentials: 'include',
+    headers: {
+      'Authorization': `Bearer ${getAccessToken()}`,
+    },
   });
   let data
 
@@ -26,12 +30,16 @@ export async function postRequest(url, data) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getAccessToken()}`,
       },
       body: JSON.stringify(data)
     });
   } else if (url === '/api/upload_avatar_image/') {
     response = await fetch(url, {
       method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
       body: data
     });
   }
@@ -41,6 +49,7 @@ export async function postRequest(url, data) {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getAccessToken()}`,
       },
       body: JSON.stringify(data)
     });

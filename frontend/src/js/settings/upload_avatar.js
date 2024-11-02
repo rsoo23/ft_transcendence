@@ -1,6 +1,7 @@
 import { addEventListenerTo } from "../ui_utils/ui_utils.js";
 import { MAX_AVATAR_FILE_SIZE } from "../global_vars.js";
 import { postRequest } from "../network_utils/api_requests.js";
+import { getAccessToken } from "../network_utils/token_utils.js";
 
 let imageToUpload = null;
 
@@ -95,6 +96,7 @@ async function uploadAvatarImage() {
 	  const response = await fetch('/api/get_avatar_image/', {
 		method: 'GET',
 		credentials: 'include',
+		headers: { 'Authorization': `Bearer ${getAccessToken()}` }
 	  });
 	  
 	  if (response.ok) {

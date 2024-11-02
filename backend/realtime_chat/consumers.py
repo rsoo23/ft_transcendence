@@ -40,7 +40,7 @@ class ChatConsumer(WebsocketConsumer):
             self.room_name,
             self.channel_name,
         )
-        self.accept()
+        self.accept('Authorization')
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(

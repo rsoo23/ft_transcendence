@@ -29,6 +29,7 @@ class ServerManager():
                 'thread': Thread(target=self.main_loop, args=(match_id,)),
                 'group_match': group_match,
                 'local': local,
+                'paused': False,
                 'p1_consumer': None,
                 'p2_consumer': None,
             }
@@ -125,9 +126,25 @@ class ServerManager():
             return
 
         if player_num == 1:
+            try:
+                if match_info['p1_consumer'] != None:
+                    match_info['p1_consumer'].player_num = 0
+                    async_to_sync(match_info['p1_consumer'].close)()
+
+            except Exception:
+                pass
+
             match_info['p1_consumer'] = consumer
 
         elif player_num == 2:
+            try:
+                if match_info['p2_consumer'] != None:
+                    match_info['p2_consumer'].player_num = 0
+                    async_to_sync(match_info['p2_consumer'].close)()
+
+            except Exception:
+                pass
+
             match_info['p2_consumer'] = consumer
 
         else:
@@ -136,18 +153,43 @@ class ServerManager():
         if match_info['p1_consumer'] == None or (match_info['local'] == False and match_info['p2_consumer'] == None):
             return
 
+        if match_info['thread'].is_alive():
+            match_info['paused'] = False
+            return
+
         # NOTE: idk if update_player_consumer should be initializing the game, but eh
         self.start_game(match_id)
 
+    def remove_player_consumer(self, match_id, player_num):
+        match_info = self.get_game(match_id)
+        if match_info == None:
+            return
+
+        if player_num == 1:
+            match_info['p1_consumer'] = None
+
+        elif player_num == 2:
+            match_info['p2_consumer'] = None
+
+        else:
+            return
+
+        # Wait 5 seconds before closing the server
+        match_info['paused'] = True
+
     def update_player_input(self, match_id, player_num, input_type, value):
         print('updating player input')
-        match_info = self.matches[match_id]
+        match_info = self.get_game(match_id)
+        if match_info == None:
+            return
+
         game_info = match_info['game_info']
         player_input = game_info.player_inputs[player_num - 1]
         player_input.set_input(input_type, value)
 
     def main_loop(self, match_id):
         accumulator_ms = 0
+        pause_ms = 0
         last_time_ms = time_ns() / 1000000
         match_info = self.get_game(match_id)
         if match_info == None:
@@ -158,11 +200,25 @@ class ServerManager():
             current_time_ms = time_ns() / 1000000
             delta_time = current_time_ms - last_time_ms
             last_time_ms = current_time_ms
-            accumulator_ms += delta_time
 
+            if match_info['paused']:
+                accumulator_ms = 0
+                pause_ms += delta_time
+                if pause_ms >= 5000:
+                    match_info['game_info'].ended = True
+
+            else:
+                accumulator_ms += delta_time
+                pause_ms = 0
+
+            # run game logic
+            msg = None
             while accumulator_ms >= GameLogic.ms_per_frame:
                 msg = match_info['game_info'].tick(GameLogic.sec_per_frame)
+                accumulator_ms -= GameLogic.ms_per_frame
 
+            # send message to clients :]
+            if msg != None:
                 try:
                     if match_info['p1_consumer'] != None:
                         async_to_sync(match_info['p1_consumer'].send_json)(msg)
@@ -170,13 +226,10 @@ class ServerManager():
                         async_to_sync(match_info['p2_consumer'].send_json)(msg)
 
                 except:
-                    print('unable to send message to socket, stopping thread')
-                    match_info['game_info'].ended = True
-                    break
+                    print('unable to send message to socket, pausing')
+                    match_info['paused'] = True
 
-                accumulator_ms -= GameLogic.ms_per_frame
-
-            # TODO: check if we need to actually implement a more precise sleep function
+            # NOTE: we don't need a precise sleep function because the accumulator already accounts for sleep inaccuracy :>
             sleep(GameLogic.sec_per_frame)
 
         self.close_game(match_id)

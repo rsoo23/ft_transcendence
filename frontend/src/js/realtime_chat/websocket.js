@@ -1,5 +1,6 @@
 import { hideOverlay, showOverlay } from "../ui_utils/overlay_utils.js";
 import { addMessage, inFriendsPage } from "./chat_utils.js";
+import { getAccessToken } from "../network_utils/token_utils.js";
 
 export let chatSocket = null
 let selectedUserId = -1
@@ -34,7 +35,7 @@ export function connectChat(receiverId) {
   // open a new WebSocket
   const webSocketUrl = 'ws://' + window.location.host + '/ws/chat/' + selectedUserId + '/'
 
-  chatSocket = new WebSocket(webSocketUrl)
+  chatSocket = new WebSocket(webSocketUrl, ['Authorization', getAccessToken()])
 
   chatSocket.onopen = function (e) {
     console.log("Successfully connected to the chat socket: ", webSocketUrl);

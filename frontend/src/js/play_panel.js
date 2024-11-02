@@ -6,10 +6,12 @@ import { getRequest } from "./network_utils/api_requests.js";
 
 // FILO array
 var panelBacklog = Array()
+var divBacklog = Array()
 var localPlay = false
 
-export function clearPanelBacklog() {
-  panelBacklog = Array()
+export function initPanelBacklog(listOfPanels, listOfDivs, current) {
+  panelBacklog = listOfPanels
+  divBacklog = listOfDivs
 }
 
 export function setLocalPlayMode(bool) {
@@ -20,29 +22,63 @@ export function getLocalPlayMode() {
   return localPlay
 }
 
-export function goToNextPanel(current, next) {
-  panelBacklog.push(current)
-  current.style.left = '-100rem'
-  current.style.opacity = '0'
-  current.style.visibility = 'hidden'
-  next.style.left = '0'
-  next.style.opacity = '1'
-  next.style.visibility = 'visible'
+function setCurrentElement(element, pastCurrentElement, oldCurrentElement, currentElement) {
+  // skip transition if not in view
+  if (element == oldCurrentElement || element == currentElement) {
+    element.style.transition = ''
+  } else {
+    element.style.transition = '0'
+  }
+
+  let buttons = element.querySelectorAll('button')
+  if (element != currentElement && !pastCurrentElement) {
+    element.style.setProperty('left', '-100rem')
+    element.style.setProperty('opacity', '0')
+    element.style.setProperty('visibility', 'hidden', 'important')
+    element.style.setProperty('pointer-events', 'none', 'important')
+    buttons.forEach((b) => b.disabled = true)
+  } else if (element == currentElement) {
+    element.style.setProperty('left', '0')
+    element.style.setProperty('opacity', '1')
+    element.style.setProperty('visibility', 'visible', 'important')
+    element.style.setProperty('pointer-events', 'auto', 'important')
+    buttons.forEach((b) => b.disabled = false)
+  } else {
+    element.style.setProperty('left', '100rem')
+    element.style.setProperty('opacity', '0')
+    element.style.setProperty('visibility', 'hidden', 'important')
+    element.style.setProperty('pointer-events', 'none', 'important')
+    buttons.forEach((b) => b.disabled = true)
+  }
 }
 
-export function goToPreviousPanel(current) {
-  const previous = panelBacklog.pop()
-  previous.style.left = '0'
-  previous.style.opacity = '1'
-  previous.style.visibility = 'visible'
-  current.style.left = '100rem'
-  current.style.opacity = '0'
-  current.style.visibility = 'hidden'
+export function setCurrentPanel(oldCurrentPanel, currentPanel) {
+  let backlog = panelBacklog
+
+  let pastCurrentPanel = false
+  for (const panel of backlog) {
+    setCurrentElement(panel, pastCurrentPanel, oldCurrentPanel, currentPanel)
+    if (panel == currentPanel) {
+      pastCurrentPanel = true
+    }
+  }
+}
+
+export function setCurrentDiv(oldCurrentDiv, currentDiv) {
+  let backlog = divBacklog
+
+  let pastCurrentDiv = false
+  for (const div of backlog) {
+    setCurrentElement(div, pastCurrentDiv, oldCurrentDiv, currentDiv)
+    if (div == currentDiv) {
+      pastCurrentDiv = true
+    }
+  }
 }
 
 export async function loadMultiplayerTest() {
   await loadContentToTarget('menu/multiplayer_test.html', 'play-settings-container')
-  document.getElementById('testback').onclick = () => goToPreviousPanel(document.getElementById('play-settings-container'))
+  document.getElementById('testback').onclick = () => setCurrentDiv(document.getElementById('play-settings-container'), document.getElementById('play-select-container'))
   initRandomColorButton(
     'testmatch',
     'play-container',
