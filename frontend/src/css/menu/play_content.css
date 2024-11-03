@@ -8,7 +8,9 @@
   overflow: hidden;
 }
 
-#play-container #play-select-container, #play-container #play-settings-container {
+#play-container #play-select-container,
+#play-container #play-settings-container,
+#play-container #play-lobby-container {
   position: relative;
   top: 0px;
   left: 0px;
@@ -149,4 +151,77 @@
 
 #play-settings-container div form select:hover {
   background-color: var(--charcoal-700);
+}
+
+#play-lobby-container {
+  margin-left: 3rem;
+  margin-right: 3rem;
+}
+
+.lobby-flex-container {
+  display: flex;
+}
+
+.lobby-column-container {
+  height: 100%;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.lobby-button-container {
+  display: block;
+  width: fit-content;
+  margin-left: auto;
+}
+
+.lobby-classic-player-container {
+  display: flex;
+  flex-flow: column;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lobby-classic-player-container p {
+  text-align: center;
+}
+
+.lobby-classic-player-container button {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lobby-classic-player-container img {
+  margin-left: auto;
+  margin-right: auto;
+  border-style: solid;
+  border-width: 0.25rem;
+  border-color: var(--charcoal-100);
+}
+
+#lobby-list {
+  overflow: auto;
+}
+
+.lobby-entry-container {
+  display: flex;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+
+  background-color: var(--charcoal-800);
+  border: 0;
+  border-radius: 3rem;
+  padding: 0.5rem;
+}
+
+.lobby-entry-container:hover {
+  background-color: var(--charcoal-700);
+}
+
+.lobby-entry-container p {
+  height: fit-content;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-left: 1rem;
 }

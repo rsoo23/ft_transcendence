@@ -22,6 +22,7 @@ from realtime_chat.jwt_middleware import JWTAuthMiddleware
 from realtime_chat.consumers import ChatConsumer
 from friends_system.consumers import FriendsSystemConsumer
 from pong.consumers import PongConsumer
+from lobby.consumers import LobbyConsumer
 
 application = ProtocolTypeRouter({
     'http': get_asgi_application(),
@@ -30,6 +31,7 @@ application = ProtocolTypeRouter({
             URLRouter([
                 path("ws/chat/<int:receiver_id>/", ChatConsumer.as_asgi()),
                 path("ws/friends_system/", FriendsSystemConsumer.as_asgi()),
+                path("ws/lobby/<int:lobby_id>", LobbyConsumer.as_asgi()),
                 re_path(r'ws/pong/(?P<match_id>[0-9]+)$', PongConsumer.as_asgi()),
             ])
         )

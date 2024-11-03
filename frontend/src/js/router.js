@@ -21,6 +21,7 @@ import { initUsernameSettings } from "./settings/update_username.js";
 import { closeFriendSystemSocket, connectFriendSystemSocket } from "./friends_system/websocket.js";
 import { setLocalPlayMode, getLocalPlayMode, initPanelBacklog, setCurrentPanel, setCurrentDiv, loadMultiplayerTest, startLocalGame } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
+import { initClassicLobby, updateClassicLobby, getInLobby, leaveLobby, createLobby, joinLobby, populateLobbyList } from "./lobby.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -282,18 +283,23 @@ async function initPlayPage() {
     const e2Rect = e2.getBoundingClientRect()
     e1.style.top = `-${e1Rect.top - e2Rect.top}px`
   }
+  const muteDiv = (div) => {
+    div.style.setProperty('pointer-events', 'none', 'important')
+  }
 
   const playTypeButtons = document.getElementById('playtype')
   const gamemodeButtons = document.getElementById('gamemode')
   const hostJoinButtons = document.getElementById('hostjoin')
   const gameSelectDiv = document.getElementById('play-select-container')
   const gameSettingsDiv = document.getElementById('play-settings-container')
+  const gameLobbyDiv = document.getElementById('play-lobby-container')
   moveAToB(gamemodeButtons, playTypeButtons)
   moveAToB(hostJoinButtons, playTypeButtons)
   moveAToB(gameSettingsDiv, gameSelectDiv)
+  moveAToB(gameLobbyDiv, gameSelectDiv)
   initPanelBacklog(
     [playTypeButtons, gamemodeButtons, hostJoinButtons],
-    [gameSelectDiv, gameSettingsDiv],
+    [gameSelectDiv, gameSettingsDiv, gameLobbyDiv],
     playTypeButtons
   )
 
@@ -311,6 +317,7 @@ async function initPlayPage() {
   document.getElementById('gamemodeback').onclick = () => setCurrentPanel(gamemodeButtons, playTypeButtons)
   document.getElementById('quickplay').onclick = async () => {
     if (getLocalPlayMode()) {
+      muteDiv(gameSelectDiv)
       await loadContentToTarget('menu/play_settings_content.html', 'play-settings-container')
       document.getElementById('settingsback').onclick = () => setCurrentDiv(gameSettingsDiv, gameSelectDiv)
       document.getElementById('start-game').onclick = () => startLocalGame()
@@ -326,11 +333,30 @@ async function initPlayPage() {
 
   // third page (online only)
   document.getElementById('hostjoinback').onclick = () => setCurrentPanel(hostJoinButtons, gamemodeButtons)
-  document.getElementById('host').onclick = () => {
-    loadMultiplayerTest()
+  document.getElementById('host').onclick = async () => {
+    muteDiv(gameSelectDiv)
+    // TODO: move this to lobby stuff
+    await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
+    const lobbyID = await createLobby()
+    await joinLobby(lobbyID)
+    initClassicLobby(gameSelectDiv)
+    setCurrentDiv(gameSelectDiv, gameLobbyDiv)
+  }
+  document.getElementById('join').onclick = async () => {
+    muteDiv(gameSelectDiv)
+    await loadContentToTarget('menu/lobby_list_content.html', 'play-settings-container')
+    document.getElementById('lobbylistback').onclick = () => setCurrentDiv(gameSettingsDiv, gameSelectDiv)
+    populateLobbyList()
     setCurrentDiv(gameSelectDiv, gameSettingsDiv)
   }
-  document.getElementById('join').onclick = () => alert('not implemented')
+
+  // lobby page
+  if (getInLobby()) {
+    await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
+    initClassicLobby(gameSelectDiv)
+    updateClassicLobby()
+    setCurrentDiv(gameSelectDiv, gameLobbyDiv)
+  }
 }
 
 async function initStatsPage() { }

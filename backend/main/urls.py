@@ -31,6 +31,7 @@ urlpatterns = [
     path('api/two_factor_auth/', include('two_factor_auth.urls')),
     path('api/', include('friends_system.urls')),
     path('api/', include('realtime_chat.urls')),
+    path('api/lobby/', include('lobby.urls')),
     path('api/pong/', include('pong.urls')),
     
 	# Serve media files
