@@ -76,7 +76,6 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
 
         match content['action']:
             case 'ready':
-                self.ready = content['value']
                 await self.channel_layer.group_send(self.group_lobby, {
                     'type': 'lobby.notify.ready',
                     'user': self.user_id,
