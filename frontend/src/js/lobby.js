@@ -3,6 +3,7 @@ import { currentUserInfo } from "./global_vars.js"
 import { getAccessToken } from "./network_utils/token_utils.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { setCurrentDiv } from "./play_panel.js";
+import { queueNotification } from "./ui_utils/notification_utils.js";
 
 var lobbySocket = null
 var inLobby = false
@@ -76,6 +77,12 @@ export async function joinLobby(id) {
     lobbySocket = null
     inLobby = false
     lobbyType = ''
+
+    if (e.code == 1006) {
+      queueNotification('magenta', 'Lobby is no longer available or does not exist.', () => {})
+    } else if (e.code == 4001) {
+      queueNotification('magenta', 'Lobby has been closed by host.', () => {})
+    }
 
     // copied from router.js
     const path = window.location.pathname;

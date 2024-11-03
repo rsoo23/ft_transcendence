@@ -132,7 +132,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json({'event': 'start'})
 
     async def lobby_notify_close(self, event):
-        await self.close(reason='Lobby closed :<')
+        await self.close(code=4001, reason='Lobby closed')
 
     async def lobby_notify_match(self, event):
         await self.send_json({
