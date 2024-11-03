@@ -4,6 +4,8 @@ import { getAccessToken } from "./network_utils/token_utils.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { setCurrentDiv } from "./play_panel.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
+import { loadPage } from "./router.js";
+import { joinMatch } from "./game/api.js";
 
 var lobbySocket = null
 var lobbyListSocket = null
@@ -11,6 +13,7 @@ var lobbyListEntries = 0
 var inLobby = false
 var lobbyType = ''
 var lobbyUsers = []
+var lobbyStarting = false
 
 export function getInLobby() {
   return inLobby
@@ -76,12 +79,17 @@ export async function joinLobby(id) {
       break
 
     case 'start':
+      lobbyStarting = true
+      queueNotification('teal', 'Game starting...', () => {})
+      updateClassicLobby()
       break
 
     case 'close':
       break
 
     case 'match':
+      await loadPage('game')
+      joinMatch(data.id)
       break
     }
   }
@@ -112,6 +120,7 @@ export function leaveLobby() {
   inLobby = false
   lobbyType = ''
   lobbyUsers = []
+  lobbyStarting = false
   if (document.getElementById('lobby-list') != null) {
     initLobbyList()
   }
@@ -137,7 +146,7 @@ export function initClassicLobby(previousDiv) {
   document.getElementById('p1-ready').onclick = readyButton;
   document.getElementById('p2-ready').onclick = readyButton;
 
-  document.getElementById('start-game').onclick = () => {}
+  document.getElementById('start-game').onclick = () => lobbySocket.send('{"action": "start"}')
 
   inLobby = true
   lobbyType = 'classic'
@@ -154,6 +163,27 @@ export function updateClassicLobby() {
     setPlayerInfo(lobbyUsers[1], 'p2')
   } else {
     setPlayerInfo(null, 'p2')
+  }
+
+  const startGameContainer = document.getElementById('start-game-container')
+  const startButton = document.getElementById('start-game')
+  if (startGameContainer == null) {
+    return
+  }
+
+  if (lobbyStarting) {
+    const p = document.createElement('p')
+    p.textContent = 'Starting game...'
+    startGameContainer.innerHTML = ''
+    startGameContainer.appendChild(p)
+  } else if (lobbyUsers.length > 0 && lobbyUsers[0].id != currentUserInfo.id) {
+    startButton.setAttribute('disabled', 'true')
+    startButton.style.setProperty('visibility', 'hidden')
+    startButton.onclick = () => {}
+  } else if (lobbyUsers.length == 1 && lobbyUsers[0].id == currentUserInfo.id) {
+    startButton.setAttribute('disabled', 'true')
+  } else if (lobbyUsers[0].id == currentUserInfo.id) {
+    startButton.removeAttribute('disabled')
   }
 }
 

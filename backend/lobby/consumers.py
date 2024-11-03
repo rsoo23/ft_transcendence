@@ -1,7 +1,7 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from .models import LobbyModel
 from django.core.cache import cache
-from pong.views import create_match
+from pong.views import create_match_and_game
 import json
 
 GROUP_LOBBYLIST = 'lobbylist'
@@ -71,7 +71,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
             })
 
     async def receive_json(self, content):
-        if 'action' not in content or 'value' not in content:
+        if 'action' not in content:
             return
 
         match content['action']:
@@ -87,7 +87,8 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                     return
 
                 await self.channel_layer.group_send(self.group_lobby, {'type': 'lobby.notify.start'})
-                match = await create_match_and_game(player1_uuid, player2_uuid, False)
+                users = json.loads(cache.get(self.group_lobby))
+                match = await create_match_and_game(users[0]['id'], users[1]['id'], False)
                 await self.channel_layer.group_send(self.group_lobby, {
                     'type': 'lobby.notify.match',
                     'id': match.id

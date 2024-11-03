@@ -180,6 +180,17 @@
   margin-right: auto;
 }
 
+#start-game {
+  background-color: var(--teal-500);
+  transition: opacity 0.5s;
+}
+
+#start-game:disabled {
+  background-color: var(--charcoal-700);
+  opacity: 0.5;
+  cursor: auto;
+}
+
 .lobby-classic-player-container {
   display: flex;
   flex-flow: column;
