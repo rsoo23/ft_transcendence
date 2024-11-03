@@ -99,5 +99,18 @@ function handleUsernameUpdate(data) {
 }
 
 function handleOnlineStatusUpdate(data) {
-
+  // if the user updated their own username, update currentUserInfo
+  // else update usersInfo
+  if (data.user_id === currentUserInfo.id) {
+    currentUserInfo.is_online = data.is_online
+    console.log('updated current user: ', currentUserInfo)
+  } else {
+    for (let key in usersInfo) {
+      if (usersInfo[key].id === data.user_id) {
+        usersInfo[key].is_online = data.is_online
+        break;
+      }
+    }
+    console.log('updated users: ', usersInfo)
+  }
 }
