@@ -162,7 +162,6 @@ function setPlayerInfo(info, prefix) {
 }
 
 export async function initLobbyList() {
-  console.log('hi')
   lobbyListSocket = new WebSocket(`ws://localhost:8000/ws/lobby_list/`, ['Authorization', getAccessToken()])
   lobbyListSocket.onmessage = (e) => {
     const data = JSON.parse(e.data)
@@ -192,7 +191,6 @@ export async function initLobbyList() {
 
 export function closeLobbyListSocket() {
   if (lobbyListSocket != null && (lobbyListSocket.readyState === WebSocket.OPEN)) {
-    console.log('bye')
     lobbyListSocket.close()
   }
 }
