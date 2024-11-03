@@ -24,13 +24,6 @@ def create_lobby(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_lobbies(request):
-    lobby = LobbyModel.objects.exclude(closed=True)
-    serializer = LobbyModelSerializer(lobby, many=True)
-    return Response(serializer.data)
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def get_lobby(request, lobby_id):
     lobby = LobbyModel.objects.get(id=lobby_id)
     serializer = LobbyModelSerializer(lobby)
