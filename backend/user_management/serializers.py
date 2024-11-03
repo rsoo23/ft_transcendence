@@ -15,6 +15,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
             'id',
             'username',
             'email',
+            'is_online',
             'first_name',
             'last_name',
             'is_active',
