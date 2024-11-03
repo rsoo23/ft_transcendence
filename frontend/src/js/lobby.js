@@ -45,6 +45,7 @@ export async function joinLobby(id) {
     case 'join':
       const response = await getRequest(`/api/users/${data.user}/`)
       lobbyUsers.push(response)
+      queueNotification('teal', `${response.username} has joined the lobby.`, () => {})
       if (lobbyType == 'classic') {
         updateClassicLobby()
       }
