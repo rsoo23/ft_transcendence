@@ -21,6 +21,7 @@ import { initUsernameSettings } from "./settings/update_username.js";
 import { closeFriendSystemSocket, connectFriendSystemSocket } from "./friends_system/websocket.js";
 import { setLocalPlayMode, getLocalPlayMode, initPanelBacklog, setCurrentPanel, setCurrentDiv, loadMultiplayerTest, startLocalGame } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
+import { connectUserUpdateSocket } from "./user_updates/websocket.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -331,6 +332,8 @@ async function initPlayPage() {
     setCurrentDiv(gameSelectDiv, gameSettingsDiv)
   }
   document.getElementById('join').onclick = () => alert('not implemented')
+
+  connectUserUpdateSocket()
 }
 
 async function initStatsPage() { }
