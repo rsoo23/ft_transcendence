@@ -21,7 +21,7 @@ import { initUsernameSettings } from "./settings/update_username.js";
 import { closeFriendSystemSocket, connectFriendSystemSocket } from "./friends_system/websocket.js";
 import { setLocalPlayMode, getLocalPlayMode, initPanelBacklog, setCurrentPanel, setCurrentDiv, loadMultiplayerTest, startLocalGame } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
-import { initClassicLobby, updateClassicLobby, getInLobby, leaveLobby, createLobby, joinLobby, initLobbyList, closeLobbyListSocket } from "./lobby.js";
+import { initClassicLobby, updateClassicLobby, getInLobby, createLobby, joinLobby, initLobbyList, closeLobbyListSocket } from "./lobby.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -359,10 +359,11 @@ async function initPlayPage() {
 
   // lobby page
   if (getInLobby()) {
+    muteDiv(gameSelectDiv)
     await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
     initClassicLobby(gameSelectDiv)
-    updateClassicLobby()
     setCurrentDiv(gameSelectDiv, gameLobbyDiv)
+    updateClassicLobby()
   }
 }
 

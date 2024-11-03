@@ -149,7 +149,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                 if i['id'] != event['user']:
                     continue
 
-                i.ready = event['ready']
+                i['ready'] = event['ready']
 
             cache.set(self.group_lobby, json.dumps(users))
 

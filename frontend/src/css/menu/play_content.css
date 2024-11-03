@@ -177,6 +177,7 @@
   display: block;
   width: fit-content;
   margin-left: auto;
+  margin-right: auto;
 }
 
 .lobby-classic-player-container {
@@ -200,6 +201,11 @@
   margin-top: 1rem;
   margin-left: auto;
   margin-right: auto;
+}
+
+.lobby-classic-player-container button:disabled {
+  background-color: transparent !important;
+  cursor: auto;
 }
 
 .lobby-classic-player-container img {

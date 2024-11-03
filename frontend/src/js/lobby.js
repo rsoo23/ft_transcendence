@@ -46,6 +46,7 @@ export async function joinLobby(id) {
 
     case 'join':
       const response = await getRequest(`/api/users/${data.user}/`)
+      response['ready'] = false
       lobbyUsers.push(response)
       queueNotification('teal', `${response.username} has joined the lobby.`, () => {})
       if (lobbyType == 'classic') {
@@ -58,11 +59,20 @@ export async function joinLobby(id) {
       for (let i = 0; i < data.list.length; i++) {
         const user = data.list[i]
         const response = await getRequest(`/api/users/${user.id}/`)
+        response['ready'] = user.ready
         lobbyUsers[i] = response
       }
       updateClassicLobby()
 
     case 'ready':
+      for (const user of lobbyUsers) {
+        if (user.id != data.user) {
+          continue
+        }
+
+        user.ready = data.ready
+      }
+      updateClassicLobby()
       break
 
     case 'start':
@@ -78,9 +88,6 @@ export async function joinLobby(id) {
 
   lobbySocket.onclose = (e) => {
     lobbySocket = null
-    inLobby = false
-    lobbyType = ''
-    lobbyUsers = []
 
     if (e.code == 1006) {
       queueNotification('magenta', 'Lobby is no longer available or does not exist.', () => {})
@@ -92,30 +99,44 @@ export async function joinLobby(id) {
     const path = window.location.pathname;
     const urlSegments = path.split('/')
     const lastUrlSegment = urlSegments.pop()
-    if (path.startsWith('/menu') && lastUrlSegment == 'play') {
-      const backButton = document.getElementById('lobbyback')
-      backButton.onclick()
+    if (path.startsWith('/menu') && lastUrlSegment == 'play' && inLobby) {
+      leaveLobby()
     }
   }
 
   lobbySocket.onopen = () => {}
 }
 
-export async function leaveLobby() {
+var lobbyBackButtonDivCache = null
+export function leaveLobby() {
+  inLobby = false
+  lobbyType = ''
+  lobbyUsers = []
+  if (document.getElementById('lobby-list') != null) {
+    initLobbyList()
+  }
   if (lobbySocket != null) {
     lobbySocket.close()
   }
+
+  setCurrentDiv(document.getElementById('play-lobby-container'), lobbyBackButtonDivCache)
 }
 
-var lobbyBackButtonDivCache = null
 export function initClassicLobby(previousDiv) {
   // init self
   lobbyBackButtonDivCache = previousDiv
-  document.getElementById('lobbyback').onclick = () => {
-    leaveLobby()
-    populateLobbyList()
-    setCurrentDiv(document.getElementById('play-lobby-container'), lobbyBackButtonDivCache)
+  document.getElementById('lobbyback').onclick = () => leaveLobby()
+
+  const readyButton = (e) => {
+    const value = (e.target.textContent != 'Unready')
+    lobbySocket.send(JSON.stringify({
+      'action': 'ready',
+      'value': value,
+    }))
   }
+  document.getElementById('p1-ready').onclick = readyButton;
+  document.getElementById('p2-ready').onclick = readyButton;
+
   document.getElementById('start-game').onclick = () => {}
 
   inLobby = true
@@ -159,13 +180,30 @@ function setPlayerInfo(info, prefix) {
   header.style.setProperty('display', 'block')
   ready.style.setProperty('display', 'block')
   name.textContent = info.username
+  
+  if (info.id != currentUserInfo.id) {
+    ready.setAttribute('disabled', 'true')
+    if (info.ready) {
+      ready.textContent = 'Ready'
+    } else {
+      ready.textContent = 'Not Ready'
+    }
+  } else {
+    if (info.ready) {
+      ready.textContent = 'Unready'
+      ready.style.setProperty('background-color', 'var(--magenta-500)')
+    } else {
+      ready.textContent = 'Ready'
+      ready.style.setProperty('background-color', 'var(--teal-500)')
+    }
+  }
 }
 
 export async function initLobbyList() {
-  lobbyListSocket = new WebSocket(`ws://localhost:8000/ws/lobby_list/`, ['Authorization', getAccessToken()])
+  document.getElementById('lobby-list').innerHTML = ''
+  lobbyListSocket = new WebSocket('ws://localhost:8000/ws/lobby_list/', ['Authorization', getAccessToken()])
   lobbyListSocket.onmessage = (e) => {
     const data = JSON.parse(e.data)
-    console.log(data)
 
     switch (data.event) {
     case 'receive':
@@ -179,6 +217,7 @@ export async function initLobbyList() {
   }
 
   lobbyListSocket.onclose = () => {
+    console.log('Closing lobbyListSocket')
     lobbyListSocket = null
   }
 
@@ -198,12 +237,14 @@ export function closeLobbyListSocket() {
 async function appendLobbyEntry(lobbyId) {
   const buttonJoinLobby = async (e) => {
     await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
-
-    const lobbyID = parseInt(e.target.id.substring('lobby-entry-'.length))
+    const substr = e.target.id.substring('lobby-entry-'.length)
+    console.log(substr)
+    const lobbyID = Number(substr)
     await joinLobby(lobbyID)
 
     const prevDiv = document.getElementById('play-settings-container')
     initClassicLobby(prevDiv)
+    closeLobbyListSocket()
     setCurrentDiv(prevDiv, document.getElementById('play-lobby-container'))
   }
 
