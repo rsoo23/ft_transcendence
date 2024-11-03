@@ -39,6 +39,10 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
         await self.channel_layer.send(self.channel_name, {'type': 'lobby.get.list'})
 
     async def disconnect(self, code):
+        # in case user fails to join early on
+        if not hasattr(self, 'group_lobby'):
+            return
+
         await self.channel_layer.group_discard(self.group_lobby, self.channel_name)
 
         if self.is_host:
