@@ -21,7 +21,7 @@ import { initUsernameSettings } from "./settings/update_username.js";
 import { closeFriendSystemSocket, connectFriendSystemSocket } from "./friends_system/websocket.js";
 import { setLocalPlayMode, getLocalPlayMode, initPanelBacklog, setCurrentPanel, setCurrentDiv, loadMultiplayerTest, startLocalGame } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
-import { connectUserUpdateSocket } from "./user_updates/websocket.js";
+import { closeUserUpdateSocket, connectUserUpdateSocket } from "./user_updates/websocket.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -60,6 +60,8 @@ window.addEventListener('popstate', async (event) => {
   if (!path.startsWith('/menu/friends')) {
     closeChatSocket()
     closeFriendSystemSocket()
+  } else if (!path.startsWith('/menu')) {
+    closeUserUpdateSocket()
   }
 });
 
