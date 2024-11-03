@@ -102,6 +102,7 @@ export function initClassicLobby(previousDiv) {
   lobbyBackButtonDivCache = previousDiv
   document.getElementById('lobbyback').onclick = () => {
     leaveLobby()
+    populateLobbyList()
     setCurrentDiv(document.getElementById('play-lobby-container'), lobbyBackButtonDivCache)
   }
   document.getElementById('start-game').onclick = () => {}
@@ -161,6 +162,11 @@ export async function populateLobbyList() {
     setCurrentDiv(prevDiv, document.getElementById('play-lobby-container'))
   }
   const lobbyList = document.getElementById('lobby-list')
+  if (lobbyList == null) {
+    return
+  }
+  lobbyList.innerHTML = ''
+
   const lobbyInfos = await getRequest('/api/lobby/get_lobbies/')
   for (const lobby of lobbyInfos) {
     if (lobby.closed) {
