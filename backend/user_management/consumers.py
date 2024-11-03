@@ -27,7 +27,12 @@ class UserUpdateConsumer(WebsocketConsumer):
         )
         self.accept('Authorization')
 
+        # broadcast to everyone that current_user is online
+        self.update_online_status(True)
+
     def disconnect(self, close_code):
+        # broadcast to everyone that current_user is not online
+        self.update_online_status(False)
         async_to_sync(self.channel_layer.group_discard)(
             self.room_name,
             self.channel_name,
@@ -61,21 +66,22 @@ class UserUpdateConsumer(WebsocketConsumer):
             self.room_name,
             {
                 'type': 'broadcast_username_update',
+                'user_id': self.current_user_id,
                 'new_username': new_username,
             }
         )
 
     def broadcast_username_update(self, event):
+        user_id = event['user_id']
         sender_username = event['new_username']
 
         self.send(text_data=json.dumps({
             'action': 'update_username',
-            'user_id': self.current_user_id,
+            'user_id': user_id,
             'new_username': sender_username,
         }))
 
     def update_online_status(self, is_online):
-        pass
         self.current_user.is_online = is_online
         self.current_user.save()
 
@@ -83,17 +89,18 @@ class UserUpdateConsumer(WebsocketConsumer):
             self.room_name,
             {
                 'type': 'broadcast_user_online_status',
+                'user_id': self.current_user_id,
                 'is_online': is_online,
             }
         )
 
     def broadcast_user_online_status(self, event):
-        pass
-        sender_username = event['new_username']
+        user_id = event['user_id']
+        is_online = event['is_online']
 
         self.send(text_data=json.dumps({
             'action': 'update_online_status',
-            'user_id': self.current_user_id,
+            'user_id': user_id,
             'is_online': is_online,
         }))
 
