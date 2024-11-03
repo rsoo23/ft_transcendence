@@ -178,8 +178,14 @@
 .lobby-classic-player-container {
   display: flex;
   flex-flow: column;
-  margin-left: auto;
-  margin-right: auto;
+  justify-content: center;
+  margin-left: 2rem;
+  margin-right: 2rem;
+
+  background-color: var(--charcoal-900);
+  padding: 2rem;
+  border-radius: 3rem;
+  width: 100%
 }
 
 .lobby-classic-player-container p {
@@ -187,6 +193,7 @@
 }
 
 .lobby-classic-player-container button {
+  margin-top: 1rem;
   margin-left: auto;
   margin-right: auto;
 }
@@ -197,6 +204,22 @@
   border-style: solid;
   border-width: 0.25rem;
   border-color: var(--charcoal-100);
+}
+
+.lobby-player-header {
+  font-weight: normal;
+  font-size: 1rem;
+}
+
+.lobby-player-name {
+  font-weight: normal;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.versus {
+  height: fit-content;
+  margin-top: 5rem;
 }
 
 #lobby-list {

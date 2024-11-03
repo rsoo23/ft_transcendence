@@ -1,6 +1,8 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from .models import LobbyModel
+from django.core.cache import cache
 from pong.views import create_match
+import json
 
 class LobbyConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
@@ -9,7 +11,6 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
             await self.close(code=3000, reason='Not Authenticated')
             return
 
-        self.users = []
         self.user_id = self.scope['user'].id
         self.lobby_id = int(self.scope['url_route']['kwargs']['lobby_id'])
         try:
@@ -29,21 +30,23 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
             })
 
         else:
-            self.users.append(self.user_id)
+            users = []
+            users.append({'id': self.user_id, 'ready': False})
+            cache.set(self.group_lobby, json.dumps(users))
 
         await self.channel_layer.group_add(self.group_lobby, self.channel_name)
-        await self.channel_layer.group_send(self.group_lobby, {
-            'type': 'lobby.get.list',
-            'channel': self.channel_name,
-        })
-        self.ready = False
         await self.accept('Authorization')
+        await self.channel_layer.send(self.channel_name, {'type': 'lobby.get.list'})
 
     async def disconnect(self, code):
         await self.channel_layer.group_discard(self.group_lobby, self.channel_name)
 
         if self.is_host:
+            cache.delete(self.group_lobby)
             await self.channel_layer.group_send(self.group_lobby, {'type': 'lobby.notify.close'})
+            model = await LobbyModel.objects.aget(id=self.lobby_id)
+            model.closed = True
+            await model.asave()
 
         else:
             await self.channel_layer.group_send(self.group_lobby, {
@@ -82,12 +85,9 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                 await self.channel_layer.group_send(self.group_lobby, {'type': 'lobby.notify.close'})
 
     async def lobby_get_list(self, event):
-        if not self.is_host:
-            return
-
-        await self.channel_layer.send(event['channel'], {
-            'type': 'lobby.notify.list',
-            'list': self.users,
+        await self.send_json({
+            'event': 'list',
+            'list': json.loads(cache.get(self.group_lobby)),
         })
 
     async def lobby_notify_left(self, event):
@@ -97,19 +97,27 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
         })
 
     async def lobby_notify_join(self, event):
-        self.users.append(event['user'])
+        if self.is_host:
+            users = json.loads(cache.get(self.group_lobby))
+            users.append({'id': event['user'], 'ready': False})
+            cache.set(self.group_lobby, json.dumps(users))
+
         await self.send_json({
             'event': 'join',
             'user': event['user'],
         })
 
-    async def lobby_notify_list(self, event):
-        await self.send_json({
-            'event': 'list',
-            'list': event['list'],
-        })
-
     async def lobby_notify_ready(self, event):
+        if self.is_host:
+            users = json.loads(cache.get(self.group_lobby))
+            for i in users:
+                if i.id != event['user']:
+                    continue
+
+                i.ready = event['ready']
+
+            cache.set(self.group_lobby, json.dumps(users))
+
         await self.send_json({
             'event': 'ready',
             'user': event['user'],

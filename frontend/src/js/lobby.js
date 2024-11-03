@@ -52,7 +52,8 @@ export async function joinLobby(id) {
     case 'list':
       lobbyUsers = data.list // we do this to reserve space :]
       for (let i = 0; i < data.list.length; i++) {
-        const response = await getRequest(`/api/users/${data.list[i]}/`)
+        const user = data.list[i]
+        const response = await getRequest(`/api/users/${user.id}/`)
         lobbyUsers[i] = response
       }
       updateClassicLobby()
@@ -72,23 +73,36 @@ export async function joinLobby(id) {
   }
 
   lobbySocket.onclose = (e) => {
-    lobbySocket = false
+    lobbySocket = null
     inLobby = false
     lobbyType = ''
+
+    // copied from router.js
+    const path = window.location.pathname;
+    const urlSegments = path.split('/')
+    const lastUrlSegment = urlSegments.pop()
+    if (path.startsWith('/menu') && lastUrlSegment == 'play') {
+      const backButton = document.getElementById('lobbyback')
+      backButton.onclick()
+    }
   }
 
   lobbySocket.onopen = () => {}
 }
 
 export async function leaveLobby() {
-  lobbySocket.close()
+  if (lobbySocket != null) {
+    lobbySocket.close()
+  }
 }
 
+var lobbyBackButtonDivCache = null
 export function initClassicLobby(previousDiv) {
   // init self
+  lobbyBackButtonDivCache = previousDiv
   document.getElementById('lobbyback').onclick = () => {
     leaveLobby()
-    setCurrentDiv(document.getElementById('play-lobby-container'), previousDiv)
+    setCurrentDiv(document.getElementById('play-lobby-container'), lobbyBackButtonDivCache)
   }
   document.getElementById('start-game').onclick = () => {}
 
@@ -97,25 +111,41 @@ export function initClassicLobby(previousDiv) {
 }
 
 export function updateClassicLobby() {
-  try {
+  if (lobbyUsers.length > 0) {
     setPlayerInfo(lobbyUsers[0], 'p1')
+  } else {
+    setPlayerInfo(null, 'p1')
+  }
+
+  if (lobbyUsers.length > 1) {
     setPlayerInfo(lobbyUsers[1], 'p2')
-  } catch (e) {
+  } else {
+    setPlayerInfo(null, 'p2')
   }
 }
 
 function setPlayerInfo(info, prefix) {
-  if (typeof(info) != 'object') {
+  const avatar = document.getElementById(`${prefix}-avatar`)
+  const name = document.getElementById(`${prefix}-name`)
+  const header = document.getElementById(`${prefix}-header`)
+  const ready = document.getElementById(`${prefix}-ready`)
+  if (info == null || !("username" in info)) {
+    avatar.style.setProperty('display', 'none')
+    avatar.src = '';
+    header.style.setProperty('display', 'none')
+    ready.style.setProperty('display', 'none')
+    name.textContent = 'Waiting for user...'
     return
   }
 
-  const avatar = document.getElementById(`${prefix}-avatar`)
-  const name = document.getElementById(`${prefix}-name`)
   if (info.avatar_img == null) {
     avatar.src = "/static/images/kirby.png";
   } else {
     avatar.setAttribute('src', info.avatar_img)
   }
+  avatar.style.setProperty('display', 'block')
+  header.style.setProperty('display', 'block')
+  ready.style.setProperty('display', 'block')
   name.textContent = info.username
 }
 
