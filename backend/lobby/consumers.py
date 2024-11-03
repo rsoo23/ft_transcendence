@@ -4,6 +4,8 @@ from django.core.cache import cache
 from pong.views import create_match
 import json
 
+GROUP_LOBBYLIST = 'lobbylist'
+
 class LobbyConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         if self.scope['user'] is None:
@@ -33,6 +35,11 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
             users = []
             users.append({'id': self.user_id, 'ready': False})
             cache.set(self.group_lobby, json.dumps(users))
+            await self.channel_layer.group_add('lobbyhost', self.channel_name)
+            await self.channel_layer.group_send(GROUP_LOBBYLIST, {
+                'type': 'lobby.receive.id',
+                'id': self.lobby_id
+            })
 
         await self.channel_layer.group_add(self.group_lobby, self.channel_name)
         await self.accept('Authorization')
@@ -46,8 +53,13 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
         await self.channel_layer.group_discard(self.group_lobby, self.channel_name)
 
         if self.is_host:
+            await self.channel_layer.group_discard('lobbyhost', self.channel_name)
             cache.delete(self.group_lobby)
             await self.channel_layer.group_send(self.group_lobby, {'type': 'lobby.notify.close'})
+            await self.channel_layer.group_send(GROUP_LOBBYLIST, {
+                'type': 'lobby.remove.id',
+                'id': self.lobby_id,
+            })
             model = await LobbyModel.objects.aget(id=self.lobby_id)
             model.closed = True
             await model.asave()
@@ -88,6 +100,16 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
 
                 await self.channel_layer.group_send(self.group_lobby, {'type': 'lobby.notify.close'})
 
+    # this is to allow LobbyListConsumer to get all available lobbies
+    async def lobby_get_id(self, event):
+        if not self.is_host:
+            return
+
+        await self.channel_layer.send(event['channel'], {
+            'type': 'lobby.receive.id',
+            'id': self.lobby_id
+        })
+
     async def lobby_get_list(self, event):
         await self.send_json({
             'event': 'list',
@@ -95,6 +117,16 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
         })
 
     async def lobby_notify_left(self, event):
+        if self.is_host:
+            users = json.loads(cache.get(self.group_lobby))
+            for i in users:
+                if i['id'] != event['user']:
+                    continue
+
+                users.remove(i)
+
+            cache.set(self.group_lobby, json.dumps(users))
+
         await self.send_json({
             'event': 'left',
             'user': event['user'],
@@ -115,7 +147,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
         if self.is_host:
             users = json.loads(cache.get(self.group_lobby))
             for i in users:
-                if i.id != event['user']:
+                if i['id'] != event['user']:
                     continue
 
                 i.ready = event['ready']
@@ -143,5 +175,39 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
     async def lobby_notify_tournament(self, event):
         await self.send_json({
             'event': 'tournament',
+            'id': event['id'],
+        })
+
+class LobbyListConsumer(AsyncJsonWebsocketConsumer):
+    async def connect(self):
+        if self.scope['user'] is None:
+            print(f'LobbyListConsumer: User not authenticated.')
+            await self.close(code=3000, reason='Not Authenticated')
+            return
+
+        await self.channel_layer.group_add(GROUP_LOBBYLIST, self.channel_name)
+        await self.accept('Authorization')
+
+    async def disconnect(self, code):
+        await self.channel_layer.group_discard(GROUP_LOBBYLIST, self.channel_name)
+
+    async def receive_json(self, content):
+        if 'action' not in content or content['action'] != 'get':
+            return
+
+        await self.channel_layer.group_send('lobbyhost', {
+            'type': 'lobby.get.id',
+            'channel': self.channel_name,
+        })
+
+    async def lobby_receive_id(self, event):
+        await self.send_json({
+            'event': 'receive',
+            'id': event['id'],
+        })
+
+    async def lobby_remove_id(self, event):
+        await self.send_json({
+            'event': 'remove',
             'id': event['id'],
         })

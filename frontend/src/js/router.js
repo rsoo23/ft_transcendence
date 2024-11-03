@@ -21,7 +21,7 @@ import { initUsernameSettings } from "./settings/update_username.js";
 import { closeFriendSystemSocket, connectFriendSystemSocket } from "./friends_system/websocket.js";
 import { setLocalPlayMode, getLocalPlayMode, initPanelBacklog, setCurrentPanel, setCurrentDiv, loadMultiplayerTest, startLocalGame } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
-import { initClassicLobby, updateClassicLobby, getInLobby, leaveLobby, createLobby, joinLobby, populateLobbyList } from "./lobby.js";
+import { initClassicLobby, updateClassicLobby, getInLobby, leaveLobby, createLobby, joinLobby, initLobbyList, closeLobbyListSocket } from "./lobby.js";
 
 const routes = {
   '/start': 'start_panel.html',
@@ -60,6 +60,10 @@ window.addEventListener('popstate', async (event) => {
   if (!path.startsWith('/menu/friends')) {
     closeChatSocket()
     closeFriendSystemSocket()
+  }
+
+  if (!path.startsWith('/menu/play')) {
+    closeLobbyListSocket()
   }
 });
 
@@ -345,8 +349,11 @@ async function initPlayPage() {
   document.getElementById('join').onclick = async () => {
     muteDiv(gameSelectDiv)
     await loadContentToTarget('menu/lobby_list_content.html', 'play-settings-container')
-    document.getElementById('lobbylistback').onclick = () => setCurrentDiv(gameSettingsDiv, gameSelectDiv)
-    populateLobbyList()
+    document.getElementById('lobbylistback').onclick = () => {
+      closeLobbyListSocket()
+      setCurrentDiv(gameSettingsDiv, gameSelectDiv)
+    }
+    initLobbyList()
     setCurrentDiv(gameSelectDiv, gameSettingsDiv)
   }
 

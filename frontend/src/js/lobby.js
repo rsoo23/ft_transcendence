@@ -6,6 +6,8 @@ import { setCurrentDiv } from "./play_panel.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
 
 var lobbySocket = null
+var lobbyListSocket = null
+var lobbyListEntries = 0
 var inLobby = false
 var lobbyType = ''
 var lobbyUsers = []
@@ -78,6 +80,7 @@ export async function joinLobby(id) {
     lobbySocket = null
     inLobby = false
     lobbyType = ''
+    lobbyUsers = []
 
     if (e.code == 1006) {
       queueNotification('magenta', 'Lobby is no longer available or does not exist.', () => {})
@@ -158,7 +161,43 @@ function setPlayerInfo(info, prefix) {
   name.textContent = info.username
 }
 
-export async function populateLobbyList() {
+export async function initLobbyList() {
+  console.log('hi')
+  lobbyListSocket = new WebSocket(`ws://localhost:8000/ws/lobby_list/`, ['Authorization', getAccessToken()])
+  lobbyListSocket.onmessage = (e) => {
+    const data = JSON.parse(e.data)
+    console.log(data)
+
+    switch (data.event) {
+    case 'receive':
+      appendLobbyEntry(data.id)
+      break
+
+    case 'remove':
+      removeLobbyEntry(data.id)
+      break
+    }
+  }
+
+  lobbyListSocket.onclose = () => {
+    lobbyListSocket = null
+  }
+
+  lobbyListSocket.onopen = () => {
+    lobbyListSocket.send('{"action": "get"}')
+  }
+
+  setTimeout(tryShowNoLobbies, 1000)
+}
+
+export function closeLobbyListSocket() {
+  if (lobbyListSocket != null && (lobbyListSocket.readyState === WebSocket.OPEN)) {
+    console.log('bye')
+    lobbyListSocket.close()
+  }
+}
+
+async function appendLobbyEntry(lobbyId) {
   const buttonJoinLobby = async (e) => {
     await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
 
@@ -169,37 +208,69 @@ export async function populateLobbyList() {
     initClassicLobby(prevDiv)
     setCurrentDiv(prevDiv, document.getElementById('play-lobby-container'))
   }
+
   const lobbyList = document.getElementById('lobby-list')
   if (lobbyList == null) {
     return
   }
-  lobbyList.innerHTML = ''
 
-  const lobbyInfos = await getRequest('/api/lobby/get_lobbies/')
-  for (const lobby of lobbyInfos) {
-    if (lobby.closed) {
-      continue
+  const lobbyInfo = await getRequest(`/api/lobby/get_lobby/${lobbyId}/`)
+  const userInfo = await getRequest(`/api/users/${lobbyInfo.host_id}/`)
+  const lobbyContainer = document.createElement('button')
+  lobbyContainer.classList.add('lobby-entry-container')
+  lobbyContainer.id = `lobby-entry-${lobbyInfo.id}`
+  lobbyContainer.onclick = buttonJoinLobby
+
+  const lobbyIcon = document.createElement('img')
+  lobbyIcon.classList.add('profile-settings-avatar')
+  if (userInfo.avatar_img == null) {
+    lobbyIcon.src = "/static/images/kirby.png";
+  } else {
+    lobbyIcon.setAttribute('src', userInfo.avatar_img)
+  }
+
+  const lobbyName = document.createElement('p')
+  lobbyName.textContent = `${userInfo.username}'s Lobby`
+
+  lobbyContainer.appendChild(lobbyIcon)
+  lobbyContainer.appendChild(lobbyName)
+  lobbyList.appendChild(lobbyContainer)
+
+  tryShowNoLobbies()
+}
+
+async function removeLobbyEntry(lobbyId) {
+  const lobbyList = document.getElementById('lobby-list')
+  if (lobbyList == null) {
+    return
+  }
+
+  const entry = document.getElementById(`lobby-entry-${lobbyId}`)
+  if (entry != null) {
+    lobbyList.removeChild(entry)
+  }
+
+  tryShowNoLobbies()
+}
+
+function tryShowNoLobbies() {
+  const lobbyList = document.getElementById('lobby-list')
+  if (lobbyList == null) {
+    return
+  }
+
+  if (lobbyList.childElementCount == 0) {
+    const div = document.createElement('div')
+    const p = document.createElement('p')
+    div.id = 'lobby-empty-text'
+    div.classList.add('lobby-empty-container')
+    p.textContent = 'No lobbies available.'
+    div.appendChild(p)
+    lobbyList.appendChild(div)
+  } else {
+    const div = document.getElementById('lobby-empty-text')
+    if (div != null) {
+      lobbyList.removeChild(div)
     }
-
-    const userInfo = await getRequest(`/api/users/${lobby.host_id}/`)
-    const lobbyContainer = document.createElement('button')
-    lobbyContainer.classList.add('lobby-entry-container')
-    lobbyContainer.id = `lobby-entry-${lobby.id}`
-    lobbyContainer.onclick = buttonJoinLobby
-
-    const lobbyIcon = document.createElement('img')
-    lobbyIcon.classList.add('profile-settings-avatar')
-    if (userInfo.avatar_img == null) {
-      lobbyIcon.src = "/static/images/kirby.png";
-    } else {
-      lobbyIcon.setAttribute('src', userInfo.avatar_img)
-    }
-
-    const lobbyName = document.createElement('p')
-    lobbyName.textContent = `${userInfo.username}'s Lobby`
-
-    lobbyContainer.appendChild(lobbyIcon)
-    lobbyContainer.appendChild(lobbyName)
-    lobbyList.appendChild(lobbyContainer)
   }
 }

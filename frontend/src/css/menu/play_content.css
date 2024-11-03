@@ -127,6 +127,10 @@
   background-color: var(--charcoal-700);
 }
 
+.lobby-refresh-button {
+  margin-left: auto;
+}
+
 .play-settings-inline-flex {
   display: inline-flex;
   align-items: center;
@@ -224,13 +228,20 @@
 
 #lobby-list {
   overflow: auto;
+  border-style: solid;
+  border-width: 0.35rem;
+  border-color: var(--charcoal-100);
+  border-radius: 3rem;
+  box-sizing: border-box;
+  justify-content: normal;
 }
 
 .lobby-entry-container {
   display: flex;
   cursor: pointer;
+  margin-left: 0.5rem;
   margin-right: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
 
   background-color: var(--charcoal-800);
   border: 0;
@@ -247,4 +258,17 @@
   font-size: 1.5rem;
   font-weight: bold;
   margin-left: 1rem;
+}
+
+.lobby-empty-container {
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.lobby-empty-container p {
+  height: fit-content;
+  margin-left: auto;
+  margin-right: auto;
 }
