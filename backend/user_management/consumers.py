@@ -50,8 +50,9 @@ class UserUpdateConsumer(WebsocketConsumer):
                 self.block_friend(blocked_id)
 
     def update_username(self, new_username):
-        if CustomUser.objects.filter(username=new_username).exclude(pk=request.user.pk).exists():
-            pass
+        if CustomUser.objects.filter(username=new_username).exists():
+            self.send_error_to_client('update_username', 'username already exists')
+            return
 
         self.current_user.username = new_username
         self.current_user.save()
@@ -68,6 +69,7 @@ class UserUpdateConsumer(WebsocketConsumer):
         sender_username = event['new_username']
 
         self.send(text_data=json.dumps({
+            'action': 'update_username',
             'user_id': self.current_user_id,
             'new_username': sender_username,
         }))
@@ -90,7 +92,27 @@ class UserUpdateConsumer(WebsocketConsumer):
         sender_username = event['new_username']
 
         self.send(text_data=json.dumps({
+            'action': 'update_online_status',
             'user_id': self.current_user_id,
             'is_online': is_online,
+        }))
+
+    def send_error_to_client(self, action, message):
+        async_to_sync(self.channel_layer.send)(
+            self.channel_name,
+            {
+                'type': 'send_error',
+                'action': action,
+                'message': message,
+            }
+        )
+
+    def send_error(self, event):
+        message = event['message']
+        action = event['action']
+
+        self.send(text_data=json.dumps({
+            'action': action,
+            'message': message,
         }))
 
