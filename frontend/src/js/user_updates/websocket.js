@@ -103,7 +103,6 @@ function handleOnlineStatusUpdate(data) {
   // else update usersInfo
   if (data.user_id === currentUserInfo.id) {
     currentUserInfo.is_online = data.is_online
-    console.log('updated current user: ', currentUserInfo)
   } else {
     for (let key in usersInfo) {
       if (usersInfo[key].id === data.user_id) {
@@ -111,6 +110,5 @@ function handleOnlineStatusUpdate(data) {
         break;
       }
     }
-    console.log('updated users: ', usersInfo)
   }
 }
