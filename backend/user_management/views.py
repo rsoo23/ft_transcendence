@@ -37,6 +37,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from django.contrib.staticfiles import finders
 # CustomUserViewSet:
 # list()        for listing all users (GET /users/)
 # retrieve()    for getting a single user (GET /users/<id>/)
@@ -338,14 +339,10 @@ def get_avatar_image(request):
         return HttpResponse(status=404)
     
     if user.avatar_img and user.avatar_img.name:
-        try:
-            return HttpResponse(user.avatar_img, content_type='image/jpeg')
-        except:
-            # If there's any error reading the file, fall back to default
-            pass
-            
+        return HttpResponse(user.avatar_img, content_type='image/jpeg')
+
     # Return default avatar
-    default_avatar_path = os.path.join(settings.STATIC_ROOT, 'images', 'kirby.png')
+    default_avatar_path = finders.find('images/kirby.png')
     try:
         with open(default_avatar_path, 'rb') as f:
             return HttpResponse(f.read(), content_type='image/png')
