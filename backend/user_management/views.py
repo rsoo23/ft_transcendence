@@ -148,25 +148,6 @@ def register_view(request):
             return JsonResponse({'success': False, 'errors': form.errors}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-# @csrf_exempt
-# def update_username(request):
-# 	# print("Request received~~~~~~~~~~~~", flush=True)
-#     try:
-#         data = json.loads(request.body)
-#         new_username = data.get('new_username')
-#
-#         if not new_username:
-#             return JsonResponse({'status': 'error', 'message': 'New username is required'}, status=400)
-#
-#         if User.objects.filter(username=new_username).exclude(pk=request.user.pk).exists():
-#             return JsonResponse({'status': 'error', 'message': 'Username already exists'}, status=400)
-#
-#         request.user.username = new_username
-#         request.user.save()
-#         return JsonResponse({'status': 'success', 'message': 'Username updated successfully'})
-#     except json.JSONDecodeError:
-#         return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'}, status=400)
-
 @csrf_exempt
 def logout_view(request):
     if request.method == 'POST':
