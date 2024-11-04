@@ -59,8 +59,8 @@ window.addEventListener('popstate', async (event) => {
 
   if (!path.startsWith('/menu/friends')) {
     closeChatSocket()
-    closeFriendSystemSocket()
   } else if (!path.startsWith('/menu')) {
+    closeFriendSystemSocket()
     closeUserUpdateSocket()
   }
 });
@@ -94,7 +94,6 @@ export async function loadContentToMainMenu(contentName) {
 
     if (contentName !== 'friends') {
       closeChatSocket()
-      closeFriendSystemSocket()
     }
     updateBorderColor(contentName)
     updateButtonState(contentName)
@@ -336,6 +335,7 @@ async function initPlayPage() {
   document.getElementById('join').onclick = () => alert('not implemented')
 
   connectUserUpdateSocket()
+  connectFriendSystemSocket()
 }
 
 async function initStatsPage() { }
@@ -348,7 +348,6 @@ export async function initFriendsPage(state = FRIEND_LIST_STATE.SHOWING_FRIEND_L
   }
 
   await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
-  connectFriendSystemSocket()
 }
 
 async function initHowToPlayPage() { }
