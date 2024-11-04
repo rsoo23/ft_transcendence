@@ -14,7 +14,7 @@ import { initLogoutButton } from './settings/logout.js';
 import { getRequest } from "./network_utils/api_requests.js";
 import { initEmailSettings } from "./settings/update_email.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
-import { setCurrentUserInfo, setUsersInfo } from "./global_vars.js";
+import { currentPageState, PAGE_STATE, setCurrentPageState, setCurrentUserInfo, setUsersInfo } from "./global_vars.js";
 import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { initUsernameSettings } from "./settings/update_username.js";
@@ -53,8 +53,10 @@ window.addEventListener('popstate', async (event) => {
   } else if (path.startsWith('/main_menu')) {
     await loadPage('main_menu');
     await loadMainMenuContent('play');
+    setCurrentPageState(PAGE_STATE.IN_PLAY_PAGE)
   } else {
     loadContent(lastUrlSegment);
+    setCurrentPageState(PAGE_STATE.NOT_IN_MENU_PAGE)
   }
 
   if (!path.startsWith('/menu/friends')) {
@@ -131,21 +133,26 @@ async function loadDynamicContent(contentName) {
       break
     case 'play':
       initPlayPage()
+      setCurrentPageState(PAGE_STATE.IN_PLAY_PAGE)
       break
     case 'game':
       // TODO: move game stuff here
       break
     case 'friends':
       initFriendsPage()
+      setCurrentPageState(PAGE_STATE.IN_FRIENDS_PAGE)
       break
     case 'stats':
       initStatsPage()
+      setCurrentPageState(PAGE_STATE.IN_STATS_PAGE)
       break
     case 'how-to-play':
       initHowToPlayPage()
+      setCurrentPageState(PAGE_STATE.IN_HOW_TO_PLAY_PAGE)
       break
     case 'settings':
       initSettingsPage()
+      setCurrentPageState(PAGE_STATE.IN_SETTINGS_PAGE)
       break
     case 'forgot_password/get_email':
       initGetEmailPage()
