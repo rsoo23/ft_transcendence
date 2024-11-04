@@ -11,7 +11,7 @@ class CustomUserCreationForm(UserCreationForm):
         self.fields['email'].label = 'email'
         self.fields['two_factor_enabled'].label = False
         self.fields['base32_secret'].label = ""
-        self.fielnds['is_online'].label = False
+        self.fields['is_online'].label = False
 
     class Meta:
         model = CustomUser
