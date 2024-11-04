@@ -110,9 +110,19 @@ async function handleNotifications(data) {
   } else if (data.action === 'unblocked_by_friend') {
     queueNotification('blue', data.message, async () => initFriendsPage(FRIEND_LIST_STATE.SHOWING_FRIEND_LIST))
     if (data.sender_id === currentChatUserId) {
-      hideOverlay('blocked-overlay', 'You are blocked by this user')
+      hideOverlay('blocked-overlay')
     }
     await loadFriendListPanel()
+  } else if (data.action === 'block_friend') {
+    queueNotification('teal', data.message, null)
+    if (data.target_id === currentChatUserId) {
+      showOverlay('blocked-overlay', 'You blocked this user')
+    }
+  } else if (data.action === 'unblock_friend') {
+    queueNotification('teal', data.message, null)
+    if (data.target_id === currentChatUserId) {
+      hideOverlay('blocked-overlay')
+    }
   } else {
     queueNotification('teal', data.message, null)
   }
