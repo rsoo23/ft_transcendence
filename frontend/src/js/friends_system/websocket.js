@@ -132,6 +132,8 @@ async function handleActionNotifications(data) {
     if (data.target_id === currentChatUserId) {
       hideOverlay('blocked-overlay')
     }
+  } else if (data.action === 'block_friend_failed') {
+    queueNotification('magenta', data.message, null)
   } else {
     queueNotification('teal', data.message, null)
   }

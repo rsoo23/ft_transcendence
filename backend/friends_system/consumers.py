@@ -133,9 +133,18 @@ class FriendsSystemConsumer(WebsocketConsumer):
 
     def block_friend(self, blocked_id):
         current_user_friend_list = FriendList.objects.get(current_user=self.current_user)
-        friend = CustomUser.objects.get(pk=blocked_id)
+        blockee = CustomUser.objects.get(pk=blocked_id)
 
-        current_user_friend_list.block_friend(friend)
+        blockee_friend_list = FriendList.objects.get(current_user=blockee)
+        if blockee_friend_list.is_blocked_friend(self.current_user):
+            self.send_to_client_channel(
+                blocked_id,
+                'block_friend_failed',
+                f'Failed: {blockee.username} has blocked you already'
+            )
+            return
+
+        current_user_friend_list.block_friend(blockee)
         self.send_to_target_channel(
             blocked_id,
             'blocked_by_friend',
