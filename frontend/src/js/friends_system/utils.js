@@ -6,6 +6,7 @@ import { friendsSystemSocket } from "./websocket.js"
 import { loadChatInterface } from "../realtime_chat/chat_utils.js"
 import { loadUsersInfo } from "../router.js"
 import { loadUserAvatar } from "../settings/upload_avatar.js"
+import { getColor } from "../ui_utils/color_utils.js"
 
 export const FRIEND_LIST_STATE = {
   SHOWING_FRIEND_LIST: 0,
