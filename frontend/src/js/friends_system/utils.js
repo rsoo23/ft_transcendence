@@ -6,6 +6,7 @@ import { friendRecordIconInfo, getUserId } from "../global_vars.js"
 import { friendsSystemSocket } from "./websocket.js"
 import { loadChatInterface } from "../realtime_chat/chat_utils.js"
 import { loadUsersInfo } from "../router.js"
+import { loadUserAvatar } from "../settings/upload_avatar.js"
 
 export const FRIEND_LIST_STATE = {
   SHOWING_FRIEND_LIST: 0,
@@ -220,7 +221,6 @@ function addListContentPlaceholderText(labelText, targetList) {
 }
 
 function createFriendRecord(username, iconsInfo) {
-  const avatarImageUrl = '/static/images/kirby.png'
   const userId = getUserId(username)
 
   const friendRecord = document.createElement('div');
@@ -233,9 +233,9 @@ function createFriendRecord(username, iconsInfo) {
   avatarContainer.className = 'avatar-container';
 
   const avatarImage = document.createElement('img');
-  avatarImage.src = avatarImageUrl;
   avatarImage.alt = 'avatar';
   avatarImage.className = 'avatar';
+  loadUserAvatar(avatarImage, userId)
 
   const statusBadge = document.createElement('div');
   statusBadge.className = 'status-badge';
