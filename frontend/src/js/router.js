@@ -1,16 +1,27 @@
-import { initHotbar, updateBorderColor, updateButtonState } from "./ui_utils/hotbar_utils.js";
-import { initBackButton, initRandomColorButton } from "./ui_utils/button_utils.js"
+import {
+  initHotbar,
+  updateBorderColor,
+  updateButtonState,
+} from "./ui_utils/hotbar_utils.js";
+import {
+  initBackButton,
+  initRandomColorButton,
+} from "./ui_utils/button_utils.js";
 import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
-import { FRIEND_LIST_STATE, loadFriendListPanel, loadFriendSearchPanel } from "./friends_system/utils.js"
+import {
+  FRIEND_LIST_STATE,
+  loadFriendListPanel,
+  loadFriendSearchPanel,
+} from "./friends_system/utils.js";
 import { handle2FA, initResendCodeButton } from "./2FA_panel.js";
 import { send_otp_2FA } from "./network_utils/2FA_utils.js";
 import { check_email } from "./forgot_password/get_email.js";
 import { verify_code } from "./forgot_password/verify_code.js";
 import { handle_change_password } from "./forgot_password/change_password.js";
 import { handleLogin } from "./login_panel.js";
-import { handleSignup } from "./signup_panel.js"
+import { handleSignup } from "./signup_panel.js";
 import { initAvatarUpload } from "./settings/upload_avatar.js";
-import { initLogoutButton } from './settings/logout.js';
+import { initLogoutButton } from "./settings/logout.js";
 import { getRequest } from "./network_utils/api_requests.js";
 import { initEmailSettings } from "./settings/update_email.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
@@ -18,37 +29,49 @@ import { currentPageState, PAGE_STATE, setCurrentPageState, setCurrentUserInfo, 
 import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { initUsernameSettings } from "./settings/update_username.js";
-import { closeFriendSystemSocket, connectFriendSystemSocket } from "./friends_system/websocket.js";
-import { setLocalPlayMode, getLocalPlayMode, initPanelBacklog, setCurrentPanel, setCurrentDiv, loadMultiplayerTest, startLocalGame } from "./play_panel.js";
+import {
+  closeFriendSystemSocket,
+  connectFriendSystemSocket,
+} from "./friends_system/websocket.js";
+import {
+  setLocalPlayMode,
+  getLocalPlayMode,
+  initPanelBacklog,
+  setCurrentPanel,
+  setCurrentDiv,
+  loadMultiplayerTest,
+  startLocalGame,
+} from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
 import { closeUserUpdateSocket, connectUserUpdateSocket } from "./user_updates/websocket.js";
+import { init2FAToggle } from "./2FA_panel.js";
 
 const routes = {
-  '/start': 'start_panel.html',
-  '/login': 'login_panel.html',
-  '/signup': 'signup_panel.html',
-  '/user_profile': 'user_profile_panel.html',
-  '/2fa_verify': '2FA_panel.html',
-  '/2fa_enable': '2FA_panel.html',
-  '/main_menu': 'menu/main_menu_panel.html',
-  '/menu/play': 'menu/play_content.html',
-  '/menu/stats': 'menu/stats_content.html',
-  '/menu/friends': 'menu/friends_content.html',
-  '/menu/how-to-play': 'menu/how_to_play_content.html',
-  '/menu/settings': 'menu/settings_content.html',
-  '/forgot_password/get_email': 'forgot_password/get_email.html',
-  '/forgot_password/verify_code': 'forgot_password/verify_code.html',
-  '/forgot_password/change_password': 'forgot_password/change_password.html',
-  '/game': 'game.html',
-}
+  "/start": "start_panel.html",
+  "/login": "login_panel.html",
+  "/signup": "signup_panel.html",
+  "/user_profile": "user_profile_panel.html",
+  "/2fa_verify": "2FA_panel.html",
+  "/2fa_enable": "2FA_panel.html",
+  "/main_menu": "menu/main_menu_panel.html",
+  "/menu/play": "menu/play_content.html",
+  "/menu/stats": "menu/stats_content.html",
+  "/menu/friends": "menu/friends_content.html",
+  "/menu/how-to-play": "menu/how_to_play_content.html",
+  "/menu/settings": "menu/settings_content.html",
+  "/forgot_password/get_email": "forgot_password/get_email.html",
+  "/forgot_password/verify_code": "forgot_password/verify_code.html",
+  "/forgot_password/change_password": "forgot_password/change_password.html",
+  "/game": "game.html",
+};
 
 // manages back and forth history
-window.addEventListener('popstate', async (event) => {
+window.addEventListener("popstate", async (event) => {
   const path = window.location.pathname;
-  const urlSegments = path.split('/')
-  const lastUrlSegment = urlSegments.pop()
+  const urlSegments = path.split("/");
+  const lastUrlSegment = urlSegments.pop();
 
-  if (path.startsWith('/menu')) {
+  if (path.startsWith("/menu")) {
     loadContentToMainMenu(lastUrlSegment);
   } else if (path.startsWith('/main_menu')) {
     await loadPage('main_menu');
@@ -70,49 +93,49 @@ window.addEventListener('popstate', async (event) => {
 // update the content (added to the body) based on the current route
 export async function loadContent(contentName) {
   const path = window.location.pathname;
-  const htmlPath = routes[path] || '<h1>404 Page Not Found</h1>';
+  const htmlPath = routes[path] || "<h1>404 Page Not Found</h1>";
 
   try {
-    const html = await getRequest(`/static/components/${htmlPath}`, 'text')
+    const html = await getRequest(`/static/components/${htmlPath}`, "text");
 
     document.body.innerHTML = html;
 
-    loadDynamicContent(contentName)
-
+    loadDynamicContent(contentName);
   } catch (error) {
-    console.error(`Error loading ${htmlPath}:`, error)
+    console.error(`Error loading ${htmlPath}:`, error);
   }
 }
 
 // update the content (added to the main menu) based on the current route
 export async function loadContentToMainMenu(contentName) {
   const path = window.location.pathname;
-  const htmlPath = routes[path] || '<h1>404 Page Not Found</h1>';
+  const htmlPath = routes[path] || "<h1>404 Page Not Found</h1>";
 
   try {
-    const html = await getRequest(`/static/components/${htmlPath}`, 'text')
+    const html = await getRequest(`/static/components/${htmlPath}`, "text");
 
-    document.querySelector('#main-menu-panel > .content-container').innerHTML = html;
+    document.querySelector("#main-menu-panel > .content-container").innerHTML =
+      html;
 
     if (contentName !== 'friends') {
       closeChatSocket()
     }
-    updateBorderColor(contentName)
-    updateButtonState(contentName)
-    loadDynamicContent(contentName)
+    updateBorderColor(contentName);
+    updateButtonState(contentName);
+    loadDynamicContent(contentName);
   } catch (error) {
-    console.error(`Error loading ${htmlPath}:`, error)
+    console.error(`Error loading ${htmlPath}:`, error);
   }
 }
 
 export async function loadPage(contentName) {
-  window.history.pushState({}, '', `/${contentName}`);
-  await loadContent(contentName)
+  window.history.pushState({}, "", `/${contentName}`);
+  await loadContent(contentName);
 }
 
 export async function loadMainMenuContent(contentName) {
-  window.history.pushState({}, '', `/menu/${contentName}`);
-  await loadContentToMainMenu(contentName)
+  window.history.pushState({}, "", `/menu/${contentName}`);
+  await loadContentToMainMenu(contentName);
 }
 
 // - loads dynamic content after loading content to main menu
@@ -173,165 +196,151 @@ async function loadDynamicContent(contentName) {
       init2FAPages(contentName)
       break
     default:
-      console.error('Error: invalid contentName')
+      console.error("Error: invalid contentName");
   }
 }
 
 async function loadCurrentUserInfo() {
   try {
-    const response = await getRequest('/api/users/current_user/')
+    const response = await getRequest("/api/users/current_user/");
 
-    console.log('userInfo: ', response)
+    console.log("userInfo: ", response);
     if (response) {
-      setCurrentUserInfo(response)
+      setCurrentUserInfo(response);
     } else {
-      console.error('Error: Failed to load userCurrentInfo')
+      console.error("Error: Failed to load userCurrentInfo");
     }
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }
 
 export async function loadUsersInfo() {
   try {
-    const response = await getRequest('/api/users/')
+    const response = await getRequest("/api/users/");
 
-    console.log('usersInfo: ', response)
+    console.log("usersInfo: ", response);
     if (response) {
-      setUsersInfo(response)
+      setUsersInfo(response);
     } else {
-      console.error('Error: Failed to load userInfo')
+      console.error("Error: Failed to load userInfo");
     }
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }
 
 async function initStartPage() {
-  initRandomColorButton(
-    'login-button',
-    'start-page-panel',
-    () => loadPage('login')
-  )
-  initRandomColorButton(
-    'signup-button',
-    'start-page-panel',
-    () => loadPage('signup')
-  )
+  initRandomColorButton("login-button", "start-page-panel", () =>
+    loadPage("login")
+  );
+  initRandomColorButton("signup-button", "start-page-panel", () =>
+    loadPage("signup")
+  );
 }
 
 async function initLoginPage() {
   const doLogin = async () => {
-    const result = await handleLogin()
+    const result = await handleLogin();
 
-    if (result === 'success-with-2fa') {
-      loadPage('2fa_verify')
-    } else if (result === 'success') {
-      await loadPage('main_menu')
-      loadMainMenuContent('play')
+    if (result === "success-with-2fa") {
+      loadPage("2fa_verify");
+    } else if (result === "success") {
+      await loadPage("main_menu");
+      loadMainMenuContent("play");
     }
-  }
+  };
 
-  initBackButton(
-    () => loadPage('start')
-  )
-  initRandomColorButton(
-    'confirm-login-button',
-    'login-panel',
-    doLogin
-  )
-  initTogglePasswordVisibilityIcon()
-  initLink(
-    'forgot-password-link',
-    () => loadPage('forgot_password/get_email')
-  )
+  initBackButton(() => loadPage("start"));
+  initRandomColorButton("confirm-login-button", "login-panel", doLogin);
+  initTogglePasswordVisibilityIcon();
+  initLink("forgot-password-link", () => loadPage("forgot_password/get_email"));
 
-  const form = document.getElementById('login-form')
+  const form = document.getElementById("login-form");
 
   form.onsubmit = (e) => {
-    e.preventDefault()
-    doLogin()
-  }
+    e.preventDefault();
+    doLogin();
+  };
 }
 
 async function initSignupPage() {
   const doRegister = async () => {
-    const result = await handleSignup()
+    const result = await handleSignup();
 
-    if (result === 'success') {
-      loadPage('login')
+    if (result === "success") {
+      loadPage("login");
     }
-  }
+  };
 
-  initBackButton(
-    () => loadPage('start')
-  )
-  initRandomColorButton(
-    'confirm-signup-button',
-    'signup-panel',
-    doRegister
-  )
-  initTogglePasswordVisibilityIcon()
-  const form = document.getElementById('signup-form')
+  initBackButton(() => loadPage("start"));
+  initRandomColorButton("confirm-signup-button", "signup-panel", doRegister);
+  initTogglePasswordVisibilityIcon();
+  const form = document.getElementById("signup-form");
   form.onsubmit = (e) => {
-    e.preventDefault()
-    doRegister()
-  }
+    e.preventDefault();
+    doRegister();
+  };
 }
 
 async function initMainMenuPage() {
-  initHotbar()
-  await loadCurrentUserInfo()
-  await loadUsersInfo()
+  initHotbar();
+  await loadCurrentUserInfo();
+  await loadUsersInfo();
 }
 
 async function initPlayPage() {
   const moveAToB = (e1, e2) => {
-    const e1Rect = e1.getBoundingClientRect()
-    const e2Rect = e2.getBoundingClientRect()
-    e1.style.top = `-${e1Rect.top - e2Rect.top}px`
-  }
+    const e1Rect = e1.getBoundingClientRect();
+    const e2Rect = e2.getBoundingClientRect();
+    e1.style.top = `-${e1Rect.top - e2Rect.top}px`;
+  };
 
-  const playTypeButtons = document.getElementById('playtype')
-  const gamemodeButtons = document.getElementById('gamemode')
-  const hostJoinButtons = document.getElementById('hostjoin')
-  const gameSelectDiv = document.getElementById('play-select-container')
-  const gameSettingsDiv = document.getElementById('play-settings-container')
-  moveAToB(gamemodeButtons, playTypeButtons)
-  moveAToB(hostJoinButtons, playTypeButtons)
-  moveAToB(gameSettingsDiv, gameSelectDiv)
+  const playTypeButtons = document.getElementById("playtype");
+  const gamemodeButtons = document.getElementById("gamemode");
+  const hostJoinButtons = document.getElementById("hostjoin");
+  const gameSelectDiv = document.getElementById("play-select-container");
+  const gameSettingsDiv = document.getElementById("play-settings-container");
+  moveAToB(gamemodeButtons, playTypeButtons);
+  moveAToB(hostJoinButtons, playTypeButtons);
+  moveAToB(gameSettingsDiv, gameSelectDiv);
   initPanelBacklog(
     [playTypeButtons, gamemodeButtons, hostJoinButtons],
     [gameSelectDiv, gameSettingsDiv],
     playTypeButtons
-  )
+  );
 
   // first page
-  document.getElementById('localplay').onclick = () => {
-    setLocalPlayMode(true)
-    setCurrentPanel(playTypeButtons, gamemodeButtons)
-  }
-  document.getElementById('onlineplay').onclick = () => {
-    setLocalPlayMode(false)
-    setCurrentPanel(playTypeButtons, gamemodeButtons)
-  }
+  document.getElementById("localplay").onclick = () => {
+    setLocalPlayMode(true);
+    setCurrentPanel(playTypeButtons, gamemodeButtons);
+  };
+  document.getElementById("onlineplay").onclick = () => {
+    setLocalPlayMode(false);
+    setCurrentPanel(playTypeButtons, gamemodeButtons);
+  };
 
   // second page
-  document.getElementById('gamemodeback').onclick = () => setCurrentPanel(gamemodeButtons, playTypeButtons)
-  document.getElementById('quickplay').onclick = async () => {
+  document.getElementById("gamemodeback").onclick = () =>
+    setCurrentPanel(gamemodeButtons, playTypeButtons);
+  document.getElementById("quickplay").onclick = async () => {
     if (getLocalPlayMode()) {
-      await loadContentToTarget('menu/play_settings_content.html', 'play-settings-container')
-      document.getElementById('settingsback').onclick = () => setCurrentDiv(gameSettingsDiv, gameSelectDiv)
-      document.getElementById('start-game').onclick = () => startLocalGame()
-      setCurrentDiv(gameSelectDiv, gameSettingsDiv)
-      return
+      await loadContentToTarget(
+        "menu/play_settings_content.html",
+        "play-settings-container"
+      );
+      document.getElementById("settingsback").onclick = () =>
+        setCurrentDiv(gameSettingsDiv, gameSelectDiv);
+      document.getElementById("start-game").onclick = () => startLocalGame();
+      setCurrentDiv(gameSelectDiv, gameSettingsDiv);
+      return;
     }
 
-    setCurrentPanel(gamemodeButtons, hostJoinButtons)
-  }
-  document.getElementById('tournament').onclick = () => {
-    alert('not implemented yet :[')
-  }
+    setCurrentPanel(gamemodeButtons, hostJoinButtons);
+  };
+  document.getElementById("tournament").onclick = () => {
+    alert("not implemented yet :[");
+  };
 
   // third page (online only)
   document.getElementById('hostjoinback').onclick = () => setCurrentPanel(hostJoinButtons, gamemodeButtons)
@@ -347,11 +356,13 @@ async function initPlayPage() {
 
 async function initStatsPage() { }
 
-export async function initFriendsPage(state = FRIEND_LIST_STATE.SHOWING_FRIEND_LIST) {
+export async function initFriendsPage(
+  state = FRIEND_LIST_STATE.SHOWING_FRIEND_LIST
+) {
   if (state === FRIEND_LIST_STATE.SHOWING_FRIEND_LIST) {
-    await loadFriendListPanel()
+    await loadFriendListPanel();
   } else if (state === FRIEND_LIST_STATE.SHOWING_FRIEND_SEARCH_LIST) {
-    await loadFriendSearchPanel()
+    await loadFriendSearchPanel();
   }
 
   await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
@@ -365,86 +376,75 @@ async function initSettingsPage() {
   initLogoutButton();
   initEmailSettings();
   initPasswordSettings();
+  init2FAToggle();
 }
 
 function initGetEmailPage() {
-  initBackButton(() => loadPage('login'))
-  initRandomColorButton(
-    'submit-email-button',
-    'get-email-panel',
-    async () => {
-      const result = await check_email()
+  initBackButton(() => loadPage("login"));
+  initRandomColorButton("submit-email-button", "get-email-panel", async () => {
+    const result = await check_email();
 
-      if (result === 'error') {
-        return
-      }
-      loadPage('forgot_password/verify_code')
+    if (result === "error") {
+      return;
     }
-  )
+    loadPage("forgot_password/verify_code");
+  });
 }
 
 function initVerifyCodePage() {
-  initBackButton(() => loadPage('forgot_password/get_email'))
-  initRandomColorButton(
-    'submit-code-button',
-    'verify-code-panel',
-    async () => {
-      const result = await verify_code()
+  initBackButton(() => loadPage("forgot_password/get_email"));
+  initRandomColorButton("submit-code-button", "verify-code-panel", async () => {
+    const result = await verify_code();
 
-      if (result === 'error') {
-        return
-      }
-      loadPage('forgot_password/change_password')
+    if (result === "error") {
+      return;
     }
-  )
+    loadPage("forgot_password/change_password");
+  });
 }
 
 function initChangePasswordPage() {
-  initBackButton(() => loadPage('forgot_password/verify_code'))
-  initTogglePasswordVisibilityIcon()
+  initBackButton(() => loadPage("forgot_password/verify_code"));
+  initTogglePasswordVisibilityIcon();
   initRandomColorButton(
-    'confirm-signup-button',
-    'verify-code-panel',
+    "confirm-signup-button",
+    "verify-code-panel",
     async () => {
-      const result = await handle_change_password()
+      const result = await handle_change_password();
 
-      if (result === 'error') {
-        return
+      if (result === "error") {
+        return;
       }
-      loadPage('login')
+      loadPage("login");
     }
-  )
+  );
 }
 
 function init2FAPages(contentName) {
-  if (contentName === '2fa_verify' || contentName === '2fa_enable') {
-    send_otp_2FA()
-    if (contentName === '2fa_verify') {
-      initBackButton(() => loadPage('login'))
+  if (contentName === "2fa_verify" || contentName === "2fa_enable") {
+    send_otp_2FA();
+    if (contentName === "2fa_verify") {
+      initBackButton(() => loadPage("login"));
     } else {
       initBackButton(() => {
-        loadPage('main_menu')
-        loadMainMenuContent('settings')
-      })
+        loadPage("main_menu");
+        loadMainMenuContent("settings");
+      });
     }
-    initResendCodeButton(() => send_otp_2FA())
-    initRandomColorButton(
-      'submit-2fa-button',
-      'two-fa-panel',
-      async () => {
-        const result = await handle2FA()
+    initResendCodeButton(() => send_otp_2FA());
+    initRandomColorButton("submit-2fa-button", "two-fa-panel", async () => {
+      const result = await handle2FA();
 
-        if (result === 'error') {
-          return
-        }
-
-        loadPage('main_menu')
-        if (contentName === '2fa_verify') {
-          loadMainMenuContent('play')
-        } else {
-          loadMainMenuContent('settings')
-        }
+      if (result === "error") {
+        return;
       }
-    )
+
+      loadPage("main_menu");
+      if (contentName === "2fa_verify") {
+        loadMainMenuContent("play");
+      } else {
+        loadMainMenuContent("settings");
+      }
+    });
   }
 }

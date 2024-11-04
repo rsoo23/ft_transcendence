@@ -129,6 +129,13 @@ if DEBUG:
         'default': {
             'BACKEND': 'channels.layers.InMemoryChannelLayer'
         }
+	}
+    # Cache configuration
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'unique-snowflake',
+        }
     }
 
 else:
