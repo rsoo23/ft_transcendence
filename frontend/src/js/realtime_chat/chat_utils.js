@@ -1,5 +1,6 @@
-import { currentUserInfo } from "../global_vars.js";
+import { currentUserInfo, getUserId } from "../global_vars.js";
 import { getRequest } from "../network_utils/api_requests.js";
+import { loadUserAvatar } from "../settings/upload_avatar.js";
 import { showOverlay } from "../ui_utils/overlay_utils.js";
 import { scrollToBottom } from "../ui_utils/scroll.js";
 import { addEventListenerTo, addTextPlaceholder, loadContentToTarget } from "../ui_utils/ui_utils.js";
@@ -54,7 +55,7 @@ async function loadChatMessages(userId) {
       addTextPlaceholder('chat-content-container', 'No chat messages yet')
     } else if (response.length > 0) {
       hasMessages = true
-      response.map(message => addMessage(message.sender_username, '/static/images/kirby.png', message.content, message.timestamp))
+      response.map(message => addMessage(message.sender_username, message.content, message.timestamp))
       scrollToBottom('chat-content-container')
     }
   } catch (error) {
@@ -99,7 +100,9 @@ function sendMessage(chatInputElement) {
   chatInputElement.value = "";
 }
 
-export function addMessage(username, avatarUrl, message, datetime) {
+export function addMessage(username, message, datetime) {
+  const userId = getUserId(username)
+
   const chatMessageContainer = document.createElement('div');
   chatMessageContainer.classList.add('chat-message-container');
 
@@ -107,9 +110,9 @@ export function addMessage(username, avatarUrl, message, datetime) {
   avatarContainer.classList.add('avatar-container');
 
   const avatarImg = document.createElement('img');
-  avatarImg.src = avatarUrl;
   avatarImg.alt = 'avatar';
   avatarImg.classList.add('avatar');
+  loadUserAvatar(avatarImg, userId)
 
   const statusBadge = document.createElement('div');
   statusBadge.classList.add('status-badge');

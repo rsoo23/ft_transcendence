@@ -16,6 +16,9 @@ export function setUsersInfo(obj) {
 }
 
 export function getUserId(username) {
+  if (username === currentUserInfo.username) {
+    return currentUserInfo.id
+  }
   for (const user of usersInfo) {
     if (user.username === username) {
       return user.id
