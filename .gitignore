@@ -8,3 +8,4 @@ myenv/
 venv/
 env/
 media/
+dump.rdb
