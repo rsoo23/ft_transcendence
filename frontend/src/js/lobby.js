@@ -270,7 +270,6 @@ async function appendLobbyEntry(lobbyId) {
   const buttonJoinLobby = async (e) => {
     await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
     const substr = e.target.id.substring('lobby-entry-'.length)
-    console.log(substr)
     const lobbyID = Number(substr)
     await joinLobby(lobbyID)
 
