@@ -127,10 +127,6 @@
   background-color: var(--charcoal-700);
 }
 
-.lobby-refresh-button {
-  margin-left: auto;
-}
-
 .play-settings-inline-flex {
   display: inline-flex;
   align-items: center;
