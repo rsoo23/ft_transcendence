@@ -1,5 +1,5 @@
 FROM python:3.12-alpine
-WORKDIR /app
+WORKDIR /app/django
 COPY . .
 RUN chmod +x docker-entrypoint.sh
 RUN pip install -r requirements.txt

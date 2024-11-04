@@ -5,7 +5,8 @@ services:
       - django_net
       - redis_net
     volumes:
-      - django_statics:/app/static
+      - django_statics:/app/django/static
+      - django_media:/app/media
     env_file:
       - .env
     depends_on:
@@ -56,6 +57,7 @@ services:
 
 volumes:
   django_statics:
+  django_media:
   data:
   postgres-data:
 
