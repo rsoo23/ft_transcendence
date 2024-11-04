@@ -44,6 +44,7 @@ import {
 } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
 import { init2FAToggle } from "./2FA_panel.js";
+import { refreshToken } from "./network_utils/token_utils.js";
 
 const routes = {
   "/start": "start_panel.html",
@@ -237,6 +238,7 @@ async function initLoginPage() {
     if (result === "success-with-2fa") {
       loadPage("2fa_verify");
     } else if (result === "success") {
+      setInterval(refreshToken, 10 * 60 * 1000)
       await loadPage("main_menu");
       loadMainMenuContent("play");
     }
