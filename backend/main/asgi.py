@@ -8,8 +8,10 @@ https://docs.djangoproject.com/en/5.0/howto/deployment/asgi/
 """
 
 import os
+import django
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
+django.setup()
 
 from user_management.auth import JWTAuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
