@@ -18,17 +18,16 @@ class ChatConsumer(WebsocketConsumer):
             self.close()
             return
 
+        self.sender_id = self.sender.id
+
         self.receiver_id = self.scope['url_route']['kwargs']['receiver_id']
         self.receiver = get_object_or_404(CustomUser, pk=self.receiver_id)
 
-        self.sender_username = self.sender.username
-        self.receiver_username = self.receiver.username
-
-        # create the room_name dynamically based on the sender's and receiver's username
-        if self.sender_username < self.receiver_username:
-            self.room_name = f'chat_{self.sender_username}_{self.receiver_username}'
+        # create the room_name dynamically based on the sender's and receiver's ids
+        if self.sender_id < self.receiver_id:
+            self.room_name = f'chat_{self.sender_id}_{self.receiver_id}'
         else:
-            self.room_name = f'chat_{self.receiver_username}_{self.sender_username}'
+            self.room_name = f'chat_{self.receiver_id}_{self.sender_id}'
 
         # get or create a room
         self.room, created = Room.objects.get_or_create(name=self.room_name)
