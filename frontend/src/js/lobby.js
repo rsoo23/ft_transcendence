@@ -107,9 +107,7 @@ export async function joinLobby(id) {
 
     // copied from router.js
     const path = window.location.pathname;
-    const urlSegments = path.split('/')
-    const lastUrlSegment = urlSegments.pop()
-    if (path.startsWith('/menu') && lastUrlSegment == 'play' && inLobby) {
+    if (path.startsWith('/menu/play') && inLobby) {
       leaveLobby()
     }
   }
@@ -155,6 +153,11 @@ export function initClassicLobby(previousDiv) {
 }
 
 export function updateClassicLobby() {
+  const path = window.location.pathname;
+  if (!path.startsWith('/menu/play')) {
+    return
+  }
+
   if (lobbyUsers.length > 0) {
     setPlayerInfo(lobbyUsers[0], 'p1')
   } else {
@@ -169,10 +172,6 @@ export function updateClassicLobby() {
 
   const startGameContainer = document.getElementById('start-game-container')
   const startButton = document.getElementById('start-game')
-  if (startGameContainer == null) {
-    return
-  }
-
   if (lobbyStarting) {
     const p = document.createElement('p')
     p.textContent = 'Starting game...'
