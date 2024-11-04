@@ -1,8 +1,7 @@
 
 import { addEventListenerTo, loadContentToTarget, truncateString } from "../ui_utils/ui_utils.js"
-import { getColor } from "../ui_utils/color_utils.js"
 import { getRequest, postRequest } from "../network_utils/api_requests.js"
-import { friendRecordIconInfo, getUserId, usersInfo } from "../global_vars.js"
+import { friendRecordIconInfo, getUserId, setOnlineStatus, usersInfo } from "../global_vars.js"
 import { friendsSystemSocket } from "./websocket.js"
 import { loadChatInterface } from "../realtime_chat/chat_utils.js"
 import { loadUsersInfo } from "../router.js"
@@ -239,12 +238,7 @@ function createFriendRecord(username, iconsInfo) {
 
   const statusBadge = document.createElement('div');
   statusBadge.className = 'status-badge';
-
-  if (getUserOnlineStatus(userId)) {
-    statusBadge.style.backgroundColor = getColor('teal', 500)
-  } else {
-    statusBadge.style.backgroundColor = getColor('magenta', 500)
-  }
+  setOnlineStatus(statusBadge, userId)
 
   const avatarName = document.createElement('div');
   avatarName.className = 'avatar-name';
@@ -320,13 +314,5 @@ function initFriendRecordIcon(icon, iconId, userId) {
 
 function sendToFriendSystemSocket(info) {
   friendsSystemSocket.send(JSON.stringify(info));
-}
-
-export function getUserOnlineStatus(userId) {
-  for (let key in usersInfo) {
-    if (usersInfo[key].id === userId) {
-      return usersInfo[key].is_online
-    }
-  }
 }
 

@@ -1,9 +1,10 @@
-import { currentUserInfo, getUserId } from "../global_vars.js";
+import { currentUserInfo, getUserId, setOnlineStatus } from "../global_vars.js";
 import { getRequest } from "../network_utils/api_requests.js";
 import { loadUserAvatar } from "../settings/upload_avatar.js";
 import { showOverlay } from "../ui_utils/overlay_utils.js";
 import { scrollToBottom } from "../ui_utils/scroll.js";
 import { addEventListenerTo, addTextPlaceholder, loadContentToTarget } from "../ui_utils/ui_utils.js";
+import { loadFriendProfile } from "./friend_profile_utils.js";
 import { chatSocket, connectChat } from "./websocket.js";
 
 let hasMessages = false
@@ -27,6 +28,9 @@ export async function loadChatInterface(userId) {
   await loadChatMessages(userId)
 
   initChatInput()
+
+  // load friend profile
+  loadFriendProfile(userId)
 }
 
 async function isFriendBlocked(userId) {
@@ -114,11 +118,7 @@ export function addMessage(username, message, datetime) {
   avatarImg.classList.add('avatar');
   loadUserAvatar(avatarImg, userId)
 
-  const statusBadge = document.createElement('div');
-  statusBadge.classList.add('status-badge');
-
   avatarContainer.appendChild(avatarImg);
-  avatarContainer.appendChild(statusBadge);
 
   const messageContainer = document.createElement('div');
   messageContainer.classList.add('message-container');

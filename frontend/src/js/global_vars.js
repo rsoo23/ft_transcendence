@@ -1,3 +1,4 @@
+import { getColor } from "./ui_utils/color_utils.js"
 
 export const ANIM_WAIT_DURATION = 550
 
@@ -25,6 +26,30 @@ export function getUserId(username) {
     }
   }
   return (-1)
+}
+
+export function getUserOnlineStatus(userId) {
+  for (let key in usersInfo) {
+    if (usersInfo[key].id === userId) {
+      return usersInfo[key].is_online
+    }
+  }
+}
+
+export function setOnlineStatus(statusBadge, userId) {
+  if (getUserOnlineStatus(userId)) {
+    statusBadge.style.backgroundColor = getColor('teal', 500)
+  } else {
+    statusBadge.style.backgroundColor = getColor('magenta', 500)
+  }
+}
+
+export function getUsername(userId) {
+  for (let key in usersInfo) {
+    if (usersInfo[key].id === userId) {
+      return usersInfo[key].username
+    }
+  }
 }
 
 export let hotbarItems = {
