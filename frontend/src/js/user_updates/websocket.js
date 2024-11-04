@@ -28,6 +28,7 @@ export function connectUserUpdateSocket() {
 
     if (data.action === 'update_username') {
       handleUsernameUpdate(data)
+      alert('Username updated successfully')
     } else if (data.action === 'update_online_status') {
       handleOnlineStatusUpdate(data)
     }
