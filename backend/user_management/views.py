@@ -330,7 +330,12 @@ def get_avatar_image(request):
     """
     Returns the user's avatar image if it exists, otherwise returns default avatar
     """
-    user = request.user
+    user_id = request.query_params.get('user_id')
+
+    try:
+        user = CustomUser.objects.get(pk=user_id)
+    except CustomUser.DoesNotExist:
+        return HttpResponse(status=404)
     
     if user.avatar_img and user.avatar_img.name:
         try:
