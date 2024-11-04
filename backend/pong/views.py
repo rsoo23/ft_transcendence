@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from asgiref.sync import sync_to_async
+from user_management.models import CustomUser
 from .models import PongMatch
 from .server import server_manager
 import asyncio
@@ -37,7 +38,15 @@ async def try_clean_match(match_id):
     print(f'pong: Match with id {match_id} was deleted due to inactivity.')
 
 async def create_match_and_game(user1, user2, local):
-    match = await sync_to_async(PongMatch.objects.create)(player1_uuid=user1, player2_uuid=user2, local=local)
+    player1 = await CustomUser.objects.aget(id=user1)
+    player2 = (await CustomUser.objects.aget(id=user2)) if not local else None
+    match = await sync_to_async(PongMatch.objects.create)(
+        player1=player1,
+        player2=player2,
+        player1_uuid=user1,
+        player2_uuid=user2,
+        local=local
+    )
     loop = asyncio.get_running_loop()
     await loop.run_in_executor(None, server_manager.try_create_game, match.id, f'pongmatch-{match.id}', local)
 
