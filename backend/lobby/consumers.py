@@ -27,15 +27,6 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
         self.max_users = model.max_users
         self.is_host = (self.user_id == model.host_id)
         if not self.is_host:
-            try:
-                users = json.loads(cache.get(self.group_lobby))
-                if len(users) >= self.max_users:
-                    await self.close(code=4002, reason='Lobby full')
-                    return
-
-            except Exception:
-                return
-
             await self.channel_layer.group_send(self.group_lobby, {
                 'type': 'lobby.notify.join',
                 'user': self.user_id,
@@ -155,6 +146,13 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
     async def lobby_notify_join(self, event):
         if self.is_host:
             users = json.loads(cache.get(self.group_lobby))
+            # check if lobby is already full
+            if len(users) >= self.max_users:
+                await self.channel_layer.group_send(self.group_lobby, {
+                    'type': 'lobby.notify.kick',
+                    'user': event['user'],
+                })
+
             users.append({'id': event['user'], 'ready': False})
             cache.set(self.group_lobby, json.dumps(users))
             if len(users) >= self.max_users:
@@ -190,6 +188,10 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
 
     async def lobby_notify_close(self, event):
         await self.close(code=4001, reason='Lobby closed')
+
+    async def lobby_notify_kick(self, event):
+        if self.user_id == event['user']:
+            await self.close(code=4002, reason='Lobby full')
 
     async def lobby_notify_match(self, event):
         await self.send_json({

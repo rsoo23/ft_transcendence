@@ -98,9 +98,11 @@ export async function joinLobby(id) {
     lobbySocket = null
 
     if (e.code == 1006) {
-      queueNotification('magenta', 'Lobby is no longer available or does not exist.', () => {})
+      queueNotification('magenta', 'Lobby is no longer available.', () => {})
     } else if (e.code == 4001) {
       queueNotification('magenta', 'Lobby has been closed by host.', () => {})
+    } else if (e.code == 4002) {
+      queueNotification('magenta', 'Lobby is full.', () => {})
     }
 
     // copied from router.js
