@@ -352,6 +352,7 @@ async function initPlayPage() {
       await joinLobby(lobbyID)
       initClassicLobby(gameLobbyListDiv)
       setCurrentDiv(gameLobbyListDiv, gameLobbyDiv)
+      updateClassicLobby()
     }
     initLobbyList()
     setCurrentDiv(gameSelectDiv, gameLobbyListDiv)

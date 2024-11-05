@@ -183,7 +183,7 @@ export function updateClassicLobby() {
     startButton.onclick = () => {}
   } else if (lobbyUsers.length == 1 && lobbyUsers[0].id == currentUserInfo.id) {
     startButton.setAttribute('disabled', 'true')
-  } else if (lobbyUsers[0].id == currentUserInfo.id) {
+  } else if (lobbyUsers.length > 1) {
     startButton.removeAttribute('disabled')
   }
 }
