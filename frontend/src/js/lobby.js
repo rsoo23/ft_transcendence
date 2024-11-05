@@ -9,8 +9,6 @@ import { joinMatch } from "./game/api.js";
 import { initLobbyList } from "./lobby_list.js";
 
 var lobbySocket = null
-var lobbyListSocket = null
-var lobbyListEntries = 0
 var inLobby = false
 var lobbyType = ''
 var lobbyUsers = []
