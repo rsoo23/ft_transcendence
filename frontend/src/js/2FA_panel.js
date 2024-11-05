@@ -36,24 +36,18 @@ export async function init2FAToggle() {
   }
   
 export async function handle2FA() {
-  const inputContainers = {
-    code: document.getElementById("two-fa-code-input-container"),
-  };
+  const codeInput = document.getElementById("two-fa-code");
+  const codeValue = codeInput.value;
 
-  const info = {
-    code: document.getElementById("two-fa-code").value,
-  };
-
-  if (isInputEmpty(info, inputContainers)) {
-    alert("This field is required");
+  if (!codeValue) {
+	alert("This field is required");
 	return "error";
   }
 
   try {
-    const response = await postRequest(
-      "/api/two_factor_auth/verify_2FA/",
-      info
-    );
+    const response = await postRequest("/api/two_factor_auth/verify_2FA/", {
+      code: codeValue
+   });
 
     if (response.success) {
       alert("2FA Enabled !");
@@ -76,14 +70,11 @@ export async function handle2FA() {
 }
 
 function isInputEmpty(code, inputContainers) {
-  for (let key of Object.keys(code)) {
-    if (!code[key]) {
-      return true;
-    } else {
-      resetInputField(inputContainers[key]);
-    }
-  }
-  return false;
+   if (!code.code) {
+	alert("This field is required");
+	return true;
+   }
+   return false;
 }
 
 export function initResendCodeButton(callback) {
