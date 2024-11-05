@@ -1,8 +1,5 @@
 import { loadPage } from "./router.js";
 import { addEventListenerTo } from "./ui_utils/ui_utils.js";
-import {
-  resetInputField,
-} from "./ui_utils/input_field_utils.js";
 import { postRequest, getRequest } from "./network_utils/api_requests.js";
 
 export async function init2FAToggle() {
@@ -67,14 +64,6 @@ export async function handle2FA() {
 	alert("An error occurred while verifying 2FA");
     return "error";
   }
-}
-
-function isInputEmpty(code, inputContainers) {
-   if (!code.code) {
-	alert("This field is required");
-	return true;
-   }
-   return false;
 }
 
 export function initResendCodeButton(callback) {
