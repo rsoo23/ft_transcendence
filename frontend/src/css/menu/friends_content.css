@@ -354,7 +354,7 @@
   width: auto;
 }
 
-#blocked-overlay {
+#chat-interface-overlay {
   width: 95%;
   height: 95%;
   display: none;

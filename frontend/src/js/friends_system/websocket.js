@@ -115,22 +115,22 @@ async function handleActionNotifications(data) {
   } else if (data.action === 'blocked_by_friend') {
     queueNotification('magenta', data.message, null)
     if (data.sender_id === currentChatUserId) {
-      showOverlay('blocked-overlay', 'You are blocked by this user')
+      showOverlay('chat-interface-overlay', 'You are blocked by this user')
     }
   } else if (data.action === 'unblocked_by_friend') {
     queueNotification('blue', data.message, null)
     if (data.sender_id === currentChatUserId) {
-      hideOverlay('blocked-overlay')
+      hideOverlay('chat-interface-overlay')
     }
   } else if (data.action === 'block_friend') {
     queueNotification('teal', data.message, null)
     if (data.target_id === currentChatUserId) {
-      showOverlay('blocked-overlay', 'You blocked this user')
+      showOverlay('chat-interface-overlay', 'You blocked this user')
     }
   } else if (data.action === 'unblock_friend') {
     queueNotification('teal', data.message, null)
     if (data.target_id === currentChatUserId) {
-      hideOverlay('blocked-overlay')
+      hideOverlay('chat-interface-overlay')
     }
   } else if (data.action === 'block_friend_failed') {
     queueNotification('magenta', data.message, null)
