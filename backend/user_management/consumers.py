@@ -59,6 +59,7 @@ class UserUpdateConsumer(WebsocketConsumer):
             self.send_error_to_client('update_username', 'username already exists')
             return
 
+        self.current_user.refresh_from_db()
         self.current_user.username = new_username
         self.current_user.save()
 
@@ -82,6 +83,7 @@ class UserUpdateConsumer(WebsocketConsumer):
         }))
 
     def update_online_status(self, is_online):
+        self.current_user.refresh_from_db()
         self.current_user.is_online = is_online
         self.current_user.save()
 
