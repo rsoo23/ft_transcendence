@@ -1,9 +1,4 @@
-import {
-  initBackButton,
-  initRandomColorButton,
-} from "./ui_utils/button_utils.js";
 import { loadPage } from "./router.js";
-import { send_otp_2FA } from "./network_utils/2FA_utils.js";
 import { getColor } from "./ui_utils/color_utils.js";
 import { addEventListenerTo } from "./ui_utils/ui_utils.js";
 import {
@@ -80,7 +75,8 @@ export async function handle2FA() {
   };
 
   if (isInputEmpty(info, inputContainers)) {
-    return "error";
+    alert("This field is required");
+	return "error";
   }
 
   try {
@@ -93,11 +89,18 @@ export async function handle2FA() {
       alert("2FA Enabled !");
       return "success";
     } else {
-      console.log("Error");
+        if (response.Status === "2FA Code is Wrong") {
+            alert("Incorrect code. Please try again.");
+        } else if (response.Status === "2FA Code Timeout") {
+            alert("Code has expired. Please request a new one.");
+        } else {
+			alert("Verification failed. Please try again.");
+        }
       return "error";
     }
   } catch (error) {
     console.error("Error:", error);
+	alert("An error occurred while verifying 2FA");
     return "error";
   }
 }
@@ -105,13 +108,6 @@ export async function handle2FA() {
 function isInputEmpty(code, inputContainers) {
   for (let key of Object.keys(code)) {
     if (!code[key]) {
-      if (key === "code") {
-        setInputFieldHint(
-          inputContainers[key],
-          "This field is required",
-          getColor("magenta", 500)
-        );
-      }
       return true;
     } else {
       resetInputField(inputContainers[key]);
