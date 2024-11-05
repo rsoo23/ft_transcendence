@@ -153,7 +153,7 @@ class FriendsSystemConsumer(WebsocketConsumer):
         self.send_to_client_channel(
             blocked_id,
             'block_friend',
-            f'Successfully blocked {friend.username}'
+            f'Successfully blocked {blockee.username}'
         )
 
     def unblock_friend(self, unblocked_id):
