@@ -123,7 +123,10 @@ def login_view(request):
                 errors['username'] = ['Admin cannot login']
                 return JsonResponse({'success': False, 'errors': errors})
             login(request, user)
-            return JsonResponse({'success': True})
+            return JsonResponse({
+                'success': True,
+                'two_factor_enabled': user.two_factor_enabled
+            })
         else:
             if not User.objects.filter(username=username).exists():
                 errors['username'] = ['User does not exist: please sign up']
