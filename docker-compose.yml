@@ -50,6 +50,7 @@ services:
     volumes:
       - ./frontend:/var/www/html/
       - django_statics:/var/www/django
+      - django_media:/var/www/media
       - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
     env_file:
       - .env
