@@ -1,6 +1,6 @@
 import { currentPageState, PAGE_STATE } from "../global_vars.js";
 import { getAccessToken } from "../network_utils/token_utils.js";
-import { currentChatUserId } from "../realtime_chat/chat_utils.js";
+import { currentChatUserId, loadChatInterface } from "../realtime_chat/chat_utils.js";
 import { initFriendsPage } from "../router.js";
 import { queueNotification } from "../ui_utils/notification_utils.js";
 import { hideOverlay, showOverlay } from "../ui_utils/overlay_utils.js";
@@ -121,6 +121,7 @@ async function handleActionNotifications(data) {
     queueNotification('blue', data.message, null)
     if (data.sender_id === currentChatUserId) {
       hideOverlay('chat-interface-overlay')
+      loadChatInterface(currentChatUserId)
     }
   } else if (data.action === 'block_friend') {
     queueNotification('teal', data.message, null)
@@ -131,6 +132,7 @@ async function handleActionNotifications(data) {
     queueNotification('teal', data.message, null)
     if (data.target_id === currentChatUserId) {
       hideOverlay('chat-interface-overlay')
+      loadChatInterface(currentChatUserId)
     }
   } else if (data.action === 'block_friend_failed') {
     queueNotification('magenta', data.message, null)
