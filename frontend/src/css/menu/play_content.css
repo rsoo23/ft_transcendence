@@ -9,6 +9,7 @@
 }
 
 #play-container #play-select-container,
+#play-container #play-lobby-list-container,
 #play-container #play-settings-container,
 #play-container #play-lobby-container {
   position: relative;
@@ -239,6 +240,11 @@
   margin-top: 5rem;
 }
 
+#play-lobby-list-container {
+  margin-left: 3rem;
+  margin-right: 3rem;
+}
+
 #lobby-list {
   overflow: auto;
   border-style: solid;
@@ -247,6 +253,11 @@
   border-radius: 3rem;
   box-sizing: border-box;
   justify-content: normal;
+}
+
+#lobby-host-button {
+  margin-left: auto;
+  background-color: var(--teal-500);
 }
 
 .lobby-entry-container {

@@ -273,7 +273,7 @@ async function appendLobbyEntry(lobbyId) {
     await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
     await joinLobby(lobbyID)
 
-    const prevDiv = document.getElementById('play-settings-container')
+    const prevDiv = document.getElementById('play-lobby-list-container')
     initClassicLobby(prevDiv)
     closeLobbyListSocket()
     setCurrentDiv(prevDiv, document.getElementById('play-lobby-container'))
