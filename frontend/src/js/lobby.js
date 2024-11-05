@@ -28,6 +28,15 @@ export async function createLobby() {
   return null
 }
 
+export async function createTournamentLobby(maxUsers) {
+  const response = await postRequest('/api/lobby/create_tournament_lobby/', { max_users: maxUsers })
+  if (response.success) {
+    return response.lobby_id
+  }
+
+  return null
+}
+
 export async function joinLobby(id) {
   lobbySocket = new WebSocket(`ws://${window.location.host}/ws/lobby/${id}`, ['Authorization', getAccessToken()])
   lobbySocket.onmessage = async (e) => {
@@ -159,15 +168,15 @@ export function updateClassicLobby() {
   }
 
   if (lobbyUsers.length > 0) {
-    setPlayerInfo(lobbyUsers[0], 'p1')
+    setClassicPlayerInfo(lobbyUsers[0], 'p1')
   } else {
-    setPlayerInfo(null, 'p1')
+    setClassicPlayerInfo(null, 'p1')
   }
 
   if (lobbyUsers.length > 1) {
-    setPlayerInfo(lobbyUsers[1], 'p2')
+    setClassicPlayerInfo(lobbyUsers[1], 'p2')
   } else {
-    setPlayerInfo(null, 'p2')
+    setClassicPlayerInfo(null, 'p2')
   }
 
   const startGameContainer = document.getElementById('start-game-container')
@@ -188,7 +197,7 @@ export function updateClassicLobby() {
   }
 }
 
-function setPlayerInfo(info, prefix) {
+function setClassicPlayerInfo(info, prefix) {
   const avatar = document.getElementById(`${prefix}-avatar`)
   const name = document.getElementById(`${prefix}-name`)
   const header = document.getElementById(`${prefix}-header`)

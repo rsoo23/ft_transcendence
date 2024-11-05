@@ -25,6 +25,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
 
         self.group_lobby = f'lobby-{self.lobby_id}'
         self.max_users = model.max_users
+        self.is_tournament = model.is_tournament
         self.is_host = (self.user_id == model.host_id)
         if not self.is_host:
             await self.channel_layer.group_send(self.group_lobby, {
@@ -39,7 +40,8 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
             await self.channel_layer.group_add('lobbyhost', self.channel_name)
             await self.channel_layer.group_send(GROUP_LOBBYLIST, {
                 'type': 'lobby.receive.id',
-                'id': self.lobby_id
+                'id': self.lobby_id,
+                'is_tournament': self.is_tournament,
             })
 
         await self.channel_layer.group_add(self.group_lobby, self.channel_name)
@@ -60,6 +62,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
             await self.channel_layer.group_send(GROUP_LOBBYLIST, {
                 'type': 'lobby.remove.id',
                 'id': self.lobby_id,
+                'is_tournament': self.is_tournament,
             })
             model = await LobbyModel.objects.aget(id=self.lobby_id)
             model.closed = True
@@ -112,7 +115,8 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
 
         await self.channel_layer.send(event['channel'], {
             'type': 'lobby.receive.id',
-            'id': self.lobby_id
+            'id': self.lobby_id,
+            'is_tournament': self.is_tournament,
         })
 
     async def lobby_get_list(self, event):
@@ -128,6 +132,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                 await self.channel_layer.group_send(GROUP_LOBBYLIST, {
                         'type': 'lobby.receive.id',
                         'id': self.lobby_id,
+                        'is_tournament': self.is_tournament,
                     })
 
             for i in users:
@@ -159,6 +164,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                 await self.channel_layer.group_send(GROUP_LOBBYLIST, {
                     'type': 'lobby.remove.id',
                     'id': self.lobby_id,
+                    'is_tournament': self.is_tournament,
                 })
 
         await self.send_json({
@@ -212,6 +218,12 @@ class LobbyListConsumer(AsyncJsonWebsocketConsumer):
             await self.close(code=3000, reason='Not Authenticated')
             return
 
+        isTournamentIndex = self.scope['subprotocols'].index('IsTournament') if 'IsTournament' in self.scope['subprotocols'] else None
+        self.is_tournament = (
+            isTournamentIndex != None
+            and isTournamentIndex + 1 < len(self.scope['subprotocols'])
+            and self.scope['subprotocols'][isTournamentIndex + 1] == 'true'
+        )
         await self.channel_layer.group_add(GROUP_LOBBYLIST, self.channel_name)
         await self.accept('Authorization')
 
@@ -228,12 +240,18 @@ class LobbyListConsumer(AsyncJsonWebsocketConsumer):
         })
 
     async def lobby_receive_id(self, event):
+        if event['is_tournament'] != self.is_tournament:
+            return
+
         await self.send_json({
             'event': 'receive',
             'id': event['id'],
         })
 
     async def lobby_remove_id(self, event):
+        if event['is_tournament'] != self.is_tournament:
+            return
+
         await self.send_json({
             'event': 'remove',
             'id': event['id'],

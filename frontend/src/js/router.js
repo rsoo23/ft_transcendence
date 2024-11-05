@@ -21,7 +21,7 @@ import { initUsernameSettings } from "./settings/update_username.js";
 import { closeFriendSystemSocket, connectFriendSystemSocket, } from "./friends_system/websocket.js";
 import { initPlayDivs, startingMenuSwitcher, divSwitcher, loadMultiplayerTest, startLocalGame, } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
-import { initClassicLobby, updateClassicLobby, getInLobby, createLobby, joinLobby, } from "./lobby.js";
+import { initClassicLobby, updateClassicLobby, getInLobby, createLobby, createTournamentLobby, joinLobby } from "./lobby.js";
 import { initLobbyList, closeLobbyListSocket, } from "./lobby_list.js";
 import { closeUserUpdateSocket, connectUserUpdateSocket } from "./user_updates/websocket.js";
 import { init2FAToggle } from "./2FA_panel.js";
@@ -328,7 +328,7 @@ async function initPlayPage() {
       divSwitcher.setCurrentDiv('play-lobby-list-container', 'play-lobby-container')
       updateClassicLobby()
     }
-    initLobbyList()
+    initLobbyList(isTournament)
     divSwitcher.setCurrentDiv('play-select-container', 'play-lobby-list-container')
   }
   document.getElementById("gamemodeback").onclick = () => startingMenuSwitcher.setCurrentDiv('gamemode', 'playtype');

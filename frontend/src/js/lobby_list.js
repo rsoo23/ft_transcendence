@@ -6,9 +6,12 @@ import { divSwitcher } from "./play_panel.js";
 
 var lobbyListSocket = null
 
-export async function initLobbyList() {
+export async function initLobbyList(isTournament) {
   document.getElementById('lobby-list').innerHTML = ''
-  lobbyListSocket = new WebSocket(`ws://${window.location.host}/ws/lobby_list/`, ['Authorization', getAccessToken()])
+  lobbyListSocket = new WebSocket('ws://localhost:8000/ws/lobby_list/', [
+    'Authorization', getAccessToken(),
+    'IsTournament', `${isTournament}`,
+  ])
   lobbyListSocket.onmessage = (e) => {
     const data = JSON.parse(e.data)
 
