@@ -9,3 +9,4 @@ venv/
 env/
 media/
 dump.rdb
+redis.log
