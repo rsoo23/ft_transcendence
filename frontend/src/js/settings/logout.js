@@ -1,5 +1,8 @@
+import { closeFriendSystemSocket } from "../friends_system/websocket.js";
 import { postRequest } from "../network_utils/api_requests.js";
+import { closeChatSocket } from "../realtime_chat/websocket.js";
 import { loadPage } from "../router.js";
+import { closeUserUpdateSocket } from "../user_updates/websocket.js";
 
 export async function handleLogout() {
   try {
@@ -9,6 +12,11 @@ export async function handleLogout() {
 
     if (response.success) {
       alert("Logged out successfully");
+
+      closeUserUpdateSocket()
+      closeChatSocket()
+      closeFriendSystemSocket()
+
       loadPage("start");
     } else {
       alert("Logout failed: " + (response.error || "Unknown error"));

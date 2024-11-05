@@ -12,10 +12,11 @@ class CustomUserAdmin(UserAdmin):
         "id",
         "username",
         "email",
-        "password",
+        "is_online",
         "two_factor_enabled",
-        "base32_secret",
         "avatar_img",
+        "password",
+        "base32_secret",
     ]
 
 admin.site.register(CustomUser, CustomUserAdmin)

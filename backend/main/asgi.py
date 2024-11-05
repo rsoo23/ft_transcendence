@@ -23,6 +23,7 @@ from realtime_chat.consumers import ChatConsumer
 from friends_system.consumers import FriendsSystemConsumer
 from pong.consumers import PongConsumer
 from lobby.consumers import LobbyConsumer, LobbyListConsumer
+from user_management.consumers import UserUpdateConsumer
 
 application = ProtocolTypeRouter({
     'http': get_asgi_application(),
@@ -34,6 +35,7 @@ application = ProtocolTypeRouter({
                 path("ws/lobby/<int:lobby_id>", LobbyConsumer.as_asgi()),
                 path("ws/lobby_list/", LobbyListConsumer.as_asgi()),
                 re_path(r'ws/pong/(?P<match_id>[0-9]+)$', PongConsumer.as_asgi()),
+                path("ws/user_update/", UserUpdateConsumer.as_asgi()),
             ])
         )
     ),

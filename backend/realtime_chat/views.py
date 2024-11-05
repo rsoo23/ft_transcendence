@@ -14,17 +14,16 @@ from rest_framework.permissions import IsAuthenticated
 @permission_classes([IsAuthenticated])
 def get_chat_messages(request):
     current_user = request.user
-    sender_username = current_user.username
 
-    receiver_id = request.query_params.get('receiver_id')
-    receiver = get_object_or_404(CustomUser, pk=receiver_id)
-    receiver_username = receiver.username
+    sender_id = current_user.id
+
+    receiver_id = int(request.query_params.get('receiver_id'))
 
     # generates the room name dynamically based on their usernames in alphabetical order
-    if sender_username < receiver_username:
-        room_name = f'chat_{sender_username}_{receiver_username}'
+    if sender_id < receiver_id:
+        room_name = f'chat_{sender_id}_{receiver_id}'
     else:
-        room_name = f'chat_{receiver_username}_{sender_username}'
+        room_name = f'chat_{receiver_id}_{sender_id}'
 
     room, created = Room.objects.get_or_create(name=room_name)
 

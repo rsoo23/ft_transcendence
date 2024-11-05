@@ -25,7 +25,7 @@ import { initLogoutButton } from "./settings/logout.js";
 import { getRequest } from "./network_utils/api_requests.js";
 import { initEmailSettings } from "./settings/update_email.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
-import { setCurrentUserInfo, setUsersInfo } from "./global_vars.js";
+import { currentPageState, PAGE_STATE, setCurrentPageState, setCurrentUserInfo, setUsersInfo } from "./global_vars.js";
 import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { initUsernameSettings } from "./settings/update_username.js";
@@ -52,6 +52,7 @@ import {
   initLobbyList,
   closeLobbyListSocket,
 } from "./lobby.js";
+import { closeUserUpdateSocket, connectUserUpdateSocket } from "./user_updates/websocket.js";
 import { init2FAToggle } from "./2FA_panel.js";
 
 const routes = {
@@ -81,16 +82,20 @@ window.addEventListener("popstate", async (event) => {
 
   if (path.startsWith("/menu")) {
     loadContentToMainMenu(lastUrlSegment);
-  } else if (path.startsWith("/main_menu")) {
-    await loadPage("main_menu");
-    await loadMainMenuContent("play");
+  } else if (path.startsWith('/main_menu')) {
+    await loadPage('main_menu');
+    await loadMainMenuContent('play');
+    setCurrentPageState(PAGE_STATE.IN_PLAY_PAGE)
   } else {
     loadContent(lastUrlSegment);
+    setCurrentPageState(PAGE_STATE.NOT_IN_MENU_PAGE)
   }
 
-  if (!path.startsWith("/menu/friends")) {
-    closeChatSocket();
-    closeFriendSystemSocket();
+  if (!path.startsWith('/menu/friends')) {
+    closeChatSocket()
+  } else if (!path.startsWith('/menu')) {
+    closeFriendSystemSocket()
+    closeUserUpdateSocket()
   }
 
   if (!path.startsWith('/menu/play')) {
@@ -125,9 +130,8 @@ export async function loadContentToMainMenu(contentName) {
     document.querySelector("#main-menu-panel > .content-container").innerHTML =
       html;
 
-    if (contentName !== "friends") {
-      closeChatSocket();
-      closeFriendSystemSocket();
+    if (contentName !== 'friends') {
+      closeChatSocket()
     }
     updateBorderColor(contentName);
     updateButtonState(contentName);
@@ -151,54 +155,59 @@ export async function loadMainMenuContent(contentName) {
 // - initializes event listeners for any ui components
 async function loadDynamicContent(contentName) {
   switch (contentName) {
-    case "start":
-      initStartPage();
-      break;
-    case "login":
-      initLoginPage();
-      break;
-    case "signup":
-      initSignupPage();
-      break;
-    case "main_menu":
-      initMainMenuPage();
-      break;
-    case "play":
-      initPlayPage();
-      break;
-    case "game":
+    case 'start':
+      initStartPage()
+      break
+    case 'login':
+      initLoginPage()
+      break
+    case 'signup':
+      initSignupPage()
+      break
+    case 'main_menu':
+      initMainMenuPage()
+      break
+    case 'play':
+      initPlayPage()
+      setCurrentPageState(PAGE_STATE.IN_PLAY_PAGE)
+      break
+    case 'game':
       // TODO: move game stuff here
-      break;
-    case "friends":
-      initFriendsPage();
-      break;
-    case "stats":
-      initStatsPage();
-      break;
-    case "how-to-play":
-      initHowToPlayPage();
-      break;
-    case "settings":
-      initSettingsPage();
-      break;
-    case "forgot_password/get_email":
-      initGetEmailPage();
-      break;
-    case "forgot_password/verify_code":
-      initVerifyCodePage();
-      break;
-    case "forgot_password/change_password":
-      initChangePasswordPage();
-      break;
-    case "forgot_password/change_password":
-      initChangePasswordPage();
-      break;
-    case "2fa_verify":
-      init2FAPages(contentName);
-      break;
-    case "2fa_enable":
-      init2FAPages(contentName);
-      break;
+      break
+    case 'friends':
+      initFriendsPage()
+      setCurrentPageState(PAGE_STATE.IN_FRIENDS_PAGE)
+      break
+    case 'stats':
+      initStatsPage()
+      setCurrentPageState(PAGE_STATE.IN_STATS_PAGE)
+      break
+    case 'how-to-play':
+      initHowToPlayPage()
+      setCurrentPageState(PAGE_STATE.IN_HOW_TO_PLAY_PAGE)
+      break
+    case 'settings':
+      initSettingsPage()
+      setCurrentPageState(PAGE_STATE.IN_SETTINGS_PAGE)
+      break
+    case 'forgot_password/get_email':
+      initGetEmailPage()
+      break
+    case 'forgot_password/verify_code':
+      initVerifyCodePage()
+      break
+    case 'forgot_password/change_password':
+      initChangePasswordPage()
+      break
+    case 'forgot_password/change_password':
+      initChangePasswordPage()
+      break
+    case '2fa_verify':
+      init2FAPages(contentName)
+      break
+    case '2fa_enable':
+      init2FAPages(contentName)
+      break
     default:
       console.error("Error: invalid contentName");
   }
@@ -291,6 +300,9 @@ async function initMainMenuPage() {
   initHotbar();
   await loadCurrentUserInfo();
   await loadUsersInfo();
+
+  connectUserUpdateSocket()
+  connectFriendSystemSocket()
 }
 
 async function initPlayPage() {
@@ -371,7 +383,7 @@ async function initPlayPage() {
   }
 }
 
-async function initStatsPage() {}
+async function initStatsPage() { }
 
 export async function initFriendsPage(
   state = FRIEND_LIST_STATE.SHOWING_FRIEND_LIST
@@ -382,11 +394,10 @@ export async function initFriendsPage(
     await loadFriendSearchPanel();
   }
 
-  await loadContentToTarget("menu/chat_demo.html", "friends-content-container");
-  connectFriendSystemSocket();
+  await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
 }
 
-async function initHowToPlayPage() {}
+async function initHowToPlayPage() { }
 
 async function initSettingsPage() {
   initAvatarUpload();
