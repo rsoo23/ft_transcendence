@@ -1,6 +1,6 @@
-import { currentUserInfo, usersInfo } from "../global_vars.js";
 import { getAccessToken } from "../network_utils/token_utils.js";
 import { hideOverlay, showOverlay } from "../ui_utils/overlay_utils.js";
+import { handleOnlineStatusUpdate, handleStatusBadges, handleUsernameUpdate } from "./utils.js";
 
 export let userUpdateSocket = null
 let reconnectAttempts = 0;
@@ -31,6 +31,7 @@ export function connectUserUpdateSocket() {
       alert('Username updated successfully')
     } else if (data.action === 'update_online_status') {
       handleOnlineStatusUpdate(data)
+      handleStatusBadges(data)
     }
   };
 
@@ -79,37 +80,3 @@ function reconnectUserUpdateSocket() {
   }
 }
 
-function handleUsernameUpdate(data) {
-  if (data.message === 'username already exists') {
-    alert("Username already exists")
-    return
-  }
-
-  // if the user updated their own username, update currentUserInfo
-  // else update usersInfo
-  if (data.user_id === currentUserInfo.id) {
-    currentUserInfo.username = data.new_username
-  } else {
-    for (let key in usersInfo) {
-      if (usersInfo[key].id === data.user_id) {
-        usersInfo[key].username = data.new_username
-        break;
-      }
-    }
-  }
-}
-
-function handleOnlineStatusUpdate(data) {
-  // if the user updated their own username, update currentUserInfo
-  // else update usersInfo
-  if (data.user_id === currentUserInfo.id) {
-    currentUserInfo.is_online = data.is_online
-  } else {
-    for (let key in usersInfo) {
-      if (usersInfo[key].id === data.user_id) {
-        usersInfo[key].is_online = data.is_online
-        break;
-      }
-    }
-  }
-}

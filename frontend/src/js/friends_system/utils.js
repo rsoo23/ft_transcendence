@@ -225,6 +225,7 @@ function createFriendRecord(username, iconsInfo) {
 
   const friendRecord = document.createElement('div');
   friendRecord.className = 'friend-record';
+  friendRecord.id = `friend-record-${userId}`
 
   const avatarSection = document.createElement('div');
   avatarSection.className = 'avatar-section';
