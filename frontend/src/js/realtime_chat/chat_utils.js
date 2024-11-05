@@ -117,7 +117,6 @@ export function addMessage(username, message, datetime) {
   avatarContainer.classList.add('avatar-container');
 
   const avatarImg = document.createElement('img');
-  avatarImg.alt = 'avatar';
   avatarImg.classList.add('avatar');
   loadUserAvatar(avatarImg, userId)
 

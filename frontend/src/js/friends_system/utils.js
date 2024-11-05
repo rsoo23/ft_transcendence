@@ -234,7 +234,6 @@ function createFriendRecord(username, iconsInfo) {
   avatarContainer.className = 'avatar-container';
 
   const avatarImage = document.createElement('img');
-  avatarImage.alt = 'avatar';
   avatarImage.className = 'avatar';
   loadUserAvatar(avatarImage, userId)
 
