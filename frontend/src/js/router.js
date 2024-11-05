@@ -49,9 +49,11 @@ import {
   getInLobby,
   createLobby,
   joinLobby,
+} from "./lobby.js";
+import {
   initLobbyList,
   closeLobbyListSocket,
-} from "./lobby.js";
+} from "./lobby_list.js";
 import { closeUserUpdateSocket, connectUserUpdateSocket } from "./user_updates/websocket.js";
 import { init2FAToggle } from "./2FA_panel.js";
 
