@@ -24,16 +24,16 @@ export async function handleLogin() {
 
     console.log(response)
     if (response.success) {
-		const tokenResponse = await retrieveTokens(loginInfo)
+        const tokenResponse = await retrieveTokens(loginInfo)
 
-		if (tokenResponse === 'success') {
-		  // Check if 2FA is enabled for the user
-		  const twoFactorStatus = await status_2FA()
-		  if (twoFactorStatus) {
-			return 'success-with-2fa'  // This will trigger 2FA verification
-		  }
-		  return 'success'
-		}
+        if (tokenResponse === 'success') {
+          // Check if 2FA is enabled for the user
+          const twoFactorStatus = await status_2FA()
+          if (twoFactorStatus) {
+              return 'success-with-2fa'  // This will trigger 2FA verification
+          }
+          return 'success'
+        }
     } else {
       handleLoginErrors(inputContainers, response.errors)
       return 'error'
