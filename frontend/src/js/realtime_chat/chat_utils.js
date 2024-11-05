@@ -1,8 +1,10 @@
-import { currentUserInfo } from "../global_vars.js";
+import { currentUserInfo, getUserId, setOnlineStatus } from "../global_vars.js";
 import { getRequest } from "../network_utils/api_requests.js";
-import { showOverlay } from "../ui_utils/overlay_utils.js";
+import { loadUserAvatar } from "../settings/upload_avatar.js";
+import { hideOverlay, showOverlay } from "../ui_utils/overlay_utils.js";
 import { scrollToBottom } from "../ui_utils/scroll.js";
 import { addEventListenerTo, addTextPlaceholder, loadContentToTarget } from "../ui_utils/ui_utils.js";
+import { loadFriendProfile } from "./friend_profile_utils.js";
 import { chatSocket, connectChat } from "./websocket.js";
 
 let hasMessages = false
@@ -15,9 +17,11 @@ export async function loadChatInterface(userId) {
   await loadContentToTarget('menu/chat_interface.html', 'friends-content-container')
 
   if (await isFriendBlocked(userId)) {
-    showOverlay('blocked-overlay', 'You are blocked by this user')
+    showOverlay('chat-interface-overlay', 'You are blocked by this user')
     return
   }
+
+  showOverlay('chat-interface-overlay', 'Loading...')
 
   // connect to chat websocket
   connectChat(userId)
@@ -26,6 +30,10 @@ export async function loadChatInterface(userId) {
   await loadChatMessages(userId)
 
   initChatInput()
+
+  // load friend profile
+  loadFriendProfile(userId)
+  hideOverlay('chat-interface-overlay')
 }
 
 async function isFriendBlocked(userId) {
@@ -54,7 +62,7 @@ async function loadChatMessages(userId) {
       addTextPlaceholder('chat-content-container', 'No chat messages yet')
     } else if (response.length > 0) {
       hasMessages = true
-      response.map(message => addMessage(message.sender_username, '/static/images/kirby.png', message.content, message.timestamp))
+      response.map(message => addMessage(message.sender_username, message.content, message.timestamp))
       scrollToBottom('chat-content-container')
     }
   } catch (error) {
@@ -99,7 +107,9 @@ function sendMessage(chatInputElement) {
   chatInputElement.value = "";
 }
 
-export function addMessage(username, avatarUrl, message, datetime) {
+export function addMessage(username, message, datetime) {
+  const userId = getUserId(username)
+
   const chatMessageContainer = document.createElement('div');
   chatMessageContainer.classList.add('chat-message-container');
 
@@ -107,15 +117,10 @@ export function addMessage(username, avatarUrl, message, datetime) {
   avatarContainer.classList.add('avatar-container');
 
   const avatarImg = document.createElement('img');
-  avatarImg.src = avatarUrl;
-  avatarImg.alt = 'avatar';
   avatarImg.classList.add('avatar');
-
-  const statusBadge = document.createElement('div');
-  statusBadge.classList.add('status-badge');
+  loadUserAvatar(avatarImg, userId)
 
   avatarContainer.appendChild(avatarImg);
-  avatarContainer.appendChild(statusBadge);
 
   const messageContainer = document.createElement('div');
   messageContainer.classList.add('message-container');

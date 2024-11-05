@@ -15,13 +15,14 @@ class CustomUser(AbstractUser):
     base32_secret = models.CharField(max_length=32, blank=True, null=True)
     email = models.EmailField(unique=True)
     avatar_img = models.ImageField(
-    upload_to=user_avatar_path,
-    null=True,
-    blank=True,
-    validators=[
-        FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif'])
-    ]
+        upload_to=user_avatar_path,
+        null=True,
+        blank=True,
+        validators=[
+            FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif'])
+        ]
     )
+    is_online = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if self.pk:  # Check if this is an update and not a new instance

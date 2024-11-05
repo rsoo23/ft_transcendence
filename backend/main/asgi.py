@@ -22,6 +22,7 @@ from pong.routing import websocket_urlpatterns as pong_urlpatterns
 from realtime_chat.jwt_middleware import JWTAuthMiddleware
 from realtime_chat.consumers import ChatConsumer
 from friends_system.consumers import FriendsSystemConsumer
+from user_management.consumers import UserUpdateConsumer
 
 application = ProtocolTypeRouter({
     'http': get_asgi_application(),
@@ -30,6 +31,7 @@ application = ProtocolTypeRouter({
             URLRouter([
                 path("ws/chat/<int:receiver_id>/", ChatConsumer.as_asgi()),
                 path("ws/friends_system/", FriendsSystemConsumer.as_asgi()),
+                path("ws/user_update/", UserUpdateConsumer.as_asgi()),
             ] + pong_urlpatterns)
         )
     ),

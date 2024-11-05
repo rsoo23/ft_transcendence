@@ -74,6 +74,7 @@ class FriendsSystemConsumer(WebsocketConsumer):
                     f'{self.current_user} sent you a friend request'
                 )
                 self.send_to_client_channel(
+                    receiver_id,
                     'friend_request_sent',
                     f'Sent friend request to {receiver.username}'
                 )
@@ -91,6 +92,7 @@ class FriendsSystemConsumer(WebsocketConsumer):
             f'{self.current_user} cancelled their friend request'
         )
         self.send_to_client_channel(
+            receiver_id,
             'friend_request_sent_cancelled',
             f'Cancelled friend request to {receiver.username}'
         )
@@ -107,6 +109,7 @@ class FriendsSystemConsumer(WebsocketConsumer):
             f'{self.current_user} accepted your friend request'
         )
         self.send_to_client_channel(
+            sender_id,
             'friend_request_received_accepted',
             f'Accepted friend request from {sender.username}'
         )
@@ -123,23 +126,34 @@ class FriendsSystemConsumer(WebsocketConsumer):
             f'{self.current_user} declined your friend request'
         )
         self.send_to_client_channel(
+            sender_id,
             'friend_request_received_declined',
             f'Declined friend request from {sender.username}'
         )
 
     def block_friend(self, blocked_id):
         current_user_friend_list = FriendList.objects.get(current_user=self.current_user)
-        friend = CustomUser.objects.get(pk=blocked_id)
+        blockee = CustomUser.objects.get(pk=blocked_id)
 
-        current_user_friend_list.block_friend(friend)
+        blockee_friend_list = FriendList.objects.get(current_user=blockee)
+        if blockee_friend_list.is_blocked_friend(self.current_user):
+            self.send_to_client_channel(
+                blocked_id,
+                'block_friend_failed',
+                f'Failed: {blockee.username} has blocked you already'
+            )
+            return
+
+        current_user_friend_list.block_friend(blockee)
         self.send_to_target_channel(
             blocked_id,
             'blocked_by_friend',
             f'{self.current_user} blocked you'
         )
         self.send_to_client_channel(
+            blocked_id,
             'block_friend',
-            f'Successfully blocked {friend.username}'
+            f'Successfully blocked {blockee.username}'
         )
 
     def unblock_friend(self, unblocked_id):
@@ -153,6 +167,7 @@ class FriendsSystemConsumer(WebsocketConsumer):
             f'{self.current_user} unblocked you'
         )
         self.send_to_client_channel(
+            unblocked_id,
             'unblock_friend',
             f'Successfully unblocked {friend.username}'
         )
@@ -170,12 +185,13 @@ class FriendsSystemConsumer(WebsocketConsumer):
                 }
             )
 
-    def send_to_client_channel(self, action, message):
+    def send_to_client_channel(self, target_id, action, message):
         async_to_sync(self.channel_layer.send)(
             self.channel_name,
             {
                 'type': 'action_acknowledge',
                 'action': action,
+                'target_id': target_id,
                 'message': message,
             }
         )
@@ -194,9 +210,11 @@ class FriendsSystemConsumer(WebsocketConsumer):
     def action_acknowledge(self, event):
         message = event['message']
         action = event['action']
+        target_id = event['target_id']
 
         self.send(text_data=json.dumps({
             'action': action,
             'message': message,
+            'target_id': target_id,
         }))
 
