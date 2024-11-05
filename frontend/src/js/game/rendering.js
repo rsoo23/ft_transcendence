@@ -47,13 +47,12 @@ class Score
 	constructor()
 	{
 		this.size = 36;
-		this.font = 'Jakarta Sans';
-		// this.font = '5rem Jakarta Sans';
+		this.font = 'Plus Jakarta Sans';
 	}
 
 	draw(renderInfo, pos, prevState, nextState)
 	{
-		renderInfo.ctx.font = `${(this.size * renderInfo.windowScale.x)}px ${this.font}`;
+		renderInfo.ctx.font = `${(this.size * renderInfo.windowScale.x)}px "${this.font}"`;
 		renderInfo.ctx.textAlign = 'center';
 		renderInfo.ctx.textBaseline = 'middle';
 		const textInfo = renderInfo.ctx.measureText(nextState.info['score'])
