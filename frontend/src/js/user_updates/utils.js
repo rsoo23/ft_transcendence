@@ -10,6 +10,7 @@ export function handleUsernameUpdate(data) {
   // else update usersInfo
   if (data.user_id === currentUserInfo.id) {
     currentUserInfo.username = data.new_username
+    alert('Username updated successfully')
   } else {
     for (let key in usersInfo) {
       if (usersInfo[key].id === data.user_id) {
