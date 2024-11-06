@@ -1,5 +1,6 @@
 import { postRequest } from "../network_utils/api_requests.js";
 import { currentUserInfo } from "../global_vars.js";
+import { userUpdateSocket } from "../user_updates/websocket.js";
 
 export async function initUsernameSettings() {
   const saveButton = document.getElementById("save-button");
@@ -41,19 +42,6 @@ async function handleSaveSettings(usernameInput) {
     return;
   }
 
-  try {
-    const response = await postRequest("/api/update_username/", {
-      new_username: newUsername,
-    });
-
-    if (response.status === "success") {
-      alert(response.message);
-      usernameInput.disabled = true;
-    } else {
-      alert("Failed to update username: " + response.message);
-    }
-  } catch (error) {
-    console.error("Error updating username:", error);
-    alert("An error occurred while updating the username. Please try again.");
-  }
+  userUpdateSocket.send(JSON.stringify({ action: 'update_username', new_username: newUsername }))
 }
+

@@ -1,15 +1,5 @@
-import {
-  initBackButton,
-  initRandomColorButton,
-} from "./ui_utils/button_utils.js";
 import { loadPage } from "./router.js";
-import { send_otp_2FA } from "./network_utils/2FA_utils.js";
-import { getColor } from "./ui_utils/color_utils.js";
 import { addEventListenerTo } from "./ui_utils/ui_utils.js";
-import {
-  resetInputField,
-  setInputFieldHint,
-} from "./ui_utils/input_field_utils.js";
 import { postRequest, getRequest } from "./network_utils/api_requests.js";
 
 export async function init2FAToggle() {
@@ -42,82 +32,38 @@ export async function init2FAToggle() {
 	}
   }
   
-  async function check2FAStatus() {
-	try {
-	  const response = await getRequest('/api/two_factor_auth/status_2FA/');
-	  return response.success;
-	} catch (error) {
-	  console.error('Error checking 2FA status:', error);
-	  return false;
-	}
-  }
-
-async function disable2FA() {
-  try {
-    const response = await postRequest("/api/two_factor_auth/disable_2FA/");
-
-    if (response.success) {
-      alert("2FA has been disabled");
-      return true;
-    } else {
-      alert("Failed to disable 2FA");
-      return false;
-    }
-  } catch (error) {
-    console.error("Error:", error);
-    alert("An error occurred while disabling 2FA");
-    return false;
-  }
-}
-
 export async function handle2FA() {
-  const inputContainers = {
-    code: document.getElementById("two-fa-code-input-container"),
-  };
+  const codeInput = document.getElementById("two-fa-code");
+  const codeValue = codeInput.value;
 
-  const info = {
-    code: document.getElementById("two-fa-code").value,
-  };
-
-  if (isInputEmpty(info, inputContainers)) {
-    return "error";
+  if (!codeValue) {
+	alert("This field is required");
+	return "error";
   }
 
   try {
-    const response = await postRequest(
-      "/api/two_factor_auth/verify_2FA/",
-      info
-    );
+    const response = await postRequest("/api/two_factor_auth/verify_2FA/", {
+      code: codeValue
+   });
 
     if (response.success) {
       alert("2FA Enabled !");
       return "success";
     } else {
-      console.log("Error");
+        if (response.Status === "2FA Code is Wrong") {
+            alert("Incorrect code. Please try again.");
+        } else if (response.Status === "2FA Code Timeout") {
+            alert("Code has expired. Please request a new one.");
+        } else {
+			alert("Verification failed. Please try again.");
+        }
       return "error";
     }
   } catch (error) {
     console.error("Error:", error);
+	alert("An error occurred while verifying 2FA");
     return "error";
   }
-}
-
-function isInputEmpty(code, inputContainers) {
-  for (let key of Object.keys(code)) {
-    if (!code[key]) {
-      if (key === "code") {
-        setInputFieldHint(
-          inputContainers[key],
-          "This field is required",
-          getColor("magenta", 500)
-        );
-      }
-      return true;
-    } else {
-      resetInputField(inputContainers[key]);
-    }
-  }
-  return false;
 }
 
 export function initResendCodeButton(callback) {

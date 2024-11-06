@@ -25,7 +25,7 @@ import { initLogoutButton } from "./settings/logout.js";
 import { getRequest } from "./network_utils/api_requests.js";
 import { initEmailSettings } from "./settings/update_email.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
-import { setCurrentUserInfo, setUsersInfo } from "./global_vars.js";
+import { currentPageState, PAGE_STATE, setCurrentPageState, setCurrentUserInfo, setUsersInfo } from "./global_vars.js";
 import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { initUsernameSettings } from "./settings/update_username.js";
@@ -43,6 +43,18 @@ import {
   startLocalGame,
 } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
+import {
+  initClassicLobby,
+  updateClassicLobby,
+  getInLobby,
+  createLobby,
+  joinLobby,
+} from "./lobby.js";
+import {
+  initLobbyList,
+  closeLobbyListSocket,
+} from "./lobby_list.js";
+import { closeUserUpdateSocket, connectUserUpdateSocket } from "./user_updates/websocket.js";
 import { init2FAToggle } from "./2FA_panel.js";
 import { refreshToken } from "./network_utils/token_utils.js";
 
@@ -73,16 +85,24 @@ window.addEventListener("popstate", async (event) => {
 
   if (path.startsWith("/menu")) {
     loadContentToMainMenu(lastUrlSegment);
-  } else if (path.startsWith("/main_menu")) {
-    await loadPage("main_menu");
-    await loadMainMenuContent("play");
+  } else if (path.startsWith('/main_menu')) {
+    await loadPage('main_menu');
+    await loadMainMenuContent('play');
+    setCurrentPageState(PAGE_STATE.IN_PLAY_PAGE)
   } else {
     loadContent(lastUrlSegment);
+    setCurrentPageState(PAGE_STATE.NOT_IN_MENU_PAGE)
   }
 
-  if (!path.startsWith("/menu/friends")) {
-    closeChatSocket();
-    closeFriendSystemSocket();
+  if (!path.startsWith('/menu/friends')) {
+    closeChatSocket()
+  } else if (!path.startsWith('/menu')) {
+    closeFriendSystemSocket()
+    closeUserUpdateSocket()
+  }
+
+  if (!path.startsWith('/menu/play')) {
+    closeLobbyListSocket()
   }
 });
 
@@ -113,9 +133,8 @@ export async function loadContentToMainMenu(contentName) {
     document.querySelector("#main-menu-panel > .content-container").innerHTML =
       html;
 
-    if (contentName !== "friends") {
-      closeChatSocket();
-      closeFriendSystemSocket();
+    if (contentName !== 'friends') {
+      closeChatSocket()
     }
     updateBorderColor(contentName);
     updateButtonState(contentName);
@@ -139,54 +158,59 @@ export async function loadMainMenuContent(contentName) {
 // - initializes event listeners for any ui components
 async function loadDynamicContent(contentName) {
   switch (contentName) {
-    case "start":
-      initStartPage();
-      break;
-    case "login":
-      initLoginPage();
-      break;
-    case "signup":
-      initSignupPage();
-      break;
-    case "main_menu":
-      initMainMenuPage();
-      break;
-    case "play":
-      initPlayPage();
-      break;
-    case "game":
+    case 'start':
+      initStartPage()
+      break
+    case 'login':
+      initLoginPage()
+      break
+    case 'signup':
+      initSignupPage()
+      break
+    case 'main_menu':
+      initMainMenuPage()
+      break
+    case 'play':
+      initPlayPage()
+      setCurrentPageState(PAGE_STATE.IN_PLAY_PAGE)
+      break
+    case 'game':
       // TODO: move game stuff here
-      break;
-    case "friends":
-      initFriendsPage();
-      break;
-    case "stats":
-      initStatsPage();
-      break;
-    case "how-to-play":
-      initHowToPlayPage();
-      break;
-    case "settings":
-      initSettingsPage();
-      break;
-    case "forgot_password/get_email":
-      initGetEmailPage();
-      break;
-    case "forgot_password/verify_code":
-      initVerifyCodePage();
-      break;
-    case "forgot_password/change_password":
-      initChangePasswordPage();
-      break;
-    case "forgot_password/change_password":
-      initChangePasswordPage();
-      break;
-    case "2fa_verify":
-      init2FAPages(contentName);
-      break;
-    case "2fa_enable":
-      init2FAPages(contentName);
-      break;
+      break
+    case 'friends':
+      initFriendsPage()
+      setCurrentPageState(PAGE_STATE.IN_FRIENDS_PAGE)
+      break
+    case 'stats':
+      initStatsPage()
+      setCurrentPageState(PAGE_STATE.IN_STATS_PAGE)
+      break
+    case 'how-to-play':
+      initHowToPlayPage()
+      setCurrentPageState(PAGE_STATE.IN_HOW_TO_PLAY_PAGE)
+      break
+    case 'settings':
+      initSettingsPage()
+      setCurrentPageState(PAGE_STATE.IN_SETTINGS_PAGE)
+      break
+    case 'forgot_password/get_email':
+      initGetEmailPage()
+      break
+    case 'forgot_password/verify_code':
+      initVerifyCodePage()
+      break
+    case 'forgot_password/change_password':
+      initChangePasswordPage()
+      break
+    case 'forgot_password/change_password':
+      initChangePasswordPage()
+      break
+    case '2fa_verify':
+      init2FAPages(contentName)
+      break
+    case '2fa_enable':
+      init2FAPages(contentName)
+      break
     default:
       console.error("Error: invalid contentName");
   }
@@ -280,72 +304,90 @@ async function initMainMenuPage() {
   initHotbar();
   await loadCurrentUserInfo();
   await loadUsersInfo();
+
+  connectUserUpdateSocket()
+  connectFriendSystemSocket()
 }
 
 async function initPlayPage() {
   const moveAToB = (e1, e2) => {
-    const e1Rect = e1.getBoundingClientRect();
-    const e2Rect = e2.getBoundingClientRect();
-    e1.style.top = `-${e1Rect.top - e2Rect.top}px`;
-  };
+    const e1Rect = e1.getBoundingClientRect()
+    const e2Rect = e2.getBoundingClientRect()
+    e1.style.top = `-${e1Rect.top - e2Rect.top}px`
+  }
+  const muteDiv = (div) => {
+    div.style.setProperty('pointer-events', 'none', 'important')
+    let buttons = div.querySelectorAll('button')
+    buttons.forEach((b) => b.disabled = true)
+  }
 
-  const playTypeButtons = document.getElementById("playtype");
-  const gamemodeButtons = document.getElementById("gamemode");
-  const hostJoinButtons = document.getElementById("hostjoin");
-  const gameSelectDiv = document.getElementById("play-select-container");
-  const gameSettingsDiv = document.getElementById("play-settings-container");
-  moveAToB(gamemodeButtons, playTypeButtons);
-  moveAToB(hostJoinButtons, playTypeButtons);
-  moveAToB(gameSettingsDiv, gameSelectDiv);
+  const playTypeButtons = document.getElementById('playtype')
+  const gamemodeButtons = document.getElementById('gamemode')
+  const gameSelectDiv = document.getElementById('play-select-container')
+  const gameLobbyListDiv = document.getElementById('play-lobby-list-container')
+  const gameSettingsDiv = document.getElementById('play-settings-container')
+  const gameLobbyDiv = document.getElementById('play-lobby-container')
+  moveAToB(gamemodeButtons, playTypeButtons)
+  moveAToB(gameLobbyListDiv, gameSelectDiv)
+  moveAToB(gameSettingsDiv, gameSelectDiv)
+  moveAToB(gameLobbyDiv, gameSelectDiv)
   initPanelBacklog(
-    [playTypeButtons, gamemodeButtons, hostJoinButtons],
-    [gameSelectDiv, gameSettingsDiv],
+    [playTypeButtons, gamemodeButtons],
+    [gameSelectDiv, gameLobbyListDiv, gameSettingsDiv, gameLobbyDiv],
     playTypeButtons
   );
 
   // first page
-  document.getElementById("localplay").onclick = () => {
-    setLocalPlayMode(true);
-    setCurrentPanel(playTypeButtons, gamemodeButtons);
+  document.getElementById("localplay").onclick = async () => {
+    setLocalPlayMode(true)
+    muteDiv(gameSelectDiv)
+    await loadContentToTarget('menu/play_settings_content.html', 'play-settings-container')
+    document.getElementById('settingsback').onclick = () => setCurrentDiv(gameSettingsDiv, gameSelectDiv)
+    document.getElementById('start-game').onclick = () => startLocalGame()
+    setCurrentDiv(gameSelectDiv, gameSettingsDiv)
   };
   document.getElementById("onlineplay").onclick = () => {
-    setLocalPlayMode(false);
-    setCurrentPanel(playTypeButtons, gamemodeButtons);
+    setLocalPlayMode(false)
+    setCurrentPanel(playTypeButtons, gamemodeButtons)
   };
 
   // second page
-  document.getElementById("gamemodeback").onclick = () =>
-    setCurrentPanel(gamemodeButtons, playTypeButtons);
-  document.getElementById("quickplay").onclick = async () => {
-    if (getLocalPlayMode()) {
-      await loadContentToTarget(
-        "menu/play_settings_content.html",
-        "play-settings-container"
-      );
-      document.getElementById("settingsback").onclick = () =>
-        setCurrentDiv(gameSettingsDiv, gameSelectDiv);
-      document.getElementById("start-game").onclick = () => startLocalGame();
-      setCurrentDiv(gameSelectDiv, gameSettingsDiv);
-      return;
+  const goToLobbyList = async () => {
+    muteDiv(gameSelectDiv)
+    await loadContentToTarget('menu/lobby_list_content.html', 'play-lobby-list-container')
+    document.getElementById('lobbylistback').onclick = () => {
+      closeLobbyListSocket()
+      setCurrentDiv(gameLobbyListDiv, gameSelectDiv)
     }
+    document.getElementById('lobby-host-button').onclick = async () => {
+      muteDiv(gameSelectDiv)
+      // TODO: move this to lobby stuff
+      await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
+      closeLobbyListSocket()
+      const lobbyID = await createLobby()
+      await joinLobby(lobbyID)
+      initClassicLobby(gameLobbyListDiv)
+      setCurrentDiv(gameLobbyListDiv, gameLobbyDiv)
+      updateClassicLobby()
+    }
+    initLobbyList()
+    setCurrentDiv(gameSelectDiv, gameLobbyListDiv)
+  }
+  document.getElementById("gamemodeback").onclick = () => setCurrentPanel(gamemodeButtons, playTypeButtons);
+  document.getElementById("quickplay").onclick = () => goToLobbyList()
+  document.getElementById("tournament").onclick = () => alert("not implemented yet :[");
 
-    setCurrentPanel(gamemodeButtons, hostJoinButtons);
-  };
-  document.getElementById("tournament").onclick = () => {
-    alert("not implemented yet :[");
-  };
-
-  // third page (online only)
-  document.getElementById("hostjoinback").onclick = () =>
-    setCurrentPanel(hostJoinButtons, gamemodeButtons);
-  document.getElementById("host").onclick = () => {
-    loadMultiplayerTest();
-    setCurrentDiv(gameSelectDiv, gameSettingsDiv);
-  };
-  document.getElementById("join").onclick = () => alert("not implemented");
+  // lobby page
+  if (getInLobby()) {
+    muteDiv(gameSelectDiv)
+    await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
+    initClassicLobby(gameSelectDiv)
+    setCurrentDiv(gameSelectDiv, gameLobbyDiv)
+    updateClassicLobby()
+  }
 }
 
-async function initStatsPage() {}
+async function initStatsPage() { }
 
 export async function initFriendsPage(
   state = FRIEND_LIST_STATE.SHOWING_FRIEND_LIST
@@ -356,11 +398,10 @@ export async function initFriendsPage(
     await loadFriendSearchPanel();
   }
 
-  await loadContentToTarget("menu/chat_demo.html", "friends-content-container");
-  connectFriendSystemSocket();
+  await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
 }
 
-async function initHowToPlayPage() {}
+async function initHowToPlayPage() { }
 
 async function initSettingsPage() {
   initAvatarUpload();

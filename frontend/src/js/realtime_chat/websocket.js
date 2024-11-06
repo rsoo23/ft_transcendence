@@ -48,7 +48,7 @@ export function connectChat(receiverId) {
     console.log(data)
 
     if (data) {
-      addMessage(data.sender_username, '/static/images/kirby.png', data.message, data.timestamp)
+      addMessage(data.sender_username, data.message, data.timestamp)
     }
   };
 

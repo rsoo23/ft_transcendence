@@ -14,20 +14,57 @@ export class Pos2D
 	}
 }
 
-const STYLES = {
-	'paddle': {
-		'shape': 'rect',
-		'filled': true,
-		'size': new Pos2D(7, 45),
-	},
-	'ball': {
-		'shape': 'circle',
-		'fillColour': '#ffffff',
-		'radius': 3.5,
-	},
-	'score': {
-		'shape': 'text',
+class Paddle
+{
+	constructor()
+	{
+		this.size = new Pos2D(7, 45);
 	}
+
+	draw(renderInfo, pos, prevState, nextState)
+	{
+		renderInfo.fillRectScaled(pos.x, pos.y, this.size.x, this.size.y);
+	}
+}
+
+class Ball
+{
+	constructor()
+	{
+		this.radius = 3.5;
+	}
+
+	draw(renderInfo, pos, prevState, nextState)
+	{
+		renderInfo.ctx.fillStyle = 'white'
+		renderInfo.arcScaled(pos.x + this.radius, pos.y + this.radius, this.radius, 0, 2 * Math.PI);
+		renderInfo.ctx.fill();
+	}
+}
+
+class Score
+{
+	constructor()
+	{
+		this.size = 36;
+		this.font = 'Plus Jakarta Sans';
+	}
+
+	draw(renderInfo, pos, prevState, nextState)
+	{
+		renderInfo.ctx.font = `${(this.size * renderInfo.windowScale.x)}px "${this.font}"`;
+		renderInfo.ctx.textAlign = 'center';
+		renderInfo.ctx.textBaseline = 'middle';
+		const textInfo = renderInfo.ctx.measureText(nextState.info['score'])
+		renderInfo.fillTextScaled("" + nextState.info['score'], pos.x, pos.y);
+		renderInfo.ctx.stroke()
+	}
+}
+
+const STYLES = {
+	'paddle': new Paddle(),
+	'ball': new Ball(),
+	'score': new Score(),
 }
 
 // The main renderer, it does all the work :]
@@ -149,32 +186,11 @@ export class RenderInfo
 			else
 				interpPos = nextState.pos;
 
-			// this.fillRectScaled(interpPos.x, interpPos.y, nextState.size.x, nextState.size.y);
 			const objStyle = STYLES[objInfo.name];
 			this.ctx.save();
 			this.ctx.beginPath();
-			switch (objStyle.shape)
-			{
-			case 'rect':
-				this.fillRectScaled(interpPos.x, interpPos.y, objStyle.size.x, objStyle.size.y);
-				break;
 
-			case 'circle':
-				this.ctx.fillStyle = 'white'
-				this.arcScaled(interpPos.x + objStyle.radius, interpPos.y + objStyle.radius, objStyle.radius, 0, 2 * Math.PI);
-				this.ctx.fill();
-				break;
-
-			case 'text':
-				// score
-				this.ctx.fillText("" + nextState.info['score'], interpPos.x, interpPos.y);
-				this.ctx.stroke()
-				break;
-
-			default:
-				console.log(`unknown shape "${objStyle.shape}"`);
-				break;
-			}
+			objStyle.draw(this, interpPos, prevState, nextState);
 
 			this.ctx.closePath();
 			this.ctx.restore();
@@ -223,6 +239,15 @@ export class RenderInfo
 			y * this.windowScale.y + this.windowPadding.y,
 			width * this.windowScale.x,
 			height * this.windowScale.y
+		);
+	}
+
+	fillTextScaled(text, x, y)
+	{
+		this.ctx.fillText(
+			text,
+			x * this.windowScale.x + this.windowPadding.x,
+			y * this.windowScale.y + this.windowPadding.y
 		);
 	}
 

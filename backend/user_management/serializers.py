@@ -15,6 +15,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
             'id',
             'username',
             'email',
+            'is_online',
             'first_name',
             'last_name',
             'is_active',
@@ -24,5 +25,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
             'last_login',
             'two_factor_enabled',
             'groups',
-            'user_permissions'
+            'user_permissions',
+            'avatar_img',
         ]

@@ -37,6 +37,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from django.contrib.staticfiles import finders
 # CustomUserViewSet:
 # list()        for listing all users (GET /users/)
 # retrieve()    for getting a single user (GET /users/<id>/)
@@ -53,6 +54,11 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         current_user = self.request.user
         return CustomUser.objects.exclude(id=current_user.id).exclude(is_staff=True)
+
+    def retrieve(self, request, pk=None):
+        user = CustomUser.objects.get(id=pk)
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
 
     # gets the current user's info
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
@@ -123,7 +129,10 @@ def login_view(request):
                 errors['username'] = ['Admin cannot login']
                 return JsonResponse({'success': False, 'errors': errors})
             login(request, user)
-            return JsonResponse({'success': True})
+            return JsonResponse({
+                'success': True,
+                'two_factor_enabled': user.two_factor_enabled
+            })
         else:
             if not User.objects.filter(username=username).exists():
                 errors['username'] = ['User does not exist: please sign up']
@@ -146,25 +155,6 @@ def register_view(request):
         else:
             return JsonResponse({'success': False, 'errors': form.errors}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
-
-@csrf_exempt
-def update_username(request):
-	# print("Request received~~~~~~~~~~~~", flush=True)
-    try:
-        data = json.loads(request.body)
-        new_username = data.get('new_username')
-        
-        if not new_username:
-            return JsonResponse({'status': 'error', 'message': 'New username is required'}, status=400)
-        
-        if User.objects.filter(username=new_username).exclude(pk=request.user.pk).exists():
-            return JsonResponse({'status': 'error', 'message': 'Username already exists'}, status=400)
-        
-        request.user.username = new_username
-        request.user.save()
-        return JsonResponse({'status': 'success', 'message': 'Username updated successfully'})
-    except json.JSONDecodeError:
-        return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'}, status=400)
 
 @csrf_exempt
 def logout_view(request):
@@ -330,17 +320,18 @@ def get_avatar_image(request):
     """
     Returns the user's avatar image if it exists, otherwise returns default avatar
     """
-    user = request.user
+    user_id = request.query_params.get('user_id')
+
+    try:
+        user = CustomUser.objects.get(pk=user_id)
+    except CustomUser.DoesNotExist:
+        return HttpResponse(status=404)
     
     if user.avatar_img and user.avatar_img.name:
-        try:
-            return HttpResponse(user.avatar_img, content_type='image/jpeg')
-        except:
-            # If there's any error reading the file, fall back to default
-            pass
-            
+        return HttpResponse(user.avatar_img, content_type='image/jpeg')
+
     # Return default avatar
-    default_avatar_path = os.path.join(settings.STATIC_ROOT, 'images', 'kirby.png')
+    default_avatar_path = finders.find('images/kirby.png')
     try:
         with open(default_avatar_path, 'rb') as f:
             return HttpResponse(f.read(), content_type='image/png')
