@@ -1,5 +1,5 @@
 import { addEventListenerTo } from "../ui_utils/ui_utils.js";
-import { avatarPaths, currentUserInfo, MAX_AVATAR_FILE_SIZE, setAvatarPath } from "../global_vars.js";
+import { currentUserInfo, MAX_AVATAR_FILE_SIZE } from "../global_vars.js";
 import { postRequest } from "../network_utils/api_requests.js";
 import { getAccessToken } from "../network_utils/token_utils.js";
 
@@ -91,33 +91,22 @@ async function uploadAvatarImage() {
 }
 
 export async function loadUserAvatar(avatarElement, userId) {
-  for (let key in avatarPaths) {
-    if (Number(key) === userId) {
-      // console.log('existing path found: ', userId, avatarPaths[key])
-      avatarElement.src = avatarPaths[key]
-      return
-    }
-  }
-
-  try {
-    const response = await fetch(`/api/get_avatar_image/?user_id=${userId}`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+    try {
+        const response = await fetch(`/api/get_avatar_image/?user_id=${userId}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Authorization': `Bearer ${getAccessToken()}` }
     });
-
+  
     if (response.ok) {
-      const blob = await response.blob();
-      const imageUrl = URL.createObjectURL(blob);
-
-      avatarElement.src = imageUrl;
-      setAvatarPath(userId, imageUrl)
+        const blob = await response.blob();
+        const imageUrl = URL.createObjectURL(blob);
+        avatarElement.src = imageUrl;
     } else {
-      setDefaultAvatar();
+        setDefaultAvatar(avatarElement);
     }
-  } catch (error) {
-    console.error('Error loading avatar:', error);
-    setDefaultAvatar();
-  }
-}
-
+    } catch (error) {
+      console.error('Error loading avatar:', error);
+      setDefaultAvatar(avatarElement);
+    }
+    }
