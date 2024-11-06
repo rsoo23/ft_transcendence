@@ -80,6 +80,7 @@
 }
 
 #profile-settings-container .avatar-container {
+  position: relative;
   width: 5rem;
   height: 5rem;
   background-color: var(--charcoal-100);
@@ -197,3 +198,13 @@
   background-color: var(--blue-500);
   transition: 0.3s;
 }
+
+.profile-settings-pencil-icon.edit-avatar-icon {
+	position: absolute;
+	bottom: 0;
+	right: -2rem;
+	border-radius: 50%;
+	padding: 0.25rem;
+	font-size: 1.5rem;
+	z-index: 1;
+  }
