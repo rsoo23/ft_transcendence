@@ -25,5 +25,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
             'last_login',
             'two_factor_enabled',
             'groups',
-            'user_permissions'
+            'user_permissions',
+            'avatar_img',
         ]

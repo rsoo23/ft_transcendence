@@ -43,6 +43,17 @@ import {
   startLocalGame,
 } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
+import {
+  initClassicLobby,
+  updateClassicLobby,
+  getInLobby,
+  createLobby,
+  joinLobby,
+} from "./lobby.js";
+import {
+  initLobbyList,
+  closeLobbyListSocket,
+} from "./lobby_list.js";
 import { closeUserUpdateSocket, connectUserUpdateSocket } from "./user_updates/websocket.js";
 import { init2FAToggle } from "./2FA_panel.js";
 
@@ -87,6 +98,10 @@ window.addEventListener("popstate", async (event) => {
   } else if (!path.startsWith('/menu')) {
     closeFriendSystemSocket()
     closeUserUpdateSocket()
+  }
+
+  if (!path.startsWith('/menu/play')) {
+    closeLobbyListSocket()
   }
 });
 
@@ -287,71 +302,87 @@ async function initMainMenuPage() {
   initHotbar();
   await loadCurrentUserInfo();
   await loadUsersInfo();
+
+  connectUserUpdateSocket()
+  connectFriendSystemSocket()
 }
 
 async function initPlayPage() {
   const moveAToB = (e1, e2) => {
-    const e1Rect = e1.getBoundingClientRect();
-    const e2Rect = e2.getBoundingClientRect();
-    e1.style.top = `-${e1Rect.top - e2Rect.top}px`;
-  };
+    const e1Rect = e1.getBoundingClientRect()
+    const e2Rect = e2.getBoundingClientRect()
+    e1.style.top = `-${e1Rect.top - e2Rect.top}px`
+  }
+  const muteDiv = (div) => {
+    div.style.setProperty('pointer-events', 'none', 'important')
+    let buttons = div.querySelectorAll('button')
+    buttons.forEach((b) => b.disabled = true)
+  }
 
-  const playTypeButtons = document.getElementById("playtype");
-  const gamemodeButtons = document.getElementById("gamemode");
-  const hostJoinButtons = document.getElementById("hostjoin");
-  const gameSelectDiv = document.getElementById("play-select-container");
-  const gameSettingsDiv = document.getElementById("play-settings-container");
-  moveAToB(gamemodeButtons, playTypeButtons);
-  moveAToB(hostJoinButtons, playTypeButtons);
-  moveAToB(gameSettingsDiv, gameSelectDiv);
+  const playTypeButtons = document.getElementById('playtype')
+  const gamemodeButtons = document.getElementById('gamemode')
+  const gameSelectDiv = document.getElementById('play-select-container')
+  const gameLobbyListDiv = document.getElementById('play-lobby-list-container')
+  const gameSettingsDiv = document.getElementById('play-settings-container')
+  const gameLobbyDiv = document.getElementById('play-lobby-container')
+  moveAToB(gamemodeButtons, playTypeButtons)
+  moveAToB(gameLobbyListDiv, gameSelectDiv)
+  moveAToB(gameSettingsDiv, gameSelectDiv)
+  moveAToB(gameLobbyDiv, gameSelectDiv)
   initPanelBacklog(
-    [playTypeButtons, gamemodeButtons, hostJoinButtons],
-    [gameSelectDiv, gameSettingsDiv],
+    [playTypeButtons, gamemodeButtons],
+    [gameSelectDiv, gameLobbyListDiv, gameSettingsDiv, gameLobbyDiv],
     playTypeButtons
   );
 
   // first page
-  document.getElementById("localplay").onclick = () => {
-    setLocalPlayMode(true);
-    setCurrentPanel(playTypeButtons, gamemodeButtons);
+  document.getElementById("localplay").onclick = async () => {
+    setLocalPlayMode(true)
+    muteDiv(gameSelectDiv)
+    await loadContentToTarget('menu/play_settings_content.html', 'play-settings-container')
+    document.getElementById('settingsback').onclick = () => setCurrentDiv(gameSettingsDiv, gameSelectDiv)
+    document.getElementById('start-game').onclick = () => startLocalGame()
+    setCurrentDiv(gameSelectDiv, gameSettingsDiv)
   };
   document.getElementById("onlineplay").onclick = () => {
-    setLocalPlayMode(false);
-    setCurrentPanel(playTypeButtons, gamemodeButtons);
+    setLocalPlayMode(false)
+    setCurrentPanel(playTypeButtons, gamemodeButtons)
   };
 
   // second page
-  document.getElementById("gamemodeback").onclick = () =>
-    setCurrentPanel(gamemodeButtons, playTypeButtons);
-  document.getElementById("quickplay").onclick = async () => {
-    if (getLocalPlayMode()) {
-      await loadContentToTarget(
-        "menu/play_settings_content.html",
-        "play-settings-container"
-      );
-      document.getElementById("settingsback").onclick = () =>
-        setCurrentDiv(gameSettingsDiv, gameSelectDiv);
-      document.getElementById("start-game").onclick = () => startLocalGame();
-      setCurrentDiv(gameSelectDiv, gameSettingsDiv);
-      return;
+  const goToLobbyList = async () => {
+    muteDiv(gameSelectDiv)
+    await loadContentToTarget('menu/lobby_list_content.html', 'play-lobby-list-container')
+    document.getElementById('lobbylistback').onclick = () => {
+      closeLobbyListSocket()
+      setCurrentDiv(gameLobbyListDiv, gameSelectDiv)
     }
-
-    setCurrentPanel(gamemodeButtons, hostJoinButtons);
-  };
-  document.getElementById("tournament").onclick = () => {
-    alert("not implemented yet :[");
-  };
-
-  // third page (online only)
-  document.getElementById('hostjoinback').onclick = () => setCurrentPanel(hostJoinButtons, gamemodeButtons)
-  document.getElementById('host').onclick = () => {
-    loadMultiplayerTest()
-    setCurrentDiv(gameSelectDiv, gameSettingsDiv)
+    document.getElementById('lobby-host-button').onclick = async () => {
+      muteDiv(gameSelectDiv)
+      // TODO: move this to lobby stuff
+      await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
+      closeLobbyListSocket()
+      const lobbyID = await createLobby()
+      await joinLobby(lobbyID)
+      initClassicLobby(gameLobbyListDiv)
+      setCurrentDiv(gameLobbyListDiv, gameLobbyDiv)
+      updateClassicLobby()
+    }
+    initLobbyList()
+    setCurrentDiv(gameSelectDiv, gameLobbyListDiv)
   }
-  document.getElementById('join').onclick = () => alert('not implemented')
+  document.getElementById("gamemodeback").onclick = () => setCurrentPanel(gamemodeButtons, playTypeButtons);
+  document.getElementById("quickplay").onclick = () => goToLobbyList()
+  document.getElementById("tournament").onclick = () => alert("not implemented yet :[");
 
-  connectUserUpdateSocket()
-  connectFriendSystemSocket()
+  // lobby page
+  if (getInLobby()) {
+    muteDiv(gameSelectDiv)
+    await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
+    initClassicLobby(gameSelectDiv)
+    setCurrentDiv(gameSelectDiv, gameLobbyDiv)
+    updateClassicLobby()
+  }
 }
 
 async function initStatsPage() { }

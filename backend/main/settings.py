@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'friends_system',
     'channels',
     'pong',
+    'lobby',
 ]
 
 AUTHENTICATION_BACKENDS = [
