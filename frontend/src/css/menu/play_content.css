@@ -310,6 +310,11 @@
 .lobby-tournament-player-list .lobby-entry-container {
   padding: 0.1rem;
   align-items: center;
+  cursor: auto;
+}
+
+.lobby-tournament-player-list .lobby-entry-container:hover {
+  background-color: var(--charcoal-800);
 }
 
 .lobby-tournament-player-list .lobby-entry-container img {
