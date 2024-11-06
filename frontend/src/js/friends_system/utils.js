@@ -243,7 +243,8 @@ function createFriendRecord(username, iconsInfo) {
 
   const avatarName = document.createElement('div');
   avatarName.className = 'avatar-name';
-  avatarName.textContent = truncateString(username, 9);
+  avatarName.textContent = username;
+  avatarName.classList.add('no-scrollbar')
 
   const iconsSection = document.createElement('div');
   iconsSection.className = 'icons-section';

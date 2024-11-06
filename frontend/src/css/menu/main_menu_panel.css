@@ -58,7 +58,6 @@
 .notification {
   display: flex;
   align-items: center;
-  justify-content: center;
   width: 0rem;
   height: 2.5rem;
   border-radius: 0.75rem;

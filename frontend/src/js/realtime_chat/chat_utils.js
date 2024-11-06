@@ -3,7 +3,7 @@ import { getRequest } from "../network_utils/api_requests.js";
 import { loadUserAvatar } from "../settings/upload_avatar.js";
 import { hideOverlay, showOverlay } from "../ui_utils/overlay_utils.js";
 import { scrollToBottom } from "../ui_utils/scroll.js";
-import { addEventListenerTo, addTextPlaceholder, loadContentToTarget } from "../ui_utils/ui_utils.js";
+import { addEventListenerTo, addTextPlaceholder, loadContentToTarget, truncateString } from "../ui_utils/ui_utils.js";
 import { loadFriendProfile } from "./friend_profile_utils.js";
 import { chatSocket, connectChat } from "./websocket.js";
 
@@ -138,7 +138,7 @@ export function addMessage(username, message, datetime) {
 
   const userNamePara = document.createElement('p');
   userNamePara.classList.add('username');
-  userNamePara.textContent = username;
+  userNamePara.textContent = truncateString(username, 20);
 
   const dateTimePara = document.createElement('p');
   dateTimePara.classList.add('message-datetime');

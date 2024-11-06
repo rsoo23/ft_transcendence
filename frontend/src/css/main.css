@@ -172,3 +172,8 @@ a:active {
 .input-field::placeholder {
   color: var(--charcoal-300);
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+

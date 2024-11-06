@@ -1,5 +1,6 @@
 import { getUsername, setOnlineStatus } from "../global_vars.js"
 import { loadUserAvatar } from "../settings/upload_avatar.js"
+import { truncateString } from "../ui_utils/ui_utils.js"
 
 export function loadFriendProfile(userId) {
   const profileContainer = document.querySelector('.profile-container')
@@ -17,6 +18,7 @@ export function loadFriendProfile(userId) {
   setOnlineStatus(statusBadge, userId)
 
   usernameDiv.innerHTML = friendUsername
-  pvpUsersLabel.innerHTML = `You vs ${friendUsername}`
+  usernameDiv.classList.add('no-scrollbar')
+  pvpUsersLabel.innerHTML = `You vs ${truncateString(friendUsername, 12)}`
 }
 
