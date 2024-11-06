@@ -1,6 +1,6 @@
 #profile-settings-container {
 	width: 100%;
-	max-width: 50rem;
+	max-width: 40rem;
 	margin: 0 auto;
 	border-radius: 1.25rem;
 	padding: 2rem;
@@ -15,7 +15,7 @@
   .profile-settings-grid {
 	display: flex;
 	flex-direction: column;
-	gap: 2rem;
+	gap: 1.5rem;
   }
  
   .avatar-section {
@@ -44,7 +44,7 @@
   }
   
 .profile-settings-label {
-  font-size: 1.125rem;
+  font-size: 1rem;
 }
 
 .profile-settings-input {
@@ -54,7 +54,7 @@
 	border-radius: 1.25rem;
 	padding: 0.5rem 1rem;
 	color: var(--charcoal-100);
-	font-size: 1rem;
+	font-size: 0.9rem;
   }
 
   .twofa-section {
