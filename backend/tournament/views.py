@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.core.cache import cache
 from .models import TournamentModel
+import json
 
 def create_tournament(lobby_id, host, users):
     tournament = TournamentModel.objects.create(host=host)
@@ -21,8 +22,8 @@ def create_bracket(id, bracket_num, pairs, users):
     user_i = 0
     for i in range(pairs):
         user1 = users[user_i]
-        user2 = users[user_i + 1] if user_i < len(users) else None
-        pair = (users[user_i], users[user_i + 1])
+        user2 = users[user_i + 1] if user_i + 1 < len(users) else None
+        pair = (user1, user2)
         user_i += 2
         set_tournament_cache(id, f'tournament-{id}-{bracket_num}-{i}', json.dumps(pair))
 
