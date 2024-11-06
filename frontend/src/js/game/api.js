@@ -56,7 +56,7 @@ async function checkSocket() {
 async function createSocket(matchID) {
   inMatchID = matchID
   matchSocket = new WebSocket(
-    `ws://localhost:8000/ws/pong/${matchID}`,
+    `ws://${window.location.host}/ws/pong/${matchID}`,
     ['Authorization', getAccessToken()]
   )
   matchSocket.onmessage = (e) => {

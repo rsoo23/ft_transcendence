@@ -24,11 +24,12 @@ export async function createLobby() {
     return response.lobby_id
   }
 
+  console.log(response.reason)
   return null
 }
 
 export async function joinLobby(id) {
-  lobbySocket = new WebSocket(`ws://localhost:8000/ws/lobby/${id}`, ['Authorization', getAccessToken()])
+  lobbySocket = new WebSocket(`ws://${window.location.host}/ws/lobby/${id}`, ['Authorization', getAccessToken()])
   lobbySocket.onmessage = async (e) => {
     const data = JSON.parse(e.data)
     console.log(data)
