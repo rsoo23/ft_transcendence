@@ -50,8 +50,15 @@ export async function joinLobby(id) {
           continue
         }
 
+        const user = lobbyUsers[i]
         lobbyUsers.splice(i, 1)
-        updateClassicLobby()
+        queueNotification('magenta', `${user.username} has left the lobby.`, () => {})
+        if (lobbyType == 'tournament') {
+          removeTournamentUser(user)
+          updateTournamentLobby()
+        } else {
+          updateClassicLobby()
+        }
         break
       }
       break
@@ -61,7 +68,9 @@ export async function joinLobby(id) {
       response['ready'] = false
       lobbyUsers.push(response)
       queueNotification('teal', `${response.username} has joined the lobby.`, () => {})
-      if (lobbyType == 'classic') {
+      if (lobbyType == 'tournament') {
+        updateTournamentLobby()
+      } else {
         updateClassicLobby()
       }
       break
@@ -74,7 +83,11 @@ export async function joinLobby(id) {
         response['ready'] = user.ready
         lobbyUsers[i] = response
       }
-      updateClassicLobby()
+      if (lobbyType == 'tournament') {
+        updateTournamentLobby()
+      } else {
+        updateClassicLobby()
+      }
 
     case 'ready':
       for (const user of lobbyUsers) {
@@ -84,13 +97,21 @@ export async function joinLobby(id) {
 
         user.ready = data.ready
       }
-      updateClassicLobby()
+      if (lobbyType == 'tournament') {
+        updateTournamentLobby()
+      } else {
+        updateClassicLobby()
+      }
       break
 
     case 'start':
       lobbyStarting = true
       queueNotification('teal', 'Game starting...', () => {})
-      updateClassicLobby()
+      if (lobbyType == 'tournament') {
+        updateTournamentLobby()
+      } else {
+        updateClassicLobby()
+      }
       break
 
     case 'close':
@@ -126,12 +147,13 @@ export async function joinLobby(id) {
 
 var lobbyBackButtonDivCache = null
 export function leaveLobby() {
+  const isTournament = (lobbyType == 'tournament')
   inLobby = false
   lobbyType = ''
   lobbyUsers = []
   lobbyStarting = false
   if (document.getElementById('lobby-list') != null) {
-    initLobbyList()
+    initLobbyList(isTournament)
   }
   if (lobbySocket != null) {
     lobbySocket.close()
@@ -237,4 +259,76 @@ function setClassicPlayerInfo(info, prefix) {
       ready.style.setProperty('background-color', 'var(--teal-500)')
     }
   }
+}
+
+export function initTournamentLobby(previousDiv) {
+  // init self
+  lobbyBackButtonDivCache = previousDiv
+  document.getElementById('lobbyback').onclick = () => leaveLobby()
+
+  const readyButton = (e) => {
+    const value = (e.target.textContent != 'Unready')
+    lobbySocket.send(JSON.stringify({
+      'action': 'ready',
+      'value': value,
+    }))
+  }
+
+  document.getElementById('start-game').onclick = () => lobbySocket.send('{"action": "start"}')
+
+  inLobby = true
+  lobbyType = 'tournament'
+}
+
+export function updateTournamentLobby() {
+  const path = window.location.pathname;
+  if (!path.startsWith('/menu/play')) {
+    return
+  }
+
+  for (const user of lobbyUsers) {
+    const existingEntry = document.getElementById(`tournament-user-${user.id}`)
+    if (!existingEntry && 'username' in user) {
+      appendTournamentUser(user)
+    } else if (existingEntry && (user == null || !('username' in user))) {
+      removeTournamentUser(existingEntry)
+    } else {
+      const ready = existingEntry.querySelector('i')
+      ready.style.setProperty('visibility', (user.ready)? 'visible' : 'hidden')
+    }
+  }
+}
+
+function appendTournamentUser(info) {
+  const avatar = document.createElement('img')
+  avatar.classList.add('profile-settings-avatar')
+  if (info.avatar_img == null) {
+    avatar.src = "/static/images/kirby.png";
+  } else {
+    avatar.src = info.avatar_img
+  }
+
+  const name = document.createElement('p')
+  name.textContent = info.username
+
+  const ready = document.createElement('i')
+  ready.classList.add('material-icons')
+  ready.style.setProperty('visibility', (info.ready)? 'visible' : 'hidden')
+  ready.textContent = 'done'
+
+  const div = document.createElement('div')
+  div.id = `tournament-user-${info.id}`
+  div.classList.add('lobby-entry-container')
+  div.appendChild(avatar)
+  div.appendChild(name)
+  div.appendChild(ready)
+
+  const list = document.getElementById('player-list')
+  list.appendChild(div)
+}
+
+function removeTournamentUser(info) {
+  const entry = document.getElementById(`tournament-user-${info.id}`)
+  const list = document.getElementById('player-list')
+  list.removeChild(entry)
 }

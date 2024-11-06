@@ -296,3 +296,38 @@
   margin-left: auto;
   margin-right: auto;
 }
+
+.lobby-tournament-player-list {
+  overflow: auto;
+  border-style: solid;
+  border-width: 0.35rem;
+  border-color: var(--charcoal-100);
+  border-radius: 3rem;
+  box-sizing: border-box;
+  justify-content: normal;
+}
+
+.lobby-tournament-player-list .lobby-entry-container {
+  padding: 0.1rem;
+  align-items: center;
+}
+
+.lobby-tournament-player-list .lobby-entry-container img {
+  height: 3rem;
+  width: 3rem;
+  margin-left: 0.1rem;
+}
+
+.lobby-tournament-player-list .lobby-entry-container p {
+  font-size: 1rem;
+}
+
+.lobby-tournament-player-list .lobby-entry-container i {
+  font-size: 2rem;
+  margin-right: 1rem;
+}
+
+.lobby-tournament-player-list .lobby-entry-container .material-icons {
+  margin-left: auto;
+  color: var(--teal-500);
+}

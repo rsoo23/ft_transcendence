@@ -1,14 +1,25 @@
 import { getAccessToken } from "./network_utils/token_utils.js"
 import { getRequest } from "./network_utils/api_requests.js"
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
-import { joinLobby, initClassicLobby } from "./lobby.js";
+import {
+  initClassicLobby,
+  updateClassicLobby,
+  getInLobby,
+  createLobby,
+  createTournamentLobby,
+  initTournamentLobby,
+  updateTournamentLobby,
+  joinLobby,
+} from "./lobby.js";
 import { divSwitcher } from "./play_panel.js";
 
 var lobbyListSocket = null
+var lobbyListTournament = false
 
 export async function initLobbyList(isTournament) {
   document.getElementById('lobby-list').innerHTML = ''
-  lobbyListSocket = new WebSocket('ws://localhost:8000/ws/lobby_list/', [
+  lobbyListTournament = isTournament
+  lobbyListSocket = new WebSocket(`ws://${window.location.host}/ws/lobby_list/`, [
     'Authorization', getAccessToken(),
     'IsTournament', `${isTournament}`,
   ])
@@ -44,18 +55,32 @@ export function closeLobbyListSocket() {
   }
 }
 
+export async function goToLobby(lobbyID, isTournament) {
+  const content = (isTournament)? 'menu/lobby_tournament_content.html' : 'menu/lobby_classic_content.html'
+  await loadContentToTarget(content, 'play-lobby-container')
+  closeLobbyListSocket()
+  await joinLobby(lobbyID)
+
+  const prevDiv = document.getElementById('play-lobby-list-container')
+  if (isTournament) {
+    initTournamentLobby(prevDiv)
+  } else {
+    initClassicLobby(prevDiv)
+  }
+  divSwitcher.setCurrentDiv(prevDiv, document.getElementById('play-lobby-container'))
+  if (isTournament) {
+    updateTournamentLobby()
+  } else {
+    updateClassicLobby()
+  }
+}
+
 async function appendLobbyEntry(lobbyId) {
   const buttonJoinLobby = async (e) => {
     const target = e.currentTarget
     const substr = target.id.substring('lobby-entry-'.length)
     const lobbyID = Number(substr)
-    await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
-    await joinLobby(lobbyID)
-
-    const prevDiv = document.getElementById('play-lobby-list-container')
-    initClassicLobby(prevDiv)
-    closeLobbyListSocket()
-    divSwitcher.setCurrentDiv(prevDiv, document.getElementById('play-lobby-container'))
+    await goToLobby(lobbyID, lobbyListTournament)
   }
 
   const lobbyList = document.getElementById('lobby-list')

@@ -21,8 +21,8 @@ import { initUsernameSettings } from "./settings/update_username.js";
 import { closeFriendSystemSocket, connectFriendSystemSocket, } from "./friends_system/websocket.js";
 import { initPlayDivs, startingMenuSwitcher, divSwitcher, loadMultiplayerTest, startLocalGame, } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
-import { initClassicLobby, updateClassicLobby, getInLobby, createLobby, createTournamentLobby, joinLobby } from "./lobby.js";
-import { initLobbyList, closeLobbyListSocket, } from "./lobby_list.js";
+import { initClassicLobby, updateClassicLobby, getInLobby, createLobby, createTournamentLobby, initTournamentLobby, updateTournamentLobby, joinLobby } from "./lobby.js";
+import { initLobbyList, closeLobbyListSocket, goToLobby } from "./lobby_list.js";
 import { closeUserUpdateSocket, connectUserUpdateSocket } from "./user_updates/websocket.js";
 import { init2FAToggle } from "./2FA_panel.js";
 import { generateArcBackground, generateGeometricBackground, getRandomInt, loadMainBackground, removeBackground, setBackgroundLinesColor } from "./animations/main_background.js";
@@ -320,13 +320,13 @@ async function initPlayPage() {
     document.getElementById('lobby-host-button').onclick = async () => {
       divSwitcher.disableDivInput('play-select-container')
       // TODO: move this to lobby stuff
-      await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
-      closeLobbyListSocket()
-      const lobbyID = await createLobby()
-      await joinLobby(lobbyID)
-      initClassicLobby('play-lobby-list-container')
-      divSwitcher.setCurrentDiv('play-lobby-list-container', 'play-lobby-container')
-      updateClassicLobby()
+      let lobbyID
+      if (isTournament) {
+        lobbyID = await createTournamentLobby(20)
+      } else {
+        lobbyID = await createLobby()
+      }
+      await goToLobby(lobbyID, isTournament)
     }
     initLobbyList(isTournament)
     divSwitcher.setCurrentDiv('play-select-container', 'play-lobby-list-container')

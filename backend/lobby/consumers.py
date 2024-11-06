@@ -2,6 +2,8 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from .models import LobbyModel
 from django.core.cache import cache
 from pong.views import create_match_and_game
+from tournament.views import create_tournament
+from asgiref.sync import sync_to_async
 import json
 
 GROUP_LOBBYLIST = 'lobbylist'
@@ -27,6 +29,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
         self.max_users = model.max_users
         self.is_tournament = model.is_tournament
         self.is_host = (self.user_id == model.host_id)
+        print(self.is_host)
         if not self.is_host:
             await self.channel_layer.group_send(self.group_lobby, {
                 'type': 'lobby.notify.join',
@@ -91,12 +94,22 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                     return
 
                 await self.channel_layer.group_send(self.group_lobby, {'type': 'lobby.notify.start'})
-                users = json.loads(cache.get(self.group_lobby))
-                match = await create_match_and_game(users[0]['id'], users[1]['id'], False)
-                await self.channel_layer.group_send(self.group_lobby, {
-                    'type': 'lobby.notify.match',
-                    'id': match.id
-                })
+                if self.is_tournament:
+                    # TODO: make tournament and do lobby.notify.tournament
+                    users = json.loads(cache.get(self.group_lobby))
+                    tournament = await sync_to_async(create_tournament)(self.lobby_id, self.scope['user'], users)
+                    await self.channel_layer.group_send(self.group_lobby, {
+                        'type': 'lobby.notify.tournament',
+                        'id': tournament.id
+                    })
+
+                else:
+                    users = json.loads(cache.get(self.group_lobby))
+                    match = await create_match_and_game(users[0]['id'], users[1]['id'], False)
+                    await self.channel_layer.group_send(self.group_lobby, {
+                        'type': 'lobby.notify.match',
+                        'id': match.id
+                    })
 
             case 'stop':
                 if not self.is_host:
