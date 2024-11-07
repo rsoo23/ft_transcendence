@@ -1,18 +1,7 @@
-import {
-  initHotbar,
-  updateBorderColor,
-  updateButtonState,
-} from "./ui_utils/hotbar_utils.js";
-import {
-  initBackButton,
-  initRandomColorButton,
-} from "./ui_utils/button_utils.js";
+import { initHotbar, updateBorderColor, updateButtonState, } from "./ui_utils/hotbar_utils.js";
+import { initBackButton, initRandomColorButton, } from "./ui_utils/button_utils.js";
 import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
-import {
-  FRIEND_LIST_STATE,
-  loadFriendListPanel,
-  loadFriendSearchPanel,
-} from "./friends_system/utils.js";
+import { FRIEND_LIST_STATE, loadFriendListPanel, loadFriendSearchPanel, } from "./friends_system/utils.js";
 import { handle2FA, initResendCodeButton } from "./2FA_panel.js";
 import { send_otp_2FA } from "./network_utils/2FA_utils.js";
 import { check_email } from "./forgot_password/get_email.js";
@@ -29,31 +18,11 @@ import { currentPageState, PAGE_STATE, setCurrentPageState, setCurrentUserInfo, 
 import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { initUsernameSettings } from "./settings/update_username.js";
-import {
-  closeFriendSystemSocket,
-  connectFriendSystemSocket,
-} from "./friends_system/websocket.js";
-import {
-  setLocalPlayMode,
-  getLocalPlayMode,
-  initPanelBacklog,
-  setCurrentPanel,
-  setCurrentDiv,
-  loadMultiplayerTest,
-  startLocalGame,
-} from "./play_panel.js";
+import { closeFriendSystemSocket, connectFriendSystemSocket, } from "./friends_system/websocket.js";
+import { setLocalPlayMode, getLocalPlayMode, initPanelBacklog, setCurrentPanel, setCurrentDiv, loadMultiplayerTest, startLocalGame, } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
-import {
-  initClassicLobby,
-  updateClassicLobby,
-  getInLobby,
-  createLobby,
-  joinLobby,
-} from "./lobby.js";
-import {
-  initLobbyList,
-  closeLobbyListSocket,
-} from "./lobby_list.js";
+import { initClassicLobby, updateClassicLobby, getInLobby, createLobby, joinLobby, } from "./lobby.js";
+import { initLobbyList, closeLobbyListSocket, } from "./lobby_list.js";
 import { closeUserUpdateSocket, connectUserUpdateSocket } from "./user_updates/websocket.js";
 import { init2FAToggle } from "./2FA_panel.js";
 import { generateArcBackground, generateGeometricBackground, getRandomInt, loadMainBackground, removeBackground, setBackgroundLinesColor } from "./animations/main_background.js";

@@ -2,15 +2,18 @@ from .data import Vector2, ObjectState
 from .paddle import Paddle
 import copy
 import math
+import random
 
 class Ball():
     size = Vector2(7, 7)
     sqrt_of_two = 2 ** (1 / 2)
+    colors = ['#08B393', '#CF2350', '#E37144', '#2A86BB', '#F6B20D', '#8E92B9']
 
     def __init__(self, x, y, vx, vy, speed):
         self.pos = Vector2(x, y)
         self.vector = Vector2(vx, vy)
         self.speed = speed
+        self.color_idx = random.randint(0, 5)
 
     # basically checks if the path of the ball intersects with a paddle
     def check_paddle_collision(self, prev_pos, paddle):
@@ -69,6 +72,18 @@ class Ball():
                 if not self.check_paddle_collision(prev_pos, paddle):
                     continue
 
+                # check if the color of paddle matches the ball's color
+                if self.color_idx != paddle.color_idx:
+                    if paddle.player_num == 1:
+                        game_info.score[1] += 1
+                        # self.pos.x = 0
+                    else:
+                        game_info.score[0] += 1
+                        # self.pos.x = game_info.game_size.x - Ball.size.x
+
+                if game_info.score[0] >= game_info.win_score or game_info.score[1] >= game_info.win_score:
+                    game_info.ended = True
+
                 if self.vector.x < 0:
                     self.pos.x = paddle.pos.x + Paddle.size.x
 
@@ -84,6 +99,9 @@ class Ball():
                 # no shooting in a straight line
                 min_angle = 10
                 new_angle = max(new_angle, min_angle) if new_angle >= 0 else min(new_angle, -min_angle)
+
+                # set to random color
+                self.color_idx = random.randint(0, 5)
 
                 if self.vector.x > 0:
                     new_angle = 180 - new_angle
@@ -133,7 +151,7 @@ class Ball():
             states.append(self.pos, alpha)
             to_travel = calc_travel_dist(self.vector, self.speed, dist_scale)
 
-        states.append(self.pos, 1.0)
+        states.append(self.pos, 1.0, {'color': Ball.colors[self.color_idx]})
         return states
 
 # respawns the ball after 5 seconds
@@ -148,6 +166,7 @@ class BallTimer():
 
         # TODO: randomize angle
         new_ball = Ball(game_info.game_size.x / 2, game_info.game_size.y / 2, math.cos(math.radians(45)), math.sin(math.radians(45)), 200)
+        new_ball.color_idx = random.randint(0, 5)
         game_info.objects.append(new_ball)
         game_info.objects.remove(self)
         return None

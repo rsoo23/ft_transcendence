@@ -3,10 +3,12 @@ from .data import Vector2, ObjectState
 class Paddle():
     size = Vector2(7, 45)
     speed = 250
+    colors = ['#08B393', '#CF2350', '#E37144', '#2A86BB', '#F6B20D', '#8E92B9']
 
     def __init__(self, x, y, player_num):
         self.pos = Vector2(x, y)
         self.player_num = player_num
+        self.color_idx = 0
 
     def tick(self, game_info, dt):
         states = ObjectState('paddle')
@@ -19,8 +21,24 @@ class Paddle():
         if player_input.get_input('down'):
             self.pos.y += Paddle.speed * dt
 
+        if player_input.get_input('left'):
+            if self.color_idx == 0:
+                self.color_idx = 5
+            else:
+                self.color_idx -= 1
+
+            player_input.set_input('left', False)
+
+        if player_input.get_input('right'):
+            if self.color_idx == 5:
+                self.color_idx = 0
+            else:
+                self.color_idx += 1
+
+            player_input.set_input('right', False)
+
         # clamp pos
         self.pos.y = min(max(self.pos.y, 0), game_info.game_size.y - Paddle.size.y)
 
-        states.append(self.pos, 1.0)
+        states.append(self.pos, 1.0, {'color': Paddle.colors[self.color_idx]})
         return states
