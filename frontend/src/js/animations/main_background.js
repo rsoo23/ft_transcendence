@@ -3,8 +3,17 @@ import { loadContentToTarget } from "../ui_utils/ui_utils.js";
 
 export async function loadMainBackground() {
   await loadContentToTarget('main_background.html', 'main-background')
-  generateGeometricBackground()
-  // // generateArcBackground()
+
+  const type = getRandomInt(0, 1)
+
+  switch (type) {
+    case 0:
+      generateGeometricBackground()
+      break
+    case 1:
+      generateArcBackground()
+      break
+  }
 }
 
 export function getRandomInt(min, max) {

@@ -241,17 +241,7 @@ async function initStartPage() {
   );
   initRandomColorButton("surprise-button", "start-page-panel", () => {
     removeBackground()
-
-    const type = getRandomInt(0, 1)
-
-    switch (type) {
-      case 0:
-        generateGeometricBackground()
-        break
-      case 1:
-        generateArcBackground()
-        break
-    }
+    loadMainBackground()
   }
   );
 }
