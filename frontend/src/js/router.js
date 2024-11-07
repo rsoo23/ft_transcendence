@@ -15,7 +15,7 @@ import {
 } from "./friends_system/utils.js";
 import { handle2FA, initResendCodeButton } from "./2FA_panel.js";
 import { send_otp_2FA } from "./network_utils/2FA_utils.js";
-import { check_email } from "./forgot_password/get_email.js";
+import { check_email, initEmailForm } from "./forgot_password/get_email.js";
 import { verify_code } from "./forgot_password/verify_code.js";
 import { handle_change_password } from "./forgot_password/change_password.js";
 import { handleLogin } from "./login_panel.js";
@@ -422,6 +422,7 @@ async function initSettingsPage() {
 
 function initGetEmailPage() {
   initBackButton(() => loadPage("login"));
+  initEmailForm();
   initRandomColorButton("submit-email-button", "get-email-panel", async () => {
     const result = await check_email();
 
