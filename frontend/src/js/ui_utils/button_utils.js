@@ -1,6 +1,7 @@
 
 import { addEventListenerTo } from "./ui_utils.js";
 import { getColor, getRandomColor } from "./color_utils.js";
+import { setBackgroundLinesColor } from "../animations/main_background.js";
 
 export function initBackButton(callback) {
   const backToStartButton = document.getElementById('back-button')
@@ -76,6 +77,8 @@ export function initRandomColorButton(buttonID, panelID, callback) {
     () => {
       colorInfo = getRandomColor(500)
 
+      setBackgroundLinesColor(colorInfo['name'], 500)
+
       button.style.backgroundColor = colorInfo['hex']
       panel.style.borderColor = colorInfo['hex']
       button.style.color = getColor(colorInfo['name'], 800)
@@ -87,6 +90,8 @@ export function initRandomColorButton(buttonID, panelID, callback) {
     'mouseout',
     () => {
       const color = getColor('charcoal', 100)
+
+      setBackgroundLinesColor(colorInfo['name'], 800)
 
       button.style.backgroundColor = getColor('charcoal', 700)
       panel.style.borderColor = color
@@ -100,6 +105,8 @@ export function initRandomColorButton(buttonID, panelID, callback) {
     () => {
       const color = getColor(colorInfo['name'], 700)
 
+      setBackgroundLinesColor(colorInfo['name'], 700)
+
       button.style.backgroundColor = color
       panel.style.borderColor = color
     }
@@ -109,6 +116,8 @@ export function initRandomColorButton(buttonID, panelID, callback) {
     button,
     'mouseup',
     () => {
+      setBackgroundLinesColor(colorInfo['name'], 800)
+
       button.style.backgroundColor = colorInfo['hex']
       button.style.color = getColor(colorInfo['name'], 800)
     }
