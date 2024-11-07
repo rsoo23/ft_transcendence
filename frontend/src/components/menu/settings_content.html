@@ -1,85 +1,64 @@
 <div id="profile-settings-container">
-  <h1 class="profile-settings-title">Profile Settings</h1>
-  <div class="profile-settings-grid">
-    <!-- Avatar  -->
-    <span class="profile-settings-label">Avatar</span>
-    <div class="profile-settings-avatar-cell">
-      <div class="avatar-container">
-        <img
-          src="/static/images/kirby.png"
-          alt="avatar"
-          class="profile-settings-avatar"
-        />
-      </div>
-    </div>
-    <input
-      type="file"
-      accept="image/jpeg, image/png, image/jpg"
-      class="edit-avatar-input"
-    />
-    <i class="profile-settings-pencil-icon edit-avatar-icon material-icons"
-      >edit</i
-    >
-
-    <!-- Username  -->
-    <span class="profile-settings-label">Username</span>
-    <input
-      id="username-input"
-      type="text"
-      class="profile-settings-input"
-      placeholder="Current Username"
-      disabled
-    />
-    <i
-      id="username-edit-icon"
-      class="profile-settings-pencil-icon material-icons"
-      >edit</i
-    >
-
-    <!-- Email  -->
-    <span class="profile-settings-label">Email</span>
-    <input
-      id="email-input"
-      type="email"
-      class="profile-settings-input"
-      placeholder="Current Email"
-      disabled
-    />
-    <i id="email-edit-icon" class="profile-settings-pencil-icon material-icons"
-      >edit</i
-    >
-
-	<!-- Password -->
-	<span class="profile-settings-label">New Password</span>
-	<input
-    id="new-password-input"
-    type="password"
-    class="profile-settings-input"
-    placeholder="New Password"
-    disabled
-	/>
-	<i id="password-edit-icon" class="profile-settings-pencil-icon material-icons">edit</i>
-
-	<!-- Confirm Password -->
-	<span class="profile-settings-label">Confirm New Password</span>
-	<input
-    id="confirm-password-input"
-    type="password"
-    class="profile-settings-input"
-    placeholder="Confirm New Password"
-    disabled
-	/>
-	<i class="profile-settings-pencil-icon material-icons">edit</i>
-	
-    <!-- 2FA  -->
-    <span class="profile-settings-label">2FA</span>
-    <label class="profile-settings-toggle-switch">
-      <input type="checkbox" class="profile-settings-toggle-input" />
-      <span class="profile-settings-slider"></span>
-    </label>
+	<h1 class="profile-settings-title">Profile Settings</h1>
+	<!-- Avatar Section -->
+	<div class="profile-settings-grid">
+	  <div class="avatar-section">
+		<div class="profile-settings-avatar-cell">
+		  <div class="avatar-container">
+			<img src="/static/images/kirby.png" alt="avatar" class="profile-settings-avatar" />
+			<i class="profile-settings-pencil-icon edit-avatar-icon material-icons">edit</i>
+		  </div>
+		</div>
+		<input type="file" accept="image/jpeg, image/png, image/jpg" class="edit-avatar-input" />
+	  </div>
+  
+	  <!-- Username and Email Row -->
+	  <div class="input-row">
+		<div class="input-group">
+		  <span class="profile-settings-label">Username</span>
+		  <div class="input-with-icon">
+			<input id="username-input" type="text" class="profile-settings-input" placeholder="Current Username" disabled />
+			<i id="username-edit-icon" class="profile-settings-pencil-icon material-icons">edit</i>
+		  </div>
+		</div>
+		<div class="input-group">
+		  <span class="profile-settings-label">Email</span>
+		  <div class="input-with-icon">
+			<input id="email-input" type="email" class="profile-settings-input" placeholder="Current Email" disabled />
+			<i id="email-edit-icon" class="profile-settings-pencil-icon material-icons">edit</i>
+		  </div>
+		</div>
+	  </div>
+  
+	  <!-- Password Row -->
+	  <div class="input-row">
+		<div class="input-group">
+		  <span class="profile-settings-label">New Password</span>
+		  <div class="input-with-icon">
+			<input id="new-password-input" type="password" class="profile-settings-input" placeholder="New Password" disabled />
+			<i id="password-edit-icon" class="profile-settings-pencil-icon material-icons">edit</i>
+		  </div>
+		</div>
+		<div class="input-group">
+		  <span class="profile-settings-label">Confirm New Password</span>
+		  <div class="input-with-icon">
+			<input id="confirm-password-input" type="password" class="profile-settings-input" placeholder="Confirm New Password" disabled />
+			<i class="profile-settings-pencil-icon material-icons">edit</i>
+		  </div>
+		</div>
+	  </div>
+  
+	  <!-- 2FA Section -->
+	  <div class="twofa-section">
+		<span class="profile-settings-label">2FA</span>
+		<label class="profile-settings-toggle-switch">
+		  <input type="checkbox" class="profile-settings-toggle-input" />
+		  <span class="profile-settings-slider"></span>
+		</label>
+	  </div>
+	</div>
+	<div class="profile-settings-button-group">
+	  <button id="save-button" class="profile-settings-button">Save</button>
+	  <button id="logout-button" class="profile-settings-button">Logout</button>
+	</div>
   </div>
-  <div class="profile-settings-button-group">
-    <button id="save-button" class="profile-settings-button">Save</button>
-    <button id="logout-button" class="profile-settings-button">Logout</button>
-  </div>
-</div>

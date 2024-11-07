@@ -45,7 +45,7 @@ DEBUG = True
 if os.getenv('DJANGO_DEBUG', 'false').lower() in ['false', '']:
     DEBUG = False
 
-ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1', '*']
 CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000'] # TODO: change this to https when we have SSL
 
 
@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'friends_system',
     'channels',
     'pong',
+    'lobby',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -84,7 +85,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'ROTATE_REFRESH_TOKENS': True,
 
     'AUTH_HEADER_TYPES': ('Bearer',),
@@ -127,14 +128,20 @@ ASGI_APPLICATION = 'main.asgi.application'
 if DEBUG:
     CHANNEL_LAYERS = {
         'default': {
-            'BACKEND': 'channels.layers.InMemoryChannelLayer'
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [('127.0.0.1', 6379)]
+            },
         }
-	}
+    }
     # Cache configuration
     CACHES = {
         'default': {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-            'LOCATION': 'unique-snowflake',
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': 'redis://127.0.0.1:6379/1',
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            }
         }
     }
 
@@ -145,6 +152,16 @@ else:
             'CONFIG': {
                 'hosts': [('redis', 6379)]
             },
+        }
+    }
+
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': 'redis://redis:6379/1',
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            }
         }
     }
 
@@ -222,13 +239,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Where uploaded media files will 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'user_management.CustomUser'
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/1',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
-    }
-}

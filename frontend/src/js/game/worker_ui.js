@@ -10,6 +10,16 @@ var tickcount = 0;
 var renderInfo = null;
 var loop = null;
 var lastTime = performance.now();
+let fontFace = new FontFace(
+	'Plus Jakarta Sans',
+	'url(https://fonts.gstatic.com/s/plusjakartasans/v8/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yw.woff2) format("woff2")',
+	{
+		style: 'normal',
+		weight: '400',
+		stretch: 'normal',
+	}
+);
+fontFace.load().then(() => self.fonts.add(fontFace));
 
 function renderLoop()
 {

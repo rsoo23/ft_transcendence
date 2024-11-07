@@ -21,7 +21,7 @@
       <button id='localplay' class='play-gamemode-container'>
         <i style='color: var(--blue-500)' class='material-icons'>keyboard</i>
         <h1>Local Play</h1>
-        <p>Play locally against other players on the same keyboard</p>
+        <p>Play a classic local 1v1 pong game on the same keyboard</p>
       </button>
       <button id='onlineplay' class='play-gamemode-container'>
         <i style='color: var(--teal-500)' class='material-icons'>search</i>
@@ -30,6 +30,7 @@
       </button>
     </div>
 
+    <!-- online only page -->
     <!-- gamemode page -->
     <div id='gamemode' style='left: 100rem; opacity: 0; visibility: hidden;' class='play-block-container'>
       <button id='gamemodeback' class='material-icons play-back-button'>arrow_back</button>
@@ -44,23 +45,10 @@
         <p>Play against multiple players in a classic tournament bracket</p>
       </button>
     </div>
-
-    <!-- online only page -->
-    <div id='hostjoin' style='left: 100rem; opacity: 0; visibility: hidden;' class='play-block-container'>
-      <button id='hostjoinback' class='material-icons play-back-button'>arrow_back</button>
-      <button id='host' class='play-gamemode-container'>
-        <i style='color: var(--magenta-500)' class='material-icons'>dns</i>
-        <h1>Host</h1>
-        <p>Host a game with your own rules</p>
-      </button>
-      <button id='join' class='play-gamemode-container'>
-        <i style='color: var(--chilled-gray-500)' class='material-icons'>people</i>
-        <h1>Join</h1>
-        <p>Join a public game</p>
-      </button>
-    </div>
   </div>
 
   <!-- load settings here -->
+  <div id='play-lobby-list-container' style='left: 100rem; opacity: 0; visibility: hidden'></div>
   <div id='play-settings-container' style='left: 100rem; opacity: 0; visibility: hidden'></div>
+  <div id='play-lobby-container' style='left: 100rem; opacity: 0; visibility: hidden'></div>
 </div>
