@@ -58,6 +58,8 @@ import { closeUserUpdateSocket, connectUserUpdateSocket } from "./user_updates/w
 import { init2FAToggle } from "./2FA_panel.js";
 import { generateArcBackground, generateGeometricBackground, getRandomInt, loadMainBackground, removeBackground, setBackgroundLinesColor } from "./animations/main_background.js";
 import { refreshToken } from "./network_utils/token_utils.js";
+import { initVerifyForm} from "./forgot_password/verify_code.js";
+import { initChangePasswordForm} from "./forgot_password/change_password.js";
 
 const routes = {
   "/start": "start_panel.html",
@@ -435,6 +437,7 @@ function initGetEmailPage() {
 
 function initVerifyCodePage() {
   initBackButton(() => loadPage("forgot_password/get_email"));
+  initVerifyForm();
   initRandomColorButton("submit-code-button", "verify-code-panel", async () => {
     const result = await verify_code();
 
@@ -448,6 +451,7 @@ function initVerifyCodePage() {
 function initChangePasswordPage() {
   initBackButton(() => loadPage("forgot_password/verify_code"));
   initTogglePasswordVisibilityIcon();
+  initChangePasswordForm();
   initRandomColorButton(
     "confirm-signup-button",
     "verify-code-panel",
