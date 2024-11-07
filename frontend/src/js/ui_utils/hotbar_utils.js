@@ -4,6 +4,9 @@ import { getColor, getRandomColor } from "./color_utils.js";
 import { hideTooltip, showTooltip } from "./tooltip_utils.js";
 import { loadContentToMainMenu } from "../router.js";
 import { hotbarItems, setHotbarSelected } from "../global_vars.js";
+import { setBackgroundLinesColor } from "../animations/main_background.js";
+
+let prevColor = 'teal'
 
 export function initHotbar() {
   Object.keys(hotbarItems).forEach(key => {
@@ -27,6 +30,7 @@ function initButton(hotbarItemInfo) {
       if (!hotbarItemInfo['isSelected']) {
         button.style.backgroundColor = getColor(buttonColor, 700)
         icon.style.color = getColor(buttonColor, 400)
+        setBackgroundLinesColor(buttonColor, 500)
       }
     }
   )
@@ -39,6 +43,7 @@ function initButton(hotbarItemInfo) {
       if (!hotbarItemInfo['isSelected']) {
         button.style.backgroundColor = '#000'
         icon.style.color = getColor(buttonColor, 500)
+        setBackgroundLinesColor(buttonColor, 800)
       } else {
         button.style.backgroundColor = getColor(buttonColor, 500)
         icon.style.color = getColor(buttonColor, 200)
@@ -53,6 +58,7 @@ function initButton(hotbarItemInfo) {
       if (!hotbarItemInfo['isSelected']) {
         button.style.backgroundColor = getColor(buttonColor, 800)
         icon.style.color = getColor(buttonColor, 600)
+        setBackgroundLinesColor(buttonColor, 700)
       }
     }
   )
@@ -68,6 +74,9 @@ function initButton(hotbarItemInfo) {
 
         button.style.backgroundColor = getColor(buttonColor, 500)
         icon.style.color = getColor(buttonColor, 200)
+        setBackgroundLinesColor(buttonColor, 500)
+        setBackgroundLinesColor(prevColor, 800)
+        prevColor = buttonColor
       } else {
         button.style.backgroundColor = getColor(buttonColor, 500)
         icon.style.color = getColor(buttonColor, 200)

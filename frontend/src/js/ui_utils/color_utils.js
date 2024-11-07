@@ -4,7 +4,7 @@ const validWeights = [100, 200, 300, 400, 500, 600, 700, 800, 900]
 
 // returns a random hex value based on the colors array and color variables set in root
 export function getRandomColor(weight) {
-  const randomIndex = Math.floor(Math.random() * (colors.length - 1))
+  const randomIndex = Math.floor(Math.random() * (colors.length))
   const colorName = colors[randomIndex]
 
   if (validWeights.includes(weight)) {

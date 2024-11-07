@@ -3,37 +3,45 @@ import { getRequest } from "../network_utils/api_requests.js";
 import { loadUserAvatar } from "../settings/upload_avatar.js";
 import { hideOverlay, showOverlay } from "../ui_utils/overlay_utils.js";
 import { scrollToBottom } from "../ui_utils/scroll.js";
-import { addEventListenerTo, addTextPlaceholder, loadContentToTarget } from "../ui_utils/ui_utils.js";
+import { addEventListenerTo, addTextPlaceholder, loadContentToTarget, truncateString } from "../ui_utils/ui_utils.js";
 import { loadFriendProfile } from "./friend_profile_utils.js";
 import { chatSocket, connectChat } from "./websocket.js";
 
 let hasMessages = false
 export let currentChatUserId = -1
+let isLoadChatButtonDisabled = true
 
 // loads the chat interface containing the chat history and friend profile
 export async function loadChatInterface(userId) {
-  currentChatUserId = userId
+  if (isLoadChatButtonDisabled) {
+    isLoadChatButtonDisabled = false
+    currentChatUserId = userId
 
-  await loadContentToTarget('menu/chat_interface.html', 'friends-content-container')
+    await loadContentToTarget('menu/chat_interface.html', 'friends-content-container')
 
-  if (await isFriendBlocked(userId)) {
-    showOverlay('chat-interface-overlay', 'You are blocked by this user')
-    return
+    if (await isFriendBlocked(userId)) {
+      showOverlay('chat-interface-overlay', 'You are blocked by this user')
+      return
+    }
+
+    showOverlay('chat-interface-overlay', 'Loading...')
+
+    setTimeout(async () => {
+      // connect to chat websocket
+      connectChat(userId)
+
+      // load all messages
+      await loadChatMessages(userId)
+
+      initChatInput()
+
+      // load friend profile
+      loadFriendProfile(userId)
+
+      hideOverlay('chat-interface-overlay')
+      isLoadChatButtonDisabled = true
+    }, 300)
   }
-
-  showOverlay('chat-interface-overlay', 'Loading...')
-
-  // connect to chat websocket
-  connectChat(userId)
-
-  // load all messages
-  await loadChatMessages(userId)
-
-  initChatInput()
-
-  // load friend profile
-  loadFriendProfile(userId)
-  hideOverlay('chat-interface-overlay')
 }
 
 async function isFriendBlocked(userId) {
@@ -130,7 +138,7 @@ export function addMessage(username, message, datetime) {
 
   const userNamePara = document.createElement('p');
   userNamePara.classList.add('username');
-  userNamePara.textContent = username;
+  userNamePara.textContent = truncateString(username, 20);
 
   const dateTimePara = document.createElement('p');
   dateTimePara.classList.add('message-datetime');
