@@ -1,0 +1,44 @@
+
+#main-background {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#main-bg {
+  width: 100vw;
+  height: 100vh;
+  background: black;
+}
+
+.line {
+  stroke: #fff;
+  stroke-width: 10;
+  stroke-linecap: round;
+
+  transition: 0.2s;
+
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: dash 5s ease-in-out forwards;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.reversed {
+  animation: dashReversed 5s linear forwards;
+}
+
+@keyframes dashReversed {
+  to {
+    stroke-dashoffset: 1000;
+  }
+}

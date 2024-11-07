@@ -45,6 +45,7 @@ import {
 import { initLink } from "./ui_utils/link_utils.js";
 import { closeUserUpdateSocket, connectUserUpdateSocket } from "./user_updates/websocket.js";
 import { init2FAToggle } from "./2FA_panel.js";
+import { generateArcBackground, generateGeometricBackground, getRandomInt, loadMainBackground, removeBackground, setBackgroundLinesColor } from "./animations/main_background.js";
 
 const routes = {
   "/start": "start_panel.html",
@@ -98,7 +99,7 @@ export async function loadContent(contentName) {
   try {
     const html = await getRequest(`/static/components/${htmlPath}`, "text");
 
-    document.body.innerHTML = html;
+    document.getElementById('inner-body').innerHTML = html;
 
     loadDynamicContent(contentName);
   } catch (error) {
@@ -231,11 +232,27 @@ export async function loadUsersInfo() {
 }
 
 async function initStartPage() {
+  loadMainBackground()
   initRandomColorButton("login-button", "start-page-panel", () =>
     loadPage("login")
   );
   initRandomColorButton("signup-button", "start-page-panel", () =>
     loadPage("signup")
+  );
+  initRandomColorButton("surprise-button", "start-page-panel", () => {
+    removeBackground()
+
+    const type = getRandomInt(0, 1)
+
+    switch (type) {
+      case 0:
+        generateGeometricBackground()
+        break
+      case 1:
+        generateArcBackground()
+        break
+    }
+  }
   );
 }
 
@@ -284,6 +301,7 @@ async function initSignupPage() {
 }
 
 async function initMainMenuPage() {
+  loadMainBackground()
   initHotbar();
   await loadCurrentUserInfo();
   await loadUsersInfo();
