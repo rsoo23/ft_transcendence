@@ -1,5 +1,6 @@
 from .data import Vector2, ObjectState
 from .paddle import Paddle
+from .countdown_timer import CountdownTimer
 import copy
 import math
 import random
@@ -127,6 +128,7 @@ class Ball():
 
                 else:
                     game_info.objects.append(BallTimer())
+                    game_info.objects.append(CountdownTimer(4))
 
                 game_info.objects.remove(self)
                 stop_on_next_loop = True
@@ -161,7 +163,7 @@ class BallTimer():
 
     def tick(self, game_info, dt):
         self.time_elapsed += dt
-        if self.time_elapsed < 2.5:
+        if self.time_elapsed < 4:
             return None
 
         # TODO: randomize angle

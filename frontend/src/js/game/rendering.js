@@ -44,8 +44,39 @@ class Score {
     renderInfo.ctx.font = `${(this.size * renderInfo.windowScale.x)}px "${this.font}"`;
     renderInfo.ctx.textAlign = 'center';
     renderInfo.ctx.textBaseline = 'middle';
-    const textInfo = renderInfo.ctx.measureText(nextState.info['score'])
     renderInfo.fillTextScaled("" + nextState.info['score'], pos.x, pos.y);
+    renderInfo.ctx.stroke()
+  }
+}
+
+class Countdown {
+  constructor() {
+    this.size = 36;
+    this.font = 'Plus Jakarta Sans';
+  }
+
+  draw(renderInfo, pos, prevState, nextState) {
+    renderInfo.ctx.font = `${(this.size * renderInfo.windowScale.x)}px "${this.font}"`;
+    renderInfo.ctx.textAlign = 'center';
+    renderInfo.ctx.textBaseline = 'middle';
+
+    const text = nextState.info['time'] === 0 ? "Start!" : "" + nextState.info['time'];
+    const textWidth = renderInfo.ctx.measureText(text).width;
+    const textHeight = this.size * renderInfo.windowScale.x;
+
+    // Draw overlay rectangle
+    renderInfo.ctx.fillStyle = 'rgb(0 0 0)';
+    renderInfo.fillRectScaled(
+      pos.x - (textWidth / 2),
+      pos.y - (textHeight / 2),
+      textWidth,
+      textHeight
+    );
+
+    // Draw text
+    renderInfo.ctx.fillStyle = 'white'; // Text color
+    renderInfo.fillTextScaled(text, pos.x, pos.y);
+
     renderInfo.ctx.stroke()
   }
 }
@@ -54,6 +85,7 @@ const STYLES = {
   'paddle': new Paddle(),
   'ball': new Ball(),
   'score': new Score(),
+  'countdown_timer': new Countdown(),
 }
 
 // The main renderer, it does all the work :]
