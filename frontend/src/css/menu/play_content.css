@@ -11,7 +11,8 @@
 #play-container #play-select-container,
 #play-container #play-lobby-list-container,
 #play-container #play-settings-container,
-#play-container #play-lobby-container {
+#play-container #play-lobby-container,
+#play-container #play-tournament-container {
   position: relative;
   top: 0px;
   left: 0px;
@@ -335,4 +336,51 @@
 .lobby-tournament-player-list .lobby-entry-container .material-icons {
   margin-left: auto;
   color: var(--teal-500);
+}
+
+#bracket-list {
+  display: flex;
+}
+
+.tournament-bracket-container {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-around;
+  margin-left: 1rem;
+}
+
+.tournament-pair-container {
+  display: flex;
+  flex-flow: column;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.tournament-user-container {
+  display: flex;
+  align-items: center;
+  /* width: 10rem; */
+  width: 3rem;
+  margin-top: 0.05rem;
+  margin-bottom: 0.05rem;
+  /* padding: 0.5rem; */
+  background-color: var(--charcoal-800);
+  border-radius: 3rem;
+  overflow: hidden;
+}
+
+.tournament-user-container p {
+  height: fit-content;
+  font-size: 1rem;
+  margin: 0;
+  margin-left: 0.5rem;
+}
+
+.tournament-user-container img {
+  height: 1rem;
+  width: 1rem;
+  /* height: 2rem; */
+  /* width: 2rem; */
+  /* border-width: 0.2rem; */
+  border-width: 0.02rem;
 }
