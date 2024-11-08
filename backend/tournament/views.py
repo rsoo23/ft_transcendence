@@ -4,14 +4,15 @@ from .models import TournamentModel
 import json
 import math
 
+# creates a tournament entry and creates the first bracket for the tournament
 def create_tournament(lobby_id, host, users):
     tournament = TournamentModel.objects.create(host=host)
 
     user_amt = len(users)
     pairs = math.ceil(user_amt / 2)
     tmp_pairs = pairs
-    brackets = 0
-    while tmp_pairs > 0:
+    brackets = 1
+    while tmp_pairs > 1:
         brackets += 1
         tmp_pairs = math.ceil(tmp_pairs / 2)
 
@@ -28,8 +29,8 @@ def create_bracket(id, bracket_num, pairs, users):
     user_i = 0
     pairs_arr = []
     for i in range(pairs):
-        user1 = users[user_i]
-        user2 = users[user_i + 1] if user_i + 1 < len(users) else None
+        user1 = users[user_i]['id']
+        user2 = users[user_i + 1]['id'] if user_i + 1 < len(users) else None
         pair = (user1, user2)
         pairs_arr.append(pair)
         user_i += 2
@@ -43,7 +44,7 @@ def set_tournament_cache(id, key, value):
         keys = {key}
 
     else:
-        keys = set(json.dumps(keys_cache))
+        keys = set(json.loads(keys_cache))
         keys.add(key)
 
     cache.set(f'tournament-keys-{id}', json.dumps(list(keys)))
@@ -54,8 +55,9 @@ def clear_tournament_cache(id):
     if keys_cache == None:
         return
 
-    keys = set(json.dumps(keys_cache))
+    keys = set(json.loads(keys_cache))
     for key in keys:
+        print(f'removing {key} from redis')
         cache.delete(key)
 
     cache.delete(f'tournament-keys-{id}')
