@@ -11,9 +11,10 @@
     align-items: center;
 }
 
-.how-to-play-title {
-    margin: 0;
-    text-align: center;
+#how-to-play-title {
+	letter-spacing: -0.4rem;
+	font-size: 4rem;
+	margin: 0;
 }
 
 .controls-container {
