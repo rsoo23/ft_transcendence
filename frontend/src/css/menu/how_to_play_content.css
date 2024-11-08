@@ -37,7 +37,6 @@
     margin: 0;
 }
 
-/* Color the player titles differently */
 .player-controls:first-child .player-title {
     color: var(--teal-500);
 }
