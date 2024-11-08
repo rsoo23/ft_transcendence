@@ -16,9 +16,10 @@ export function initPlayDivs() {
   const gameLobbyListDiv = document.getElementById('play-lobby-list-container')
   const gameSettingsDiv = document.getElementById('play-settings-container')
   const gameLobbyDiv = document.getElementById('play-lobby-container')
+  const gameTournamentDiv = document.getElementById('play-tournament-container')
 
   startingMenuSwitcher = new PanelSwitcher(playTypeButtons, [playTypeButtons, gamemodeButtons])
-  divSwitcher = new PanelSwitcher(gameSelectDiv, [gameSelectDiv, gameLobbyListDiv, gameSettingsDiv, gameLobbyDiv])
+  divSwitcher = new PanelSwitcher(gameSelectDiv, [gameSelectDiv, gameLobbyListDiv, gameSettingsDiv, gameLobbyDiv, gameTournamentDiv])
 }
 
 export async function loadMultiplayerTest() {

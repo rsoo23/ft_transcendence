@@ -4,7 +4,6 @@ import { loadContentToTarget } from "./ui_utils/ui_utils.js";
 import {
   initClassicLobby,
   updateClassicLobby,
-  getInLobby,
   createLobby,
   createTournamentLobby,
   initTournamentLobby,

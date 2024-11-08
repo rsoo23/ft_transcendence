@@ -7,6 +7,7 @@ import { queueNotification } from "./ui_utils/notification_utils.js";
 import { loadPage } from "./router.js";
 import { joinMatch } from "./game/api.js";
 import { initLobbyList } from "./lobby_list.js";
+import { checkInTournament, checkIsTournamentOpponent, joinTournament } from "./tournament.js";
 
 var lobbySocket = null
 var inLobby = false
@@ -14,8 +15,16 @@ var lobbyType = ''
 var lobbyUsers = []
 var lobbyStarting = false
 
-export function getInLobby() {
+export function checkInLobby() {
   return inLobby
+}
+
+export function validateAvatarImg(src) {
+  if (src == null) {
+    return "/static/images/kirby.png"
+  } else {
+    return src
+  }
 }
 
 export async function createLobby() {
@@ -52,7 +61,11 @@ export async function joinLobby(id) {
 
         const user = lobbyUsers[i]
         lobbyUsers.splice(i, 1)
-        queueNotification('magenta', `${user.username} has left the lobby.`, () => {})
+        if (checkInTournament() && checkIsTournamentOpponent(user.id)) {
+          queueNotification('magenta', `Your opponent(${user.username}) has left the tournament.`, () => {})
+        } else {
+          queueNotification('magenta', `${user.username} has left the lobby.`, () => {})
+        }
         if (lobbyType == 'tournament') {
           removeTournamentUser(user)
           updateTournamentLobby()
@@ -118,8 +131,26 @@ export async function joinLobby(id) {
       break
 
     case 'match':
+      lobbySocket.onclose = null
       await loadPage('game')
       joinMatch(data.id)
+      break
+
+    case 'tournament':
+      await loadContentToTarget('menu/tournament_content.html', 'play-tournament-container')
+      joinTournament(data.id)
+      lobbySocket.onclose = (e) => {
+        if (e.code == 1006) {
+          queueNotification('magenta', 'Tournament is no longer available.', () => {})
+        } else if (e.code == 4001) {
+          queueNotification('magenta', 'Tournament has been closed by host.', () => {})
+        }
+      }
+
+      setCurrentDiv(
+        document.getElementById('play-lobby-container'),
+        document.getElementById('play-tournament-container')
+      )
       break
     }
   }
@@ -157,6 +188,7 @@ export function leaveLobby() {
   }
   if (lobbySocket != null) {
     lobbySocket.close()
+    lobbySocket = null
   }
 
   divSwitcher.setCurrentDiv('play-lobby-container', lobbyBackButtonDivCache)
@@ -233,11 +265,7 @@ function setClassicPlayerInfo(info, prefix) {
     return
   }
 
-  if (info.avatar_img == null) {
-    avatar.src = "/static/images/kirby.png";
-  } else {
-    avatar.setAttribute('src', info.avatar_img)
-  }
+  avatar.src = validateAvatarImg(info.avatar_img)
   avatar.style.setProperty('display', 'block')
   header.style.setProperty('display', 'block')
   ready.style.setProperty('display', 'block')
@@ -286,6 +314,13 @@ export function updateTournamentLobby() {
     return
   }
 
+  const startButton = document.getElementById('start-game')
+  // startButton.disabled = (lobbyUsers.length <= 1)
+  startButton.style.setProperty(
+    'visibility',
+    (lobbyUsers.length > 0 && lobbyUsers[0].id == currentUserInfo.id)? 'visible' : 'hidden'
+  )
+
   for (const user of lobbyUsers) {
     const existingEntry = document.getElementById(`tournament-user-${user.id}`)
     if (!existingEntry && 'username' in user) {
@@ -302,11 +337,7 @@ export function updateTournamentLobby() {
 function appendTournamentUser(info) {
   const avatar = document.createElement('img')
   avatar.classList.add('profile-settings-avatar')
-  if (info.avatar_img == null) {
-    avatar.src = "/static/images/kirby.png";
-  } else {
-    avatar.src = info.avatar_img
-  }
+  avatar.src = validateAvatarImg(info.avatar_img)
 
   const name = document.createElement('p')
   name.textContent = info.username

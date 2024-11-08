@@ -21,7 +21,7 @@ import { initUsernameSettings } from "./settings/update_username.js";
 import { closeFriendSystemSocket, connectFriendSystemSocket, } from "./friends_system/websocket.js";
 import { initPlayDivs, startingMenuSwitcher, divSwitcher, loadMultiplayerTest, startLocalGame, } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
-import { initClassicLobby, updateClassicLobby, getInLobby, createLobby, createTournamentLobby, initTournamentLobby, updateTournamentLobby, joinLobby } from "./lobby.js";
+import { initClassicLobby, updateClassicLobby, checkInLobby, createLobby, createTournamentLobby, initTournamentLobby, updateTournamentLobby, joinLobby } from "./lobby.js";
 import { initLobbyList, closeLobbyListSocket, goToLobby } from "./lobby_list.js";
 import { closeUserUpdateSocket, connectUserUpdateSocket } from "./user_updates/websocket.js";
 import { init2FAToggle } from "./2FA_panel.js";
@@ -29,6 +29,7 @@ import { generateArcBackground, generateGeometricBackground, getRandomInt, loadM
 import { refreshToken } from "./network_utils/token_utils.js";
 import { initVerifyForm } from "./forgot_password/verify_code.js";
 import { initChangePasswordForm } from "./forgot_password/change_password.js";
+import { queueNotification } from "./ui_utils/notification_utils.js";
 
 const routes = {
   "/start": "start_panel.html",
@@ -320,11 +321,16 @@ async function initPlayPage() {
     document.getElementById('lobby-host-button').onclick = async () => {
       divSwitcher.disableDivInput('play-select-container')
       // TODO: move this to lobby stuff
-      let lobbyID
+      let lobbyID = null
       if (isTournament) {
         lobbyID = await createTournamentLobby(20)
       } else {
         lobbyID = await createLobby()
+      }
+
+      if (lobbyID == null) {
+        queueNotification('magenta', `Failed to create lobby.`, () => {})
+        return
       }
       await goToLobby(lobbyID, isTournament)
     }
@@ -336,7 +342,7 @@ async function initPlayPage() {
   document.getElementById("tournament").onclick = () => alert("not implemented yet :[");
 
   // lobby page
-  if (getInLobby()) {
+  if (checkInLobby()) {
     divSwitcher.disableDivInput('play-select-container')
     await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
     initClassicLobby('play-select-container')
