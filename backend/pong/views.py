@@ -17,6 +17,7 @@ background_tasks = set()
 async def try_clean_match(match_id):
     await asyncio.sleep(30)
 
+    print(f'pong: Attempting to remove match with id {match_id}. (routine cleaning)')
     loop = asyncio.get_running_loop()
     match_info = await loop.run_in_executor(None, server_manager.get_game, match_id)
     if match_info == None:
@@ -24,6 +25,7 @@ async def try_clean_match(match_id):
 
     # just check the thread to see if the game is running
     if match_info['thread'].is_alive():
+        print(f'pong: Match with id {match_id} is still running normally. (routine cleaning)')
         return
 
     try:
@@ -35,7 +37,7 @@ async def try_clean_match(match_id):
 
     loop = asyncio.get_running_loop()
     await loop.run_in_executor(None, server_manager.close_game, match_id)
-    print(f'pong: Match with id {match_id} was deleted due to inactivity.')
+    print(f'pong: Match with id {match_id} was deleted due to inactivity. (routine cleaning)')
 
 async def create_match_and_game(user1, user2, local):
     player1 = await CustomUser.objects.aget(id=user1)
@@ -43,8 +45,6 @@ async def create_match_and_game(user1, user2, local):
     match = await sync_to_async(PongMatch.objects.create)(
         player1=player1,
         player2=player2,
-        player1_uuid=user1,
-        player2_uuid=user2,
         local=local
     )
     loop = asyncio.get_running_loop()
