@@ -8,9 +8,7 @@ class PongMatchAdmin(admin.ModelAdmin):
         "id",
         "local",
         "player1",
-        "player1_uuid",
         "player2",
-        "player2_uuid",
         "p1_score",
         "p2_score"
     ]

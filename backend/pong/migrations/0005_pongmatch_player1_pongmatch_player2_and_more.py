@@ -23,14 +23,4 @@ class Migration(migrations.Migration):
             name='player2',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='player2', to=settings.AUTH_USER_MODEL),
         ),
-        migrations.AlterField(
-            model_name='pongmatch',
-            name='player1_uuid',
-            field=models.BigIntegerField(default=0),
-        ),
-        migrations.AlterField(
-            model_name='pongmatch',
-            name='player2_uuid',
-            field=models.BigIntegerField(default=0),
-        ),
     ]
