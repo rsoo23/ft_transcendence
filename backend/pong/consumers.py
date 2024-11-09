@@ -30,7 +30,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
         # assign groups and set up user
         await self.channel_layer.group_add(self.group_match, self.channel_name)
-        self.local_game = self.match_data.local
+        self.local_game = (self.match_data.type == 'local_classic')
 
         if self.scope['user'] == self.match_data.player1:
             self.player_num = 1
