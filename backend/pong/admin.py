@@ -6,7 +6,7 @@ from .models import PongMatch
 class PongMatchAdmin(admin.ModelAdmin):
     list_display = [
         "id",
-        "local",
+        "type",
         "player1",
         "player2",
         "p1_score",
