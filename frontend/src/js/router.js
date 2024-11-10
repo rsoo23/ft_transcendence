@@ -34,8 +34,6 @@ import {
   connectFriendSystemSocket,
 } from "./friends_system/websocket.js";
 import {
-  setLocalPlayMode,
-  getLocalPlayMode,
   initPanelBacklog,
   setCurrentPanel,
   setCurrentDiv,
@@ -349,7 +347,6 @@ async function initPlayPage() {
 
   // first page
   document.getElementById("localplay").onclick = async () => {
-    setLocalPlayMode(true)
     muteDiv(gameSelectDiv)
     await loadContentToTarget('menu/play_settings_content.html', 'play-settings-container')
     document.getElementById('settingsback').onclick = () => setCurrentDiv(gameSettingsDiv, gameSelectDiv)
@@ -357,7 +354,6 @@ async function initPlayPage() {
     setCurrentDiv(gameSelectDiv, gameSettingsDiv)
   };
   document.getElementById("onlineplay").onclick = () => {
-    setLocalPlayMode(false)
     setCurrentPanel(playTypeButtons, gamemodeButtons)
   };
 

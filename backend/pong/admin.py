@@ -4,4 +4,11 @@ from .models import PongMatch
 
 @admin.register(PongMatch)
 class PongMatchAdmin(admin.ModelAdmin):
-    list_display = ["id", "local", "player1_uuid", "player2_uuid", "p1_score", "p2_score"]
+    list_display = [
+        "id",
+        "type",
+        "player1",
+        "player2",
+        "p1_score",
+        "p2_score"
+    ]
