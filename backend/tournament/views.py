@@ -3,39 +3,74 @@ from django.core.cache import cache
 from .models import TournamentModel
 import json
 import math
+import random
 
 # creates a tournament entry and creates the first bracket for the tournament
 def create_tournament(lobby_id, host, users):
     tournament = TournamentModel.objects.create(host=host)
 
+    # for debugging usage:
+    # user_amt = 4
+    # users = [x for x in range(1, user_amt + 1)]
     user_amt = len(users)
-    pairs = math.ceil(user_amt / 2)
-    tmp_pairs = pairs
-    brackets = 1
-    while tmp_pairs > 1:
-        brackets += 1
-        tmp_pairs = math.ceil(tmp_pairs / 2)
+    pairs = user_amt - 1
+    random.shuffle(users)
+
+    # generate pairs
+    max_pairs = 1
+    pairs_list = []
+    rounds_list = []
+    for i in range(pairs):
+        pairs_list.append({
+            'player1': None,
+            'player2': None,
+            'next_round_pair': (2 + len(pairs_list)) // 2,
+            'next_pair_slot': 1 + (len(pairs_list) % 2),
+        })
+        if len(pairs_list) < max_pairs or i + 1 >= pairs:
+            continue
+
+        rounds_list.append(pairs_list)
+        pairs_list = []
+        max_pairs *= 2
+
+    if len(pairs_list) > 0:
+        rounds_list.append(pairs_list)
+
+    # flip the rounds order, as it's backwards
+    rounds_list.reverse()
+
+    # used to check if the pair's slot is linked by the previous round's pair
+    is_linked = lambda i, pair, slot: (
+        len(
+            [x for x in rounds_list[i - 1] if x['next_round_pair'] == pair and x['next_pair_slot'] == slot]
+        ) > 0
+    )
+
+    # put the players into the pairs, starting from left to right
+    for i in range(len(rounds_list)):
+        pairs_list = rounds_list[i]
+        for pair_num in range(len(pairs_list)):
+            pair = pairs_list[pair_num]
+            if i == 0:
+                pair['player1'] = users.pop()
+                pair['player2'] = users.pop()
+
+            else:
+                pair['player1'] = users.pop() if not is_linked(i, pair_num + 1, 1) else None
+                pair['player2'] = users.pop() if not is_linked(i, pair_num + 1, 2) else None
+
+        if len(users) <= 0:
+            break
 
     tournament_info = {
         'lobby_id': lobby_id,
         'pairs': pairs,
-        'brackets': brackets,
+        'rounds': len(rounds_list),
+        'list': rounds_list,
     }
     set_tournament_cache(tournament.id, f'tournament-info-{tournament.id}', json.dumps(tournament_info))
-    create_bracket(tournament.id, 1, pairs, users)
     return tournament
-
-def create_bracket(id, bracket_num, pairs, users):
-    user_i = 0
-    pairs_arr = []
-    for i in range(pairs):
-        user1 = users[user_i]['id']
-        user2 = users[user_i + 1]['id'] if user_i + 1 < len(users) else None
-        pair = (user1, user2)
-        pairs_arr.append(pair)
-        user_i += 2
-
-    set_tournament_cache(id, f'tournament-{id}-{bracket_num}', json.dumps(pairs_arr))
 
 # because there are too many to track
 def set_tournament_cache(id, key, value):

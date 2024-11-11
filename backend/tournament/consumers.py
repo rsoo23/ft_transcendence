@@ -1,7 +1,7 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from .models import TournamentModel
 from django.core.cache import cache
-from .views import create_tournament, set_tournament_cache, clear_tournament_cache
+from .views import set_tournament_cache, clear_tournament_cache
 from pong.views import create_match_and_game
 import json
 
@@ -24,14 +24,14 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 
         tournament_info = json.loads(cache.get(f'tournament-info-{self.tournament_id}'))
         self.lobby_id = tournament_info['lobby_id']
-        self.bracket = 1
+        self.round = 1
         self.opponent = None
         self.group_lobby = f'lobby-{self.lobby_id}'
         self.group_tournament = f'tournament-{self.tournament_id}'
         self.is_host = (self.scope['user'] == model.host)
         if self.is_host:
             self.tournament_pairs = tournament_info['pairs']
-            self.tournament_brackets = tournament_info['brackets']
+            self.tournament_rounds = tournament_info['rounds']
 
         else:
             self.tournament_set_ready(False)
@@ -93,6 +93,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
                 })
 
     async def tournament_set_ready(self, ready):
+        # TODO: use lobby's ready system?
         set_tournament_cache(self.tournament_id, f'tournament-ready-{self.user_id}', json.dumps(ready))
 
     async def tournament_get_ready(self, id):
@@ -104,9 +105,9 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             'info': json.loads(cache.get(f'tournament-info-{self.tournament_id}')),
         })
 
-    # this will be used to advance users to the next bracket
+    # this will be used to advance users to the next round
     async def tournament_get_list(self, event):
-        pairs = json.loads(cache.get(f'tournament-{self.tournament_id}-{self.bracket}'))
+        pairs = json.loads(cache.get(f'tournament-{self.tournament_id}-{self.round}'))
         opponent = None
         for pair in pairs:
             if not self.user_id in pair:
@@ -118,7 +119,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 
         await self.send_json({
             'event': 'list',
-            'bracket': self.bracket,
+            'round': self.round,
             'pairs': pairs,
             'opponent': opponent,
         })
