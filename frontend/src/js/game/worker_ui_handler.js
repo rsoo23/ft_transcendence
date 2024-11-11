@@ -1,3 +1,5 @@
+import { ColorSwitcher } from './color_switcher.js'
+
 var workerUI = null
 
 const observer = new ResizeObserver((entries) => {
@@ -20,6 +22,14 @@ export function initRenderer() {
   workerUI.postMessage({ type: 'start' })
 
   observer.observe(div)
+
+  const colorSwitcher = new ColorSwitcher()
+
+  workerUI.addEventListener('message', (e) => {
+    const data = e.data
+
+    colorSwitcher.switchColor(data.player_num, data.color_idx)
+  })
 }
 
 export function stopRenderer() {

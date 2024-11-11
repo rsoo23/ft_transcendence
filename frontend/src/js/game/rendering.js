@@ -1,3 +1,5 @@
+// import { colorSwitcher } from "./api.js";
+
 // TODO: check if we still need this
 export class Pos2D {
   constructor(x, y) {
@@ -17,6 +19,7 @@ class Paddle {
   }
 
   draw(renderInfo, pos, prevState, nextState) {
+    postMessage(nextState.info)
     renderInfo.ctx.fillStyle = nextState.info.color
     renderInfo.fillRectScaled(pos.x, pos.y, this.size.x, this.size.y);
   }

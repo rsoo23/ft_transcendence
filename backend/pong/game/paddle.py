@@ -40,5 +40,9 @@ class Paddle():
         # clamp pos
         self.pos.y = min(max(self.pos.y, 0), game_info.game_size.y - Paddle.size.y)
 
-        states.append(self.pos, 1.0, {'color': Paddle.colors[self.color_idx]})
+        states.append(self.pos, 1.0, {
+            'player_num': self.player_num,
+            'color': Paddle.colors[self.color_idx],
+            'color_idx': self.color_idx
+        })
         return states
