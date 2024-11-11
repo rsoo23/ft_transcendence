@@ -10,7 +10,7 @@ def create_tournament(lobby_id, host, users):
     tournament = TournamentModel.objects.create(host=host)
 
     # for debugging usage:
-    # user_amt = 4
+    # user_amt = 18
     # users = [x for x in range(1, user_amt + 1)]
     user_amt = len(users)
     pairs = user_amt - 1

@@ -1,5 +1,5 @@
 import { getAccessToken } from "./network_utils/token_utils.js";
-import { currentUserInfo } from "./global_vars.js";
+import { currentUserInfo, usersInfo } from "./global_vars.js";
 import { getRequest } from "./network_utils/api_requests.js";
 import { validateAvatarImg } from "./lobby.js";
 
@@ -29,8 +29,8 @@ export async function joinTournament(id) {
       break
 
     case 'info':
-      // initTournamentList(data.info.brackets, data.info.pairs)
-      initTournamentList(5, 10)
+      console.log(data.info.list)
+      initTournamentList(data.info.list)
       break
 
     case 'list':
@@ -95,17 +95,18 @@ function initTournamentReadyButtons() {
   }
 }
 
-function initTournamentList(brackets, pairs) {
+function initTournamentList(clist) {
   const list = document.getElementById('bracket-list')
-  for (let b = 0; b < brackets; b++) {
+  for (const round of clist) {
     const bracketContainer = document.createElement('div')
     bracketContainer.classList.add('tournament-bracket-container')
 
-    for (let p = 0; p < pairs; p++) {
-      const createPair = () => {
+    for (const pairInfo of round) {
+      const createPair = (id) => {
         const avatar = document.createElement('img')
         avatar.classList.add('profile-settings-avatar')
         const name = document.createElement('p')
+        name.textContent = id
 
         const div = document.createElement('div')
         div.classList.add('tournament-user-container')
@@ -116,14 +117,31 @@ function initTournamentList(brackets, pairs) {
 
       const pair = document.createElement('div')
       pair.classList.add('tournament-pair-container')
-      pair.appendChild(createPair())
-      pair.appendChild(createPair())
+      console.log(usersInfo)
+      const getUser = (id) => {
+        if (currentUserInfo.id == id) {
+          return currentUserInfo
+        }
+
+        for (const user of usersInfo) {
+          if (user['id'] != id) {
+            continue
+          }
+          return user
+        }
+        return null
+      }
+      const player1 = getUser(pairInfo.player1.id)
+      const player2 = getUser(pairInfo.player2.id)
+      if (player1)
+        pair.appendChild(createPair(player1.username))
+      if (player2)
+        pair.appendChild(createPair(player2.username))
 
       bracketContainer.appendChild(pair)
     }
 
     list.appendChild(bracketContainer)
-    pairs = Math.ceil(pairs / 2)
   }
 }
 

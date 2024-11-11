@@ -38,7 +38,6 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 
         await self.accept('Authorization')
         await self.channel_layer.send(self.channel_name, { 'type': 'tournament.get.info' })
-        await self.channel_layer.send(self.channel_name, { 'type': 'tournament.get.list' })
 
     async def disconnect(self, code):
         # in case user fails to join early on
@@ -100,28 +99,24 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         return json.loads(cache.get(f'tournament-ready-{id}'))
 
     async def tournament_get_info(self, event):
-        await self.send_json({
-            'event': 'info',
-            'info': json.loads(cache.get(f'tournament-info-{self.tournament_id}')),
-        })
-
-    # this will be used to advance users to the next round
-    async def tournament_get_list(self, event):
-        pairs = json.loads(cache.get(f'tournament-{self.tournament_id}-{self.round}'))
-        opponent = None
-        for pair in pairs:
-            if not self.user_id in pair:
+        info = json.loads(cache.get(f'tournament-info-{self.tournament_id}'))
+        rounds = info['list']
+        for pair in rounds[self.round - 1]:
+            if (
+                (not pair['player1'] or self.user_id not in pair['player1'].values())
+                and (not pair['player2'] or self.user_id not in pair['player2'].values())
+            ):
                 continue
 
-            opponent = pair[0] if pair[0] != self.user_id else pair[1]
+            if pair['player1'] and pair['player1']['id'] == self.user_id:
+                self.opponent = pair['player2']
 
-        self.opponent = opponent
+            elif pair['player2'] and pair['player2']['id'] == self.user_id:
+                self.opponent = pair['player1']
 
         await self.send_json({
-            'event': 'list',
-            'round': self.round,
-            'pairs': pairs,
-            'opponent': opponent,
+            'event': 'info',
+            'info': info,
         })
 
     async def tournament_notify_left(self, event):
