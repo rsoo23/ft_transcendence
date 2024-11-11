@@ -166,9 +166,28 @@ class BallTimer():
         if self.time_elapsed < 4:
             return None
 
-        # TODO: randomize angle
-        new_ball = Ball(game_info.game_size.x / 2, game_info.game_size.y / 2, math.cos(math.radians(45)), math.sin(math.radians(45)), 200)
+        new_ball = self.init_ball(game_info)
         new_ball.color_idx = random.randint(0, 5)
         game_info.objects.append(new_ball)
         game_info.objects.remove(self)
         return None
+
+    # respawns the ball based o the player turn, randomizes the angle
+    def init_ball(self, game_info):
+        spawn_x = game_info.game_size.x / 2
+        spawn_y = game_info.game_size.y / 2
+        speed = 150
+
+        if game_info.player_turn == 1:
+            rad = math.radians(random.randint(120, 240))
+            v_x = math.cos(rad)
+            v_y = math.sin(rad)
+            game_info.player_turn = 2
+            return Ball(spawn_x, spawn_y, v_x, v_y, speed)
+        elif game_info.player_turn == 2:
+            rad = math.radians(random.randint(-60, 60))
+            v_x = math.cos(rad)
+            v_y = math.sin(rad)
+            game_info.player_turn = 1
+            return Ball(spawn_x, spawn_y, v_x, v_y, speed)
+

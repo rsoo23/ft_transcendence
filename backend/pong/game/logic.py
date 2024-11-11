@@ -26,6 +26,7 @@ class GameLogic():
         self.game_size = Vector2(400, 240)
         self.score = [0, 0]
         self.win_score = 5
+        self.player_turn = 1
         self.objects = [
             Paddle(25, 0, 1), # left paddle
             Paddle(self.game_size.x - Paddle.size.x - 25, 0, 2), # right paddle
