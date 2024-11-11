@@ -95,9 +95,10 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
 
                 await self.channel_layer.group_send(self.group_lobby, {'type': 'lobby.notify.start'})
                 if self.is_tournament:
-                    # TODO: make tournament and do lobby.notify.tournament
                     users = json.loads(cache.get(self.group_lobby))
+                    print('creating tournament')
                     tournament = await sync_to_async(create_tournament)(self.lobby_id, self.scope['user'], users)
+                    print('tournament done')
                     await self.channel_layer.group_send(self.group_lobby, {
                         'type': 'lobby.notify.tournament',
                         'id': tournament.id
