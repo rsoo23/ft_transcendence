@@ -27,6 +27,7 @@ class GameLogic():
         self.score = [0, 0]
         self.win_score = 5
         self.player_turn = 1
+        self.total_paddle_hits = 0
         self.objects = [
             Paddle(25, 0, 1), # left paddle
             Paddle(self.game_size.x - Paddle.size.x - 25, 0, 2), # right paddle

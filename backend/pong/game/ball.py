@@ -53,6 +53,7 @@ class Ball():
         elif game_info.player_turn == 2:
             game_info.player_turn = 1
 
+        game_info.total_paddel_hits = 0
 
     def tick(self, game_info, dt):
         calc_travel_dist = lambda vector, speed, scale: Vector2(
@@ -83,21 +84,22 @@ class Ball():
                 if not self.check_paddle_collision(prev_pos, paddle):
                     continue
 
+                game_info.total_paddle_hits += 1
+                if game_info.total_paddle_hits % 4 == 0:
+                    self.speed += 25
+
                 # check if the color of paddle matches the ball's color
                 if self.color_idx != paddle.color_idx:
                     if paddle.player_num == 1:
                         game_info.score[1] += 1
-                        # self.pos.x = 0
                     else:
                         game_info.score[0] += 1
-                        # self.pos.x = game_info.game_size.x - Ball.size.x
 
                 if game_info.score[0] >= game_info.win_score or game_info.score[1] >= game_info.win_score:
                     game_info.ended = True
 
                 if self.vector.x < 0:
                     self.pos.x = paddle.pos.x + Paddle.size.x
-
                 else:
                     self.pos.x = paddle.pos.x - Ball.size.x
 
