@@ -1,6 +1,7 @@
 import { resetInputField, setInputFieldHint } from "../ui_utils/input_field_utils.js";
 import { getColor } from "../ui_utils/color_utils.js";
 import { putRequest } from "../network_utils/api_requests.js";
+import { loadPage } from "../router.js";
 
 export async function verify_code() {
   const inputContainers = {
@@ -46,3 +47,36 @@ function isInputEmpty(code, inputContainers) {
   }
   return false
 }
+
+export function initVerifyForm() {
+    const form = document.getElementById('forgot-password-form');
+    const submitButton = document.getElementById('submit-code-button');
+    const codeInput = document.getElementById('forgot-password-code');
+    
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const result = await verify_code();
+      if (result === 'success') {
+         loadPage('forgot_password/change_password');
+      }
+    };
+    
+    // Enter key press
+    codeInput.addEventListener('keydown', async (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const result = await verify_code();
+        if (result === 'success') {
+           loadPage('forgot_password/change_password');
+        }
+      }
+    });
+    
+    // Button click
+    submitButton.onclick = async () => {
+      const result = await verify_code();
+      if (result === 'success') {
+          loadPage('forgot_password/change_password');
+      }
+    };
+  }

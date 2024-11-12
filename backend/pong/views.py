@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from asgiref.sync import sync_to_async
+from user_management.models import CustomUser
 from .models import PongMatch
 from .server import server_manager
 import asyncio
@@ -16,6 +17,7 @@ background_tasks = set()
 async def try_clean_match(match_id):
     await asyncio.sleep(30)
 
+    print(f'pong: Attempting to remove match with id {match_id}. (routine cleaning)')
     loop = asyncio.get_running_loop()
     match_info = await loop.run_in_executor(None, server_manager.get_game, match_id)
     if match_info == None:
@@ -23,6 +25,7 @@ async def try_clean_match(match_id):
 
     # just check the thread to see if the game is running
     if match_info['thread'].is_alive():
+        print(f'pong: Match with id {match_id} is still running normally. (routine cleaning)')
         return
 
     try:
@@ -34,10 +37,17 @@ async def try_clean_match(match_id):
 
     loop = asyncio.get_running_loop()
     await loop.run_in_executor(None, server_manager.close_game, match_id)
-    print(f'pong: Match with id {match_id} was deleted due to inactivity.')
+    print(f'pong: Match with id {match_id} was deleted due to inactivity. (routine cleaning)')
 
-async def create_match_and_game(user1, user2, local):
-    match = await sync_to_async(PongMatch.objects.create)(player1_uuid=user1, player2_uuid=user2, local=local)
+async def create_match_and_game(user1, user2, type):
+    local = (type == 'local_classic')
+    player1 = await CustomUser.objects.aget(id=user1)
+    player2 = (await CustomUser.objects.aget(id=user2)) if not local else None
+    match = await sync_to_async(PongMatch.objects.create)(
+        player1=player1,
+        player2=player2,
+        type=type
+    )
     loop = asyncio.get_running_loop()
     await loop.run_in_executor(None, server_manager.try_create_game, match.id, f'pongmatch-{match.id}', local)
 
@@ -55,7 +65,7 @@ async def create_match(request):
     try:
         user1 = request.data['player1_uuid']
         user2 = request.data['player2_uuid']
-        match = await create_match_and_game(user1, user2, request.data['local'])
+        match = await create_match_and_game(user1, user2, request.data['type'])
         return JsonResponse({
             'success': True,
             'match_id': match.id

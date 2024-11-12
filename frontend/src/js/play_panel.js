@@ -7,19 +7,10 @@ import { getRequest } from "./network_utils/api_requests.js";
 // FILO array
 var panelBacklog = Array()
 var divBacklog = Array()
-var localPlay = false
 
 export function initPanelBacklog(listOfPanels, listOfDivs, current) {
   panelBacklog = listOfPanels
   divBacklog = listOfDivs
-}
-
-export function setLocalPlayMode(bool) {
-  localPlay = bool
-}
-
-export function getLocalPlayMode() {
-  return localPlay
 }
 
 function setCurrentElement(element, pastCurrentElement, oldCurrentElement, currentElement) {
@@ -107,7 +98,7 @@ export async function startLocalGame() {
   let matchID = null
   try {
     const user = await getRequest('/api/users/current_user/')
-    matchID = await createMatch(user['id'], 0, getLocalPlayMode())
+    matchID = await createMatch(user['id'], 0, 'local_classic')
   } catch (error) {
     console.error('Encountered error: ', error)
   }

@@ -21,7 +21,7 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
         # check if PongMatch exists and hasn't ended
         try:
-            self.match_data = await PongMatch.objects.aget(id=self.match_id, ended=False)
+            self.match_data = await PongMatch.objects.select_related('player1', 'player2').aget(id=self.match_id, ended=False)
 
         except Exception as e:
             print('Exception while trying to get match_id: ' + str(e))
@@ -30,12 +30,12 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
         # assign groups and set up user
         await self.channel_layer.group_add(self.group_match, self.channel_name)
-        self.local_game = self.match_data.local
+        self.local_game = (self.match_data.type == 'local_classic')
 
-        if self.user_id == self.match_data.player1_uuid:
+        if self.scope['user'] == self.match_data.player1:
             self.player_num = 1
 
-        elif self.user_id == self.match_data.player2_uuid:
+        elif self.scope['user']  == self.match_data.player2:
             self.player_num = 2
 
         else:

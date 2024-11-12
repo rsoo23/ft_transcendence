@@ -3,6 +3,7 @@ import { getColor } from "../ui_utils/color_utils.js";
 import { putRequest } from "../network_utils/api_requests.js";
 import { getEmailToken } from "../network_utils/token_utils.js";
 import { send_otp_forgot_password } from "../network_utils/2FA_utils.js";
+import { loadPage } from "../router.js";
 
 export async function check_email() {
   const inputContainers = {
@@ -50,3 +51,35 @@ function isInputEmpty(code, inputContainers) {
   return false
 }
 
+export function initEmailForm() {
+    const form = document.getElementById('forgot-password-form');
+    const submitButton = document.getElementById('submit-email-button');
+    const emailInput = document.getElementById('forgot-password-email');
+    
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const result = await check_email();
+      if (result === 'success') {
+          loadPage('forgot_password/verify_code');
+      }
+    };
+    
+    // Enter key press
+    emailInput.addEventListener('keydown', async (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const result = await check_email();
+        if (result === 'success') {
+            loadPage('forgot_password/verify_code');
+        }
+      }
+    });
+    
+    // Button click
+    submitButton.onclick = async () => {
+      const result = await check_email();
+      if (result === 'success') {
+          loadPage('forgot_password/verify_code');
+      }
+    };
+  }

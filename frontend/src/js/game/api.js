@@ -8,11 +8,11 @@ import { leaveLobby } from '../lobby.js'
 var matchSocket = null
 var inMatchID = 0
 
-export async function createMatch(player1ID, player2ID, local) {
+export async function createMatch(player1ID, player2ID, type) {
   const response = await postRequest('/api/pong/create-match/', {
     'player1_uuid': player1ID,
     'player2_uuid': player2ID,
-    'local': local,
+    'type': type,
   })
   if (!response['success']) {
     console.log(response['Error'])

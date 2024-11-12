@@ -13,15 +13,17 @@
 .profile-settings-title {
   margin: 0;
   text-align: center;
+  letter-spacing: -0.25rem;
+  font-size: 3.2rem;
 }
 
 .profile-settings-grid {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
-.avatar-section {
+.profile-settings-avatar-section {
   display: flex;
   flex-direction: column;
   align-items: center;

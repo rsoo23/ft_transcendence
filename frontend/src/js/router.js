@@ -4,7 +4,7 @@ import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.j
 import { FRIEND_LIST_STATE, loadFriendListPanel, loadFriendSearchPanel, } from "./friends_system/utils.js";
 import { handle2FA, initResendCodeButton } from "./2FA_panel.js";
 import { send_otp_2FA } from "./network_utils/2FA_utils.js";
-import { check_email } from "./forgot_password/get_email.js";
+import { check_email, initEmailForm } from "./forgot_password/get_email.js";
 import { verify_code } from "./forgot_password/verify_code.js";
 import { handle_change_password } from "./forgot_password/change_password.js";
 import { handleLogin } from "./login_panel.js";
@@ -19,7 +19,7 @@ import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { initUsernameSettings } from "./settings/update_username.js";
 import { closeFriendSystemSocket, connectFriendSystemSocket, } from "./friends_system/websocket.js";
-import { setLocalPlayMode, getLocalPlayMode, initPanelBacklog, setCurrentPanel, setCurrentDiv, loadMultiplayerTest, startLocalGame, } from "./play_panel.js";
+import { initPanelBacklog, setCurrentPanel, setCurrentDiv, loadMultiplayerTest, startLocalGame, } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
 import { initClassicLobby, updateClassicLobby, getInLobby, createLobby, joinLobby, } from "./lobby.js";
 import { initLobbyList, closeLobbyListSocket, } from "./lobby_list.js";
@@ -27,6 +27,8 @@ import { closeUserUpdateSocket, connectUserUpdateSocket } from "./user_updates/w
 import { init2FAToggle } from "./2FA_panel.js";
 import { generateArcBackground, generateGeometricBackground, getRandomInt, loadMainBackground, removeBackground, setBackgroundLinesColor } from "./animations/main_background.js";
 import { refreshToken } from "./network_utils/token_utils.js";
+import { initVerifyForm } from "./forgot_password/verify_code.js";
+import { initChangePasswordForm } from "./forgot_password/change_password.js";
 
 const routes = {
   "/start": "start_panel.html",
@@ -316,7 +318,6 @@ async function initPlayPage() {
 
   // first page
   document.getElementById("localplay").onclick = async () => {
-    setLocalPlayMode(true)
     muteDiv(gameSelectDiv)
     await loadContentToTarget('menu/play_settings_content.html', 'play-settings-container')
     document.getElementById('settingsback').onclick = () => setCurrentDiv(gameSettingsDiv, gameSelectDiv)
@@ -324,7 +325,6 @@ async function initPlayPage() {
     setCurrentDiv(gameSelectDiv, gameSettingsDiv)
   };
   document.getElementById("onlineplay").onclick = () => {
-    setLocalPlayMode(false)
     setCurrentPanel(playTypeButtons, gamemodeButtons)
   };
 
@@ -391,6 +391,7 @@ async function initSettingsPage() {
 
 function initGetEmailPage() {
   initBackButton(() => loadPage("login"));
+  initEmailForm();
   initRandomColorButton("submit-email-button", "get-email-panel", async () => {
     const result = await check_email();
 
@@ -403,6 +404,7 @@ function initGetEmailPage() {
 
 function initVerifyCodePage() {
   initBackButton(() => loadPage("forgot_password/get_email"));
+  initVerifyForm();
   initRandomColorButton("submit-code-button", "verify-code-panel", async () => {
     const result = await verify_code();
 
@@ -416,6 +418,7 @@ function initVerifyCodePage() {
 function initChangePasswordPage() {
   initBackButton(() => loadPage("forgot_password/verify_code"));
   initTogglePasswordVisibilityIcon();
+  initChangePasswordForm();
   initRandomColorButton(
     "confirm-signup-button",
     "verify-code-panel",
