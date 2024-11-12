@@ -19,7 +19,7 @@ class Paddle {
   }
 
   draw(renderInfo, pos, prevState, nextState) {
-    postMessage(nextState.info)
+    postMessage({ type: 'color_switch', payload: nextState.info })
     renderInfo.ctx.fillStyle = nextState.info.color
     renderInfo.fillRectScaled(pos.x, pos.y, this.size.x, this.size.y);
   }
@@ -44,6 +44,7 @@ class Score {
   }
 
   draw(renderInfo, pos, prevState, nextState) {
+    postMessage({ type: 'turn_update', payload: nextState.info })
     renderInfo.ctx.font = `${(this.size * renderInfo.windowScale.x)}px "${this.font}"`;
     renderInfo.ctx.textAlign = 'center';
     renderInfo.ctx.textBaseline = 'middle';

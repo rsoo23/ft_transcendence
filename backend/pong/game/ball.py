@@ -44,6 +44,16 @@ class Ball():
             )
         )
 
+    def end_turn(self, game_info):
+        game_info.objects.append(BallTimer())
+        game_info.objects.append(CountdownTimer(4))
+
+        if game_info.player_turn == 1:
+            game_info.player_turn = 2
+        elif game_info.player_turn == 2:
+            game_info.player_turn = 1
+
+
     def tick(self, game_info, dt):
         calc_travel_dist = lambda vector, speed, scale: Vector2(
             scale.x * speed * dt * vector.x,
@@ -127,8 +137,7 @@ class Ball():
                     game_info.ended = True
 
                 else:
-                    game_info.objects.append(BallTimer())
-                    game_info.objects.append(CountdownTimer(4))
+                    self.end_turn(game_info)
 
                 game_info.objects.remove(self)
                 stop_on_next_loop = True
@@ -182,12 +191,10 @@ class BallTimer():
             rad = math.radians(random.randint(120, 240))
             v_x = math.cos(rad)
             v_y = math.sin(rad)
-            game_info.player_turn = 2
             return Ball(spawn_x, spawn_y, v_x, v_y, speed)
         elif game_info.player_turn == 2:
             rad = math.radians(random.randint(-60, 60))
             v_x = math.cos(rad)
             v_y = math.sin(rad)
-            game_info.player_turn = 1
             return Ball(spawn_x, spawn_y, v_x, v_y, speed)
 

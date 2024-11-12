@@ -12,8 +12,8 @@ class PongScore():
 
     def tick(self, game_info, dt):
         states = ObjectState('score')
-        states.append(self.pos, 0.0, {'score': game_info.score[self.score_index]})
-        states.append(self.pos, 1.0, {'score': game_info.score[self.score_index]})
+        states.append(self.pos, 0.0, {'player_turn': game_info.player_turn, 'score': game_info.score[self.score_index]})
+        states.append(self.pos, 1.0, {'player_turn': game_info.player_turn, 'score': game_info.score[self.score_index]})
         return states
 
 class GameLogic():

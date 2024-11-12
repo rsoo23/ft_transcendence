@@ -1,4 +1,4 @@
-import { ColorSwitcher } from './color_switcher.js'
+import { GameManager } from './game_manager.js'
 
 var workerUI = null
 
@@ -23,12 +23,19 @@ export function initRenderer() {
 
   observer.observe(div)
 
-  const colorSwitcher = new ColorSwitcher()
+  const gameManager = new GameManager()
 
   workerUI.addEventListener('message', (e) => {
-    const data = e.data
+    const { type, payload } = e.data
 
-    colorSwitcher.switchColor(data.player_num, data.color_idx)
+    switch (type) {
+      case 'color_switch':
+        gameManager.switchColorIndicator(payload.player_num, payload.color_idx)
+        break
+      case 'turn_update':
+        gameManager.updateTurn(payload.player_turn)
+        break
+    }
   })
 }
 
