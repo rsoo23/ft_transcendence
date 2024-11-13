@@ -30,11 +30,31 @@
   gap: 4.5rem;
 }
 
-.game-image {
+#how-to-play-page-2 .content-container-inner {
+  justify-content: center;
+  gap: 0;
+  margin-left: 4rem;
+}
+
+#how-to-play-page-2.content-container-outer {
+  gap: 2rem;
+}
+
+#how-to-play-page-2 .grid-container {
+  grid-template-columns: 2fr 2fr 2fr;
+  grid-template-rows: repeat(3, 1fr);
+}
+
+.game-demo {
   width: auto;
   height: 16rem;
   object-fit: cover;
   border-radius: 1rem;
+}
+
+.how-to-play-demo-gif {
+  width: auto;
+  height: 16rem;
 }
 
 #how-to-play-container .forward-button,
@@ -83,13 +103,13 @@
   justify-content: center;
 }
 
-#how-to-play-page-1, #how-to-play-page-2{
+#how-to-play-page-1, #how-to-play-page-2 {
   transition: visibility 0.75s, left 0.75s ease-in-out, opacity 0.75s ease-in-out;
 }
 
 .controls-container {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     width: 100%;
     max-width: 25rem;
     margin: 1rem 0;
