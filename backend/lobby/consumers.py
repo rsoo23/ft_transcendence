@@ -96,6 +96,10 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                 await self.channel_layer.group_send(self.group_lobby, {'type': 'lobby.notify.start'})
                 if self.is_tournament:
                     users = json.loads(cache.get(self.group_lobby))
+                    for user in users:
+                        user['ready'] = False
+
+                    cache.set(self.group_lobby, json.dumps(users))
                     print('creating tournament')
                     tournament = await sync_to_async(create_tournament)(self.lobby_id, self.scope['user'], users)
                     print('tournament done')
@@ -172,7 +176,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                     'user': event['user'],
                 })
 
-            users.append({'id': event['user'], 'ready': False})
+            users.append({'id': event['user'], 'ready': False, 'in_match': False})
             cache.set(self.group_lobby, json.dumps(users))
             if len(users) >= self.max_users:
                 await self.channel_layer.group_send(GROUP_LOBBYLIST, {
@@ -189,11 +193,25 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
     async def lobby_notify_ready(self, event):
         if self.is_host:
             users = json.loads(cache.get(self.group_lobby))
+            sender = None
             for i in users:
                 if i['id'] != event['user']:
                     continue
 
                 i['ready'] = event['ready']
+                sender = i
+
+            # is this sent by TournamentConsumer?
+            if 'opponent' in event:
+                for i in users:
+                    if i['id'] != event['opponent']['id']:
+                        continue
+
+                    if i['ready']:
+                        print('prepare to fight')
+                        sender['in_match'] = True
+                        i['in_match'] = True
+                        pass
 
             cache.set(self.group_lobby, json.dumps(users))
 

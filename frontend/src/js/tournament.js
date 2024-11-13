@@ -143,6 +143,8 @@ function initTournamentList(clist) {
 
     list.appendChild(bracketContainer)
   }
+
+  initTournamentReadyButtons()
 }
 
 function updateTournamentList() {

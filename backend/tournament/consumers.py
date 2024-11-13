@@ -59,9 +59,10 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 
         match content['action']:
             case 'ready':
-                await self.channel_layer.group_send(self.group_tournament, {
-                    'type': 'tournament.notify.ready',
+                await self.channel_layer.group_send(self.group_lobby, {
+                    'type': 'lobby.notify.ready',
                     'user': self.user_id,
+                    'opponent': self.opponent,
                     'ready': content['value'],
                 })
 
