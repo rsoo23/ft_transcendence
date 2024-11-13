@@ -1,6 +1,7 @@
 from .data import Vector2, PlayerInput, ObjectState
 from .paddle import Paddle
-from .ball import Ball
+from .ball import Ball, BallTimer
+from .countdown_timer import CountdownTimer
 from pong.serializers import ObjectStateSerializer
 import math
 
@@ -11,8 +12,8 @@ class PongScore():
 
     def tick(self, game_info, dt):
         states = ObjectState('score')
-        states.append(self.pos, 0.0, {'score': game_info.score[self.score_index]})
-        states.append(self.pos, 1.0, {'score': game_info.score[self.score_index]})
+        states.append(self.pos, 0.0, {'player_turn': game_info.player_turn, 'score': game_info.score[self.score_index]})
+        states.append(self.pos, 1.0, {'player_turn': game_info.player_turn, 'score': game_info.score[self.score_index]})
         return states
 
 class GameLogic():
@@ -25,12 +26,15 @@ class GameLogic():
         self.game_size = Vector2(400, 240)
         self.score = [0, 0]
         self.win_score = 5
+        self.player_turn = 1
+        self.total_paddle_hits = 0
         self.objects = [
             Paddle(25, 0, 1), # left paddle
             Paddle(self.game_size.x - Paddle.size.x - 25, 0, 2), # right paddle
-            Ball(self.game_size.x / 2, self.game_size.y / 2, math.cos(math.radians(45)), math.sin(math.radians(45)), 200),
+            BallTimer(),
             PongScore(self.game_size.x / 2 - 40, 60, 0),
             PongScore(self.game_size.x / 2 + 40, 60, 1),
+            CountdownTimer(4)
         ]
         # Add stat tracking
         self.paddle_bounces = [0, 0]  # Tracks hits for each player

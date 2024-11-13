@@ -1,16 +1,20 @@
 from .data import Vector2, ObjectState
 from .paddle import Paddle
+from .countdown_timer import CountdownTimer
 import copy
 import math
+import random
 
 class Ball():
     size = Vector2(7, 7)
     sqrt_of_two = 2 ** (1 / 2)
+    colors = ['#08B393', '#CF2350', '#E37144', '#2A86BB', '#F6B20D', '#8E92B9']
 
     def __init__(self, x, y, vx, vy, speed):
         self.pos = Vector2(x, y)
         self.vector = Vector2(vx, vy)
         self.speed = speed
+        self.color_idx = random.randint(0, 5)
 
     # basically checks if the path of the ball intersects with a paddle
     def check_paddle_collision(self, prev_pos, paddle):
@@ -39,6 +43,17 @@ class Ball():
                 or (not up and prev_y0 < paddle_y1 and new_y1 > paddle_y0)
             )
         )
+
+    def end_turn(self, game_info):
+        game_info.objects.append(BallTimer())
+        game_info.objects.append(CountdownTimer(4))
+
+        if game_info.player_turn == 1:
+            game_info.player_turn = 2
+        elif game_info.player_turn == 2:
+            game_info.player_turn = 1
+
+        game_info.total_paddel_hits = 0
 
     def tick(self, game_info, dt):
         calc_travel_dist = lambda vector, speed, scale: Vector2(
@@ -69,9 +84,22 @@ class Ball():
                 if not self.check_paddle_collision(prev_pos, paddle):
                     continue
 
+                game_info.total_paddle_hits += 1
+                if game_info.total_paddle_hits % 4 == 0:
+                    self.speed += 25
+
+                # check if the color of paddle matches the ball's color
+                if self.color_idx != paddle.color_idx:
+                    if paddle.player_num == 1:
+                        game_info.score[1] += 1
+                    else:
+                        game_info.score[0] += 1
+
+                if game_info.score[0] >= game_info.win_score or game_info.score[1] >= game_info.win_score:
+                    game_info.ended = True
+
                 if self.vector.x < 0:
                     self.pos.x = paddle.pos.x + Paddle.size.x
-
                 else:
                     self.pos.x = paddle.pos.x - Ball.size.x
 
@@ -84,6 +112,9 @@ class Ball():
                 # no shooting in a straight line
                 min_angle = 10
                 new_angle = max(new_angle, min_angle) if new_angle >= 0 else min(new_angle, -min_angle)
+
+                # set to random color
+                self.color_idx = random.randint(0, 5)
 
                 if self.vector.x > 0:
                     new_angle = 180 - new_angle
@@ -108,7 +139,7 @@ class Ball():
                     game_info.ended = True
 
                 else:
-                    game_info.objects.append(BallTimer())
+                    self.end_turn(game_info)
 
                 game_info.objects.remove(self)
                 stop_on_next_loop = True
@@ -133,7 +164,7 @@ class Ball():
             states.append(self.pos, alpha)
             to_travel = calc_travel_dist(self.vector, self.speed, dist_scale)
 
-        states.append(self.pos, 1.0)
+        states.append(self.pos, 1.0, {'color': Ball.colors[self.color_idx]})
         return states
 
 # respawns the ball after 5 seconds
@@ -143,11 +174,29 @@ class BallTimer():
 
     def tick(self, game_info, dt):
         self.time_elapsed += dt
-        if self.time_elapsed < 2.5:
+        if self.time_elapsed < 4:
             return None
 
-        # TODO: randomize angle
-        new_ball = Ball(game_info.game_size.x / 2, game_info.game_size.y / 2, math.cos(math.radians(45)), math.sin(math.radians(45)), 200)
+        new_ball = self.init_ball(game_info)
+        new_ball.color_idx = random.randint(0, 5)
         game_info.objects.append(new_ball)
         game_info.objects.remove(self)
         return None
+
+    # respawns the ball based o the player turn, randomizes the angle
+    def init_ball(self, game_info):
+        spawn_x = game_info.game_size.x / 2
+        spawn_y = game_info.game_size.y / 2
+        speed = 150
+
+        if game_info.player_turn == 1:
+            rad = math.radians(random.randint(120, 240))
+            v_x = math.cos(rad)
+            v_y = math.sin(rad)
+            return Ball(spawn_x, spawn_y, v_x, v_y, speed)
+        elif game_info.player_turn == 2:
+            rad = math.radians(random.randint(-60, 60))
+            v_x = math.cos(rad)
+            v_y = math.sin(rad)
+            return Ball(spawn_x, spawn_y, v_x, v_y, speed)
+

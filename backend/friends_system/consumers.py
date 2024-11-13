@@ -14,16 +14,15 @@ from rest_framework import status
 
 class FriendsSystemConsumer(WebsocketConsumer):
     def connect(self):
-        self.current_user_id = self.scope['user'].id
-        self.current_user = CustomUser.objects.get(pk=self.current_user_id)
+        if self.scope['user'] and self.scope['user'].is_authenticated:
+            self.current_user_id = self.scope['user'].id
+            self.current_user = CustomUser.objects.get(pk=self.current_user_id)
 
-        if not self.scope['user'].is_authenticated:
+            cache.set(f'{self.current_user_id}', self.channel_name)
+
+            self.accept('Authorization')
+        else: 
             self.close()
-            return
-
-        cache.set(f'{self.current_user_id}', self.channel_name)
-
-        self.accept('Authorization')
 
     def disconnect(self, close_code):
         cache.delete(f'{self.current_user_id}')

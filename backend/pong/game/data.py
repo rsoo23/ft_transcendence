@@ -27,6 +27,8 @@ class PlayerInput():
         self.inputs = {
             'up': False,
             'down': False,
+            'left': False,
+            'right': False,
         }
 
     def set_input(self, input_type, value):

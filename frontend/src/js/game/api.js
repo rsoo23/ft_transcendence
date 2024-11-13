@@ -28,7 +28,7 @@ var socketChecker = null
 // TODO: delete userid
 export async function joinMatch(matchID, userID) {
   if (matchSocket != undefined) {
-  	matchSocket.close()
+    matchSocket.close()
   }
 
   initRenderer()
@@ -48,7 +48,7 @@ async function checkSocket() {
   }
 
   console.log('connection might be stuck, reconnecting')
-  matchSocket.onclose = () => {}
+  matchSocket.onclose = () => { }
   matchSocket.close()
   await createSocket(inMatchID)
 }

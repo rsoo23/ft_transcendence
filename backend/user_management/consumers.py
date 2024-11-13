@@ -12,23 +12,22 @@ from rest_framework import status
 
 class UserUpdateConsumer(WebsocketConsumer):
     def connect(self):
-        if not self.scope['user'].is_authenticated:
+        if self.scope['user'] and self.scope['user'].is_authenticated:
+            self.current_user_id = self.scope['user'].id
+            self.current_user = CustomUser.objects.get(pk=self.current_user_id)
+
+            self.room_name = 'user_updates'
+
+            async_to_sync(self.channel_layer.group_add)(
+                self.room_name,
+                self.channel_name,
+            )
+            self.accept('Authorization')
+
+            # broadcast to everyone that current_user is online
+            self.update_online_status(True)
+        else:
             self.close()
-            return
-
-        self.current_user_id = self.scope['user'].id
-        self.current_user = CustomUser.objects.get(pk=self.current_user_id)
-
-        self.room_name = 'user_updates'
-
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_name,
-            self.channel_name,
-        )
-        self.accept('Authorization')
-
-        # broadcast to everyone that current_user is online
-        self.update_online_status(True)
 
     def disconnect(self, close_code):
         # broadcast to everyone that current_user is not online

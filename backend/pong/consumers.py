@@ -69,12 +69,10 @@ class PongConsumer(AsyncJsonWebsocketConsumer):
 
         if content['type'] == 'input':
             if self.local_game:
-                player_num = 2 if content['input'].find('p2', 0, 2) != -1 else 1
-                if player_num == 2:
-                    content['input'] = content['input'][2:]
-
+                player_num = 2 if content['input'].find('p2_', 0, 3) != -1 else 1
             else:
                 player_num = self.player_num
 
+            content['input'] = content['input'][3:]
             loop = asyncio.get_running_loop()
             await loop.run_in_executor(None, server_manager.update_player_input, self.match_id, player_num, content['input'], content['value'])
