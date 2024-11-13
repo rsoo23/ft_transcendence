@@ -190,15 +190,17 @@ export function leaveLobby() {
   lobbyType = ''
   lobbyUsers = []
   lobbyStarting = false
+
+  // this is to check if you're leaving a lobby normally
   if (document.getElementById('lobby-list') != null) {
     initLobbyList(isTournament)
+    divSwitcher.setCurrentDiv('play-lobby-container', lobbyBackButtonDivCache)
   }
+
   if (lobbySocket != null) {
     lobbySocket.close()
     lobbySocket = null
   }
-
-  divSwitcher.setCurrentDiv('play-lobby-container', lobbyBackButtonDivCache)
 }
 
 export function initClassicLobby(previousDiv) {
