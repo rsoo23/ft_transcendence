@@ -1,3 +1,5 @@
+import { GameManager } from './game_manager.js'
+
 var workerUI = null
 
 const observer = new ResizeObserver((entries) => {
@@ -20,6 +22,21 @@ export function initRenderer() {
   workerUI.postMessage({ type: 'start' })
 
   observer.observe(div)
+
+  const gameManager = new GameManager()
+
+  workerUI.addEventListener('message', (e) => {
+    const { type, payload } = e.data
+
+    switch (type) {
+      case 'color_switch':
+        gameManager.switchColorIndicator(payload.player_num, payload.color_idx)
+        break
+      case 'turn_update':
+        gameManager.updateTurn(payload.player_turn)
+        break
+    }
+  })
 }
 
 export function stopRenderer() {
