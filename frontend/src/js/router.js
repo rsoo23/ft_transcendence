@@ -311,7 +311,7 @@ async function initPlayPage() {
   };
 
   // second page
-  const goToLobbyList = async () => {
+  const goToLobbyList = async (isTournament) => {
     divSwitcher.disableDivInput('play-select-container')
     await loadContentToTarget('menu/lobby_list_content.html', 'play-lobby-list-container')
     document.getElementById('lobbylistback').onclick = () => {
@@ -338,8 +338,8 @@ async function initPlayPage() {
     divSwitcher.setCurrentDiv('play-select-container', 'play-lobby-list-container')
   }
   document.getElementById("gamemodeback").onclick = () => startingMenuSwitcher.setCurrentDiv('gamemode', 'playtype');
-  document.getElementById("quickplay").onclick = () => goToLobbyList()
-  document.getElementById("tournament").onclick = () => alert("not implemented yet :[");
+  document.getElementById("quickplay").onclick = () => goToLobbyList(false)
+  document.getElementById("tournament").onclick = () => goToLobbyList(true);
 
   // lobby page
   if (checkInLobby()) {

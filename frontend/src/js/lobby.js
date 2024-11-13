@@ -157,10 +157,7 @@ export async function joinLobby(id) {
         }
       }
 
-      setCurrentDiv(
-        document.getElementById('play-lobby-container'),
-        document.getElementById('play-tournament-container')
-      )
+      divSwitcher.setCurrentDiv('play-lobby-container', 'play-tournament-container')
       break
     }
   }
