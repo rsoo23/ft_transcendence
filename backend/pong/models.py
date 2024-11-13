@@ -1,5 +1,6 @@
 from django.db import models
 from user_management.models import CustomUser
+from django.utils import timezone
 
 class PongMatch(models.Model):
     aborted = models.BooleanField(default=False)
@@ -9,3 +10,4 @@ class PongMatch(models.Model):
     p2_score = models.IntegerField(default=0)
     player1 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='player1', null=True)
     player2 = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='player2', null=True)
+    date_joined = models.DateTimeField(default=timezone.now)

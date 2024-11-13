@@ -33,6 +33,7 @@ urlpatterns = [
     path('api/', include('realtime_chat.urls')),
     path('api/lobby/', include('lobby.urls')),
     path('api/pong/', include('pong.urls')),
+    path('api/game_stats/', include('game_stats.urls')),
     
 	# Serve media files
     re_path(r'^media/(?P<path>.*)$', serve, {
