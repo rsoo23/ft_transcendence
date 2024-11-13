@@ -33,9 +33,6 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             self.tournament_pairs = tournament_info['pairs']
             self.tournament_rounds = tournament_info['rounds']
 
-        else:
-            self.tournament_set_ready(False)
-
         await self.accept('Authorization')
         await self.channel_layer.send(self.channel_name, { 'type': 'tournament.get.info' })
 
@@ -92,13 +89,6 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
                     'opponent': self.opponent,
                 })
 
-    async def tournament_set_ready(self, ready):
-        # TODO: use lobby's ready system?
-        set_tournament_cache(self.tournament_id, f'tournament-ready-{self.user_id}', json.dumps(ready))
-
-    async def tournament_get_ready(self, id):
-        return json.loads(cache.get(f'tournament-ready-{id}'))
-
     async def tournament_get_info(self, event):
         info = json.loads(cache.get(f'tournament-info-{self.tournament_id}'))
         rounds = info['list']
@@ -129,19 +119,3 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
     async def tournament_match_end(self, event):
         event['winner_id']
 
-    async def tournament_notify_ready(self, event):
-        if self.is_host:
-            users = json.loads(cache.get(self.group_lobby))
-            for i in users:
-                if i['id'] != event['user']:
-                    continue
-
-                i['ready'] = event['ready']
-
-            cache.set(self.group_lobby, json.dumps(users))
-
-        await self.send_json({
-            'event': 'ready',
-            'user': event['user'],
-            'ready': content['value'],
-        })
