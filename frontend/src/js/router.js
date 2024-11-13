@@ -19,7 +19,7 @@ import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { initUsernameSettings } from "./settings/update_username.js";
 import { closeFriendSystemSocket, connectFriendSystemSocket, } from "./friends_system/websocket.js";
-import { initPanelBacklog, setCurrentPanel, setCurrentDiv, loadMultiplayerTest, startLocalGame, } from "./play_panel.js";
+import { initPlayDivs, startingMenuSwitcher, divSwitcher, loadMultiplayerTest, startLocalGame, } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
 import { initClassicLobby, updateClassicLobby, getInLobby, createLobby, joinLobby, } from "./lobby.js";
 import { initLobbyList, closeLobbyListSocket, } from "./lobby_list.js";
@@ -289,77 +289,58 @@ async function initMainMenuPage() {
 }
 
 async function initPlayPage() {
-  const moveAToB = (e1, e2) => {
-    const e1Rect = e1.getBoundingClientRect()
-    const e2Rect = e2.getBoundingClientRect()
-    e1.style.top = `-${e1Rect.top - e2Rect.top}px`
-  }
-  const muteDiv = (div) => {
-    div.style.setProperty('pointer-events', 'none', 'important')
-    let buttons = div.querySelectorAll('button')
-    buttons.forEach((b) => b.disabled = true)
-  }
-
   const playTypeButtons = document.getElementById('playtype')
   const gamemodeButtons = document.getElementById('gamemode')
   const gameSelectDiv = document.getElementById('play-select-container')
   const gameLobbyListDiv = document.getElementById('play-lobby-list-container')
   const gameSettingsDiv = document.getElementById('play-settings-container')
   const gameLobbyDiv = document.getElementById('play-lobby-container')
-  moveAToB(gamemodeButtons, playTypeButtons)
-  moveAToB(gameLobbyListDiv, gameSelectDiv)
-  moveAToB(gameSettingsDiv, gameSelectDiv)
-  moveAToB(gameLobbyDiv, gameSelectDiv)
-  initPanelBacklog(
-    [playTypeButtons, gamemodeButtons],
-    [gameSelectDiv, gameLobbyListDiv, gameSettingsDiv, gameLobbyDiv],
-    playTypeButtons
-  );
+  initPlayDivs();
 
   // first page
   document.getElementById("localplay").onclick = async () => {
-    muteDiv(gameSelectDiv)
+    startingMenuSwitcher.disableDivInput('play-select-container')
     await loadContentToTarget('menu/play_settings_content.html', 'play-settings-container')
-    document.getElementById('settingsback').onclick = () => setCurrentDiv(gameSettingsDiv, gameSelectDiv)
+    document.getElementById('settingsback').onclick = () => divSwitcher.setCurrentDiv('play-settings-container', 'play-select-container')
     document.getElementById('start-game').onclick = () => startLocalGame()
-    setCurrentDiv(gameSelectDiv, gameSettingsDiv)
+    divSwitcher.setCurrentDiv('play-select-container', 'play-settings-container')
   };
   document.getElementById("onlineplay").onclick = () => {
-    setCurrentPanel(playTypeButtons, gamemodeButtons)
+    startingMenuSwitcher.setCurrentDiv('playtype', 'gamemode')
   };
 
   // second page
   const goToLobbyList = async () => {
-    muteDiv(gameSelectDiv)
+    divSwitcher.disableDivInput('play-select-container')
     await loadContentToTarget('menu/lobby_list_content.html', 'play-lobby-list-container')
     document.getElementById('lobbylistback').onclick = () => {
       closeLobbyListSocket()
-      setCurrentDiv(gameLobbyListDiv, gameSelectDiv)
+      divSwitcher.setCurrentDiv('play-lobby-list-container', 'play-select-container')
     }
     document.getElementById('lobby-host-button').onclick = async () => {
-      muteDiv(gameSelectDiv)
+      divSwitcher.disableDivInput('play-select-container')
       // TODO: move this to lobby stuff
       await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
       closeLobbyListSocket()
       const lobbyID = await createLobby()
       await joinLobby(lobbyID)
-      initClassicLobby(gameLobbyListDiv)
-      setCurrentDiv(gameLobbyListDiv, gameLobbyDiv)
+      initClassicLobby('play-lobby-list-container')
+      divSwitcher.setCurrentDiv('play-lobby-list-container', 'play-lobby-container')
       updateClassicLobby()
     }
     initLobbyList()
-    setCurrentDiv(gameSelectDiv, gameLobbyListDiv)
+    divSwitcher.setCurrentDiv('play-select-container', 'play-lobby-list-container')
   }
-  document.getElementById("gamemodeback").onclick = () => setCurrentPanel(gamemodeButtons, playTypeButtons);
+  document.getElementById("gamemodeback").onclick = () => startingMenuSwitcher.setCurrentDiv('gamemode', 'playtype');
   document.getElementById("quickplay").onclick = () => goToLobbyList()
   document.getElementById("tournament").onclick = () => alert("not implemented yet :[");
 
   // lobby page
   if (getInLobby()) {
-    muteDiv(gameSelectDiv)
+    divSwitcher.disableDivInput('play-select-container')
     await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
-    initClassicLobby(gameSelectDiv)
-    setCurrentDiv(gameSelectDiv, gameLobbyDiv)
+    initClassicLobby('play-select-container')
+    divSwitcher.setCurrentDiv('play-select-container', 'play-lobby-container', true)
     updateClassicLobby()
   }
 }

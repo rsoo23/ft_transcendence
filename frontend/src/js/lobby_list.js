@@ -2,7 +2,7 @@ import { getAccessToken } from "./network_utils/token_utils.js"
 import { getRequest } from "./network_utils/api_requests.js"
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { joinLobby, initClassicLobby } from "./lobby.js";
-import { setCurrentDiv } from "./play_panel.js";
+import { divSwitcher } from "./play_panel.js";
 
 var lobbyListSocket = null
 
@@ -52,7 +52,7 @@ async function appendLobbyEntry(lobbyId) {
     const prevDiv = document.getElementById('play-lobby-list-container')
     initClassicLobby(prevDiv)
     closeLobbyListSocket()
-    setCurrentDiv(prevDiv, document.getElementById('play-lobby-container'))
+    divSwitcher.setCurrentDiv(prevDiv, document.getElementById('play-lobby-container'))
   }
 
   const lobbyList = document.getElementById('lobby-list')

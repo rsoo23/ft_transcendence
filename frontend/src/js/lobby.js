@@ -2,7 +2,7 @@ import { getRequest, postRequest } from "./network_utils/api_requests.js";
 import { currentUserInfo } from "./global_vars.js"
 import { getAccessToken } from "./network_utils/token_utils.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
-import { setCurrentDiv } from "./play_panel.js";
+import { divSwitcher } from "./play_panel.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
 import { loadPage } from "./router.js";
 import { joinMatch } from "./game/api.js";
@@ -128,7 +128,7 @@ export function leaveLobby() {
     lobbySocket.close()
   }
 
-  setCurrentDiv(document.getElementById('play-lobby-container'), lobbyBackButtonDivCache)
+  divSwitcher.setCurrentDiv('play-lobby-container', lobbyBackButtonDivCache)
 }
 
 export function initClassicLobby(previousDiv) {
