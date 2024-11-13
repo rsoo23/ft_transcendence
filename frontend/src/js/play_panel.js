@@ -3,68 +3,22 @@ import { createMatch, joinMatch } from "./game/api.js";
 import { loadPage } from "./router.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { getRequest } from "./network_utils/api_requests.js";
+import { PanelSwitcher } from "./ui_utils/panelswitcher_utils.js";
 
-// FILO array
-var panelBacklog = Array()
-var divBacklog = Array()
+// for moving stuff
+export var startingMenuSwitcher = null
+export var divSwitcher = null
 
-export function initPanelBacklog(listOfPanels, listOfDivs, current) {
-  panelBacklog = listOfPanels
-  divBacklog = listOfDivs
-}
+export function initPlayDivs() {
+  const playTypeButtons = document.getElementById('playtype')
+  const gamemodeButtons = document.getElementById('gamemode')
+  const gameSelectDiv = document.getElementById('play-select-container')
+  const gameLobbyListDiv = document.getElementById('play-lobby-list-container')
+  const gameSettingsDiv = document.getElementById('play-settings-container')
+  const gameLobbyDiv = document.getElementById('play-lobby-container')
 
-function setCurrentElement(element, pastCurrentElement, oldCurrentElement, currentElement) {
-  // skip transition if not in view
-  if (element == oldCurrentElement || element == currentElement) {
-    element.style.transition = ''
-  } else {
-    element.style.transition = '0'
-  }
-
-  let buttons = element.querySelectorAll('button')
-  if (element != currentElement && !pastCurrentElement) {
-    element.style.setProperty('left', '-100rem')
-    element.style.setProperty('opacity', '0')
-    element.style.setProperty('visibility', 'hidden', 'important')
-    element.style.setProperty('pointer-events', 'none', 'important')
-    buttons.forEach((b) => b.disabled = true)
-  } else if (element == currentElement) {
-    element.style.setProperty('left', '0')
-    element.style.setProperty('opacity', '1')
-    element.style.setProperty('visibility', 'visible', 'important')
-    element.style.setProperty('pointer-events', 'auto', 'important')
-    buttons.forEach((b) => b.disabled = false)
-  } else {
-    element.style.setProperty('left', '100rem')
-    element.style.setProperty('opacity', '0')
-    element.style.setProperty('visibility', 'hidden', 'important')
-    element.style.setProperty('pointer-events', 'none', 'important')
-    buttons.forEach((b) => b.disabled = true)
-  }
-}
-
-export function setCurrentPanel(oldCurrentPanel, currentPanel) {
-  let backlog = panelBacklog
-
-  let pastCurrentPanel = false
-  for (const panel of backlog) {
-    setCurrentElement(panel, pastCurrentPanel, oldCurrentPanel, currentPanel)
-    if (panel == currentPanel) {
-      pastCurrentPanel = true
-    }
-  }
-}
-
-export function setCurrentDiv(oldCurrentDiv, currentDiv) {
-  let backlog = divBacklog
-
-  let pastCurrentDiv = false
-  for (const div of backlog) {
-    setCurrentElement(div, pastCurrentDiv, oldCurrentDiv, currentDiv)
-    if (div == currentDiv) {
-      pastCurrentDiv = true
-    }
-  }
+  startingMenuSwitcher = new PanelSwitcher(playTypeButtons, [playTypeButtons, gamemodeButtons])
+  divSwitcher = new PanelSwitcher(gameSelectDiv, [gameSelectDiv, gameLobbyListDiv, gameSettingsDiv, gameLobbyDiv])
 }
 
 export async function loadMultiplayerTest() {
