@@ -14,7 +14,7 @@ export function checkInTournament() {
 }
 
 export function checkIsTournamentOpponent(id) {
-  return (id == tournamentCurrentOpponent.id)
+  return (tournamentCurrentOpponent && id == tournamentCurrentOpponent.id)
 }
 
 export async function joinTournament(id) {
@@ -131,12 +131,14 @@ function initTournamentList(clist) {
         }
         return null
       }
-      const player1 = getUser(pairInfo.player1.id)
-      const player2 = getUser(pairInfo.player2.id)
-      if (player1)
+      if (pairInfo.player1) {
+        const player1 = getUser(pairInfo.player1.id)
         pair.appendChild(createPair(player1.username))
-      if (player2)
+      }
+      if (pairInfo.player2) {
+        const player2 = getUser(pairInfo.player2.id)
         pair.appendChild(createPair(player2.username))
+      }
 
       bracketContainer.appendChild(pair)
     }

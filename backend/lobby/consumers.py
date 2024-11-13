@@ -110,10 +110,12 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
 
                 else:
                     users = json.loads(cache.get(self.group_lobby))
-                    match = await create_match_and_game(users[0]['id'], users[1]['id'], False)
+                    match = await create_match_and_game(users[0]['id'], users[1]['id'], 'online_classic')
                     await self.channel_layer.group_send(self.group_lobby, {
                         'type': 'lobby.notify.match',
-                        'id': match.id
+                        'id': match.id,
+                        'p1': users[0]['id'],
+                        'p2': users[1]['id'],
                     })
 
             case 'stop':
@@ -202,16 +204,24 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                 sender = i
 
             # is this sent by TournamentConsumer?
-            if 'opponent' in event:
+            if 'opponent' in event and event['opponent']:
                 for i in users:
                     if i['id'] != event['opponent']['id']:
                         continue
 
-                    if i['ready']:
-                        print('prepare to fight')
-                        sender['in_match'] = True
-                        i['in_match'] = True
-                        pass
+                    if not i['ready']:
+                        break
+
+                    print('prepare to fight')
+                    sender['in_match'] = True
+                    i['in_match'] = True
+                    match = await create_match_and_game(sender['id'], i['id'], False)
+                    await self.channel_layer.group_send(self.group_lobby, {
+                        'type': 'lobby.notify.match',
+                        'id': match.id,
+                        'p1': sender['id'],
+                        'p2': i['id'],
+                    })
 
             cache.set(self.group_lobby, json.dumps(users))
 
@@ -235,6 +245,8 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json({
             'event': 'match',
             'id': event['id'],
+            'p1': event['p1'],
+            'p2': event['p2'],
         })
 
     async def lobby_notify_tournament(self, event):

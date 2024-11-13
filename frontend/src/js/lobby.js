@@ -5,7 +5,7 @@ import { loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { divSwitcher } from "./play_panel.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
 import { loadPage } from "./router.js";
-import { joinMatch } from "./game/api.js";
+import { joinMatch, defaultMatchOnClose } from "./game/api.js";
 import { initLobbyList } from "./lobby_list.js";
 import { checkInTournament, checkIsTournamentOpponent, joinTournament } from "./tournament.js";
 
@@ -131,9 +131,19 @@ export async function joinLobby(id) {
       break
 
     case 'match':
+      if (data.p1 != currentUserInfo.id && data.p2 != currentUserInfo.id) {
+        break
+      }
+
       lobbySocket.onclose = null
       await loadPage('game')
-      joinMatch(data.id)
+      joinMatch(data.id, () => {
+        if (!checkInTournament()) {
+          leaveLobby()
+        }
+
+        defaultMatchOnClose()
+      })
       break
 
     case 'tournament':

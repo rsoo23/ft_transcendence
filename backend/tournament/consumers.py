@@ -116,6 +116,11 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             'user': event['user'],
         })
 
+    async def tournament_notify_match(self, event):
+        await self.send_json({
+            'event': 'match',
+            'id': id,
+        })
+
     async def tournament_match_end(self, event):
         event['winner_id']
-

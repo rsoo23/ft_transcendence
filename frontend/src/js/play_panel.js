@@ -1,5 +1,5 @@
 import { initRandomColorButton } from "./ui_utils/button_utils.js"
-import { createMatch, joinMatch } from "./game/api.js";
+import { createMatch, joinMatch, defaultMatchOnClose } from "./game/api.js";
 import { loadPage } from "./router.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { getRequest } from "./network_utils/api_requests.js";
@@ -62,5 +62,5 @@ export async function startLocalGame() {
     return
   }
   await loadPage('game')
-  joinMatch(matchID, 0)
+  joinMatch(matchID, defaultMatchOnClose)
 }
