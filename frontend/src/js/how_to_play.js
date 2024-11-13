@@ -7,9 +7,9 @@ export function initHowToPlayDivs() {
   const page2 = document.getElementById('how-to-play-page-2')
   const page3 = document.getElementById('how-to-play-page-3')
   const page4 = document.getElementById('how-to-play-page-4')
-  // const page5 = document.getElementById('how-to-play-page-5')
+  const page5 = document.getElementById('how-to-play-page-5')
 
-  const pages = [page1, page2, page3, page4]
+  const pages = [page1, page2, page3, page4, page5]
 
   howToPlayPageSwitcher = new PanelSwitcher(page1, pages)
 
