@@ -33,6 +33,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             self.tournament_pairs = tournament_info['pairs']
             self.tournament_rounds = tournament_info['rounds']
 
+        await self.channel_layer.group_add(self.group_tournament, self.channel_name)
         await self.accept('Authorization')
         await self.channel_layer.send(self.channel_name, { 'type': 'tournament.get.info' })
 
@@ -124,4 +125,8 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         })
 
     async def tournament_match_end(self, event):
+        if not self.is_host:
+            return
+
+        tournament_info = json.loads(cache.get(f'tournament-info-{self.tournament_id}'))
         event['winner_id']

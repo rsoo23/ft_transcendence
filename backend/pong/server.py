@@ -94,6 +94,13 @@ class ServerManager():
             match_data.ended = True
             match_data.save()
 
+            if match_data.tournament != None:
+                is_p1_winner = (match_data.p1_score >= match_info['game_info'].win_score)
+                async_to_sync(self.channel_layer.group_send)(f'tournament-{match_data.tournament.id}', {
+                    'type': 'tournament.match.end',
+                    'winner_id': match_data.player1.id if is_p1_winner else match_data.player2.id,
+                })
+
         except Exception as e:
             print('Exception while trying to set match data: ' + str(e))
 
