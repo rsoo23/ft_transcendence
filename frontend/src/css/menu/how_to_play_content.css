@@ -19,7 +19,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  position: relative;
+  /*position: relative;*/
 }
 
 .content-container-outer {
@@ -89,11 +89,13 @@
 }
 
 #how-to-play-container .forward-button {
-  right: -1rem;
+  right: 1rem;
+  bottom: 43%;
 }
 
 #how-to-play-container .back-button {
-  left: -1rem;
+  left: 1rem;
+  bottom: 43%;
 }
 
 #how-to-play-title {
