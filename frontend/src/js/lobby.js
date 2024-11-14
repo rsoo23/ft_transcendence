@@ -19,6 +19,10 @@ export function checkInLobby() {
   return inLobby
 }
 
+export function getLobbyType() {
+  return lobbyType;
+}
+
 export function validateAvatarImg(src) {
   if (src == null) {
     return "/static/images/kirby.png"
