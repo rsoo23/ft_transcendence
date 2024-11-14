@@ -198,6 +198,8 @@ export function leaveLobby() {
   if (document.getElementById('lobby-list') != null) {
     initLobbyList(isTournament)
     divSwitcher.setCurrentDiv('play-lobby-container', 'play-lobby-list-container')
+  } else {
+    divSwitcher.setCurrentDiv('play-lobby-container', 'play-select-container')
   }
 
   if (lobbySocket != null) {
