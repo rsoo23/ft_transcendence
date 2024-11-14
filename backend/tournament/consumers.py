@@ -60,6 +60,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
                     'type': 'lobby.notify.ready',
                     'user': self.user_id,
                     'opponent': self.opponent,
+                    'tournament_id': self.tournament_id,
                     'ready': content['value'],
                 })
 

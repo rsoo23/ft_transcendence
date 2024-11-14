@@ -215,7 +215,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                     print('prepare to fight')
                     sender['in_match'] = True
                     i['in_match'] = True
-                    match = await create_match_and_game(sender['id'], i['id'], False)
+                    match = await create_match_and_game(sender['id'], i['id'], 'online_tournament', event['tournament_id'])
                     await self.channel_layer.group_send(self.group_lobby, {
                         'type': 'lobby.notify.match',
                         'id': match.id,

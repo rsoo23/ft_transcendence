@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from asgiref.sync import sync_to_async
 from user_management.models import CustomUser
 from .models import PongMatch
+from tournament.models import TournamentModel
 from .server import server_manager
 import asyncio
 
@@ -39,14 +40,17 @@ async def try_clean_match(match_id):
     await loop.run_in_executor(None, server_manager.close_game, match_id)
     print(f'pong: Match with id {match_id} was deleted due to inactivity. (routine cleaning)')
 
-async def create_match_and_game(user1, user2, type):
+async def create_match_and_game(user1, user2, type, tournament_id=-1):
     local = (type == 'local_classic')
     player1 = await CustomUser.objects.aget(id=user1)
     player2 = (await CustomUser.objects.aget(id=user2)) if not local else None
+    tournament = await TournamentModel.objects.aget(id=tournament_id) if tournament_id != -1 else None
+
     match = await sync_to_async(PongMatch.objects.create)(
         player1=player1,
         player2=player2,
-        type=type
+        type=type,
+        tournament=tournament,
     )
     loop = asyncio.get_running_loop()
     await loop.run_in_executor(None, server_manager.try_create_game, match.id, f'pongmatch-{match.id}', local)
