@@ -30,7 +30,8 @@ export async function joinTournament(id) {
 
     case 'info':
       console.log(data.info.list)
-      initTournamentList(data.info.list)
+      tournamentInfo = data.info.list
+      initTournamentList()
       break
 
     case 'list':
@@ -95,9 +96,9 @@ function initTournamentReadyButtons() {
   }
 }
 
-function initTournamentList(clist) {
+export function initTournamentList() {
   const list = document.getElementById('bracket-list')
-  for (const round of clist) {
+  for (const round of tournamentInfo) {
     const bracketContainer = document.createElement('div')
     bracketContainer.classList.add('tournament-bracket-container')
 
