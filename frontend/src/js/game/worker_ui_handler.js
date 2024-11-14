@@ -24,7 +24,6 @@ export function initRenderer() {
   observer.observe(div)
 
   const gameManager = new GameManager()
-  let next_player_turn = 1
 
   workerUI.addEventListener('message', (e) => {
     const { type, payload } = e.data
@@ -34,16 +33,11 @@ export function initRenderer() {
         gameManager.switchColorIndicator(payload.player_num, payload.color_idx)
         break
       case 'turn_update':
-        if (next_player_turn === payload.player_turn) {
-
-          gameManager.updateTurn(payload.player_turn)
-
-          if (payload.player_turn === 1) {
-            next_player_turn = 2
-          } else {
-            next_player_turn = 1
-          }
-        }
+        gameManager.updateTurn(payload.player_turn)
+        break
+      case 'charge_powerup':
+        gameManager.chargePowerup(payload)
+        break
     }
   })
 }

@@ -1,6 +1,7 @@
 from .data import Vector2, PlayerInput, ObjectState
 from .paddle import Paddle
 from .ball import Ball, BallTimer
+from .powerups_manager import PowerupsManager
 from .countdown_timer import CountdownTimer
 from pong.serializers import ObjectStateSerializer
 import math
@@ -25,16 +26,18 @@ class GameLogic():
         self.player_inputs = [PlayerInput(), PlayerInput()]
         self.game_size = Vector2(400, 240)
         self.score = [0, 0]
-        self.win_score = 5
+        self.win_score = 50
         self.player_turn = 1
         self.total_paddle_hits = 0
+        self.powerup_charge_num = [0, 0]
         self.objects = [
             Paddle(25, 0, 1), # left paddle
             Paddle(self.game_size.x - Paddle.size.x - 25, 0, 2), # right paddle
             BallTimer(),
             PongScore(self.game_size.x / 2 - 40, 60, 0),
             PongScore(self.game_size.x / 2 + 40, 60, 1),
-            CountdownTimer(4)
+            CountdownTimer(4),
+            PowerupsManager()
         ]
         # Add stat tracking
         self.paddle_bounces = [0, 0]  # Tracks hits for each player

@@ -43,6 +43,7 @@ class Paddle():
         states.append(self.pos, 1.0, {
             'player_num': self.player_num,
             'color': Paddle.colors[self.color_idx],
-            'color_idx': self.color_idx
+            'color_idx': self.color_idx,
+            'powerup_charge_num': game_info.powerup_charge_num,
         })
         return states

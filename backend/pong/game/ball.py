@@ -94,6 +94,11 @@ class Ball():
                         game_info.score[1] += 1
                     else:
                         game_info.score[0] += 1
+                else:
+                    if paddle.player_num == 1 and game_info.powerup_charge_num[0] < 3:
+                        game_info.powerup_charge_num[0] += 1
+                    elif paddle.player_num == 2 and game_info.powerup_charge_num[1] < 3:
+                        game_info.powerup_charge_num[1] += 1
 
                 if game_info.score[0] >= game_info.win_score or game_info.score[1] >= game_info.win_score:
                     game_info.ended = True

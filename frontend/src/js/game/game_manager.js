@@ -14,6 +14,13 @@ export class GameManager {
     this.p2ColorIndex = 0
 
     this.gameHeader = document.getElementById('game-header-text')
+    this.nextPlayerTurn = 2
+
+    this.p1PowerupIndicators = document.querySelectorAll('#p1-powerup-bar .powerup-indicator')
+    this.p2PowerupIndicators = document.querySelectorAll('#p2-powerup-bar .powerup-indicator')
+    this.p1PowerupBar = document.getElementById('p1-powerup-bar')
+    this.p2PowerupBar = document.getElementById('p2-powerup-bar')
+    this.powerup_charge_num = [0, 0]
   }
 
   switchColorIndicator(playerNum, colorIndex) {
@@ -37,7 +44,7 @@ export class GameManager {
   }
 
   updateTurn(playerTurn) {
-    if (playerTurn === undefined) {
+    if (playerTurn === undefined || playerTurn === this.nextPlayerTurn) {
       return
     }
     if (playerTurn === 1) {
@@ -45,5 +52,48 @@ export class GameManager {
     } else if (playerTurn === 2) {
       this.gameHeader.innerHTML = "Serving to Player 2"
     }
+    this.nextPlayerTurn = playerTurn
+  }
+
+  chargePowerup(chargeNum) {
+    if (chargeNum[0] === this.powerup_charge_num[0] && chargeNum[1] === this.powerup_charge_num[1]) {
+      return
+    }
+
+    for (let i = 0; i < chargeNum[0]; i++) {
+      this.p1PowerupIndicators[i].style.backgroundColor = 'var(--yellow-200)'
+    }
+    for (let i = 0; i < chargeNum[1]; i++) {
+      this.p2PowerupIndicators[i].style.backgroundColor = 'var(--yellow-200)'
+    }
+
+    if (chargeNum[0] === 3) {
+      this.animatePowerupBarPulse(this.p1PowerupBar)
+    }
+    if (chargeNum[1] === 3) {
+      this.animatePowerupBarPulse(this.p2PowerupBar)
+    }
+
+    this.powerup_charge_num = chargeNum
+  }
+
+  animatePowerupBarPulse(powerupBar) {
+    powerupBar.animate(
+      [
+        { backgroundColor: 'var(--yellow-800)' },
+        { backgroundColor: 'var(--yellow-500)' },
+        { backgroundColor: 'var(--yellow-800)' },
+      ],
+      {
+        duration: 1000,
+        iterations: Infinity,
+        easing: 'ease-in-out'
+      },
+    );
+  }
+
+  usePowerup() {
+    // if (chargeNum[0] === 3) {
+    // }
   }
 }
