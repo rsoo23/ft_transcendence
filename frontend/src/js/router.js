@@ -290,12 +290,6 @@ async function initMainMenuPage() {
 }
 
 async function initPlayPage() {
-  const playTypeButtons = document.getElementById('playtype')
-  const gamemodeButtons = document.getElementById('gamemode')
-  const gameSelectDiv = document.getElementById('play-select-container')
-  const gameLobbyListDiv = document.getElementById('play-lobby-list-container')
-  const gameSettingsDiv = document.getElementById('play-settings-container')
-  const gameLobbyDiv = document.getElementById('play-lobby-container')
   initPlayDivs();
 
   // first page
