@@ -187,7 +187,6 @@ export async function joinLobby(id) {
   lobbySocket.onopen = () => {}
 }
 
-var lobbyBackButtonDivCache = null
 export function leaveLobby() {
   const isTournament = (lobbyType == 'tournament')
   inLobby = false
@@ -198,7 +197,7 @@ export function leaveLobby() {
   // this is to check if you're leaving a lobby normally
   if (document.getElementById('lobby-list') != null) {
     initLobbyList(isTournament)
-    divSwitcher.setCurrentDiv('play-lobby-container', lobbyBackButtonDivCache)
+    divSwitcher.setCurrentDiv('play-lobby-container', 'play-lobby-list-container')
   }
 
   if (lobbySocket != null) {
@@ -207,9 +206,8 @@ export function leaveLobby() {
   }
 }
 
-export function initClassicLobby(previousDiv) {
+export function initClassicLobby() {
   // init self
-  lobbyBackButtonDivCache = previousDiv
   document.getElementById('lobbyback').onclick = () => leaveLobby()
 
   const readyButton = (e) => {
@@ -302,9 +300,8 @@ function setClassicPlayerInfo(info, prefix) {
   }
 }
 
-export function initTournamentLobby(previousDiv) {
+export function initTournamentLobby() {
   // init self
-  lobbyBackButtonDivCache = previousDiv
   document.getElementById('lobbyback').onclick = () => leaveLobby()
 
   const readyButton = (e) => {

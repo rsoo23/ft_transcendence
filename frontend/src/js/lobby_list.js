@@ -60,13 +60,12 @@ export async function goToLobby(lobbyID, isTournament) {
   closeLobbyListSocket()
   await joinLobby(lobbyID)
 
-  const prevDiv = 'play-lobby-list-container'
   if (isTournament) {
-    initTournamentLobby(prevDiv)
+    initTournamentLobby()
   } else {
-    initClassicLobby(prevDiv)
+    initClassicLobby()
   }
-  divSwitcher.setCurrentDiv(prevDiv, 'play-lobby-container')
+  divSwitcher.setCurrentDiv('play-lobby-list-container', 'play-lobby-container')
   if (isTournament) {
     updateTournamentLobby()
   } else {

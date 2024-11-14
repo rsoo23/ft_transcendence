@@ -346,10 +346,10 @@ async function initPlayPage() {
     const inTournament = (getLobbyType() == 'tournament')
     if (inTournament) {
       await loadContentToTarget('menu/lobby_tournament_content.html', 'play-lobby-container')
-      initTournamentLobby('play-select-container')
+      initTournamentLobby()
     } else {
       await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
-      initClassicLobby('play-select-container')
+      initClassicLobby()
     }
 
     divSwitcher.setCurrentDiv('play-select-container', 'play-lobby-container', true)
