@@ -7,7 +7,7 @@ import { queueNotification } from "./ui_utils/notification_utils.js";
 import { loadPage } from "./router.js";
 import { joinMatch, defaultMatchOnClose } from "./game/api.js";
 import { initLobbyList } from "./lobby_list.js";
-import { checkInTournament, checkIsTournamentOpponent, joinTournament } from "./tournament.js";
+import { checkInTournament, checkIsTournamentOpponent, joinTournament, leaveTournament } from "./tournament.js";
 
 var lobbySocket = null
 var inLobby = false
@@ -181,6 +181,7 @@ export async function joinLobby(id) {
     const path = window.location.pathname;
     if (path.startsWith('/menu/play') && inLobby) {
       leaveLobby()
+      leaveTournament()
     }
   }
 

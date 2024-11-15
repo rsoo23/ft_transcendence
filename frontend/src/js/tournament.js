@@ -1,7 +1,8 @@
 import { getAccessToken } from "./network_utils/token_utils.js";
 import { currentUserInfo, usersInfo } from "./global_vars.js";
 import { getRequest } from "./network_utils/api_requests.js";
-import { validateAvatarImg } from "./lobby.js";
+import { validateAvatarImg, leaveLobby } from "./lobby.js";
+import { queueNotification } from "./ui_utils/notification_utils.js";
 
 var tournamentSocket = null
 var tournamentInfo = {}
@@ -80,9 +81,34 @@ export async function joinTournament(id) {
     }
   }
 
-  tournamentSocket.onclose = () => {}
+  tournamentSocket.onclose = (e) => {
+    tournamentSocket = null
+
+    if (e.code == 1006) {
+      queueNotification('magenta', 'Tournament is no longer available.', () => {})
+    } else if (e.code == 1011) {
+      queueNotification('magenta', 'Invalid tournament.', () => {})
+    }
+
+    if (inTournament) {
+      leaveTournament()
+    }
+  }
 
   tournamentSocket.onopen = () => {}
+}
+
+export function leaveTournament() {
+  tournamentInfo = {}
+  tournamentCurrentOpponent = null
+  inTournament = false
+
+  if (tournamentSocket != null) {
+    tournamentSocket.close()
+  }
+
+  // just let the lobby system handle the transition :]
+  leaveLobby()
 }
 
 function initTournamentReadyButtons() {
