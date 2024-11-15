@@ -142,6 +142,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         pair = await self.find_pair_by_user_id(rounds, event['winner_id'], self.round)
         winner = pair['player1'] if pair['player1'] and pair['player1']['id'] == event['winner_id'] else pair['player2']
 
+        winner['ready'] = False
         rounds[self.round][pair['next_round_pair'] - 1][f'player{pair['next_pair_slot']}'] = winner
         cache.set(f'tournament-info-{self.tournament_id}', json.dumps(info))
 
