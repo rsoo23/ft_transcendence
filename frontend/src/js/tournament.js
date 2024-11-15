@@ -7,6 +7,7 @@ var tournamentSocket = null
 var tournamentInfo = {}
 var tournamentBrackets = {}
 var tournamentCurrentOpponent = null
+var tournamentWinner = null
 var inTournament = false
 
 export function checkInTournament() {
@@ -35,8 +36,7 @@ export async function joinTournament(id) {
         break
       }
 
-      document.getElementById('bracket-list').innerHTML = ''
-      initTournamentList()
+      loadTournamentList()
       break
 
     case 'list':
@@ -67,13 +67,15 @@ export async function joinTournament(id) {
       }
       break
 
-    case 'opponent':
-      break
+    case 'winner':
+      const response = await getRequest(`/api/users/${data.user}/`)
+      tournamentWinner = response
 
-    case 'win':
-      break
+      if (document.getElementById('bracket-list') == null) {
+        break
+      }
 
-    case 'status':
+      loadTournamentList()
       break
     }
   }
@@ -101,42 +103,43 @@ function initTournamentReadyButtons() {
   }
 }
 
-export function initTournamentList() {
+export function loadTournamentList() {
+  const createPair = (id) => {
+    const avatar = document.createElement('img')
+    avatar.classList.add('profile-settings-avatar')
+    const name = document.createElement('p')
+    name.textContent = id
+
+    const div = document.createElement('div')
+    div.classList.add('tournament-user-container')
+    div.appendChild(avatar)
+    div.appendChild(name)
+    return div
+  }
+  console.log(usersInfo)
+  const getUser = (id) => {
+    if (currentUserInfo.id == id) {
+      return currentUserInfo
+    }
+
+    for (const user of usersInfo) {
+      if (user['id'] != id) {
+        continue
+      }
+      return user
+    }
+    return null
+  }
+
   const list = document.getElementById('bracket-list')
+  list.innerHTML = ''
   for (const round of tournamentInfo) {
     const bracketContainer = document.createElement('div')
     bracketContainer.classList.add('tournament-bracket-container')
 
     for (const pairInfo of round) {
-      const createPair = (id) => {
-        const avatar = document.createElement('img')
-        avatar.classList.add('profile-settings-avatar')
-        const name = document.createElement('p')
-        name.textContent = id
-
-        const div = document.createElement('div')
-        div.classList.add('tournament-user-container')
-        div.appendChild(avatar)
-        div.appendChild(name)
-        return div
-      }
-
       const pair = document.createElement('div')
       pair.classList.add('tournament-pair-container')
-      console.log(usersInfo)
-      const getUser = (id) => {
-        if (currentUserInfo.id == id) {
-          return currentUserInfo
-        }
-
-        for (const user of usersInfo) {
-          if (user['id'] != id) {
-            continue
-          }
-          return user
-        }
-        return null
-      }
 
       let p1Div
       let p2Div
@@ -161,6 +164,20 @@ export function initTournamentList() {
 
     list.appendChild(bracketContainer)
   }
+
+  const winnerContainer = document.createElement('div')
+  winnerContainer.classList.add('tournament-bracket-container')
+  const winner = document.createElement('div')
+  winner.classList.add('tournament-pair-container')
+  let winnerDiv
+  if (tournamentWinner) {
+    const winnerUser = getUser(tournamentWinner.id)
+    winnerDiv = createPair(winnerUser.username)
+  } else {
+    winnerDiv = createPair('')
+  }
+  winnerContainer.appendChild(winnerDiv)
+  list.appendChild(winnerContainer)
 
   initTournamentReadyButtons()
 }

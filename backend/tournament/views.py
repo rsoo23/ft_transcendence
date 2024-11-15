@@ -24,6 +24,7 @@ def create_tournament(lobby_id, host, users):
         pairs_list.append({
             'player1': None,
             'player2': None,
+            'round': len(rounds_list) + 1,
             'next_round_pair': (2 + len(pairs_list)) // 2,
             'next_pair_slot': 1 + (len(pairs_list) % 2),
         })

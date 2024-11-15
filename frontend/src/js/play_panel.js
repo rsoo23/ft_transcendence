@@ -5,7 +5,7 @@ import { loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { getRequest } from "./network_utils/api_requests.js";
 import { PanelSwitcher } from "./ui_utils/panelswitcher_utils.js";
 import { initClassicLobby, updateClassicLobby, initTournamentLobby, updateTournamentLobby, getLobbyType, checkInLobby } from "./lobby.js";
-import { checkInTournament, initTournamentList } from "./tournament.js";
+import { checkInTournament, loadTournamentList } from "./tournament.js";
 
 // for moving stuff
 export var startingMenuSwitcher = null
@@ -93,6 +93,6 @@ export async function tryReturnToLobby() {
   } else {
     await loadContentToTarget('menu/tournament_content.html', 'play-tournament-container')
     divSwitcher.setCurrentDiv('play-lobby-container', 'play-tournament-container', true)
-    initTournamentList()
+    loadTournamentList()
   }
 }

@@ -142,8 +142,22 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         pair = await self.find_pair_by_user_id(rounds, event['winner_id'], self.round)
         winner = pair['player1'] if pair['player1'] and pair['player1']['id'] == event['winner_id'] else pair['player2']
 
+        if pair['round'] >= info['rounds']:
+            await self.channel_layer.group_send(self.group_tournament, {
+                'type': 'tournament.notify.winner',
+                'user': winner['id'],
+            })
+            return
+
         winner['ready'] = False
-        rounds[self.round][pair['next_round_pair'] - 1][f'player{pair['next_pair_slot']}'] = winner
+        rounds[pair['round']][pair['next_round_pair'] - 1][f'player{pair['next_pair_slot']}'] = winner
         cache.set(f'tournament-info-{self.tournament_id}', json.dumps(info))
 
         await self.channel_layer.group_send(self.group_tournament, { 'type': 'tournament.get.info' })
+
+    # a winner is you!
+    async def tournament_notify_winner(self, event):
+        await self.send_json({
+            'event': 'winner',
+            'user': event['user'],
+        })
