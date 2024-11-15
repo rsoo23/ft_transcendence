@@ -6,6 +6,7 @@ import { PONG_INPUTS } from '../global_vars.js'
 import { leaveLobby } from '../lobby.js'
 
 var matchSocket = null
+var matchCallback = null
 var inMatchID = 0
 
 export async function createMatch(player1ID, player2ID, type) {
@@ -54,6 +55,7 @@ async function checkSocket() {
 
 async function createSocket(matchID, callback) {
   inMatchID = matchID
+  matchCallback = callback
   matchSocket = new WebSocket(
     `ws://${window.location.host}/ws/pong/${matchID}`,
     ['Authorization', getAccessToken()]
@@ -76,7 +78,8 @@ async function createSocket(matchID, callback) {
     window.onkeyup = null
     matchSocket = null
 
-    await callback()
+    await matchCallback()
+    matchCallback = null
   }
 
   matchSocket.onopen = () => {
