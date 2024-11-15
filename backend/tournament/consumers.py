@@ -91,26 +91,35 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
                     'opponent': self.opponent,
                 })
 
-    async def tournament_get_info(self, event):
-        info = json.loads(cache.get(f'tournament-info-{self.tournament_id}'))
-        rounds = info['list']
-        for pair in rounds[self.round - 1]:
+    async def find_pair_by_user_id(self, rounds, user_id, round_num):
+        for pair in rounds[round_num - 1]:
             if (
-                (not pair['player1'] or self.user_id not in pair['player1'].values())
-                and (not pair['player2'] or self.user_id not in pair['player2'].values())
+                (not pair['player1'] or pair['player1']['id'] != user_id)
+                and (not pair['player2'] or pair['player2']['id'] != user_id)
             ):
                 continue
 
-            if pair['player1'] and pair['player1']['id'] == self.user_id:
-                self.opponent = pair['player2']
+            return pair
 
-            elif pair['player2'] and pair['player2']['id'] == self.user_id:
-                self.opponent = pair['player1']
+        return None
 
+    async def tournament_get_info(self, event):
+        info = json.loads(cache.get(f'tournament-info-{self.tournament_id}'))
         await self.send_json({
             'event': 'info',
             'info': info,
         })
+
+        pair = await self.find_pair_by_user_id(info['list'], self.user_id, self.round)
+        if not pair:
+            return
+
+        if pair['player1'] and pair['player1']['id'] == self.user_id:
+            self.opponent = pair['player2']
+
+        elif pair['player2'] and pair['player2']['id'] == self.user_id:
+            self.opponent = pair['player1']
+
 
     async def tournament_notify_left(self, event):
         await self.send_json({
@@ -128,5 +137,12 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         if not self.is_host:
             return
 
-        tournament_info = json.loads(cache.get(f'tournament-info-{self.tournament_id}'))
-        event['winner_id']
+        info = json.loads(cache.get(f'tournament-info-{self.tournament_id}'))
+        rounds = info['list']
+        pair = await self.find_pair_by_user_id(rounds, event['winner_id'], self.round)
+        winner = pair['player1'] if pair['player1'] and pair['player1']['id'] == event['winner_id'] else pair['player2']
+
+        rounds[self.round][pair['next_round_pair'] - 1][f'player{pair['next_pair_slot']}'] = winner
+        cache.set(f'tournament-info-{self.tournament_id}', json.dumps(info))
+
+        await self.channel_layer.group_send(self.group_tournament, { 'type': 'tournament.get.info' })

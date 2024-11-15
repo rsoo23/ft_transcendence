@@ -31,6 +31,11 @@ export async function joinTournament(id) {
     case 'info':
       console.log(data.info.list)
       tournamentInfo = data.info.list
+      if (document.getElementById('bracket-list') == null) {
+        break
+      }
+
+      document.getElementById('bracket-list').innerHTML = ''
       initTournamentList()
       break
 
@@ -132,15 +137,25 @@ export function initTournamentList() {
         }
         return null
       }
+
+      let p1Div
+      let p2Div
       if (pairInfo.player1) {
         const player1 = getUser(pairInfo.player1.id)
-        pair.appendChild(createPair(player1.username))
-      }
-      if (pairInfo.player2) {
-        const player2 = getUser(pairInfo.player2.id)
-        pair.appendChild(createPair(player2.username))
+        p1Div = createPair(player1.username)
+      } else {
+        p1Div = createPair('')
       }
 
+      if (pairInfo.player2) {
+        const player2 = getUser(pairInfo.player2.id)
+        p2Div = createPair(player2.username)
+      } else {
+        p2Div = createPair('')
+      }
+
+      pair.appendChild(p1Div)
+      pair.appendChild(p2Div)
       bracketContainer.appendChild(pair)
     }
 
