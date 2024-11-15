@@ -322,7 +322,7 @@ export function initTournamentLobby() {
 
 export function updateTournamentLobby() {
   const path = window.location.pathname;
-  if (!path.startsWith('/menu/play')) {
+  if (!path.startsWith('/menu/play') || checkInTournament()) {
     return
   }
 
