@@ -92,8 +92,24 @@ export class GameManager {
     );
   }
 
-  usePowerup() {
-    // if (chargeNum[0] === 3) {
-    // }
+  activatePowerup(activatorPlayerNum, activePowerup, powerupActivated) {
+    if (this.powerup_charge_num[0] === 0 && activatorPlayerNum === 1 && powerupActivated) {
+      this.resetPowerupBar(this.p1PowerupBar, this.p1PowerupIndicators)
+    }
+
+    if (this.powerup_charge_num[1] === 0 && activatorPlayerNum === 2 && powerupActivated) {
+      this.resetPowerupBar(this.p2PowerupBar, this.p2PowerupIndicators)
+    }
+  }
+
+  resetPowerupBar(powerupBar, powerupIndicators) {
+    const animations = powerupBar.getAnimations()
+    if (animations[0]) {
+      animations[0].cancel()
+    }
+
+    powerupIndicators.forEach((element) => {
+      element.style.backgroundColor = 'var(--charcoal-800)'
+    })
   }
 }

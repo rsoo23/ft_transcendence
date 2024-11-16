@@ -37,7 +37,8 @@ class GameLogic():
             PongScore(self.game_size.x / 2 - 40, 60, 0),
             PongScore(self.game_size.x / 2 + 40, 60, 1),
             CountdownTimer(4),
-            PowerupsManager()
+            PowerupsManager(1),
+            PowerupsManager(2)
         ]
         # Add stat tracking
         self.paddle_bounces = [0, 0]  # Tracks hits for each player

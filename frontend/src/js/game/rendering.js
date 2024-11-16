@@ -86,11 +86,18 @@ class Countdown {
   }
 }
 
+class PowerupsManager {
+  draw(renderInfo, pos, prevState, nextState) {
+    postMessage({ type: 'active_powerup', payload: nextState.info })
+  }
+}
+
 const STYLES = {
   'paddle': new Paddle(),
   'ball': new Ball(),
   'score': new Score(),
   'countdown_timer': new Countdown(),
+  'powerups_manager': new PowerupsManager()
 }
 
 // The main renderer, it does all the work :]

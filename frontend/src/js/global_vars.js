@@ -180,11 +180,11 @@ export const PONG_INPUTS = {
   'KeyS': 'p1_down',
   'KeyA': 'p1_left',
   'KeyD': 'p1_right',
-  'LeftShift': 'p1_activate_powerup',
+  'ShiftLeft': 'p1_activate_powerup',
 
   'ArrowUp': 'p2_up',
   'ArrowDown': 'p2_down',
   'ArrowLeft': 'p2_left',
   'ArrowRight': 'p2_right',
-  'RightShift': 'p2_activate_powerup',
+  'ShiftRight': 'p2_activate_powerup',
 }
