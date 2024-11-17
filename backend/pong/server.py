@@ -5,6 +5,9 @@ from .game.logic import GameLogic
 from .models import PongMatch
 from time import sleep, time_ns
 import asyncio
+from django.utils import timezone
+from game_stats.models import MatchStats
+import datetime
 
 # NOTICE: due to how threading's Lock works, it's best to call every ServerManager method with run_in_executor
 #         else you risk having your async function get stuck in purgatory (aka, the whole server freezes)
@@ -88,11 +91,32 @@ class ServerManager():
         print('getting match info')
         try: 
             match_data = PongMatch.objects.get(id=match_id)
+            game_info = match_info['game_info']
+            
             print('setting match info')
             match_data.p1_score = match_info['game_info'].score[0]
             match_data.p2_score = match_info['game_info'].score[1]
             match_data.ended = True
             match_data.save()
+
+            start_time = match_data.date_joined if hasattr(match_data, 'date_joined') else None
+            duration = None
+            if start_time:
+                duration = timezone.now() - start_time
+            
+            # Create match statistics
+            MatchStats.objects.create(
+                pong_match=match_data,
+                p1_paddle_bounces=getattr(game_info, 'paddle_bounces', [0, 0])[0],
+                p2_paddle_bounces=getattr(game_info, 'paddle_bounces', [0, 0])[1],
+                p1_points_lost_by_wall_hit=getattr(game_info, 'wall_hits', [0, 0])[0],
+                p2_points_lost_by_wall_hit=getattr(game_info, 'wall_hits', [0, 0])[1],
+                p1_points_lost_by_wrong_color=getattr(game_info, 'wrong_color_hits', [0, 0])[0],
+                p2_points_lost_by_wrong_color=getattr(game_info, 'wrong_color_hits', [0, 0])[1],
+                p1_color_switches=getattr(game_info, 'color_switches', [0, 0])[0],
+                p2_color_switches=getattr(game_info, 'color_switches', [0, 0])[1],
+                match_duration=duration
+            )
 
         except Exception as e:
             print('Exception while trying to set match data: ' + str(e))
