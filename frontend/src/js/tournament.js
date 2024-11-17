@@ -82,6 +82,7 @@ export async function joinTournament(id) {
   }
 
   tournamentSocket.onclose = (e) => {
+    console.log('Closing tournamentSocket')
     tournamentSocket = null
 
     if (e.code == 1006) {
