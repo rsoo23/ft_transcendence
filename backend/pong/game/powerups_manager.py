@@ -45,11 +45,34 @@ class SwapUpDown():
         game_info.objects.remove(self)
         return None
 
+# swap the opponent's paddle color shifting directions for 10 seconds
+class SwapLeftRight():
+    def __init__(self, powerups_manager):
+        self.name = 'swap_left_right'
+        self.duration = 10
+        self.time_elapsed = 0
+        self.powerups_manager = powerups_manager
+        self.is_reversed = False
+
+    def tick(self, game_info, dt):
+        paddle = game_info.get_paddle(self.powerups_manager.opponent_player_num)
+
+        self.time_elapsed += dt
+        if self.time_elapsed < self.duration:
+            if not self.is_reversed:
+                paddle.color_shift_functions.reverse()
+                self.is_reversed = True
+            return None
+
+        paddle.color_shift_functions.reverse()
+        game_info.objects.remove(self)
+        return None
+
 class PowerupsManager():
     def __init__(self, player_num):
         self.activator_player_num = player_num
         self.opponent_player_num = 1 if player_num == 2 else 2
-        self.powerup_types = ['big_paddle', 'swap_up_down']
+        self.powerup_types = ['big_paddle', 'swap_up_down', 'swap_left_right']
         self.powerup_activated = False
         self.pos = Vector2(0, 0)
 
@@ -61,6 +84,8 @@ class PowerupsManager():
                 selected_powerup = BigPaddle(self)
             case 'swap_up_down':
                 selected_powerup = SwapUpDown(self)
+            case 'swap_left_right':
+                selected_powerup = SwapLeftRight(self)
 
         game_info.objects.append(selected_powerup)
 

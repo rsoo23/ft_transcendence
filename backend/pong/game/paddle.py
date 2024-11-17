@@ -10,12 +10,25 @@ class Paddle():
         self.player_num = player_num
         self.color_idx = 0
         self.move_functions = [self.move_up, self.move_down]
+        self.color_shift_functions = [self.shift_color_left, self.shift_color_right]
 
     def move_up(self, dt):
         self.pos.y -= Paddle.speed * dt
 
     def move_down(self, dt):
         self.pos.y += Paddle.speed * dt
+
+    def shift_color_left(self):
+        if self.color_idx == 0:
+            self.color_idx = 5
+        else:
+            self.color_idx -= 1
+
+    def shift_color_right(self):
+        if self.color_idx == 5:
+            self.color_idx = 0
+        else:
+            self.color_idx += 1
 
     def tick(self, game_info, dt):
         states = ObjectState('paddle')
@@ -29,19 +42,11 @@ class Paddle():
             self.move_functions[1](dt)
 
         if player_input.get_input('left'):
-            if self.color_idx == 0:
-                self.color_idx = 5
-            else:
-                self.color_idx -= 1
-
+            self.color_shift_functions[0]()
             player_input.set_input('left', False)
 
         if player_input.get_input('right'):
-            if self.color_idx == 5:
-                self.color_idx = 0
-            else:
-                self.color_idx += 1
-
+            self.color_shift_functions[1]()
             player_input.set_input('right', False)
 
         # clamp pos
