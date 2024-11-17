@@ -24,14 +24,21 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 
         tournament_info = json.loads(cache.get(f'tournament-info-{self.tournament_id}'))
         self.lobby_id = tournament_info['lobby_id']
-        self.round = 1
         self.opponent = None
         self.group_lobby = f'lobby-{self.lobby_id}'
         self.group_tournament = f'tournament-{self.tournament_id}'
         self.is_host = (self.scope['user'] == model.host)
-        if self.is_host:
-            self.tournament_pairs = tournament_info['pairs']
-            self.tournament_rounds = tournament_info['rounds']
+
+        info = json.loads(cache.get(f'tournament-info-{self.tournament_id}'))
+        for round in info['list']:
+            for pair in round:
+                if (pair['player1'] and pair['player1']['id'] == self.user_id) or (pair['player2'] and pair['player2']['id'] == self.user_id):
+                    self.round = info['rounds'] - pair['round'] + 1
+
+        if not hasattr(self, 'round'):
+            await self.close(code=3000, reason='Not in tournament')
+
+        print(f'{self.user_id}: {self.round}')
 
         await self.channel_layer.group_add(self.group_tournament, self.channel_name)
         await self.accept('Authorization')
@@ -62,6 +69,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
                     'user': self.user_id,
                     'opponent': self.opponent,
                     'tournament_id': self.tournament_id,
+                    'tournament_round': self.round,
                     'ready': content['value'],
                 })
 
@@ -134,15 +142,21 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         })
 
     async def tournament_match_end(self, event):
+        if event['winner_id'] == self.user_id:
+            self.round += 1
+
         if not self.is_host:
             return
 
         info = json.loads(cache.get(f'tournament-info-{self.tournament_id}'))
         rounds = info['list']
-        pair = await self.find_pair_by_user_id(rounds, event['winner_id'], self.round)
+        print(rounds)
+        pair = await self.find_pair_by_user_id(rounds, event['winner_id'], event['round'])
+        print(pair)
         winner = pair['player1'] if pair['player1'] and pair['player1']['id'] == event['winner_id'] else pair['player2']
 
-        if pair['round'] >= info['rounds']:
+        # because the rounds are inverted :]
+        if pair['round'] <= 1:
             await self.channel_layer.group_send(self.group_tournament, {
                 'type': 'tournament.notify.winner',
                 'user': winner['id'],
@@ -150,7 +164,10 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             return
 
         winner['ready'] = False
-        rounds[pair['round']][pair['next_round_pair'] - 1][f'player{pair['next_pair_slot']}'] = winner
+        round_index = info['rounds'] - pair['round'] + 1
+        pair_index = pair['next_round_pair'] - 1
+        player_slot = f'player{pair['next_pair_slot']}'
+        rounds[round_index][pair_index][player_slot] = winner
         cache.set(f'tournament-info-{self.tournament_id}', json.dumps(info))
 
         await self.channel_layer.group_send(self.group_tournament, { 'type': 'tournament.get.info' })
