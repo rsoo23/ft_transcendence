@@ -97,22 +97,6 @@ def status_2FA(request):
             'error': str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def disable_2FA(request):
-    try:
-        user = request.user
-        user.two_factor_enabled = False
-        user.save()
-        return Response({
-            'success': True,
-            'Status': '2FA disabled'
-        })
-    except Exception as e:
-        return Response({
-            'error': str(e)
-        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 def get_token_bearer_name(cookie):
     if 'ID_Token' not in cookie:
         raise ValueError("ID_Token not found in cookies")
