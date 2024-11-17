@@ -163,7 +163,11 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             })
             return
 
-        winner['ready'] = False
+        await self.channel_layer.group_send(self.group_lobby, {
+            'type': 'lobby.notify.ready',
+            'user': winner['id'],
+            'ready': False,
+        })
         round_index = info['rounds'] - pair['round'] + 1
         pair_index = pair['next_round_pair'] - 1
         player_slot = f'player{pair['next_pair_slot']}'
