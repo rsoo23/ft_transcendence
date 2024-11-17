@@ -43,9 +43,8 @@ export async function initLobbyList(isTournament) {
 
   lobbyListSocket.onopen = () => {
     lobbyListSocket.send('{"action": "get"}')
+    setTimeout(tryShowNoLobbies, 1000)
   }
-
-  setTimeout(tryShowNoLobbies, 1000)
 }
 
 export function closeLobbyListSocket() {
