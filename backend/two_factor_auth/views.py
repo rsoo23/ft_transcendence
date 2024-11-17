@@ -66,6 +66,8 @@ def verify_2FA(request):
             }, status=status.HTTP_401_UNAUTHORIZED)
             
         if verify_otp(otp, code):
+            user.two_factor_enabled = True
+            user.save()
             return Response({
                 'success': True, 
                 'Status': '2FA Code Verified'
@@ -89,22 +91,6 @@ def status_2FA(request):
         return Response({
             'success': user.two_factor_enabled,
             'Status': '2FA enabled' if user.two_factor_enabled else '2FA not enabled'
-        })
-    except Exception as e:
-        return Response({
-            'error': str(e)
-        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def disable_2FA(request):
-    try:
-        user = request.user
-        user.two_factor_enabled = False
-        user.save()
-        return Response({
-            'success': True,
-            'Status': '2FA disabled'
         })
     except Exception as e:
         return Response({

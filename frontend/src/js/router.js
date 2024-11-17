@@ -436,6 +436,13 @@ function init2FAPages(contentName) {
         return;
       }
 
+      if (contentName === "2fa_enable") {
+        const twoFactorToggle = document.querySelector(".profile-settings-toggle-input");
+        if (twoFactorToggle) {
+          twoFactorToggle.checked = true;
+        }
+      }
+
       loadPage("main_menu");
       if (contentName === "2fa_verify") {
         loadMainMenuContent("play");
