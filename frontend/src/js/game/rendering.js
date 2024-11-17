@@ -14,15 +14,13 @@ export class Pos2D {
 }
 
 class Paddle {
-  constructor() {
-    this.size = new Pos2D(7, 45);
-  }
+  constructor() { }
 
   draw(renderInfo, pos, prevState, nextState) {
     postMessage({ type: 'color_switch', payload: nextState.info })
     postMessage({ type: 'charge_powerup', payload: nextState.info.powerup_charge_num })
     renderInfo.ctx.fillStyle = nextState.info.color
-    renderInfo.fillRectScaled(pos.x, pos.y, this.size.x, this.size.y);
+    renderInfo.fillRectScaled(pos.x, pos.y, nextState.info.size.x, nextState.info.size.y);
   }
 }
 

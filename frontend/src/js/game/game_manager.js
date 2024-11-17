@@ -92,7 +92,7 @@ export class GameManager {
     );
   }
 
-  activatePowerup(activatorPlayerNum, activePowerup, powerupActivated) {
+  activatePowerup(activatorPlayerNum, powerupActivated) {
     if (this.powerup_charge_num[0] === 0 && activatorPlayerNum === 1 && powerupActivated) {
       this.resetPowerupBar(this.p1PowerupBar, this.p1PowerupIndicators)
     }

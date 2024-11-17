@@ -39,7 +39,7 @@ class Paddle():
             player_input.set_input('right', False)
 
         # clamp pos
-        self.pos.y = min(max(self.pos.y, 0), game_info.game_size.y - Paddle.size.y)
+        self.pos.y = min(max(self.pos.y, 0), game_info.game_size.y - self.size.y)
 
         states.append(self.pos, 1.0, {
             'player_num': self.player_num,
@@ -47,5 +47,9 @@ class Paddle():
             'color_idx': self.color_idx,
             'powerup_charge_num': game_info.powerup_charge_num,
             'is_default_color_order': True,
+            'size': {
+                'x': self.size.x,
+                'y': self.size.y
+            }
         })
         return states

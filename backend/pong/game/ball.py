@@ -29,9 +29,9 @@ class Ball():
         new_y0 = self.pos.y
         new_y1 = self.pos.y + Ball.size.y
         paddle_x0 = paddle.pos.x
-        paddle_x1 = paddle.pos.x + Paddle.size.x
+        paddle_x1 = paddle.pos.x + paddle.size.x
         paddle_y0 = paddle.pos.y
-        paddle_y1 = paddle.pos.y + Paddle.size.y
+        paddle_y1 = paddle.pos.y + paddle.size.y
 
         return (
             (
@@ -104,7 +104,7 @@ class Ball():
                     game_info.ended = True
 
                 if self.vector.x < 0:
-                    self.pos.x = paddle.pos.x + Paddle.size.x
+                    self.pos.x = paddle.pos.x + paddle.size.x
                 else:
                     self.pos.x = paddle.pos.x - Ball.size.x
 
@@ -112,7 +112,7 @@ class Ball():
 
                 # next bounce angle
                 ball_rel_pos = self.pos.y + (Ball.size.y / 2) - paddle.pos.y
-                new_angle = -60 + max(min(120 * (ball_rel_pos / Paddle.size.y), 120), 0)
+                new_angle = -60 + max(min(120 * (ball_rel_pos / paddle.size.y), 120), 0)
 
                 # no shooting in a straight line
                 min_angle = 10

@@ -85,7 +85,7 @@ async function createSocket(matchID) {
 
   matchSocket.onopen = () => {
     prevMessageRecv = performance.now()
-    socketChecker = setTimeout(checkSocket, 1000)
+    // socketChecker = setTimeout(checkSocket, 1000)
   }
 
   window.onkeydown = (e) => {

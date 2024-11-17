@@ -59,6 +59,12 @@ class GameLogic():
         if is_wrong_hit:
             self.wrong_color_hits[player_num] += 1
 
+    def get_paddle(self, player_num):
+        for obj in self.objects:
+            if isinstance(obj, Paddle) and obj.player_num == player_num:
+                return obj
+        return None
+
     # returns an array of objects for the client to render
     def tick(self, dt):
         states = []
