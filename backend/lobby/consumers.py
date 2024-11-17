@@ -224,7 +224,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                 break
 
             # is this sent by TournamentConsumer?
-            if 'opponent' in event and event['opponent']:
+            if event['ready'] and 'opponent' in event and event['opponent']:
                 opponent = None
                 for i in users:
                     if i['id'] != event['opponent']['id']:
