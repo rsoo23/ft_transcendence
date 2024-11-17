@@ -50,7 +50,7 @@ async function checkSocket() {
   console.log('connection might be stuck, reconnecting')
   matchSocket.onclose = () => { }
   matchSocket.close()
-  await createSocket(inMatchID)
+  await createSocket(inMatchID, matchCallback)
 }
 
 async function createSocket(matchID, callback) {
