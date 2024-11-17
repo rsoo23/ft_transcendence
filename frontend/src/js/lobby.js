@@ -167,6 +167,7 @@ export async function joinLobby(id) {
   }
 
   lobbySocket.onclose = (e) => {
+    console.log('Closing lobbySocket')
     lobbySocket = null
 
     if (e.code == 1006) {
@@ -189,6 +190,10 @@ export async function joinLobby(id) {
 }
 
 export function leaveLobby() {
+  if (!inLobby) {
+    return
+  }
+
   const isTournament = (lobbyType == 'tournament')
   inLobby = false
   lobbyType = ''
