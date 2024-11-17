@@ -66,6 +66,8 @@ def verify_2FA(request):
             }, status=status.HTTP_401_UNAUTHORIZED)
             
         if verify_otp(otp, code):
+            user.two_factor_enabled = True
+            user.save()
             return Response({
                 'success': True, 
                 'Status': '2FA Code Verified'
