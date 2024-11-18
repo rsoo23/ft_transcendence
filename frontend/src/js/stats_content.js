@@ -217,42 +217,73 @@ export async function loadMatchDetails(matchId) {
 			<p class="match-date">${new Date(stats.created_at).toLocaleString()}</p>
 			<p class="match-duration">Duration: ${duration}</p>
 		  </div>
-		</div>
-		
-		<div class="players-container">
-		  <div class="player-column">
-			<h3>${stats.pong_match?.player1?.username || 'Player 1'}</h3>
-			<p class="game-stats-score ${stats.pong_match?.p1_score > stats.pong_match?.p2_score ? 'winner' : ''}">${stats.pong_match?.p1_score || 0}</p>
-		  </div>
-		  <div class="vs-divider">VS</div>
-		  <div class="player-column">
-			<h3>${stats.pong_match?.player2?.username || 'Player 2'}</h3>
-			<p class="game-stats-score ${stats.pong_match?.p2_score > stats.pong_match?.p1_score ? 'winner' : ''}">${stats.pong_match?.p2_score || 0}</p>
-		  </div>
-		</div>
-  
-		<div class="stats-grid">
-		  <div class="stat-row">
-			<div class="stat-value">${stats.p1_paddle_bounces}</div>
-			<div class="stat-label">Paddle Bounces</div>
-			<div class="stat-value">${stats.p2_paddle_bounces}</div>
-		  </div>
-		  <div class="stat-row">
-			<div class="stat-value">${stats.p1_color_switches}</div>
-			<div class="stat-label">Color Switches</div>
-			<div class="stat-value">${stats.p2_color_switches}</div>
-		  </div>
-		  <div class="stat-row">
-			<div class="stat-value">${stats.p1_points_lost_by_wall_hit}</div>
-			<div class="stat-label">Wall Hits</div>
-			<div class="stat-value">${stats.p2_points_lost_by_wall_hit}</div>
-		  </div>
-		  <div class="stat-row">
-			<div class="stat-value">${stats.p1_points_lost_by_wrong_color}</div>
-			<div class="stat-label">Wrong Color Hits</div>
-			<div class="stat-value">${stats.p2_points_lost_by_wrong_color}</div>
-		  </div>
-		</div>
+          </div>
+
+        <div class="players-container">
+          <div class="player-column">
+            <h3>${stats.pong_match?.player1?.username || 'Player 1'}</h3>
+            <p class="game-stats-score ${stats.pong_match?.p1_score > stats.pong_match?.p2_score ? 'winner' : ''}">${stats.pong_match?.p1_score || 0}</p>
+          </div>
+          <div class="vs-divider">VS</div>
+          <div class="player-column">
+            <h3>${stats.pong_match?.player2?.username || 'Player 2'}</h3>
+            <p class="game-stats-score ${stats.pong_match?.p2_score > stats.pong_match?.p1_score ? 'winner' : ''}">${stats.pong_match?.p2_score || 0}</p>
+          </div>
+        </div>
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
+        <!-- Title -->
+        <text x="20" y="40" font-family="Arial" font-size="24" fill="#E2E8F0">Paddle Bounces</text>
+
+        <!-- Value Labels -->
+        <text x="20" y="100" font-family="Arial" font-size="18" fill="#E2E8F0">800</text>
+        <text x="20" y="200" font-family="Arial" font-size="18" fill="#E2E8F0">400</text>
+        
+        <!-- Bars -->
+        <g transform="translate(80, 0)">
+            <!-- First row -->
+            <rect x="0" y="80" width="150" height="30" fill="#3B82F6" rx="4"/>
+            <rect x="150" y="80" width="300" height="30" fill="#EC4899" rx="4"/>
+            
+            <!-- Second row -->
+            <rect x="0" y="180" width="300" height="30" fill="#3B82F6" rx="4"/>
+            <rect x="300" y="180" width="100" height="30" fill="#EC4899" rx="4"/>
+        </g>
+        
+        <!-- Legend -->
+        <g transform="translate(80, 250)">
+		    <!-- Player 1 -->
+		    <rect x="0" y="0" width="20" height="20" fill="#3B82F6" rx="4"/>
+		    <text x="30" y="15" font-family="Arial" font-size="16" fill="#E2E8F0">Player 1</text>
+		    
+		    <!-- Player 2 -->
+		    <rect x="120" y="0" width="20" height="20" fill="#EC4899" rx="4"/>
+		    <text x="150" y="15" font-family="Arial" font-size="16" fill="#E2E8F0">Player 2</text>
+	    </g>
+	    </svg> 
+   
+	    <div class="stats-grid">
+	      <div class="stat-row">
+	        <div class="stat-value">${stats.p1_paddle_bounces}</div>
+	        <div class="stat-label">Paddle Bounces</div>
+	        <div class="stat-value">${stats.p2_paddle_bounces}</div>
+	      </div>
+	      <div class="stat-row">
+	        <div class="stat-value">${stats.p1_color_switches}</div>
+	        <div class="stat-label">Color Switches</div>
+	        <div class="stat-value">${stats.p2_color_switches}</div>
+	      </div>
+	      <div class="stat-row">
+	        <div class="stat-value">${stats.p1_points_lost_by_wall_hit}</div>
+	        <div class="stat-label">Wall Hits</div>
+	        <div class="stat-value">${stats.p2_points_lost_by_wall_hit}</div>
+	      </div>
+	      <div class="stat-row">
+	        <div class="stat-value">${stats.p1_points_lost_by_wrong_color}</div>
+	        <div class="stat-label">Wrong Color Hits</div>
+	        <div class="stat-value">${stats.p2_points_lost_by_wrong_color}</div>
+	      </div>
+	    </div>
 	  </div>
 	`;
   }
