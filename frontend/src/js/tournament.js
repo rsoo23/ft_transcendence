@@ -160,11 +160,20 @@ export function loadTournamentList() {
 
       const pairInfo = (i < round.length)? round[i] : null
       const winner = (pairInfo && pairInfo.winner)? pairInfo.winner : null
-      let p1Div = createPair((pairInfo && pairInfo.player1)? getUserById(pairInfo.player1.id) : null, winner)
-      let p2Div = createPair((pairInfo && pairInfo.player2)? getUserById(pairInfo.player2.id) : null, winner)
+      const player1 = (pairInfo && pairInfo.player1)? getUserById(pairInfo.player1.id) : null
+      const player2 = (pairInfo && pairInfo.player2)? getUserById(pairInfo.player2.id) : null
+      let p1Div = createPair(player1, winner)
+      let p2Div = createPair(player2, winner)
 
       if (!pairInfo) {
         pair.classList.add('tournament-emptypair-container')
+      } else if (pairInfo && !winner) {
+        if (player1) {
+          updateTournamentPlayerReady(player1.id, player1.ready)
+        }
+        if (player2) {
+          updateTournamentPlayerReady(player2.id, player2.ready)
+        }
       }
 
       pair.appendChild(p1Div)
@@ -200,16 +209,16 @@ export function loadTournamentList() {
 
 export function updateTournamentPlayerReady(id, isReady) {
   const ready = document.getElementById(`tournament-ready-${id}`)
-  if (!ready) {
-    return
+  if (ready) {
+    ready.style.setProperty('visibility', (isReady)? 'visible' : 'hidden')
   }
 
-  ready.style.setProperty('visibility', (isReady)? 'visible' : 'hidden')
-
   const opponentReadyStatus = document.getElementById('opponentstatus')
-  if (tournamentCurrentOpponent != null && id == tournamentCurrentOpponent.id) {
-    opponentReadyStatus.textContent = (isReady)? 'Opponent is ready!' : 'Waiting for opponent...'
-  } else if (tournamentCurrentOpponent == null) {
-    opponentReadyStatus.textContent = 'Waiting for previous round to end...'
+  if (opponentReadyStatus) {
+    if (tournamentCurrentOpponent != null && id == tournamentCurrentOpponent.id) {
+      opponentReadyStatus.textContent = (isReady)? 'Opponent is ready!' : 'Waiting for opponent...'
+    } else if (tournamentCurrentOpponent == null) {
+      opponentReadyStatus.textContent = 'Waiting for previous round to end...'
+    }
   }
 }
