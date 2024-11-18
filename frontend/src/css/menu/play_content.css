@@ -380,6 +380,11 @@
   align-items: center;
 }
 
+.tournament-ready-container .button-md {
+  min-width: 7.5rem;
+  width: fit-content;
+}
+
 .tournament-user-container {
   display: flex;
   align-items: center;

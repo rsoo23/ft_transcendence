@@ -1,5 +1,5 @@
 import { getAccessToken } from "./network_utils/token_utils.js";
-import { currentUserInfo, usersInfo } from "./global_vars.js";
+import { currentUserInfo, usersInfo, LOSE_BUTTON_MSGS } from "./global_vars.js";
 import { getRequest } from "./network_utils/api_requests.js";
 import { checkUserIsReady, validateAvatarImg, leaveLobby, getUserById } from "./lobby.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
@@ -9,6 +9,7 @@ var tournamentInfo = {}
 var tournamentBrackets = {}
 var tournamentCurrentOpponent = null
 var tournamentWinner = null
+var tournamentIsLoser = false
 var inTournament = false
 
 export function checkInTournament() {
@@ -48,6 +49,16 @@ export async function joinTournament(id) {
 
       loadTournamentList()
       break
+
+    case 'lose':
+      if (data.user != currentUserInfo.id) {
+        break
+      }
+
+      console.log('rip in pieces')
+      tournamentIsLoser = true
+      updateTournamentPlayerReady(data.user, false)
+      break
     }
   }
 
@@ -73,6 +84,7 @@ export function leaveTournament() {
   tournamentInfo = {}
   tournamentCurrentOpponent = null
   tournamentWinner = null
+  tournamentIsLoser = false
   inTournament = false
 
   if (tournamentSocket != null) {
@@ -167,7 +179,7 @@ export function loadTournamentList() {
 
       if (!pairInfo) {
         pair.classList.add('tournament-emptypair-container')
-      } else if (pairInfo && !winner) {
+      } else if (!tournamentIsLoser && pairInfo && !winner) {
         if (player1) {
           updateTournamentPlayerReady(player1.id, player1.ready)
         }
@@ -204,7 +216,11 @@ export function loadTournamentList() {
   winnerContainer.appendChild(winnerDiv)
   list.appendChild(winnerContainer)
 
-  initTournamentReadyButtons()
+  if (!tournamentIsLoser) {
+    initTournamentReadyButtons()
+  }
+
+  updateTournamentPlayerReady(currentUserInfo.id, currentUserInfo.ready && !tournamentIsLoser)
 }
 
 export function updateTournamentPlayerReady(id, isReady) {
@@ -214,11 +230,22 @@ export function updateTournamentPlayerReady(id, isReady) {
   }
 
   const opponentReadyStatus = document.getElementById('opponentstatus')
-  if (opponentReadyStatus) {
-    if (tournamentCurrentOpponent != null && id == tournamentCurrentOpponent.id) {
-      opponentReadyStatus.textContent = (isReady)? 'Opponent is ready!' : 'Waiting for opponent...'
-    } else if (tournamentCurrentOpponent == null) {
-      opponentReadyStatus.textContent = 'Waiting for previous round to end...'
+  if (!opponentReadyStatus) {
+    return
+  }
+
+  if (tournamentIsLoser) {
+    opponentReadyStatus.textContent = 'You lost...'
+    const button = document.getElementById('tournamentready')
+    if (button.textContent == 'Ready' || button.textContent == 'Unready') {
+      const randInt = (max, min) => Math.ceil(Math.random() * (max - min) + min)
+      button.textContent = LOSE_BUTTON_MSGS[randInt(0, LOSE_BUTTON_MSGS.length)]
+      button.style.setProperty('background-color', 'var(--magenta-500)')
+      button.onclick = leaveTournament
     }
+  } else if (tournamentCurrentOpponent != null && id == tournamentCurrentOpponent.id) {
+    opponentReadyStatus.textContent = (isReady)? 'Opponent is ready!' : 'Waiting for opponent...'
+  } else if (tournamentCurrentOpponent == null) {
+    opponentReadyStatus.textContent = 'Waiting for previous round to end...'
   }
 }
