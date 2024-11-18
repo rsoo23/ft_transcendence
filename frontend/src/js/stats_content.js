@@ -1,27 +1,31 @@
 import { loadUserAvatar } from "./settings/upload_avatar.js";
 import { getRequest } from "./network_utils/api_requests.js";
+import { currentUserInfo } from "./global_vars.js";
 
 export async function loadStatsPage() {
     try {
         // Get match stats from your API
         // console.log("Fetching match stats...");
         const matchStats = await getRequest('/api/game_stats/match-stats/');
-        // console.log("Received match stats:", matchStats);
-        
         const container = document.querySelector('.scrollable-container');
         // if (!container) {
         //     console.error("Could not find .scrollable-container");
         //     return;
         // }
         
-        // if (!matchStats || matchStats.length === 0) {
-        //     console.log("No match stats found");
-        //     container.innerHTML = '<div class="no-matches">No matches found</div>';
-        //     return;
-        // }
-        
         container.innerHTML = ''; // Clear existing content
-        
+
+        if (!matchStats || matchStats.length === 0) {
+            const noMatchesDiv = document.createElement('div');
+            noMatchesDiv.className = 'no-matches';
+            noMatchesDiv.style.textAlign = 'center';
+            noMatchesDiv.style.padding = '2rem';
+            noMatchesDiv.style.color = 'var(--charcoal-300)';
+            noMatchesDiv.textContent = 'No match history found';
+            container.appendChild(noMatchesDiv);
+            return;
+        }
+
         // Group matches by date
         const matchesByDate = groupMatchesByDate(matchStats);
         // console.log("Grouped matches:", matchesByDate);
@@ -58,9 +62,13 @@ function formatDate(date) {
 function formatTime(date) {
     const hours = date.getHours();
     const minutes = date.getMinutes();
+	// more than 12 is PM, less than 12 is AM
     const ampm = hours >= 12 ? 'pm' : 'am';
+	// Convert to 12 hour format
     const formattedHours = hours % 12 || 12;
+	// minutes always have 2 digits
     const formattedMinutes = minutes.toString().padStart(2, '0');
+	// e.g. 13:05 to 1:05 PM
     return `${formattedHours}:${formattedMinutes}${ampm}`;
 }
 
@@ -68,13 +76,13 @@ function createDateSection(date, matches) {
     const section = document.createElement('div');
     section.className = 'record-section';
     
-    // Add date header
+    // Date header
     const dateDiv = document.createElement('div');
     dateDiv.className = 'date';
     dateDiv.textContent = date;
     section.appendChild(dateDiv);
     
-    // Add match records
+    // Match records
     matches.forEach(match => {
         const matchRecord = createMatchRecord(match);
         section.appendChild(matchRecord);
@@ -87,19 +95,29 @@ function createMatchRecord(match) {
     const recordDiv = document.createElement('div');
     recordDiv.className = 'match-record';
     
-    // Create player 1 section
-    const player1Section = createPlayerSection(match.pong_match?.player1, 'player1');
+    // Determine if current user was player1 or player2
+    const isPlayer1 = match.pong_match?.player1?.id === currentUserInfo.id;
     
-    // Create score section
-    const scoreSection = createScoreSection(match);
+    // Create player sections based on whether current user was player1 or player2
+    const userSection = createPlayerSection(
+        isPlayer1 ? match.pong_match?.player1 : match.pong_match?.player2,
+		// ?: is a ternary operator (boolean value: player 1 or player 2)
+		// ?. optional chaining operator (if the value before the ?. is null or undefined, the expression after the ?. is not evaluated)
+        'current-player'
+    );
     
-    // Create player 2 section
-    const player2Section = createPlayerSection(match.pong_match?.player2, 'player2');
+    const opponentSection = createPlayerSection(
+        isPlayer1 ? match.pong_match?.player2 : match.pong_match?.player1,
+        'opponent'
+    );
     
-    // Append all sections
-    recordDiv.appendChild(player1Section);
+    // Create score section with scores arranged based on player position
+    const scoreSection = createScoreSection(match, isPlayer1);
+    
+    // Always show current user on the left
+    recordDiv.appendChild(userSection);
     recordDiv.appendChild(scoreSection);
-    recordDiv.appendChild(player2Section);
+    recordDiv.appendChild(opponentSection);
     
     return recordDiv;
 }
@@ -135,13 +153,24 @@ function createPlayerSection(player, playerClass) {
     return section;
 }
 
-function createScoreSection(match) {
+function createScoreSection(match, isPlayer1) {
     const section = document.createElement('div');
     section.className = 'score-time-section';
     
     const score = document.createElement('div');
     score.className = 'score';
-    score.textContent = `${match.pong_match?.p1_score || 0} - ${match.pong_match?.p2_score || 0}`;
+    
+    // Display scores based on whether current user was player1 or player2
+    const userScore = isPlayer1 ? match.pong_match?.p1_score : match.pong_match?.p2_score;
+    const opponentScore = isPlayer1 ? match.pong_match?.p2_score : match.pong_match?.p1_score;
+    score.textContent = `${userScore || 0} - ${opponentScore || 0}`;
+    
+    // Win/loss styling
+    if (userScore > opponentScore) {
+        score.style.backgroundColor = 'var(--teal-500)';
+    } else {
+        score.style.backgroundColor = 'var(--magenta-500)';
+    }
     
     const time = document.createElement('div');
     time.className = 'time';
