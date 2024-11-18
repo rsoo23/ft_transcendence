@@ -19,16 +19,17 @@ import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { initUsernameSettings } from "./settings/update_username.js";
 import { closeFriendSystemSocket, connectFriendSystemSocket, } from "./friends_system/websocket.js";
-import { initPlayDivs, startingMenuSwitcher, divSwitcher, loadMultiplayerTest, startLocalGame, } from "./play_panel.js";
+import { initPlayDivs, startingMenuSwitcher, divSwitcher, loadMultiplayerTest, startLocalGame, tryReturnToLobby } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
-import { initClassicLobby, updateClassicLobby, getInLobby, createLobby, joinLobby, } from "./lobby.js";
-import { initLobbyList, closeLobbyListSocket, } from "./lobby_list.js";
+import { initClassicLobby, updateClassicLobby, createLobby, createTournamentLobby, initTournamentLobby, updateTournamentLobby, joinLobby } from "./lobby.js";
+import { initLobbyList, closeLobbyListSocket, goToLobby } from "./lobby_list.js";
 import { closeUserUpdateSocket, connectUserUpdateSocket } from "./user_updates/websocket.js";
 import { init2FAToggle } from "./2FA_panel.js";
 import { generateArcBackground, generateGeometricBackground, getRandomInt, loadMainBackground, removeBackground, setBackgroundLinesColor } from "./animations/main_background.js";
 import { refreshToken } from "./network_utils/token_utils.js";
 import { initVerifyForm } from "./forgot_password/verify_code.js";
 import { initChangePasswordForm } from "./forgot_password/change_password.js";
+import { queueNotification } from "./ui_utils/notification_utils.js";
 import { initHowToPlayDivs } from "./how_to_play.js";
 import { loadStatsPage } from "./stats_content.js";
 
@@ -291,12 +292,6 @@ async function initMainMenuPage() {
 }
 
 async function initPlayPage() {
-  const playTypeButtons = document.getElementById('playtype')
-  const gamemodeButtons = document.getElementById('gamemode')
-  const gameSelectDiv = document.getElementById('play-select-container')
-  const gameLobbyListDiv = document.getElementById('play-lobby-list-container')
-  const gameSettingsDiv = document.getElementById('play-settings-container')
-  const gameLobbyDiv = document.getElementById('play-lobby-container')
   initPlayDivs();
 
   // first page
@@ -312,7 +307,7 @@ async function initPlayPage() {
   };
 
   // second page
-  const goToLobbyList = async () => {
+  const goToLobbyList = async (isTournament) => {
     divSwitcher.disableDivInput('play-select-container')
     await loadContentToTarget('menu/lobby_list_content.html', 'play-lobby-list-container')
     document.getElementById('lobbylistback').onclick = () => {
@@ -322,29 +317,27 @@ async function initPlayPage() {
     document.getElementById('lobby-host-button').onclick = async () => {
       divSwitcher.disableDivInput('play-select-container')
       // TODO: move this to lobby stuff
-      await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
-      closeLobbyListSocket()
-      const lobbyID = await createLobby()
-      await joinLobby(lobbyID)
-      initClassicLobby('play-lobby-list-container')
-      divSwitcher.setCurrentDiv('play-lobby-list-container', 'play-lobby-container')
-      updateClassicLobby()
+      let lobbyID = null
+      if (isTournament) {
+        lobbyID = await createTournamentLobby(20)
+      } else {
+        lobbyID = await createLobby()
+      }
+
+      if (lobbyID == null) {
+        queueNotification('magenta', `Failed to create lobby.`, () => {})
+        return
+      }
+      await goToLobby(lobbyID, isTournament)
     }
-    initLobbyList()
+    initLobbyList(isTournament)
     divSwitcher.setCurrentDiv('play-select-container', 'play-lobby-list-container')
   }
   document.getElementById("gamemodeback").onclick = () => startingMenuSwitcher.setCurrentDiv('gamemode', 'playtype');
-  document.getElementById("quickplay").onclick = () => goToLobbyList()
-  document.getElementById("tournament").onclick = () => alert("not implemented yet :[");
+  document.getElementById("quickplay").onclick = () => goToLobbyList(false)
+  document.getElementById("tournament").onclick = () => goToLobbyList(true);
 
-  // lobby page
-  if (getInLobby()) {
-    divSwitcher.disableDivInput('play-select-container')
-    await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
-    initClassicLobby('play-select-container')
-    divSwitcher.setCurrentDiv('play-select-container', 'play-lobby-container', true)
-    updateClassicLobby()
-  }
+  await tryReturnToLobby()
 }
 
 async function initStatsPage() {

@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'channels',
     'pong',
     'lobby',
+    'tournament',
     'game_stats',
 ]
 

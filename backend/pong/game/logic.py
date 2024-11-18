@@ -21,8 +21,9 @@ class GameLogic():
     sec_per_frame = 1 / 60
     ms_per_frame = sec_per_frame * 1000
 
-    def __init__(self):
+    def __init__(self, info):
         self.ended = False
+        self.info = info
         self.player_inputs = [PlayerInput(), PlayerInput()]
         self.game_size = Vector2(400, 240)
         self.score = [0, 0]

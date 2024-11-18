@@ -1,9 +1,11 @@
 import { initRandomColorButton } from "./ui_utils/button_utils.js"
-import { createMatch, joinMatch } from "./game/api.js";
+import { createMatch, joinMatch, defaultMatchOnClose } from "./game/api.js";
 import { loadPage } from "./router.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { getRequest } from "./network_utils/api_requests.js";
 import { PanelSwitcher } from "./ui_utils/panelswitcher_utils.js";
+import { initClassicLobby, updateClassicLobby, initTournamentLobby, updateTournamentLobby, getLobbyType, checkInLobby } from "./lobby.js";
+import { checkInTournament, loadTournamentList } from "./tournament.js";
 
 // for moving stuff
 export var startingMenuSwitcher = null
@@ -16,9 +18,10 @@ export function initPlayDivs() {
   const gameLobbyListDiv = document.getElementById('play-lobby-list-container')
   const gameSettingsDiv = document.getElementById('play-settings-container')
   const gameLobbyDiv = document.getElementById('play-lobby-container')
+  const gameTournamentDiv = document.getElementById('play-tournament-container')
 
   startingMenuSwitcher = new PanelSwitcher(playTypeButtons, [playTypeButtons, gamemodeButtons])
-  divSwitcher = new PanelSwitcher(gameSelectDiv, [gameSelectDiv, gameLobbyListDiv, gameSettingsDiv, gameLobbyDiv])
+  divSwitcher = new PanelSwitcher(gameSelectDiv, [gameSelectDiv, gameLobbyListDiv, gameSettingsDiv, gameLobbyDiv, gameTournamentDiv])
 }
 
 export async function loadMultiplayerTest() {
@@ -61,5 +64,35 @@ export async function startLocalGame() {
     return
   }
   await loadPage('game')
-  joinMatch(matchID, 0)
+  joinMatch(matchID, defaultMatchOnClose)
+}
+
+export async function tryReturnToLobby() {
+  // resume to lobby
+  if (!checkInLobby()) {
+    return
+  }
+
+  divSwitcher.disableDivInput('play-select-container')
+  if (!checkInTournament()) {
+    const inTournament = (getLobbyType() == 'tournament')
+    if (inTournament) {
+      await loadContentToTarget('menu/lobby_tournament_content.html', 'play-lobby-container')
+      initTournamentLobby()
+    } else {
+      await loadContentToTarget('menu/lobby_classic_content.html', 'play-lobby-container')
+      initClassicLobby()
+    }
+
+    divSwitcher.setCurrentDiv('play-select-container', 'play-lobby-container', true)
+    if (inTournament) {
+      updateTournamentLobby()
+    } else {
+      updateClassicLobby()
+    }
+  } else {
+    await loadContentToTarget('menu/tournament_content.html', 'play-tournament-container')
+    divSwitcher.setCurrentDiv('play-lobby-container', 'play-tournament-container', true)
+    loadTournamentList()
+  }
 }

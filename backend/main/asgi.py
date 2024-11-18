@@ -27,6 +27,7 @@ from friends_system.consumers import FriendsSystemConsumer
 from pong.consumers import PongConsumer
 from lobby.consumers import LobbyConsumer, LobbyListConsumer
 from user_management.consumers import UserUpdateConsumer
+from tournament.consumers import TournamentConsumer
 
 application = ProtocolTypeRouter({
     'http': get_asgi_application(),
@@ -39,6 +40,7 @@ application = ProtocolTypeRouter({
                 path("ws/lobby_list/", LobbyListConsumer.as_asgi()),
                 re_path(r'ws/pong/(?P<match_id>[0-9]+)$', PongConsumer.as_asgi()),
                 path("ws/user_update/", UserUpdateConsumer.as_asgi()),
+                path("ws/tournament/<int:tournament_id>", TournamentConsumer.as_asgi()),
             ])
         )
     ),

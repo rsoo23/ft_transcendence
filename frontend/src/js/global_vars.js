@@ -188,3 +188,15 @@ export const PONG_INPUTS = {
   'ArrowRight': 'p2_right',
   'ShiftRight': 'p2_activate_powerup',
 }
+
+export const LOSE_BUTTON_MSGS = [
+  'Damn it!',
+  'Mamma mia!',
+  'It was the lag! I swear!',
+  'It didn\'t run on my 486...',
+  'bruh',
+  'How could this happen?',
+  'It\'s not possible!',
+  'It just ain\'t right!',
+  'Now I\'ve seen everything...',
+]

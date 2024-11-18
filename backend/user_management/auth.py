@@ -21,13 +21,13 @@ class JWTAuthMiddleware(BaseMiddleware):
             raise ValueError(
                 'JWTAuthMiddleware could not find "Authorization" in scope.'
             )
-        if len(scope['subprotocols']) != 2:
+        if scope['subprotocols'].index('Authorization') + 1 >= len(scope['subprotocols']):
             raise ValueError(
-                'JWTAuthMiddleware invalid amount of subprotocols in scope.'
+                'JWTAuthMiddleware access token missing after "Authorization" in scope.'
             )
 
         if 'token' not in scope:
-            scope['token'] = scope['subprotocols'][1]
+            scope['token'] = scope['subprotocols'][scope['subprotocols'].index('Authorization') + 1]
 
         if 'user' not in scope:
             scope['user'] = UserLazyObject()

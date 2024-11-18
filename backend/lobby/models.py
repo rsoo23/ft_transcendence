@@ -4,3 +4,4 @@ class LobbyModel(models.Model):
     host_id = models.BigIntegerField()
     max_users = models.BigIntegerField()
     closed = models.BooleanField(default=False)
+    is_tournament = models.BooleanField(default=False)

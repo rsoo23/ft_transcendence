@@ -20,7 +20,7 @@ class ServerManager():
         self.channel_layer = get_channel_layer()
 
     # will do nothing if game already exists
-    def try_create_game(self, match_id, group_match, local):
+    def try_create_game(self, match_id, group_match, local, info={}):
         with self.matches_lock:
             if match_id in self.matches:
                 print(f'match with id {match_id} already exists!')
@@ -28,7 +28,7 @@ class ServerManager():
 
             print(f'creating match with id {match_id}')
             self.matches[match_id] = {
-                'game_info': GameLogic(),
+                'game_info': GameLogic(info),
                 'thread': Thread(target=self.main_loop, args=(match_id,)),
                 'group_match': group_match,
                 'local': local,
@@ -98,6 +98,14 @@ class ServerManager():
             match_data.p2_score = match_info['game_info'].score[1]
             match_data.ended = True
             match_data.save()
+
+            if match_data.tournament != None:
+                is_p1_winner = (match_data.p1_score >= match_info['game_info'].win_score)
+                async_to_sync(self.channel_layer.group_send)(f'tournament-{match_data.tournament.id}', {
+                    'type': 'tournament.match.end',
+                    'winner_id': match_data.player1.id if is_p1_winner else match_data.player2.id,
+                    'round': match_info['game_info'].info['tournament_round']
+                })
 
             start_time = match_data.date_joined if hasattr(match_data, 'date_joined') else None
             duration = None

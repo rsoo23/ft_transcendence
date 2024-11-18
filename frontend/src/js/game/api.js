@@ -6,6 +6,7 @@ import { PONG_INPUTS } from '../global_vars.js'
 import { leaveLobby } from '../lobby.js'
 
 var matchSocket = null
+var matchCallback = null
 var inMatchID = 0
 
 export async function createMatch(player1ID, player2ID, type) {
@@ -25,14 +26,13 @@ export async function createMatch(player1ID, player2ID, type) {
 var prevMessageRecv = 0
 var socketChecker = null
 
-// TODO: delete userid
-export async function joinMatch(matchID, userID) {
+export async function joinMatch(matchID, callback) {
   if (matchSocket != undefined) {
     matchSocket.close()
   }
 
   initRenderer()
-  await createSocket(matchID)
+  await createSocket(matchID, callback)
 }
 
 // TODO: maybe adjust this to handle bad latency too?
@@ -50,11 +50,12 @@ async function checkSocket() {
   console.log('connection might be stuck, reconnecting')
   matchSocket.onclose = () => { }
   matchSocket.close()
-  await createSocket(inMatchID)
+  await createSocket(inMatchID, matchCallback)
 }
 
-async function createSocket(matchID) {
+async function createSocket(matchID, callback) {
   inMatchID = matchID
+  matchCallback = callback
   matchSocket = new WebSocket(
     `ws://${window.location.host}/ws/pong/${matchID}`,
     ['Authorization', getAccessToken()]
@@ -77,10 +78,8 @@ async function createSocket(matchID) {
     window.onkeyup = null
     matchSocket = null
 
-    // TODO: go to match end or something
-    leaveLobby()
-    await loadPage('main_menu')
-    loadMainMenuContent('play')
+    await matchCallback()
+    matchCallback = null
   }
 
   matchSocket.onopen = () => {
@@ -109,4 +108,10 @@ async function createSocket(matchID) {
       'value': false,
     }))
   }
+}
+
+export async function defaultMatchOnClose() {
+  // TODO: go to match end or something
+  await loadPage('main_menu')
+  loadMainMenuContent('play')
 }
