@@ -102,6 +102,9 @@ class PowerupsManager():
         self.is_powerup_activated = True
 
     def tick(self, game_info, dt):
+        if not game_info.info['is_powerup_checked']:
+            return
+
         player_input = game_info.player_inputs[self.activator_player_num - 1]
 
         if player_input.get_input('activate_powerup'):

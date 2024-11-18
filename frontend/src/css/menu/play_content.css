@@ -178,12 +178,12 @@
   margin-right: auto;
 }
 
-#start-game {
+#start-game, #reset-to-default {
   background-color: var(--teal-500);
   transition: opacity 0.5s;
 }
 
-#start-game:disabled {
+#start-game:disabled, #reset-to-default:disabled {
   background-color: var(--charcoal-700);
   opacity: 0.5;
   cursor: auto;
@@ -429,3 +429,79 @@
 .tournament-user-container i {
   color: var(--teal-500);
 }
+
+.powerups-toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 3rem;
+  height: 1.5rem;
+}
+
+.powerups-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.powerups-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--charcoal-300);
+  transition: 0.4s;
+  border-radius: 1.5rem;
+}
+
+.powerups-slider:before {
+  position: absolute;
+  content: "";
+  height: 1.25rem;
+  width: 1.25rem;
+  left: 0.125rem;
+  bottom: 0.125rem;
+  background-color: var(--charcoal-100);
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+.powerups-toggle-input:checked + .powerups-slider {
+  background-color: var(--teal-500);
+}
+
+.powerups-toggle-input:checked + .powerups-slider:before {
+  transform: translateX(1.5rem);
+}
+.powerups-toggle-input:focus + .powerups-slider {
+  box-shadow: 0 0 0.0625rem var(--teal-500);
+}
+
+.powerups-slider.round {
+  border-radius: 2.125rem;
+}
+
+.game-settings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8rem;
+  align-items: center;
+}
+
+.game-settings-grid {
+  width: 100%;
+  font-size: 1.5rem;
+  gap: 2rem;
+
+  display: grid;
+  grid-template-columns: 16rem 35rem 2rem;
+  grid-template-rows: 1fr 1fr 1fr;
+  column-gap: 2rem;
+}
+
+.game-settings-container .button-container {
+  display: flex;
+  gap: 2rem;
+}
+

@@ -69,7 +69,8 @@ async def create_match(request):
     try:
         user1 = request.data['player1_uuid']
         user2 = request.data['player2_uuid']
-        match = await create_match_and_game(user1, user2, request.data['type'])
+        info = request.data['info']
+        match = await create_match_and_game(user1, user2, request.data['type'], -1, info)
         return JsonResponse({
             'success': True,
             'match_id': match.id

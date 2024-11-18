@@ -1,4 +1,5 @@
 import { GameManager } from './game_manager.js'
+import { isPowerupChecked } from './game_settings.js'
 
 var workerUI = null
 
@@ -24,6 +25,10 @@ export function initRenderer() {
   observer.observe(div)
 
   const gameManager = new GameManager()
+
+  if (!isPowerupChecked) {
+    gameManager.hidePowerupBars()
+  }
 
   workerUI.addEventListener('message', (e) => {
     const { type, payload } = e.data

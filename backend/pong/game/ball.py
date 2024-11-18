@@ -86,7 +86,7 @@ class Ball():
 
                 game_info.total_paddle_hits += 1
                 if game_info.total_paddle_hits % 4 == 0:
-                    self.speed += 25
+                    self.speed += int(game_info.info['ball_speed_increment'])
 
                 # check if the color of paddle matches the ball's color
                 if self.color_idx != paddle.color_idx:

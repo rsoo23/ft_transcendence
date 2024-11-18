@@ -4,32 +4,29 @@
   <h1>Game Settings</h1>
 </div>
 </br>
-<div>
+<div class="game-settings-container">
   <form>
-    <div class='play-settings-inline-flex'>
-      <p>Match visibility:</p>
-      <select id='match-visibility'>
-        <option value="public">Public</option>
-        <option value="friends">Friends-Only</option>
-        <option value="invite">Invite-Only</option>
-      </select>
-    </div>
-    <div class='play-settings-inline-flex'>
-      <p>Match visibility:</p>
-      <select id='match-visibility'>
-        <option value="public">Public</option>
-        <option value="friends">Friends-Only</option>
-        <option value="invite">Invite-Only</option>
-      </select>
-    </div>
-    <div class='play-settings-inline-flex'>
-      <p>Match visibility:</p>
-      <select id='match-visibility'>
-        <option value="public">Public</option>
-        <option value="friends">Friends-Only</option>
-        <option value="invite">Invite-Only</option>
-      </select>
+    <div class="game-settings-grid">
+      <!-- Game Score -->
+      <label for="game-score">Winning Game Score</label>
+      <input type="range" id="game-score" name="gameScore" min="3" max="10" value="5">
+      <span id="game-score-value">5</span>
+
+      <!-- Ball Speed Increment -->
+      <label for="ball-speed">Ball Speed Increment</label>
+      <input type="range" id="ball-speed" name="ballSpeed" min="10" max="50" value="25" step="5">
+      <span id="ball-speed-value">25</span>
+
+      <!-- Powerups Enabled -->
+      <label>Powerups</label>
+      <label class="powerups-toggle-switch">
+        <input type="checkbox" class="powerups-toggle-input" id="powerups-toggle-input"/>
+        <span class="powerups-slider"></span>
+      </label>
     </div>
   </form>
-  <button id='start-game' class='button button-md'>Start Game</button>
+  <div class="button-container">
+    <button id='reset-to-default' class='button button-md'>Reset to default</button>
+    <button id='start-game' class='button button-md'>Start Game</button>
+  </div>
 </div>
