@@ -113,6 +113,8 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 
     async def tournament_get_info(self, event):
         info = json.loads(cache.get(f'tournament-info-{self.tournament_id}'))
+        # if for some reason self.round goes out of bounds
+        self.round = info['rounds'] if self.round > info['rounds'] else self.round
         pair = await self.find_pair_by_user_id(info['list'], self.user_id, self.round)
         if not pair:
             return
@@ -150,13 +152,14 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 
         info = json.loads(cache.get(f'tournament-info-{self.tournament_id}'))
         rounds = info['list']
-        print(rounds)
         pair = await self.find_pair_by_user_id(rounds, event['winner_id'], event['round'])
-        print(pair)
         winner = pair['player1'] if pair['player1'] and pair['player1']['id'] == event['winner_id'] else pair['player2']
+        pair['winner'] = winner
 
         # because the rounds are inverted :]
         if pair['round'] <= 1:
+            cache.set(f'tournament-info-{self.tournament_id}', json.dumps(info))
+            await self.channel_layer.group_send(self.group_tournament, { 'type': 'tournament.get.info' })
             await self.channel_layer.group_send(self.group_tournament, {
                 'type': 'tournament.notify.winner',
                 'user': winner['id'],

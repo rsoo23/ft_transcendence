@@ -27,6 +27,7 @@ def create_tournament(lobby_id, host, users):
             'round': len(rounds_list) + 1,
             'next_round_pair': (2 + len(pairs_list)) // 2,
             'next_pair_slot': 1 + (len(pairs_list) % 2),
+            'winner': None,
         })
         if len(pairs_list) < max_pairs or i + 1 >= pairs:
             continue

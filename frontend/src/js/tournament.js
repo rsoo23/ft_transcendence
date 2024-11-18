@@ -72,6 +72,7 @@ export async function joinTournament(id) {
 export function leaveTournament() {
   tournamentInfo = {}
   tournamentCurrentOpponent = null
+  tournamentWinner = null
   inTournament = false
 
   if (tournamentSocket != null) {
@@ -104,7 +105,7 @@ function initTournamentReadyButtons() {
 }
 
 export function loadTournamentList() {
-  const createPair = (user) => {
+  const createPair = (user, winner) => {
     const avatar = document.createElement('img')
     avatar.classList.add('profile-settings-avatar')
     if (user) {
@@ -117,12 +118,12 @@ export function loadTournamentList() {
 
     const ready = document.createElement('i')
     ready.classList.add('material-icons')
-    ready.textContent = 'done'
-    if (user) {
+    ready.textContent = (winner && winner.id == user.id)? 'emoji_events' : 'done'
+    if (user && !winner) {
       ready.id = `tournament-ready-${user.id}`
       ready.style.setProperty('visibility', (checkUserIsReady(user.id))? 'visible' : 'hidden')
     } else {
-      ready.style.setProperty('visibility', 'hidden')
+      ready.style.setProperty('visibility', (user && winner && winner.id == user.id)? 'visible' : 'hidden')
     }
 
     const nameDiv = document.createElement('div')
@@ -131,7 +132,9 @@ export function loadTournamentList() {
 
     const div = document.createElement('div')
     div.classList.add('tournament-user-container')
-    if (user && user.id == currentUserInfo.id) {
+    if (user && winner) {
+      div.style.setProperty('background-color', (user.id == winner.id)? 'var(--teal-800)' : 'var(--magenta-800)')
+    } else if (user && user.id == currentUserInfo.id) {
       div.classList.add('tournament-currentuser-container')
     }
     div.appendChild(avatar)
@@ -164,8 +167,8 @@ export function loadTournamentList() {
       const pair = document.createElement('div')
       pair.classList.add('tournament-pair-container')
 
-      let p1Div = createPair((pairInfo.player1)? getUser(pairInfo.player1.id) : null)
-      let p2Div = createPair((pairInfo.player2)? getUser(pairInfo.player2.id) : null)
+      let p1Div = createPair((pairInfo.player1)? getUser(pairInfo.player1.id) : null, pairInfo.winner)
+      let p2Div = createPair((pairInfo.player2)? getUser(pairInfo.player2.id) : null, pairInfo.winner)
 
       pair.appendChild(p1Div)
       pair.appendChild(p2Div)
@@ -181,9 +184,11 @@ export function loadTournamentList() {
   winner.classList.add('tournament-pair-container')
   let winnerDiv
   if (tournamentWinner) {
-    winnerDiv = createPair(getUser(tournamentWinner.id))
+    winnerDiv = createPair(getUser(tournamentWinner.id), tournamentWinner)
+    winnerDiv.querySelector('i').style.setProperty('color', 'var(--yellow-500)')
+    winnerDiv.style.setProperty('background-color', 'var(--yellow-800)')
   } else {
-    winnerDiv = createPair('')
+    winnerDiv = createPair(null, null)
   }
   winnerContainer.appendChild(winnerDiv)
   list.appendChild(winnerContainer)
