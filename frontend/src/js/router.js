@@ -32,6 +32,7 @@ import { initChangePasswordForm } from "./forgot_password/change_password.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
 import { initHowToPlayDivs } from "./how_to_play.js";
 import { loadStatsPage } from "./stats_content.js";
+import { initGameSettings } from "./game/game_settings.js";
 
 const routes = {
   "/start": "start_panel.html",
@@ -301,6 +302,7 @@ async function initPlayPage() {
     document.getElementById('settingsback').onclick = () => divSwitcher.setCurrentDiv('play-settings-container', 'play-select-container')
     document.getElementById('start-game').onclick = () => startLocalGame()
     divSwitcher.setCurrentDiv('play-select-container', 'play-settings-container')
+    initGameSettings();
   };
   document.getElementById("onlineplay").onclick = () => {
     startingMenuSwitcher.setCurrentDiv('playtype', 'gamemode')
@@ -325,7 +327,7 @@ async function initPlayPage() {
       }
 
       if (lobbyID == null) {
-        queueNotification('magenta', `Failed to create lobby.`, () => {})
+        queueNotification('magenta', `Failed to create lobby.`, () => { })
         return
       }
       await goToLobby(lobbyID, isTournament)
@@ -341,7 +343,7 @@ async function initPlayPage() {
 }
 
 async function initStatsPage() {
-	await loadStatsPage();
+  await loadStatsPage();
 }
 
 export async function initFriendsPage(
