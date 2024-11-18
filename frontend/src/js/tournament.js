@@ -134,7 +134,9 @@ export function loadTournamentList() {
     div.classList.add('tournament-user-container')
     if (user && winner) {
       div.style.setProperty('background-color', (user.id == winner.id)? 'var(--teal-800)' : 'var(--magenta-800)')
-    } else if (user && user.id == currentUserInfo.id) {
+      div.style.setProperty('outline-color', (user.id == winner.id)? 'var(--teal-500)' : 'var(--magenta-500)')
+    }
+    if (user && user.id == currentUserInfo.id) {
       div.classList.add('tournament-currentuser-container')
     }
     div.appendChild(avatar)
@@ -145,22 +147,32 @@ export function loadTournamentList() {
   console.log(usersInfo)
   const list = document.getElementById('bracket-list')
   list.innerHTML = ''
+  let column = tournamentInfo.length - 1
   for (const round of tournamentInfo) {
     const bracketContainer = document.createElement('div')
     bracketContainer.classList.add('tournament-bracket-container')
 
-    for (const pairInfo of round) {
+    console.log(2 ** column)
+    for (let i = 0; i < 2 ** column; i++) {
+    // for (const pairInfo of round) {
       const pair = document.createElement('div')
       pair.classList.add('tournament-pair-container')
 
-      let p1Div = createPair((pairInfo.player1)? getUserById(pairInfo.player1.id) : null, pairInfo.winner)
-      let p2Div = createPair((pairInfo.player2)? getUserById(pairInfo.player2.id) : null, pairInfo.winner)
+      const pairInfo = (i < round.length)? round[i] : null
+      const winner = (pairInfo && pairInfo.winner)? pairInfo.winner : null
+      let p1Div = createPair((pairInfo && pairInfo.player1)? getUserById(pairInfo.player1.id) : null, winner)
+      let p2Div = createPair((pairInfo && pairInfo.player2)? getUserById(pairInfo.player2.id) : null, winner)
+
+      if (!pairInfo) {
+        pair.classList.add('tournament-emptypair-container')
+      }
 
       pair.appendChild(p1Div)
       pair.appendChild(p2Div)
       bracketContainer.appendChild(pair)
     }
 
+    --column;
     list.appendChild(bracketContainer)
   }
 

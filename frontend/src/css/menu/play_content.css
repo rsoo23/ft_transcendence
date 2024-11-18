@@ -350,6 +350,7 @@
   margin-right: 2rem;
   flex-grow: 1;
   justify-content: center;
+  overflow: auto;
 
   background-color: var(--charcoal-800);
   border-radius: 3rem;
@@ -367,6 +368,10 @@
   flex-flow: column;
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
+}
+
+.tournament-emptypair-container {
+  opacity: 0.5;
 }
 
 .tournament-ready-container {
