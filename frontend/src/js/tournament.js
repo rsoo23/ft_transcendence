@@ -1,7 +1,7 @@
 import { getAccessToken } from "./network_utils/token_utils.js";
 import { currentUserInfo, usersInfo } from "./global_vars.js";
 import { getRequest } from "./network_utils/api_requests.js";
-import { checkUserIsReady, validateAvatarImg, leaveLobby } from "./lobby.js";
+import { checkUserIsReady, validateAvatarImg, leaveLobby, getUserById } from "./lobby.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
 
 var tournamentSocket = null
@@ -143,20 +143,6 @@ export function loadTournamentList() {
     return div
   }
   console.log(usersInfo)
-  const getUser = (id) => {
-    if (currentUserInfo.id == id) {
-      return currentUserInfo
-    }
-
-    for (const user of usersInfo) {
-      if (user['id'] != id) {
-        continue
-      }
-      return user
-    }
-    return null
-  }
-
   const list = document.getElementById('bracket-list')
   list.innerHTML = ''
   for (const round of tournamentInfo) {
@@ -167,8 +153,8 @@ export function loadTournamentList() {
       const pair = document.createElement('div')
       pair.classList.add('tournament-pair-container')
 
-      let p1Div = createPair((pairInfo.player1)? getUser(pairInfo.player1.id) : null, pairInfo.winner)
-      let p2Div = createPair((pairInfo.player2)? getUser(pairInfo.player2.id) : null, pairInfo.winner)
+      let p1Div = createPair((pairInfo.player1)? getUserById(pairInfo.player1.id) : null, pairInfo.winner)
+      let p2Div = createPair((pairInfo.player2)? getUserById(pairInfo.player2.id) : null, pairInfo.winner)
 
       pair.appendChild(p1Div)
       pair.appendChild(p2Div)
@@ -184,7 +170,7 @@ export function loadTournamentList() {
   winner.classList.add('tournament-pair-container')
   let winnerDiv
   if (tournamentWinner) {
-    winnerDiv = createPair(getUser(tournamentWinner.id), tournamentWinner)
+    winnerDiv = createPair(getUserById(tournamentWinner.id), tournamentWinner)
     winnerDiv.querySelector('i').style.setProperty('color', 'var(--yellow-500)')
     winnerDiv.style.setProperty('background-color', 'var(--yellow-800)')
     if (tournamentWinner.id == currentUserInfo.id) {

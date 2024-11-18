@@ -1,10 +1,10 @@
 import { getRequest, postRequest } from "./network_utils/api_requests.js";
-import { currentUserInfo } from "./global_vars.js"
+import { currentUserInfo, usersInfo } from "./global_vars.js"
 import { getAccessToken } from "./network_utils/token_utils.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { divSwitcher } from "./play_panel.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
-import { loadPage } from "./router.js";
+import { loadPage, loadUsersInfo } from "./router.js";
 import { joinMatch, defaultMatchOnClose } from "./game/api.js";
 import { initLobbyList } from "./lobby_list.js";
 import { checkInTournament, checkIsTournamentOpponent, joinTournament, leaveTournament, updateTournamentPlayerReady } from "./tournament.js";
@@ -64,6 +64,22 @@ export async function createTournamentLobby(maxUsers) {
   return null
 }
 
+export function getUserById(id) {
+  if (id == currentUserInfo.id) {
+    return currentUserInfo
+  }
+
+  for (const user of usersInfo) {
+    if (user.id != id) {
+      continue
+    }
+
+    return user
+  }
+
+  return null
+}
+
 export async function joinLobby(id) {
   lobbySocket = new WebSocket(`ws://${window.location.host}/ws/lobby/${id}`, ['Authorization', getAccessToken()])
   lobbySocket.onmessage = async (e) => {
@@ -95,10 +111,20 @@ export async function joinLobby(id) {
       break
 
     case 'join':
-      const response = await getRequest(`/api/users/${data.user}/`)
-      response['ready'] = false
-      lobbyUsers.push(response)
-      queueNotification('teal', `${response.username} has joined the lobby.`, () => {})
+      let user = getUserById(data.user)
+      if (!user) {
+        await loadUsersInfo()
+        user = getUserById(data.user)
+
+        // how
+        if (!user) {
+          break
+        }
+      }
+
+      user['ready'] = false
+      lobbyUsers.push(user)
+      queueNotification('teal', `${user.username} has joined the lobby.`, () => {})
       if (lobbyType == 'tournament') {
         updateTournamentLobby()
       } else {
@@ -109,10 +135,13 @@ export async function joinLobby(id) {
     case 'list':
       lobbyUsers = data.list // we do this to reserve space :]
       for (let i = 0; i < data.list.length; i++) {
-        const user = data.list[i]
-        const response = await getRequest(`/api/users/${user.id}/`)
-        response['ready'] = user.ready
-        lobbyUsers[i] = response
+        const userInfo = data.list[i]
+        let user = getUserById(data.user)
+        if (!user) {
+          user = await getRequest(`/api/users/${userInfo.id}/`)
+        }
+        user['ready'] = userInfo.ready
+        lobbyUsers[i] = user
       }
       if (lobbyType == 'tournament') {
         updateTournamentLobby()
