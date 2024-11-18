@@ -29,6 +29,7 @@ class PlayerInput():
             'down': False,
             'left': False,
             'right': False,
+            'activate_powerup': False,
         }
 
     def set_input(self, input_type, value):

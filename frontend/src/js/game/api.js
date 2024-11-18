@@ -85,27 +85,27 @@ async function createSocket(matchID) {
 
   matchSocket.onopen = () => {
     prevMessageRecv = performance.now()
-    socketChecker = setTimeout(checkSocket, 1000)
+    // socketChecker = setTimeout(checkSocket, 1000)
   }
 
   window.onkeydown = (e) => {
-    if (e.repeat || !(e.keyCode in PONG_INPUTS))
+    if (e.repeat || !(e.code in PONG_INPUTS))
       return;
 
     matchSocket.send(JSON.stringify({
       'type': 'input',
-      'input': `${PONG_INPUTS[e.keyCode]}`,
+      'input': `${PONG_INPUTS[e.code]}`,
       'value': true,
     }))
   }
 
   window.onkeyup = (e) => {
-    if (e.repeat || !(e.keyCode in PONG_INPUTS))
+    if (e.repeat || !(e.code in PONG_INPUTS))
       return;
 
     matchSocket.send(JSON.stringify({
       'type': 'input',
-      'input': `${PONG_INPUTS[e.keyCode]}`,
+      'input': `${PONG_INPUTS[e.code]}`,
       'value': false,
     }))
   }
