@@ -113,11 +113,6 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 
     async def tournament_get_info(self, event):
         info = json.loads(cache.get(f'tournament-info-{self.tournament_id}'))
-        await self.send_json({
-            'event': 'info',
-            'info': info,
-        })
-
         pair = await self.find_pair_by_user_id(info['list'], self.user_id, self.round)
         if not pair:
             return
@@ -128,6 +123,11 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         elif pair['player2'] and pair['player2']['id'] == self.user_id:
             self.opponent = pair['player1']
 
+        await self.send_json({
+            'event': 'info',
+            'info': info,
+            'opponent': self.opponent,
+        })
 
     async def tournament_notify_left(self, event):
         await self.send_json({
