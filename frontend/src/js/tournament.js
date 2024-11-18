@@ -131,7 +131,7 @@ export function loadTournamentList() {
 
     const div = document.createElement('div')
     div.classList.add('tournament-user-container')
-    if (user.id == currentUserInfo.id) {
+    if (user && user.id == currentUserInfo.id) {
       div.classList.add('tournament-currentuser-container')
     }
     div.appendChild(avatar)
