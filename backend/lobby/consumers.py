@@ -30,6 +30,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
         self.max_users = model.max_users
         self.is_tournament = model.is_tournament
         self.is_host = (self.user_id == model.host_id)
+        self.broadcast = True
         if not self.is_host:
             await self.channel_layer.group_send(self.group_lobby, {
                 'type': 'lobby.notify.join',
@@ -95,6 +96,12 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                     return
 
                 await self.channel_layer.group_send(self.group_lobby, {'type': 'lobby.notify.start'})
+                self.broadcast = False
+                await self.channel_layer.group_send(GROUP_LOBBYLIST, {
+                    'type': 'lobby.remove.id',
+                    'id': self.lobby_id,
+                    'is_tournament': self.is_tournament,
+                })
                 if self.is_tournament:
                     async with self.cache_lock:
                         users = json.loads(cache.get(self.group_lobby))
@@ -133,7 +140,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
             return
 
         users = json.loads(cache.get(self.group_lobby))
-        if len(users) >= self.max_users:
+        if len(users) >= self.max_users or not self.broadcast:
             return
 
         await self.channel_layer.send(event['channel'], {
