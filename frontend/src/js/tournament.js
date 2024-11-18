@@ -187,6 +187,10 @@ export function loadTournamentList() {
     winnerDiv = createPair(getUser(tournamentWinner.id), tournamentWinner)
     winnerDiv.querySelector('i').style.setProperty('color', 'var(--yellow-500)')
     winnerDiv.style.setProperty('background-color', 'var(--yellow-800)')
+    if (tournamentWinner.id == currentUserInfo.id) {
+      winnerDiv.classList.add('tournament-currentuser-container')
+      winnerDiv.style.setProperty('outline-color', 'var(--yellow-500)')
+    }
   } else {
     winnerDiv = createPair(null, null)
   }
