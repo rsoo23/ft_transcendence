@@ -145,7 +145,9 @@ function createPlayerSection(player, playerClass) {
     
     const name = document.createElement('div');
     name.className = 'avatar-name';
-    name.textContent = player?.username || 'Unknown Player';
+    const playerName = player?.username || 'Unknown Player';
+	name.textContent = playerName;
+	name.title = playerName; // Show full name on hover, use HTML title attribute
     
     section.appendChild(avatarContainer);
     section.appendChild(name);

@@ -57,15 +57,13 @@
 }
 
 .match-record {
-  display: flex;
-  justify-content: space-around;
-
-  width: 100%;
-  height: 5rem;
-
-  background-color: var(--charcoal-600);
-  border-radius: 10px;
-  transition: 0.2s;
+	display: flex;
+	justify-content: space-around;
+	width: 100%;
+	height: 5rem;
+	background-color: var(--charcoal-600);
+	border-radius: 10px;
+	transition: 0.2s;
 }
 
 .match-record:hover {
@@ -97,6 +95,11 @@
 
 .match-record .avatar-name {
   font-size: 0.75rem;
+  max-width: 5rem; /* Limit width */
+  white-space: nowrap; /* It wont go to the next line */
+  overflow: hidden; /* Hide overflow words */
+  text-overflow: ellipsis; /* ... */
+  text-align: center;
 }
 
 .match-record .score-time-section {
@@ -203,4 +206,12 @@
   justify-content: center;
   align-items: center;
   font-size: 1.875rem;
+}
+
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 5rem; /* Fixed width for player sections */
 }
