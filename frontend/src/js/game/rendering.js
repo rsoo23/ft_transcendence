@@ -43,7 +43,6 @@ class Score {
   }
 
   draw(renderInfo, pos, prevState, nextState) {
-    postMessage({ type: 'turn_update', payload: nextState.info })
     renderInfo.ctx.font = `${(this.size * renderInfo.windowScale.x)}px "${this.font}"`;
     renderInfo.ctx.textAlign = 'center';
     renderInfo.ctx.textBaseline = 'middle';
@@ -54,7 +53,7 @@ class Score {
 
 class Countdown {
   constructor() {
-    this.size = 36;
+    this.size = 25;
     this.font = 'Plus Jakarta Sans';
   }
 
@@ -63,12 +62,20 @@ class Countdown {
     renderInfo.ctx.textAlign = 'center';
     renderInfo.ctx.textBaseline = 'middle';
 
-    const text = nextState.info['time'] === 0 ? "Start!" : "" + nextState.info['time'];
-    const textWidth = renderInfo.ctx.measureText(text).width;
+    let text
+
+    if (nextState.info['time'] === 0) {
+      text = "Start!";
+    } else if (nextState.info['time'] === 4) {
+      text = `Serving to the ${nextState.info.player_turn === 1 ? 'left' : 'right'}`;
+    } else {
+      text = "" + nextState.info['time'];
+    }
+    const textWidth = renderInfo.ctx.measureText(text).width / 2;
     const textHeight = this.size * renderInfo.windowScale.x;
 
     // Draw overlay rectangle
-    renderInfo.ctx.fillStyle = 'rgb(0 0 0)';
+    renderInfo.ctx.fillStyle = 'black';
     renderInfo.fillRectScaled(
       pos.x - (textWidth / 2),
       pos.y - (textHeight / 2),

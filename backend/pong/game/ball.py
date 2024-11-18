@@ -46,7 +46,7 @@ class Ball():
 
     def end_turn(self, game_info):
         game_info.objects.append(BallTimer())
-        game_info.objects.append(CountdownTimer(4))
+        game_info.objects.append(CountdownTimer(game_info.countdown_duration))
 
         if game_info.player_turn == 1:
             game_info.player_turn = 2
@@ -179,7 +179,7 @@ class BallTimer():
 
     def tick(self, game_info, dt):
         self.time_elapsed += dt
-        if self.time_elapsed < 4:
+        if self.time_elapsed < game_info.countdown_duration:
             return None
 
         new_ball = self.init_ball(game_info)

@@ -13,9 +13,6 @@ export class GameManager {
     this.p1ColorIndex = 0
     this.p2ColorIndex = 0
 
-    this.gameHeader = document.getElementById('game-header-text')
-    this.nextPlayerTurn = 2
-
     this.p1PowerupIndicators = document.querySelectorAll('#p1-powerup-bar .powerup-indicator')
     this.p2PowerupIndicators = document.querySelectorAll('#p2-powerup-bar .powerup-indicator')
     this.p1PowerupBar = document.getElementById('p1-powerup-bar')
@@ -41,18 +38,6 @@ export class GameManager {
         this.p2PrevColorIndex = colorIndex
       }
     }
-  }
-
-  updateTurn(playerTurn) {
-    if (playerTurn === undefined || playerTurn === this.nextPlayerTurn) {
-      return
-    }
-    if (playerTurn === 1) {
-      this.gameHeader.innerHTML = "Serving to Player 1"
-    } else if (playerTurn === 2) {
-      this.gameHeader.innerHTML = "Serving to Player 2"
-    }
-    this.nextPlayerTurn = playerTurn
   }
 
   chargePowerup(chargeNum) {

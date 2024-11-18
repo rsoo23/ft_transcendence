@@ -13,8 +13,8 @@ class PongScore():
 
     def tick(self, game_info, dt):
         states = ObjectState('score')
-        states.append(self.pos, 0.0, {'player_turn': game_info.player_turn, 'score': game_info.score[self.score_index]})
-        states.append(self.pos, 1.0, {'player_turn': game_info.player_turn, 'score': game_info.score[self.score_index]})
+        states.append(self.pos, 0.0, {'score': game_info.score[self.score_index]})
+        states.append(self.pos, 1.0, {'score': game_info.score[self.score_index]})
         return states
 
 class GameLogic():
@@ -27,6 +27,7 @@ class GameLogic():
         self.game_size = Vector2(400, 240)
         self.score = [0, 0]
         self.win_score = 5
+        self.countdown_duration = 5
         self.player_turn = 1
         self.total_paddle_hits = 0
         self.powerup_charge_num = [0, 0]
@@ -36,7 +37,7 @@ class GameLogic():
             BallTimer(),
             PongScore(self.game_size.x / 2 - 40, 60, 0),
             PongScore(self.game_size.x / 2 + 40, 60, 1),
-            CountdownTimer(4),
+            CountdownTimer(self.countdown_duration),
             PowerupsManager(1),
             PowerupsManager(2)
         ]

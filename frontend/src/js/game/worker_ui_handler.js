@@ -32,9 +32,6 @@ export function initRenderer() {
       case 'color_switch':
         gameManager.switchColorIndicator(payload.player_num, payload.color_idx)
         break
-      case 'turn_update':
-        gameManager.updateTurn(payload.player_turn)
-        break
       case 'charge_powerup':
         gameManager.chargePowerup(payload)
         break
