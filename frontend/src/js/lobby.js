@@ -404,5 +404,8 @@ function appendTournamentUser(info) {
 function removeTournamentUser(info) {
   const entry = document.getElementById(`tournament-user-${info.id}`)
   const list = document.getElementById('player-list')
+  if (!list || !entry) {
+    return
+  }
   list.removeChild(entry)
 }
