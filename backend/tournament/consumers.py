@@ -25,6 +25,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         tournament_info = json.loads(cache.get(f'tournament-info-{self.tournament_id}'))
         self.lobby_id = tournament_info['lobby_id']
         self.opponent = None
+        self.is_loser = False
         self.group_lobby = f'lobby-{self.lobby_id}'
         self.group_tournament = f'tournament-{self.tournament_id}'
         self.is_host = (self.scope['user'] == model.host)
@@ -119,11 +120,15 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         if not pair:
             return
 
-        if pair['player1'] and pair['player1']['id'] == self.user_id:
-            self.opponent = pair['player2']
+        if not self.is_loser:
+            if pair['player1'] and pair['player1']['id'] == self.user_id:
+                self.opponent = pair['player2']
 
-        elif pair['player2'] and pair['player2']['id'] == self.user_id:
-            self.opponent = pair['player1']
+            elif pair['player2'] and pair['player2']['id'] == self.user_id:
+                self.opponent = pair['player1']
+
+        else:
+            self.opponent = None
 
         await self.send_json({
             'event': 'info',
@@ -144,6 +149,8 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         })
 
     async def tournament_notify_lose(self, event):
+        self.is_loser = True
+        self.opponent = None
         await self.send_json({
             'event': 'lose',
             'user': event['user'],
