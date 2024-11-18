@@ -104,7 +104,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                 })
                 if self.is_tournament:
                     async with self.cache_lock:
-                        users = json.loads(cache.get(self.group_lobby))
+                        users = await self.get_lobby_info()
                         for user in users:
                             user['ready'] = False
 
@@ -119,7 +119,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                     })
 
                 else:
-                    users = json.loads(cache.get(self.group_lobby))
+                    users = await self.get_lobby_info()
                     match = await create_match_and_game(users[0]['id'], users[1]['id'], 'online_classic')
                     await self.channel_layer.group_send(self.group_lobby, {
                         'type': 'lobby.notify.match',
@@ -134,12 +134,19 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
 
                 await self.channel_layer.group_send(self.group_lobby, {'type': 'lobby.notify.close'})
 
+    async def get_lobby_info():
+        info = cache.get(self.group_lobby)
+        if not info:
+            await self.close(code=4001, reason='Lobby closed')
+
+        return json.loads(info)
+
     # this is to allow LobbyListConsumer to get all available lobbies
     async def lobby_get_id(self, event):
         if not self.is_host:
             return
 
-        users = json.loads(cache.get(self.group_lobby))
+        users = await self.get_lobby_info()
         if len(users) >= self.max_users or not self.broadcast:
             return
 
@@ -152,7 +159,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
     async def lobby_get_list(self, event):
         await self.send_json({
             'event': 'list',
-            'list': json.loads(cache.get(self.group_lobby)),
+            'list': await self.get_lobby_info(),
         })
 
     async def lobby_notify_left(self, event):
@@ -165,7 +172,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
             return
 
         async with self.cache_lock:
-            users = json.loads(cache.get(self.group_lobby))
+            users = await self.get_lobby_info()
             if len(users) >= self.max_users:
                 await self.channel_layer.group_send(GROUP_LOBBYLIST, {
                         'type': 'lobby.receive.id',
@@ -192,7 +199,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
             return
 
         async with self.cache_lock:
-            users = json.loads(cache.get(self.group_lobby))
+            users = await self.get_lobby_info()
             # check if lobby is already full
             if len(users) >= self.max_users:
                 await self.channel_layer.group_send(self.group_lobby, {
@@ -220,7 +227,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
             return
 
         async with self.cache_lock:
-            users = json.loads(cache.get(self.group_lobby))
+            users = await self.get_lobby_info()
             sender = None
             for i in users:
                 if i['id'] != event['user']:
