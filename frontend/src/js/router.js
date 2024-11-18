@@ -29,6 +29,7 @@ import { generateArcBackground, generateGeometricBackground, getRandomInt, loadM
 import { refreshToken } from "./network_utils/token_utils.js";
 import { initVerifyForm } from "./forgot_password/verify_code.js";
 import { initChangePasswordForm } from "./forgot_password/change_password.js";
+import { initHowToPlayDivs } from "./how_to_play.js";
 import { loadStatsPage } from "./stats_content.js";
 
 const routes = {
@@ -362,7 +363,9 @@ export async function initFriendsPage(
   await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
 }
 
-async function initHowToPlayPage() { }
+async function initHowToPlayPage() {
+  initHowToPlayDivs()
+}
 
 async function initSettingsPage() {
   initAvatarUpload();

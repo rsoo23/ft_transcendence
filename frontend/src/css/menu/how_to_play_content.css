@@ -1,28 +1,143 @@
 #how-to-play-container {
     width: 100%;
-    max-width: 40rem;
     margin: 0 auto;
     border-radius: 1.25rem;
-    padding: 2rem;
+    padding: 2rem 3rem;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
     align-items: center;
+    gap: 1rem;
+    overflow: hidden;
+    position: relative;
+}
+
+#how-to-play-container > .content-container-outer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /*position: relative;*/
+}
+
+.content-container-outer {
+  transition: visibility 0.75s, left 0.75s ease-in-out, opacity 0.75s ease-in-out;
+}
+
+#how-to-play-page-2.content-container-outer,
+#how-to-play-page-3.content-container-outer,
+#how-to-play-page-5.content-container-outer {
+  gap: 2rem;
+}
+
+#how-to-play-container .content-container-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+
+  justify-content: center;
+  gap: 0;
+  margin-left: 4rem;
+}
+
+#how-to-play-page-1 .content-container-inner {
+  justify-content: start;
+  gap: 4.5rem;
+  margin: 0;
+}
+
+#how-to-play-page-4 .content-container-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 20rem 2rem;
+  margin: 0;
+}
+
+#how-to-play-page-2 .grid-container,
+#how-to-play-page-3 .grid-container {
+  grid-template-columns: 6rem 5rem 5rem;
+  grid-template-rows: repeat(3, 1fr);
+}
+
+#how-to-play-page-5 .grid-container {
+  grid-template-columns: 6rem 6rem 6rem;
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.game-demo {
+  width: auto;
+  height: 16rem;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+.how-to-play-demo-gif {
+  width: auto;
+  height: 16rem;
+}
+
+#how-to-play-page-4 .how-to-play-demo-gif {
+  width: auto;
+  height: 15rem;
+}
+
+#how-to-play-container .forward-button,
+#how-to-play-container .back-button {
+  position: absolute;
+  background-color: var(--charcoal-800);
+  padding: 1rem;
+  border: 0;
+  border-radius: 3rem;
+  cursor: pointer;
+}
+
+#how-to-play-container .forward-button {
+  right: 1rem;
+  bottom: 43%;
+}
+
+#how-to-play-container .back-button {
+  left: 1rem;
+  bottom: 43%;
 }
 
 #how-to-play-title {
-	letter-spacing: -0.4rem;
-	font-size: 4rem;
+	font-size: 2rem;
 	margin: 0;
+  color: var(--orange-500);
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 8rem 7rem 7rem;
+  grid-template-rows: repeat(5, 1fr);
+  gap: 1rem;
+}
+
+.grid-title {
+  display: flex;
+  align-items: center;
+}
+
+.grid-title.player-title {
+  justify-content: center;
+}
+
+.grid-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .controls-container {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     width: 100%;
-    max-width: 32rem;
-    margin: 2rem 0;
+    max-width: 25rem;
+    margin: 1rem 0;
     gap: 2rem;
 }
 
@@ -34,7 +149,6 @@
 }
 
 .player-title {
-    font-size: 1.5rem;
     margin: 0;
 }
 
@@ -58,29 +172,40 @@
     gap: 1rem;
 }
 
-.key {
-    width: 3rem;
-    height: 3rem;
+.key, .long-key {
     background-color: var(--charcoal-700);
     border-radius: 0.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.5rem;
+    font-size: 1rem;
     font-weight: bold;
 }
 
+.key {
+  width: 2rem;
+  height: 2rem;
+}
+
+.long-key {
+  width: 5rem;
+  height: 2rem;
+}
+
 .key-description {
-    font-size: 1.3rem;
     color: var(--charcoal-100);
+}
+
+.key-description, .player-title {
+    font-size: 1rem;
 }
 
 .game-description {
     text-align: center;
-    color: var(--charcoal-300);
+    color: var(--charcoal-100);
     max-width: 30rem;
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1rem;
     line-height: 1.5;
 }
 
