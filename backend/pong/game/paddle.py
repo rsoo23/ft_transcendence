@@ -43,10 +43,12 @@ class Paddle():
 
         if player_input.get_input('left'):
             self.color_shift_functions[0]()
+            game_info.add_color_switch(self.player_num)
             player_input.set_input('left', False)
 
         if player_input.get_input('right'):
             self.color_shift_functions[1]()
+            game_info.add_color_switch(self.player_num)
             player_input.set_input('right', False)
 
         # clamp pos

@@ -48,18 +48,17 @@ class GameLogic():
         self.wrong_color_hits = [0, 0] # Tracks wrong color hits
         self.color_switches = [0, 0]   # Tracks color switches
 
-    def handle_paddle_hit(self, player_num):
-        self.paddle_bounces[player_num] += 1
-        
-    def handle_wall_hit(self, player_num):
-        self.wall_hits[player_num] += 1
-        
-    def handle_color_mechanics(self, player_num, is_switch, is_wrong_hit=False):
-        # Add this where you handle color mechanics
-        if is_switch:
-            self.color_switches[player_num] += 1
-        if is_wrong_hit:
-            self.wrong_color_hits[player_num] += 1
+    def add_paddle_bounce(self, player_num):
+        self.paddle_bounces[player_num - 1] += 1
+
+    def add_wall_hit(self, player_num):
+        self.wall_hits[player_num - 1] += 1
+
+    def add_wrong_color_hit(self, player_num):
+        self.wrong_color_hits[player_num - 1] += 1
+
+    def add_color_switch(self, player_num):
+        self.color_switches[player_num - 1] += 1
 
     def get_paddle(self, player_num):
         for obj in self.objects:

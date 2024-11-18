@@ -85,11 +85,15 @@ class Ball():
                     continue
 
                 game_info.total_paddle_hits += 1
+                game_info.add_paddle_bounce(paddle.player_num)
+
+                # increase the speed of the ball every 4 hits
                 if game_info.total_paddle_hits % 4 == 0:
                     self.speed += int(game_info.info['ball_speed_increment'])
 
                 # check if the color of paddle matches the ball's color
                 if self.color_idx != paddle.color_idx:
+                    game_info.add_wrong_color_hit(paddle.player_num)
                     if paddle.player_num == 1:
                         game_info.score[1] += 1
                     else:
@@ -132,10 +136,12 @@ class Ball():
             # check for vertical walls, if hit, score a point for one side
             if self.pos.x + Ball.size.x >= game_info.game_size.x or self.pos.x < 0:
                 if self.vector.x < 0:
+                    game_info.add_wall_hit(2)
                     game_info.score[1] += 1
                     self.pos.x = 0
 
                 else:
+                    game_info.add_wall_hit(1)
                     game_info.score[0] += 1
                     self.pos.x = game_info.game_size.x - Ball.size.x
 
