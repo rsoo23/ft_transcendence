@@ -18,9 +18,6 @@ export async function loadStatsPage() {
     if (!matchStats || matchStats.length === 0) {
       const noMatchesDiv = document.createElement('div');
       noMatchesDiv.className = 'no-matches';
-      noMatchesDiv.style.textAlign = 'center';
-      noMatchesDiv.style.padding = '2rem';
-      noMatchesDiv.style.color = 'var(--charcoal-300)';
       noMatchesDiv.textContent = 'No match history found';
       container.appendChild(noMatchesDiv);
       return;
@@ -35,6 +32,21 @@ export async function loadStatsPage() {
       const section = createDateSection(date, matches);
       container.appendChild(section);
     }
+
+    // Add click handlers to all match records
+    document.querySelectorAll('.match-record').forEach(record => {
+		record.addEventListener('click', () => {
+		  // Get the match ID from the data attribute
+		  const matchId = record.getAttribute('data-match-id');
+		  loadMatchDetails(matchId);
+		  
+		  // Remove highlight from all records and highlight the clicked one
+		  document.querySelectorAll('.match-record').forEach(r => 
+			r.classList.remove('selected'));
+		  record.classList.add('selected');
+		});
+	  });
+
   } catch (error) {
     console.error('Error loading match history:', error);
   }
@@ -94,6 +106,7 @@ function createDateSection(date, matches) {
 function createMatchRecord(match) {
   const recordDiv = document.createElement('div');
   recordDiv.className = 'match-record';
+  recordDiv.setAttribute('data-match-id', match.id);
 
   // Determine if current user was player1 or player2
   const isPlayer1 = match.pong_match?.player1?.id === currentUserInfo.id;
@@ -141,7 +154,7 @@ function createPlayerSection(player, playerClass) {
 
   const name = document.createElement('div');
   name.className = 'avatar-name';
-  const playerName = player?.username || 'Unknown Player';
+  const playerName = player?.username || 'Player 2';
   name.textContent = playerName;
   name.title = playerName; // Show full name on hover, use HTML title attribute
 
@@ -179,3 +192,80 @@ function createScoreSection(match, isPlayer1) {
 
   return section;
 }
+
+export async function loadMatchDetails(matchId) {
+	try {
+	  const matchStats = await getRequest(`/api/game_stats/match-stats/${matchId}/`);
+	  const matchStatsContainer = document.getElementById('match-stats-container');
+	  const content = matchStatsContainer.querySelector('.content');
+	  
+	  content.innerHTML = generateMatchStatsHTML(matchStats);
+  
+	} catch (error) {
+	  console.error('Error loading match details:', error);
+	}
+  }
+
+  function generateMatchStatsHTML(stats) {
+	// Format duration into minutes and seconds
+	const duration = stats.match_duration ? formatDuration(stats.match_duration) : 'N/A';
+	
+	return `
+	  <div class="match-stats-details">
+		<div class="match-header">
+		  <div class="match-info">
+			<p class="match-date">${new Date(stats.created_at).toLocaleString()}</p>
+			<p class="match-duration">Duration: ${duration}</p>
+		  </div>
+		</div>
+		
+		<div class="players-container">
+		  <div class="player-column">
+			<h3>${stats.pong_match?.player1?.username || 'Player 1'}</h3>
+			<p class="game-stats-score ${stats.pong_match?.p1_score > stats.pong_match?.p2_score ? 'winner' : ''}">${stats.pong_match?.p1_score || 0}</p>
+		  </div>
+		  <div class="vs-divider">VS</div>
+		  <div class="player-column">
+			<h3>${stats.pong_match?.player2?.username || 'Player 2'}</h3>
+			<p class="game-stats-score ${stats.pong_match?.p2_score > stats.pong_match?.p1_score ? 'winner' : ''}">${stats.pong_match?.p2_score || 0}</p>
+		  </div>
+		</div>
+  
+		<div class="stats-grid">
+		  <div class="stat-row">
+			<div class="stat-value">${stats.p1_paddle_bounces}</div>
+			<div class="stat-label">Paddle Bounces</div>
+			<div class="stat-value">${stats.p2_paddle_bounces}</div>
+		  </div>
+		  <div class="stat-row">
+			<div class="stat-value">${stats.p1_color_switches}</div>
+			<div class="stat-label">Color Switches</div>
+			<div class="stat-value">${stats.p2_color_switches}</div>
+		  </div>
+		  <div class="stat-row">
+			<div class="stat-value">${stats.p1_points_lost_by_wall_hit}</div>
+			<div class="stat-label">Wall Hits</div>
+			<div class="stat-value">${stats.p2_points_lost_by_wall_hit}</div>
+		  </div>
+		  <div class="stat-row">
+			<div class="stat-value">${stats.p1_points_lost_by_wrong_color}</div>
+			<div class="stat-label">Wrong Color Hits</div>
+			<div class="stat-value">${stats.p2_points_lost_by_wrong_color}</div>
+		  </div>
+		</div>
+	  </div>
+	`;
+  }
+
+  function formatDuration(duration) {
+	// Parse the duration string (e.g., "00:05:23")
+	const [hours, minutes, seconds] = duration.split(':').map(Number);
+	
+	if (hours > 0) {
+	  return `${hours}h ${minutes}m ${seconds}s`;
+	} else if (minutes > 0) {
+	  return `${minutes}m ${seconds}s`;
+	} else {
+	  return `${seconds}s`;
+	}
+  }
