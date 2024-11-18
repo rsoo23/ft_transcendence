@@ -92,8 +92,50 @@ class Countdown {
 }
 
 class PowerupsManager {
+  constructor() {
+    this.size = 25;
+    this.font = 'Plus Jakarta Sans';
+    this.powerups_font_size = 10
+  }
+
   draw(renderInfo, pos, prevState, nextState) {
-    postMessage({ type: 'active_powerup', payload: nextState.info })
+    renderInfo.ctx.font = `${(this.size * renderInfo.windowScale.x)}px "${this.font}"`;
+    renderInfo.ctx.textAlign = 'center';
+    renderInfo.ctx.textBaseline = 'middle';
+
+    let text
+
+    switch (nextState.info.activated_powerup) {
+      case 'big_paddle':
+        text = "Big Paddle!";
+        break;
+      case 'swap_up_down':
+        text = "Swap Up Down!";
+        break;
+      case 'swap_left_right':
+        text = "Swap Left Right!";
+        break;
+      default:
+        text = "";
+    }
+    const textWidth = renderInfo.ctx.measureText(text).width / 2;
+    const textHeight = this.size * renderInfo.windowScale.x;
+
+    renderInfo.ctx.fillStyle = 'black';
+    renderInfo.fillRectScaled(
+      pos.x - (textWidth / 2),
+      pos.y - (textHeight / 2),
+      textWidth,
+      textHeight
+    );
+
+    // Draw text
+    renderInfo.ctx.fillStyle = 'white'; // Text color
+    renderInfo.fillTextScaled(text, pos.x, pos.y);
+
+    renderInfo.ctx.stroke()
+
+    postMessage({ type: 'activate_powerup', payload: nextState.info })
   }
 }
 

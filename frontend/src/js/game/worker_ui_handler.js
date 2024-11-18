@@ -35,8 +35,8 @@ export function initRenderer() {
       case 'charge_powerup':
         gameManager.chargePowerup(payload)
         break
-      case 'active_powerup':
-        gameManager.activatePowerup(payload.activator_player_num, payload.powerup_activated)
+      case 'activate_powerup':
+        gameManager.activatePowerup(payload.activator_player_num, payload.is_powerup_activated)
         break
     }
   })

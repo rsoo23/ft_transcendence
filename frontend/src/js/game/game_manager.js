@@ -77,12 +77,12 @@ export class GameManager {
     );
   }
 
-  activatePowerup(activatorPlayerNum, powerupActivated) {
-    if (this.powerup_charge_num[0] === 0 && activatorPlayerNum === 1 && powerupActivated) {
+  activatePowerup(activatorPlayerNum, isPowerupActivated) {
+    if (this.powerup_charge_num[0] === 0 && activatorPlayerNum === 1 && isPowerupActivated) {
       this.resetPowerupBar(this.p1PowerupBar, this.p1PowerupIndicators)
     }
 
-    if (this.powerup_charge_num[1] === 0 && activatorPlayerNum === 2 && powerupActivated) {
+    if (this.powerup_charge_num[1] === 0 && activatorPlayerNum === 2 && isPowerupActivated) {
       this.resetPowerupBar(this.p2PowerupBar, this.p2PowerupIndicators)
     }
   }

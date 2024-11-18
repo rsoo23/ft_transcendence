@@ -1,40 +1,49 @@
 from .data import Vector2, ObjectState
 import random
 
-# increases the size of the activator's paddle for 10 seconds
-class BigPaddle():
+class Powerup():
     def __init__(self, powerups_manager):
-        self.name = 'big_paddle'
+        self.powerups_manager = powerups_manager
         self.duration = 10
         self.time_elapsed = 0
-        self.powerups_manager = powerups_manager
+        self.powerup_label_duration = 1 
+        self.is_reversed = False
+
+# increases the size of the activator's paddle for 10 seconds
+class BigPaddle(Powerup):
+    def __init__(self, powerups_manager):
+        super().__init__(powerups_manager)
+        self.name = 'big_paddle'
 
     def tick(self, game_info, dt):
         paddle = game_info.get_paddle(self.powerups_manager.activator_player_num)
 
         self.time_elapsed += dt
+        if self.time_elapsed > self.powerup_label_duration:
+            self.powerups_manager.activated_powerup = ''
+
         if self.time_elapsed < self.duration:
             paddle.size = Vector2(7, 80)
             return None
 
         paddle.size = Vector2(7, 45)
-        self.powerups_manager.powerup_activated = False
+        self.powerups_manager.is_powerup_activated = False
         game_info.objects.remove(self)
         return None
 
 # swap the opponent's paddle up and down directions for 10 seconds
-class SwapUpDown():
+class SwapUpDown(Powerup):
     def __init__(self, powerups_manager):
+        super().__init__(powerups_manager)
         self.name = 'swap_up_down'
-        self.duration = 10
-        self.time_elapsed = 0
-        self.powerups_manager = powerups_manager
-        self.is_reversed = False
 
     def tick(self, game_info, dt):
         paddle = game_info.get_paddle(self.powerups_manager.opponent_player_num)
 
         self.time_elapsed += dt
+        if self.time_elapsed > self.powerup_label_duration:
+            self.powerups_manager.activated_powerup = ''
+
         if self.time_elapsed < self.duration:
             if not self.is_reversed:
                 paddle.move_functions.reverse()
@@ -46,18 +55,18 @@ class SwapUpDown():
         return None
 
 # swap the opponent's paddle color shifting directions for 10 seconds
-class SwapLeftRight():
+class SwapLeftRight(Powerup):
     def __init__(self, powerups_manager):
+        super().__init__(powerups_manager)
         self.name = 'swap_left_right'
-        self.duration = 10
-        self.time_elapsed = 0
-        self.powerups_manager = powerups_manager
-        self.is_reversed = False
 
     def tick(self, game_info, dt):
         paddle = game_info.get_paddle(self.powerups_manager.opponent_player_num)
 
         self.time_elapsed += dt
+        if self.time_elapsed > self.powerup_label_duration:
+            self.powerups_manager.activated_powerup = ''
+
         if self.time_elapsed < self.duration:
             if not self.is_reversed:
                 paddle.color_shift_functions.reverse()
@@ -73,13 +82,14 @@ class PowerupsManager():
         self.activator_player_num = player_num
         self.opponent_player_num = 1 if player_num == 2 else 2
         self.powerup_types = ['big_paddle', 'swap_up_down', 'swap_left_right']
-        self.powerup_activated = False
-        self.pos = Vector2(0, 0)
+        self.is_powerup_activated = False
+        self.pos = Vector2(200, 120)
+        self.activated_powerup = ''
 
     def select_random_powerup(self, game_info):
-        powerup = random.choice(self.powerup_types)
+        self.activated_powerup = random.choice(self.powerup_types)
 
-        match powerup:
+        match self.activated_powerup:
             case 'big_paddle':
                 selected_powerup = BigPaddle(self)
             case 'swap_up_down':
@@ -89,7 +99,7 @@ class PowerupsManager():
 
         game_info.objects.append(selected_powerup)
 
-        self.powerup_activated = True
+        self.is_powerup_activated = True
 
     def tick(self, game_info, dt):
         player_input = game_info.player_inputs[self.activator_player_num - 1]
@@ -106,7 +116,8 @@ class PowerupsManager():
         states.append(self.pos, 0.0)
         states.append(self.pos, 1.0, {
             'activator_player_num': self.activator_player_num,
-            'powerup_activated': self.powerup_activated
+            'is_powerup_activated': self.is_powerup_activated,
+            'activated_powerup': self.activated_powerup
         })
         return states
 
