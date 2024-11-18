@@ -170,7 +170,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         })
         round_index = info['rounds'] - pair['round'] + 1
         pair_index = pair['next_round_pair'] - 1
-        player_slot = f'player{pair['next_pair_slot']}'
+        player_slot = f'player{pair["next_pair_slot"]}'
         rounds[round_index][pair_index][player_slot] = winner
         cache.set(f'tournament-info-{self.tournament_id}', json.dumps(info))
 
