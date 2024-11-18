@@ -27,9 +27,6 @@ export async function joinTournament(id) {
     console.log(data)
 
     switch (data.event) {
-    case 'ready':
-      break
-
     case 'info':
       console.log(data.info.list)
       tournamentInfo = data.info.list
@@ -39,34 +36,6 @@ export async function joinTournament(id) {
       }
 
       loadTournamentList()
-      break
-
-    case 'list':
-      tournamentBrackets[data.bracket] = data.pairs
-      tournamentCurrentOpponent = data.opponent
-      for (let i = 0; i < data.pairs.length; i++) {
-        let newPair = []
-        for (const id of data.pairs[i]) {
-          if (!id) {
-            newPair.push(null)
-            continue
-          }
-
-          const response = await getRequest(`/api/users/${id}/`)
-          newPair.push(response)
-        }
-
-        tournamentBrackets[data.bracket][i] = newPair
-      }
-
-      updateTournamentList()
-      break
-
-    // maybe this is handled by lobby?
-    case 'left':
-      if (checkIsTournamentOpponent(data.user)) {
-        break
-      }
       break
 
     case 'winner':
@@ -220,32 +189,6 @@ export function loadTournamentList() {
   list.appendChild(winnerContainer)
 
   initTournamentReadyButtons()
-}
-
-function updateTournamentList() {
-  const list = document.getElementById('bracket-list')
-  for (const [num, bracket] of Object.entries(tournamentBrackets)) {
-    for (const pair of bracket) {
-      for (const user of pair) {
-        if (!user) {
-          continue
-        }
-
-        const avatar = document.createElement('img')
-        avatar.classList.add('profile-settings-avatar')
-        avatar.src = validateAvatarImg(user.avatar_img)
-        const name = document.createElement('p')
-        name.textContent = user.username
-
-        const div = document.createElement('div')
-        div.classList.add('tournament-pair-container')
-        div.appendChild(avatar)
-        div.appendChild(name)
-
-        list.appendChild(div)
-      }
-    }
-  }
 }
 
 export function updateTournamentPlayerReady(id, isReady) {
