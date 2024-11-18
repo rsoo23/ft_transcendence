@@ -40,7 +40,7 @@
 .scrollable-container::-webkit-scrollbar-thumb {
   background: var(--charcoal-400);
   border-radius: 10px;
-  height: 1rem;
+  /* height: 1rem; */
   transition: 0.2s;
 }
 
@@ -151,6 +151,9 @@
 
 #stats-content-container {
   width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* #overall-stats-container {
@@ -184,14 +187,17 @@
 #match-stats-container {
   height: 100%;
   width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 #match-stats-container > .content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  text-align: center;
 }
 
 #match-stats-container .text {
@@ -204,6 +210,7 @@
   justify-content: center;
   align-items: center;
   font-size: 1.875rem;
+  margin: 2rem 0;
 }
 
 .game-stats-avatar-section {
