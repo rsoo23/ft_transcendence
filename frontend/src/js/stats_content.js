@@ -124,7 +124,7 @@ function createMatchRecord(match) {
 
 function createPlayerSection(player, playerClass) {
     const section = document.createElement('div');
-    section.className = 'avatar-section';
+    section.className = 'game-stats-avatar-section';
     
     const avatarContainer = document.createElement('div');
     avatarContainer.className = 'avatar-container';
