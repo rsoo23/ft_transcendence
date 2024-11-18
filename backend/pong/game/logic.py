@@ -50,19 +50,15 @@ class GameLogic():
 
     def add_paddle_bounce(self, player_num):
         self.paddle_bounces[player_num - 1] += 1
-        print(self.paddle_bounces)
 
     def add_wall_hit(self, player_num):
         self.wall_hits[player_num - 1] += 1
-        print(self.wall_hits)
 
     def add_wrong_color_hit(self, player_num):
         self.wrong_color_hits[player_num - 1] += 1
-        print(self.wrong_color_hits)
 
     def add_color_switch(self, player_num):
         self.color_switches[player_num - 1] += 1
-        print(self.color_switches)
 
     def get_paddle(self, player_num):
         for obj in self.objects:
