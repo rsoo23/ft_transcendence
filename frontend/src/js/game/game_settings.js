@@ -11,6 +11,8 @@ export function initGameSettings() {
 
   const powerupsCheckbox = document.getElementById('powerups-toggle-input');
 
+  const resetToDefault = document.getElementById('reset-to-default');
+
   gameScoreSlider.addEventListener('input', () => {
     gameScoreValue.textContent = gameScoreSlider.value;
     gameScore = gameScoreSlider.value;
@@ -23,5 +25,16 @@ export function initGameSettings() {
 
   powerupsCheckbox.addEventListener('change', () => {
     isPowerupChecked = powerupsCheckbox.checked;
+  });
+
+  resetToDefault.addEventListener('click', () => {
+    gameScore = 5;
+    ballSpeedIncrement = 25;
+    isPowerupChecked = false;
+    gameScoreSlider.value = 5;
+    ballSpeedSlider.value = 25;
+    powerupsCheckbox.checked = false;
+    gameScoreValue.textContent = 5;
+    ballSpeedValue.textContent = 25;
   });
 }
