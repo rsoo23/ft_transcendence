@@ -14,6 +14,7 @@ function processNotificationQueue() {
   if (notificationQueue.length === 0) return;
 
   const notificationContainer = document.getElementById('notification-container')
+  if (!notificationContainer) return;
   const { color, text, callback } = notificationQueue.shift();
   const notification = createNotification(color, text, () => callback);
 
