@@ -257,9 +257,9 @@ export function updateTournamentPlayerReady(id, isReady) {
   ready.style.setProperty('visibility', (isReady)? 'visible' : 'hidden')
 
   const opponentReadyStatus = document.getElementById('opponentstatus')
-  if (tournamentCurrentOpponent && id == tournamentCurrentOpponent.id) {
+  if (tournamentCurrentOpponent != null && id == tournamentCurrentOpponent.id) {
     opponentReadyStatus.textContent = (isReady)? 'Opponent is ready!' : 'Waiting for opponent...'
-  } else {
+  } else if (tournamentCurrentOpponent == null) {
     opponentReadyStatus.textContent = 'Waiting for previous round to end...'
   }
 }
