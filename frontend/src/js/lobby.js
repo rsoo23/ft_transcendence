@@ -155,11 +155,18 @@ export async function joinLobby(id) {
         break
       }
 
-      lobbySocket.onclose = null
+      const oldOnClose = lobbySocket.onclose
+      lobbySocket.onclose = async (e) => {
+        console.log('lobby was abruptly closed')
+        await defaultMatchOnClose()
+        oldOnClose(e)
+      }
       await loadPage('game')
       joinMatch(data.id, () => {
         if (!checkInTournament()) {
           leaveLobby()
+        } else {
+          lobbySocket.onclose = oldOnClose
         }
 
         defaultMatchOnClose()
@@ -169,23 +176,22 @@ export async function joinLobby(id) {
     case 'tournament':
       await loadContentToTarget('menu/tournament_content.html', 'play-tournament-container')
       joinTournament(data.id)
-      lobbySocket.onclose = (e) => {
+
+      const eCodeHandler = (e) => {
         if (e.code == 1006) {
           queueNotification('magenta', 'Tournament is no longer available.', () => {})
         } else if (e.code == 4001) {
           queueNotification('magenta', 'Tournament has been closed by host.', () => {})
         }
       }
+      lobbySocket.onclose = (e) => closeLobbySocket(e, eCodeHandler)
 
       divSwitcher.setCurrentDiv('play-lobby-container', 'play-tournament-container')
       break
     }
   }
 
-  lobbySocket.onclose = (e) => {
-    console.log('Closing lobbySocket')
-    lobbySocket = null
-
+  const eCodeHandler = (e) => {
     if (e.code == 1006) {
       queueNotification('magenta', 'Lobby is no longer available.', () => {})
     } else if (e.code == 4001) {
@@ -193,16 +199,19 @@ export async function joinLobby(id) {
     } else if (e.code == 4002) {
       queueNotification('magenta', 'Lobby is full.', () => {})
     }
-
-    // copied from router.js
-    const path = window.location.pathname;
-    if (path.startsWith('/menu/play') && inLobby) {
-      leaveLobby()
-      leaveTournament()
-    }
   }
-
+  lobbySocket.onclose = (e) => closeLobbySocket(e, eCodeHandler)
   lobbySocket.onopen = () => {}
+}
+
+function closeLobbySocket(e, callback) {
+  console.log('Closing lobbySocket')
+  lobbySocket = null
+
+  callback(e)
+
+  leaveLobby()
+  leaveTournament()
 }
 
 export function leaveLobby() {
