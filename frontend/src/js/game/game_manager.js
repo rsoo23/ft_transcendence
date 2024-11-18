@@ -40,6 +40,11 @@ export class GameManager {
     }
   }
 
+  hidePowerupBars() {
+    this.p1PowerupBar.style.display = 'none'
+    this.p2PowerupBar.style.display = 'none'
+  }
+
   chargePowerup(chargeNum) {
     if (chargeNum[0] === this.powerup_charge_num[0] && chargeNum[1] === this.powerup_charge_num[1]) {
       return

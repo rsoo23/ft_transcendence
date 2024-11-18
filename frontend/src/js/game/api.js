@@ -9,11 +9,12 @@ var matchSocket = null
 var matchCallback = null
 var inMatchID = 0
 
-export async function createMatch(player1ID, player2ID, type) {
+export async function createMatch(player1ID, player2ID, type, info) {
   const response = await postRequest('/api/pong/create-match/', {
     'player1_uuid': player1ID,
     'player2_uuid': player2ID,
     'type': type,
+    'info': info
   })
   if (!response['success']) {
     console.log(response['Error'])

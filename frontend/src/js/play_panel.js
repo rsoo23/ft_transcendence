@@ -6,6 +6,7 @@ import { getRequest } from "./network_utils/api_requests.js";
 import { PanelSwitcher } from "./ui_utils/panelswitcher_utils.js";
 import { initClassicLobby, updateClassicLobby, initTournamentLobby, updateTournamentLobby, getLobbyType, checkInLobby } from "./lobby.js";
 import { checkInTournament, loadTournamentList } from "./tournament.js";
+import { ballSpeedIncrement, gameScore, isPowerupChecked } from "./game/game_settings.js";
 
 // for moving stuff
 export var startingMenuSwitcher = null
@@ -55,7 +56,16 @@ export async function startLocalGame() {
   let matchID = null
   try {
     const user = await getRequest('/api/users/current_user/')
-    matchID = await createMatch(user['id'], 0, 'local_classic')
+    matchID = await createMatch(
+      user['id'],
+      0,
+      'local_classic',
+      {
+        'game_score': gameScore,
+        'ball_speed_increment': ballSpeedIncrement,
+        'is_powerup_checked': isPowerupChecked
+      }
+    )
   } catch (error) {
     console.error('Encountered error: ', error)
   }

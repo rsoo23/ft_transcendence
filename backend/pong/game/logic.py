@@ -27,7 +27,7 @@ class GameLogic():
         self.player_inputs = [PlayerInput(), PlayerInput()]
         self.game_size = Vector2(400, 240)
         self.score = [0, 0]
-        self.win_score = 5
+        self.win_score = int(self.info['game_score'])
         self.countdown_duration = 5
         self.player_turn = 1
         self.total_paddle_hits = 0
