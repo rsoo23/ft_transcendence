@@ -338,8 +338,21 @@
   color: var(--teal-500);
 }
 
+.tournament-column-container {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
 #bracket-list {
   display: flex;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  flex-grow: 1;
+  justify-content: center;
+
+  background-color: var(--charcoal-800);
+  border-radius: 3rem;
 }
 
 .tournament-bracket-container {
@@ -356,31 +369,51 @@
   margin-bottom: 0.25rem;
 }
 
+.tournament-ready-container {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+}
+
 .tournament-user-container {
   display: flex;
   align-items: center;
-  /* width: 10rem; */
-  width: 3rem;
+  width: 10rem;
   margin-top: 0.05rem;
   margin-bottom: 0.05rem;
   /* padding: 0.5rem; */
-  background-color: var(--charcoal-800);
+  background-color: var(--charcoal-900);
   border-radius: 3rem;
   overflow: hidden;
 }
 
-.tournament-user-container p {
+.tournament-currentuser-container {
+  outline-style: solid;
+  outline-width: 0.02rem;
+  outline-color: var(--charcoal-100);
+}
+
+.tournament-username-container {
+  overflow: hidden;
+  flex-grow: 1;
+  mask-image: linear-gradient(to right, black 90%, transparent 100%)
+}
+
+.tournament-username-container p {
   height: fit-content;
-  font-size: 0.5rem;
+  font-weight: normal;
+  font-size: 1.0rem;
   margin: 0;
   margin-left: 0.5rem;
 }
 
 .tournament-user-container img {
-  height: 1rem;
-  width: 1rem;
-  /* height: 2rem; */
-  /* width: 2rem; */
-  /* border-width: 0.2rem; */
+  height: 1.5rem;
+  width: 1.5rem;
   border-width: 0.02rem;
+  flex-shrink: 0;
+}
+
+.tournament-user-container i {
+  color: var(--teal-500);
 }

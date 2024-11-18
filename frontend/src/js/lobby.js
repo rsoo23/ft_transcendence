@@ -7,7 +7,7 @@ import { queueNotification } from "./ui_utils/notification_utils.js";
 import { loadPage } from "./router.js";
 import { joinMatch, defaultMatchOnClose } from "./game/api.js";
 import { initLobbyList } from "./lobby_list.js";
-import { checkInTournament, checkIsTournamentOpponent, joinTournament, leaveTournament } from "./tournament.js";
+import { checkInTournament, checkIsTournamentOpponent, joinTournament, leaveTournament, updateTournamentPlayerReady } from "./tournament.js";
 
 var lobbySocket = null
 var inLobby = false
@@ -21,6 +21,20 @@ export function checkInLobby() {
 
 export function getLobbyType() {
   return lobbyType;
+}
+
+export function checkUserIsReady(id) {
+  let target = null
+  for (const user of lobbyUsers) {
+    if (user.id != id) {
+      continue
+    }
+
+    target = user
+    break
+  }
+
+  return (target && target.ready)
 }
 
 export function validateAvatarImg(src) {
@@ -114,7 +128,9 @@ export async function joinLobby(id) {
 
         user.ready = data.ready
       }
-      if (lobbyType == 'tournament') {
+      if (checkInTournament()) {
+        updateTournamentPlayerReady(data.user, data.ready)
+      } else if (lobbyType == 'tournament') {
         updateTournamentLobby()
       } else {
         updateClassicLobby()

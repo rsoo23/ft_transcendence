@@ -1,7 +1,7 @@
 import { getAccessToken } from "./network_utils/token_utils.js";
 import { currentUserInfo, usersInfo } from "./global_vars.js";
 import { getRequest } from "./network_utils/api_requests.js";
-import { validateAvatarImg, leaveLobby } from "./lobby.js";
+import { checkUserIsReady, validateAvatarImg, leaveLobby } from "./lobby.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
 
 var tournamentSocket = null
@@ -113,15 +113,18 @@ export function leaveTournament() {
 }
 
 function initTournamentReadyButtons() {
-  const button = document.getElementById('p1-ready')
+  const button = document.getElementById('tournamentready')
+  button.style.setProperty('background-color', 'var(--teal-500)')
 
   button.onclick = (e) => {
     const target = e.currentTarget
     const isReady = (target.textContent == 'Unready')
-    if (isReady) {
-      target.textContent = 'Ready'
-    } else {
+    if (!isReady) {
       target.textContent = 'Unready'
+      target.style.setProperty('background-color', 'var(--magenta-500)')
+    } else {
+      target.textContent = 'Ready'
+      target.style.setProperty('background-color', 'var(--teal-500)')
     }
     tournamentSocket.send(JSON.stringify({
       'action': 'ready',
@@ -131,16 +134,39 @@ function initTournamentReadyButtons() {
 }
 
 export function loadTournamentList() {
-  const createPair = (id) => {
+  const createPair = (user) => {
     const avatar = document.createElement('img')
     avatar.classList.add('profile-settings-avatar')
+    if (user) {
+      avatar.src = validateAvatarImg(user.avatar_img)
+    }
     const name = document.createElement('p')
-    name.textContent = id
+    if (user) {
+      name.textContent = user.username
+    }
+
+    const ready = document.createElement('i')
+    ready.classList.add('material-icons')
+    ready.textContent = 'done'
+    if (user) {
+      ready.id = `tournament-ready-${user.id}`
+      ready.style.setProperty('visibility', (checkUserIsReady(user.id))? 'visible' : 'hidden')
+    } else {
+      ready.style.setProperty('visibility', 'hidden')
+    }
+
+    const nameDiv = document.createElement('div')
+    nameDiv.classList.add('tournament-username-container')
+    nameDiv.appendChild(name)
 
     const div = document.createElement('div')
     div.classList.add('tournament-user-container')
+    if (user.id == currentUserInfo.id) {
+      div.classList.add('tournament-currentuser-container')
+    }
     div.appendChild(avatar)
-    div.appendChild(name)
+    div.appendChild(nameDiv)
+    div.appendChild(ready)
     return div
   }
   console.log(usersInfo)
@@ -168,21 +194,8 @@ export function loadTournamentList() {
       const pair = document.createElement('div')
       pair.classList.add('tournament-pair-container')
 
-      let p1Div
-      let p2Div
-      if (pairInfo.player1) {
-        const player1 = getUser(pairInfo.player1.id)
-        p1Div = createPair(player1.username)
-      } else {
-        p1Div = createPair('')
-      }
-
-      if (pairInfo.player2) {
-        const player2 = getUser(pairInfo.player2.id)
-        p2Div = createPair(player2.username)
-      } else {
-        p2Div = createPair('')
-      }
+      let p1Div = createPair((pairInfo.player1)? getUser(pairInfo.player1.id) : null)
+      let p2Div = createPair((pairInfo.player2)? getUser(pairInfo.player2.id) : null)
 
       pair.appendChild(p1Div)
       pair.appendChild(p2Div)
@@ -198,8 +211,7 @@ export function loadTournamentList() {
   winner.classList.add('tournament-pair-container')
   let winnerDiv
   if (tournamentWinner) {
-    const winnerUser = getUser(tournamentWinner.id)
-    winnerDiv = createPair(winnerUser.username)
+    winnerDiv = createPair(getUser(tournamentWinner.id))
   } else {
     winnerDiv = createPair('')
   }
@@ -233,4 +245,13 @@ function updateTournamentList() {
       }
     }
   }
+}
+
+export function updateTournamentPlayerReady(id, isReady) {
+  const ready = document.getElementById(`tournament-ready-${id}`)
+  if (!ready) {
+    return
+  }
+
+  ready.style.setProperty('visibility', (isReady)? 'visible' : 'hidden')
 }
