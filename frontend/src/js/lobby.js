@@ -97,6 +97,8 @@ export async function joinLobby(id) {
         lobbyUsers.splice(i, 1)
         if (checkInTournament() && checkIsTournamentOpponent(user.id)) {
           queueNotification('magenta', `Your opponent(${user.username}) has left the tournament.`, () => {})
+        } else if (checkInTournament()) {
+          queueNotification('magenta', `${user.username} has left the tournament.`, () => {})
         } else {
           queueNotification('magenta', `${user.username} has left the lobby.`, () => {})
         }
