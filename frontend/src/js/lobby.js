@@ -1,12 +1,13 @@
 import { getRequest, postRequest } from "./network_utils/api_requests.js";
-import { currentUserInfo } from "./global_vars.js"
+import { currentUserInfo, usersInfo } from "./global_vars.js"
 import { getAccessToken } from "./network_utils/token_utils.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
 import { divSwitcher } from "./play_panel.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
-import { loadPage } from "./router.js";
-import { joinMatch } from "./game/api.js";
+import { loadPage, loadUsersInfo } from "./router.js";
+import { joinMatch, defaultMatchOnClose } from "./game/api.js";
 import { initLobbyList } from "./lobby_list.js";
+import { checkInTournament, checkIsTournamentOpponent, joinTournament, leaveTournament, updateTournamentPlayerReady } from "./tournament.js";
 
 var lobbySocket = null
 var inLobby = false
@@ -14,8 +15,34 @@ var lobbyType = ''
 var lobbyUsers = []
 var lobbyStarting = false
 
-export function getInLobby() {
+export function checkInLobby() {
   return inLobby
+}
+
+export function getLobbyType() {
+  return lobbyType;
+}
+
+export function checkUserIsReady(id) {
+  let target = null
+  for (const user of lobbyUsers) {
+    if (user.id != id) {
+      continue
+    }
+
+    target = user
+    break
+  }
+
+  return (target && target.ready)
+}
+
+export function validateAvatarImg(src) {
+  if (src == null) {
+    return "/static/images/kirby.png"
+  } else {
+    return src
+  }
 }
 
 export async function createLobby() {
@@ -25,6 +52,31 @@ export async function createLobby() {
   }
 
   console.log(response.reason)
+  return null
+}
+
+export async function createTournamentLobby(maxUsers) {
+  const response = await postRequest('/api/lobby/create_tournament_lobby/', { max_users: maxUsers })
+  if (response.success) {
+    return response.lobby_id
+  }
+
+  return null
+}
+
+export function getUserById(id) {
+  if (id == currentUserInfo.id) {
+    return currentUserInfo
+  }
+
+  for (const user of usersInfo) {
+    if (user.id != id) {
+      continue
+    }
+
+    return user
+  }
+
   return null
 }
 
@@ -41,18 +93,43 @@ export async function joinLobby(id) {
           continue
         }
 
+        const user = lobbyUsers[i]
         lobbyUsers.splice(i, 1)
-        updateClassicLobby()
+        if (checkInTournament() && checkIsTournamentOpponent(user.id)) {
+          queueNotification('magenta', `Your opponent(${user.username}) has left the tournament.`, () => {})
+        } else if (checkInTournament()) {
+          queueNotification('magenta', `${user.username} has left the tournament.`, () => {})
+        } else {
+          queueNotification('magenta', `${user.username} has left the lobby.`, () => {})
+        }
+        if (lobbyType == 'tournament') {
+          removeTournamentUser(user)
+          updateTournamentLobby()
+        } else {
+          updateClassicLobby()
+        }
         break
       }
       break
 
     case 'join':
-      const response = await getRequest(`/api/users/${data.user}/`)
-      response['ready'] = false
-      lobbyUsers.push(response)
-      queueNotification('teal', `${response.username} has joined the lobby.`, () => {})
-      if (lobbyType == 'classic') {
+      let user = getUserById(data.user)
+      if (!user) {
+        await loadUsersInfo()
+        user = getUserById(data.user)
+
+        // how
+        if (!user) {
+          break
+        }
+      }
+
+      user['ready'] = false
+      lobbyUsers.push(user)
+      queueNotification('teal', `${user.username} has joined the lobby.`, () => {})
+      if (lobbyType == 'tournament') {
+        updateTournamentLobby()
+      } else {
         updateClassicLobby()
       }
       break
@@ -60,12 +137,19 @@ export async function joinLobby(id) {
     case 'list':
       lobbyUsers = data.list // we do this to reserve space :]
       for (let i = 0; i < data.list.length; i++) {
-        const user = data.list[i]
-        const response = await getRequest(`/api/users/${user.id}/`)
-        response['ready'] = user.ready
-        lobbyUsers[i] = response
+        const userInfo = data.list[i]
+        let user = getUserById(data.user)
+        if (!user) {
+          user = await getRequest(`/api/users/${userInfo.id}/`)
+        }
+        user['ready'] = userInfo.ready
+        lobbyUsers[i] = user
       }
-      updateClassicLobby()
+      if (lobbyType == 'tournament') {
+        updateTournamentLobby()
+      } else {
+        updateClassicLobby()
+      }
 
     case 'ready':
       for (const user of lobbyUsers) {
@@ -75,28 +159,70 @@ export async function joinLobby(id) {
 
         user.ready = data.ready
       }
-      updateClassicLobby()
+      if (checkInTournament()) {
+        updateTournamentPlayerReady(data.user, data.ready)
+      } else if (lobbyType == 'tournament') {
+        updateTournamentLobby()
+      } else {
+        updateClassicLobby()
+      }
       break
 
     case 'start':
       lobbyStarting = true
       queueNotification('teal', 'Game starting...', () => {})
-      updateClassicLobby()
+      if (lobbyType == 'tournament') {
+        updateTournamentLobby()
+      } else {
+        updateClassicLobby()
+      }
       break
 
     case 'close':
       break
 
     case 'match':
+      if (data.p1 != currentUserInfo.id && data.p2 != currentUserInfo.id) {
+        break
+      }
+
+      const oldOnClose = lobbySocket.onclose
+      lobbySocket.onclose = async (e) => {
+        console.log('lobby was abruptly closed')
+        await defaultMatchOnClose()
+        oldOnClose(e)
+      }
       await loadPage('game')
-      joinMatch(data.id)
+      joinMatch(data.id, () => {
+        if (!checkInTournament()) {
+          leaveLobby()
+        } else {
+          lobbySocket.onclose = oldOnClose
+        }
+
+        defaultMatchOnClose()
+      })
+      break
+
+    case 'tournament':
+      await loadContentToTarget('menu/tournament_content.html', 'play-tournament-container')
+      joinTournament(data.id)
+
+      const eCodeHandler = (e) => {
+        if (e.code == 1006) {
+          queueNotification('magenta', 'Tournament is no longer available.', () => {})
+        } else if (e.code == 4001) {
+          queueNotification('magenta', 'Tournament has been closed by host.', () => {})
+        }
+      }
+      lobbySocket.onclose = (e) => closeLobbySocket(e, eCodeHandler)
+
+      divSwitcher.setCurrentDiv('play-lobby-container', 'play-tournament-container')
       break
     }
   }
 
-  lobbySocket.onclose = (e) => {
-    lobbySocket = null
-
+  const eCodeHandler = (e) => {
     if (e.code == 1006) {
       queueNotification('magenta', 'Lobby is no longer available.', () => {})
     } else if (e.code == 4001) {
@@ -104,36 +230,48 @@ export async function joinLobby(id) {
     } else if (e.code == 4002) {
       queueNotification('magenta', 'Lobby is full.', () => {})
     }
-
-    // copied from router.js
-    const path = window.location.pathname;
-    if (path.startsWith('/menu/play') && inLobby) {
-      leaveLobby()
-    }
   }
-
+  lobbySocket.onclose = (e) => closeLobbySocket(e, eCodeHandler)
   lobbySocket.onopen = () => {}
 }
 
-var lobbyBackButtonDivCache = null
+function closeLobbySocket(e, callback) {
+  console.log('Closing lobbySocket')
+  lobbySocket = null
+
+  callback(e)
+
+  leaveLobby()
+  leaveTournament()
+}
+
 export function leaveLobby() {
+  if (!inLobby) {
+    return
+  }
+
+  const isTournament = (lobbyType == 'tournament')
   inLobby = false
   lobbyType = ''
   lobbyUsers = []
   lobbyStarting = false
+
+  // this is to check if you're leaving a lobby normally
   if (document.getElementById('lobby-list') != null) {
-    initLobbyList()
+    initLobbyList(isTournament)
+    divSwitcher.setCurrentDiv('play-lobby-container', 'play-lobby-list-container')
+  } else {
+    divSwitcher.setCurrentDiv('play-lobby-container', 'play-select-container')
   }
+
   if (lobbySocket != null) {
     lobbySocket.close()
+    lobbySocket = null
   }
-
-  divSwitcher.setCurrentDiv('play-lobby-container', lobbyBackButtonDivCache)
 }
 
-export function initClassicLobby(previousDiv) {
+export function initClassicLobby() {
   // init self
-  lobbyBackButtonDivCache = previousDiv
   document.getElementById('lobbyback').onclick = () => leaveLobby()
 
   const readyButton = (e) => {
@@ -159,15 +297,15 @@ export function updateClassicLobby() {
   }
 
   if (lobbyUsers.length > 0) {
-    setPlayerInfo(lobbyUsers[0], 'p1')
+    setClassicPlayerInfo(lobbyUsers[0], 'p1')
   } else {
-    setPlayerInfo(null, 'p1')
+    setClassicPlayerInfo(null, 'p1')
   }
 
   if (lobbyUsers.length > 1) {
-    setPlayerInfo(lobbyUsers[1], 'p2')
+    setClassicPlayerInfo(lobbyUsers[1], 'p2')
   } else {
-    setPlayerInfo(null, 'p2')
+    setClassicPlayerInfo(null, 'p2')
   }
 
   const startGameContainer = document.getElementById('start-game-container')
@@ -188,7 +326,7 @@ export function updateClassicLobby() {
   }
 }
 
-function setPlayerInfo(info, prefix) {
+function setClassicPlayerInfo(info, prefix) {
   const avatar = document.getElementById(`${prefix}-avatar`)
   const name = document.getElementById(`${prefix}-name`)
   const header = document.getElementById(`${prefix}-header`)
@@ -202,11 +340,7 @@ function setPlayerInfo(info, prefix) {
     return
   }
 
-  if (info.avatar_img == null) {
-    avatar.src = "/static/images/kirby.png";
-  } else {
-    avatar.setAttribute('src', info.avatar_img)
-  }
+  avatar.src = validateAvatarImg(info.avatar_img)
   avatar.style.setProperty('display', 'block')
   header.style.setProperty('display', 'block')
   ready.style.setProperty('display', 'block')
@@ -228,4 +362,81 @@ function setPlayerInfo(info, prefix) {
       ready.style.setProperty('background-color', 'var(--teal-500)')
     }
   }
+}
+
+export function initTournamentLobby() {
+  // init self
+  document.getElementById('lobbyback').onclick = () => leaveLobby()
+
+  const readyButton = (e) => {
+    const value = (e.target.textContent != 'Unready')
+    lobbySocket.send(JSON.stringify({
+      'action': 'ready',
+      'value': value,
+    }))
+  }
+
+  document.getElementById('start-game').onclick = () => lobbySocket.send('{"action": "start"}')
+
+  inLobby = true
+  lobbyType = 'tournament'
+}
+
+export function updateTournamentLobby() {
+  const path = window.location.pathname;
+  if (!path.startsWith('/menu/play') || checkInTournament()) {
+    return
+  }
+
+  const startButton = document.getElementById('start-game')
+  // startButton.disabled = (lobbyUsers.length <= 1)
+  startButton.style.setProperty(
+    'visibility',
+    (lobbyUsers.length > 0 && lobbyUsers[0].id == currentUserInfo.id)? 'visible' : 'hidden'
+  )
+
+  for (const user of lobbyUsers) {
+    const existingEntry = document.getElementById(`tournament-user-${user.id}`)
+    if (!existingEntry && 'username' in user) {
+      appendTournamentUser(user)
+    } else if (existingEntry && (user == null || !('username' in user))) {
+      removeTournamentUser(existingEntry)
+    } else {
+      const ready = existingEntry.querySelector('i')
+      ready.style.setProperty('visibility', (user.ready)? 'visible' : 'hidden')
+    }
+  }
+}
+
+function appendTournamentUser(info) {
+  const avatar = document.createElement('img')
+  avatar.classList.add('profile-settings-avatar')
+  avatar.src = validateAvatarImg(info.avatar_img)
+
+  const name = document.createElement('p')
+  name.textContent = info.username
+
+  const ready = document.createElement('i')
+  ready.classList.add('material-icons')
+  ready.style.setProperty('visibility', (info.ready)? 'visible' : 'hidden')
+  ready.textContent = 'done'
+
+  const div = document.createElement('div')
+  div.id = `tournament-user-${info.id}`
+  div.classList.add('lobby-entry-container')
+  div.appendChild(avatar)
+  div.appendChild(name)
+  div.appendChild(ready)
+
+  const list = document.getElementById('player-list')
+  list.appendChild(div)
+}
+
+function removeTournamentUser(info) {
+  const entry = document.getElementById(`tournament-user-${info.id}`)
+  const list = document.getElementById('player-list')
+  if (!list || !entry) {
+    return
+  }
+  list.removeChild(entry)
 }

@@ -1,9 +1,21 @@
 <div id='game-container' class='panel'>
   <!-- <pre id='debugtickrate'></pre> -->
   <!-- <pre id='debugrenderrate'></pre> -->
-  <div id='game-header-text'>Serving to Player 1</div>
+  <div id='game-header-text'>Local Game</div>
 
-  <canvas id="pongcanvas"></canvas>
+  <div class='canvas-row'>
+    <div id='p1-powerup-bar' class='powerup-bar'>
+      <div class='powerup-indicator'></div>
+      <div class='powerup-indicator'></div>
+      <div class='powerup-indicator'></div>
+    </div>
+    <canvas id="pongcanvas"></canvas>
+    <div id='p2-powerup-bar' class='powerup-bar'>
+      <div class='powerup-indicator'></div>
+      <div class='powerup-indicator'></div>
+      <div class='powerup-indicator'></div>
+    </div>
+  </div>
 
   <div id='color-switcher-container'>
     <div id='p1-color-switcher' class='color-switcher'>

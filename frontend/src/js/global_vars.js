@@ -176,12 +176,27 @@ export let friendRecordIconInfo = {
 }
 
 export const PONG_INPUTS = {
-  87: 'p1_up',
-  83: 'p1_down',
-  65: 'p1_left',
-  68: 'p1_right',
-  38: 'p2_up',
-  40: 'p2_down',
-  37: 'p2_left',
-  39: 'p2_right',
+  'KeyW': 'p1_up',
+  'KeyS': 'p1_down',
+  'KeyA': 'p1_left',
+  'KeyD': 'p1_right',
+  'ShiftLeft': 'p1_activate_powerup',
+
+  'ArrowUp': 'p2_up',
+  'ArrowDown': 'p2_down',
+  'ArrowLeft': 'p2_left',
+  'ArrowRight': 'p2_right',
+  'ShiftRight': 'p2_activate_powerup',
 }
+
+export const LOSE_BUTTON_MSGS = [
+  'Damn it!',
+  'Mamma mia!',
+  'It was the lag! I swear!',
+  'It didn\'t run on my 486...',
+  'bruh',
+  'How could this happen?',
+  'It\'s not possible!',
+  'It just ain\'t right!',
+  'Now I\'ve seen everything...',
+]

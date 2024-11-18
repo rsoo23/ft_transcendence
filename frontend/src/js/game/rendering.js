@@ -14,14 +14,13 @@ export class Pos2D {
 }
 
 class Paddle {
-  constructor() {
-    this.size = new Pos2D(7, 45);
-  }
+  constructor() { }
 
   draw(renderInfo, pos, prevState, nextState) {
     postMessage({ type: 'color_switch', payload: nextState.info })
+    postMessage({ type: 'charge_powerup', payload: nextState.info.powerup_charge_num })
     renderInfo.ctx.fillStyle = nextState.info.color
-    renderInfo.fillRectScaled(pos.x, pos.y, this.size.x, this.size.y);
+    renderInfo.fillRectScaled(pos.x, pos.y, nextState.info.size.x, nextState.info.size.y);
   }
 }
 
@@ -44,7 +43,6 @@ class Score {
   }
 
   draw(renderInfo, pos, prevState, nextState) {
-    postMessage({ type: 'turn_update', payload: nextState.info })
     renderInfo.ctx.font = `${(this.size * renderInfo.windowScale.x)}px "${this.font}"`;
     renderInfo.ctx.textAlign = 'center';
     renderInfo.ctx.textBaseline = 'middle';
@@ -55,7 +53,7 @@ class Score {
 
 class Countdown {
   constructor() {
-    this.size = 36;
+    this.size = 25;
     this.font = 'Plus Jakarta Sans';
   }
 
@@ -64,12 +62,20 @@ class Countdown {
     renderInfo.ctx.textAlign = 'center';
     renderInfo.ctx.textBaseline = 'middle';
 
-    const text = nextState.info['time'] === 0 ? "Start!" : "" + nextState.info['time'];
-    const textWidth = renderInfo.ctx.measureText(text).width;
+    let text
+
+    if (nextState.info['time'] === 0) {
+      text = "Start!";
+    } else if (nextState.info['time'] === 4) {
+      text = `Serving to the ${nextState.info.player_turn === 1 ? 'left' : 'right'}`;
+    } else {
+      text = "" + nextState.info['time'];
+    }
+    const textWidth = renderInfo.ctx.measureText(text).width / 2;
     const textHeight = this.size * renderInfo.windowScale.x;
 
     // Draw overlay rectangle
-    renderInfo.ctx.fillStyle = 'rgb(0 0 0)';
+    renderInfo.ctx.fillStyle = 'black';
     renderInfo.fillRectScaled(
       pos.x - (textWidth / 2),
       pos.y - (textHeight / 2),
@@ -85,11 +91,60 @@ class Countdown {
   }
 }
 
+class PowerupsManager {
+  constructor() {
+    this.size = 25;
+    this.font = 'Plus Jakarta Sans';
+    this.powerups_font_size = 10
+  }
+
+  draw(renderInfo, pos, prevState, nextState) {
+    renderInfo.ctx.font = `${(this.size * renderInfo.windowScale.x)}px "${this.font}"`;
+    renderInfo.ctx.textAlign = 'center';
+    renderInfo.ctx.textBaseline = 'middle';
+
+    let text
+
+    switch (nextState.info.activated_powerup) {
+      case 'big_paddle':
+        text = "Big Paddle!";
+        break;
+      case 'swap_up_down':
+        text = "Swap Up Down!";
+        break;
+      case 'swap_left_right':
+        text = "Swap Left Right!";
+        break;
+      default:
+        text = "";
+    }
+    const textWidth = renderInfo.ctx.measureText(text).width / 2;
+    const textHeight = this.size * renderInfo.windowScale.x;
+
+    renderInfo.ctx.fillStyle = 'black';
+    renderInfo.fillRectScaled(
+      pos.x - (textWidth / 2),
+      pos.y - (textHeight / 2),
+      textWidth,
+      textHeight
+    );
+
+    // Draw text
+    renderInfo.ctx.fillStyle = 'white'; // Text color
+    renderInfo.fillTextScaled(text, pos.x, pos.y);
+
+    renderInfo.ctx.stroke()
+
+    postMessage({ type: 'activate_powerup', payload: nextState.info })
+  }
+}
+
 const STYLES = {
   'paddle': new Paddle(),
   'ball': new Ball(),
   'score': new Score(),
   'countdown_timer': new Countdown(),
+  'powerups_manager': new PowerupsManager()
 }
 
 // The main renderer, it does all the work :]

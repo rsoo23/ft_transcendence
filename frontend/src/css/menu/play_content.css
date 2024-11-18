@@ -11,7 +11,8 @@
 #play-container #play-select-container,
 #play-container #play-lobby-list-container,
 #play-container #play-settings-container,
-#play-container #play-lobby-container {
+#play-container #play-lobby-container,
+#play-container #play-tournament-container {
   position: relative;
   top: 0px;
   left: 0px;
@@ -295,4 +296,136 @@
   height: fit-content;
   margin-left: auto;
   margin-right: auto;
+}
+
+.lobby-tournament-player-list {
+  overflow: auto;
+  border-style: solid;
+  border-width: 0.35rem;
+  border-color: var(--charcoal-100);
+  border-radius: 3rem;
+  box-sizing: border-box;
+  justify-content: normal;
+}
+
+.lobby-tournament-player-list .lobby-entry-container {
+  padding: 0.1rem;
+  align-items: center;
+  cursor: auto;
+}
+
+.lobby-tournament-player-list .lobby-entry-container:hover {
+  background-color: var(--charcoal-800);
+}
+
+.lobby-tournament-player-list .lobby-entry-container img {
+  height: 3rem;
+  width: 3rem;
+  margin-left: 0.1rem;
+}
+
+.lobby-tournament-player-list .lobby-entry-container p {
+  font-size: 1rem;
+}
+
+.lobby-tournament-player-list .lobby-entry-container i {
+  font-size: 2rem;
+  margin-right: 1rem;
+}
+
+.lobby-tournament-player-list .lobby-entry-container .material-icons {
+  margin-left: auto;
+  color: var(--teal-500);
+}
+
+.tournament-column-container {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+#bracket-list {
+  display: flex;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  flex-grow: 1;
+  justify-content: center;
+  overflow: auto;
+
+  background-color: var(--charcoal-800);
+  border-radius: 3rem;
+}
+
+.tournament-bracket-container {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-around;
+  margin-left: 1rem;
+}
+
+.tournament-pair-container {
+  display: flex;
+  flex-flow: column;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.tournament-emptypair-container {
+  opacity: 0.5;
+}
+
+.tournament-ready-container {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+}
+
+.tournament-ready-container .button-md {
+  min-width: 6.5rem;
+  width: fit-content;
+  padding-left: 1.0rem;
+  padding-right: 1.0rem;
+}
+
+.tournament-user-container {
+  display: flex;
+  align-items: center;
+  width: 10rem;
+  margin-top: 0.05rem;
+  margin-bottom: 0.05rem;
+  /* padding: 0.5rem; */
+  background-color: var(--charcoal-900);
+  border-radius: 3rem;
+  overflow: hidden;
+}
+
+.tournament-currentuser-container {
+  outline-style: solid;
+  outline-width: 0.02rem;
+  outline-color: var(--charcoal-100);
+}
+
+.tournament-username-container {
+  overflow: hidden;
+  flex-grow: 1;
+  mask-image: linear-gradient(to right, black 90%, transparent 100%)
+}
+
+.tournament-username-container p {
+  height: fit-content;
+  font-weight: normal;
+  font-size: 1.0rem;
+  margin: 0;
+  margin-left: 0.5rem;
+}
+
+.tournament-user-container img {
+  height: 1.5rem;
+  width: 1.5rem;
+  border-width: 0.02rem;
+  flex-shrink: 0;
+}
+
+.tournament-user-container i {
+  color: var(--teal-500);
 }
