@@ -231,36 +231,32 @@ export async function loadMatchDetails(matchId) {
           </div>
         </div>
 
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200">
         <!-- Title -->
         <text x="20" y="40" font-family="Arial" font-size="24" fill="#E2E8F0">Paddle Bounces</text>
-
-        <!-- Value Labels -->
+    
+        <!-- Value Label -->
         <text x="20" y="100" font-family="Arial" font-size="18" fill="#E2E8F0">800</text>
-        <text x="20" y="200" font-family="Arial" font-size="18" fill="#E2E8F0">400</text>
         
         <!-- Bars -->
         <g transform="translate(80, 0)">
-            <!-- First row -->
+            <!-- Single row for paddle bounces -->
             <rect x="0" y="80" width="150" height="30" fill="#3B82F6" rx="4"/>
             <rect x="150" y="80" width="300" height="30" fill="#EC4899" rx="4"/>
-            
-            <!-- Second row -->
-            <rect x="0" y="180" width="300" height="30" fill="#3B82F6" rx="4"/>
-            <rect x="300" y="180" width="100" height="30" fill="#EC4899" rx="4"/>
         </g>
         
         <!-- Legend -->
-        <g transform="translate(80, 250)">
-		    <!-- Player 1 -->
-		    <rect x="0" y="0" width="20" height="20" fill="#3B82F6" rx="4"/>
-		    <text x="30" y="15" font-family="Arial" font-size="16" fill="#E2E8F0">Player 1</text>
-		    
-		    <!-- Player 2 -->
-		    <rect x="120" y="0" width="20" height="20" fill="#EC4899" rx="4"/>
-		    <text x="150" y="15" font-family="Arial" font-size="16" fill="#E2E8F0">Player 2</text>
-	    </g>
-	    </svg> 
+        <g transform="translate(80, 150)">
+            <!-- Player 1 -->
+            <rect x="0" y="0" width="20" height="20" fill="#3B82F6" rx="4"/>
+            <text x="30" y="15" font-family="Arial" font-size="16" fill="#E2E8F0">Player 1</text>
+            
+            <!-- Player 2 -->
+            <rect x="120" y="0" width="20" height="20" fill="#EC4899" rx="4"/>
+            <text x="150" y="15" font-family="Arial" font-size="16" fill="#E2E8F0">Player 2</text>
+        </g>
+    </svg>
+
    
 	    <div class="stats-grid">
 	      <div class="stat-row">
