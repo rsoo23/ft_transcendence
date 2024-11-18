@@ -134,7 +134,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
 
                 await self.channel_layer.group_send(self.group_lobby, {'type': 'lobby.notify.close'})
 
-    async def get_lobby_info():
+    async def get_lobby_info(self):
         info = cache.get(self.group_lobby)
         if not info:
             await self.close(code=4001, reason='Lobby closed')
