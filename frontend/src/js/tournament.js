@@ -230,13 +230,20 @@ export function updateTournamentPlayerReady(id, isReady) {
   }
 
   const opponentReadyStatus = document.getElementById('opponentstatus')
+  const button = document.getElementById('tournamentready')
   if (!opponentReadyStatus) {
     return
   }
 
-  if (tournamentIsLoser) {
+  if (tournamentWinner && tournamentWinner.id == currentUserInfo.id) {
+    opponentReadyStatus.textContent = 'You won!!!'
+    if (button.textContent == 'Ready' || button.textContent == 'Unready') {
+      button.textContent = 'Leave'
+      button.style.setProperty('background-color', 'var(--teal-500)')
+      button.onclick = leaveTournament
+    }
+  } else if (tournamentIsLoser) {
     opponentReadyStatus.textContent = 'You lost...'
-    const button = document.getElementById('tournamentready')
     if (button.textContent == 'Ready' || button.textContent == 'Unready') {
       const randInt = (max, min) => Math.ceil(Math.random() * (max - min) + min)
       button.textContent = LOSE_BUTTON_MSGS[randInt(0, LOSE_BUTTON_MSGS.length)]
