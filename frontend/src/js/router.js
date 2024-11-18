@@ -30,6 +30,8 @@ import { refreshToken } from "./network_utils/token_utils.js";
 import { initVerifyForm } from "./forgot_password/verify_code.js";
 import { initChangePasswordForm } from "./forgot_password/change_password.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
+import { initHowToPlayDivs } from "./how_to_play.js";
+import { loadStatsPage } from "./stats_content.js";
 
 const routes = {
   "/start": "start_panel.html",
@@ -338,7 +340,9 @@ async function initPlayPage() {
   await tryReturnToLobby()
 }
 
-async function initStatsPage() { }
+async function initStatsPage() {
+	await loadStatsPage();
+}
 
 export async function initFriendsPage(
   state = FRIEND_LIST_STATE.SHOWING_FRIEND_LIST
@@ -352,7 +356,9 @@ export async function initFriendsPage(
   await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
 }
 
-async function initHowToPlayPage() { }
+async function initHowToPlayPage() {
+  initHowToPlayDivs()
+}
 
 async function initSettingsPage() {
   initAvatarUpload();
@@ -424,6 +430,13 @@ function init2FAPages(contentName) {
 
       if (result === "error") {
         return;
+      }
+
+      if (contentName === "2fa_enable") {
+        const twoFactorToggle = document.querySelector(".profile-settings-toggle-input");
+        if (twoFactorToggle) {
+          twoFactorToggle.checked = true;
+        }
       }
 
       loadPage("main_menu");

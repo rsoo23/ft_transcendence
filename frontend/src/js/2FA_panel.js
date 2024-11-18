@@ -13,16 +13,25 @@ export async function init2FAToggle() {
 		twoFactorToggle.checked = response.success;
 		let current2FAState = response.success;
   
+        if (current2FAState) {
+			twoFactorToggle.disabled = true;
+		}
+
 		if (saveButton) {
 		  saveButton.addEventListener("click", () => {
-			// Only handle 2FA if the state has changed
-			if (twoFactorToggle.checked !== current2FAState) {
-			  if (twoFactorToggle.checked) {
+			if (!current2FAState && twoFactorToggle.checked) {
 				loadPage('2fa_enable');
 			  }
+			});
+		  }
+
+		// After enabled, keep it enabled at all times
+		twoFactorToggle.addEventListener("change", (e) => {
+	        if (current2FAState) {
+				e.target.checked = true;
 			}
-		  });
-		}
+		});
+
 	  } catch (error) {
 		console.error('Error initializing 2FA toggle:', error);
 		twoFactorToggle.checked = false;

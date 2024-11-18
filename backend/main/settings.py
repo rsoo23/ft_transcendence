@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'pong',
     'lobby',
     'tournament',
+    'game_stats',
 ]
 
 AUTHENTICATION_BACKENDS = [
