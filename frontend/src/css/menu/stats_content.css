@@ -225,7 +225,7 @@
 .match-stats-details {
 	background-color: var(--charcoal-800);
 	border-radius: 1rem;
-	padding: 2rem;
+	padding: 1rem 2rem 2rem 2rem;
 	width: 80%;
 	max-width: 800px;
 	margin: 0rem auto;
@@ -237,8 +237,11 @@
   }
   
   .match-date, .match-duration {
-	color: var(--charcoal-300);
-	margin: 0.5rem 0;
+	color: var(--charcoal-100);
+	margin: 0.5rem;
+	font-size: 1.1rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
   }
   
   .players-container {

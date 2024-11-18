@@ -214,7 +214,7 @@ export async function loadMatchDetails(matchId) {
 	  <div class="match-stats-details">
 		<div class="match-header">
 		  <div class="match-info">
-			<p class="match-date">${new Date(stats.created_at).toLocaleString()}</p>
+			<p class="match-date">${formatDate(new Date(stats.created_at))}</p>
 			<p class="match-duration">Duration: ${duration}</p>
 		  </div>
           </div>
@@ -289,10 +289,10 @@ export async function loadMatchDetails(matchId) {
 	const [hours, minutes, seconds] = duration.split(':').map(Number);
 	
 	if (hours > 0) {
-	  return `${hours}h ${minutes}m ${seconds}s`;
+	  return `${hours}h ${minutes}m ${Math.round(seconds)}s`;
 	} else if (minutes > 0) {
-	  return `${minutes}m ${seconds}s`;
+	  return `${minutes}m ${Math.round(seconds)}s`;
 	} else {
-	  return `${seconds}s`;
+	  return `${Math.round(seconds)}s`;
 	}
   }
