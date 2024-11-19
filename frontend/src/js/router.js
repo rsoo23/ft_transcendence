@@ -19,7 +19,7 @@ import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { initUsernameSettings } from "./settings/update_username.js";
 import { closeFriendSystemSocket, connectFriendSystemSocket, } from "./friends_system/websocket.js";
-import { initPlayDivs, startingMenuSwitcher, divSwitcher, loadMultiplayerTest, startLocalGame, tryReturnToLobby } from "./play_panel.js";
+import { initPlayDivs, startingMenuSwitcher, divSwitcher, loadMultiplayerTest, startLocalGame, tryReturnToLobby, goToGameSettings } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
 import { initClassicLobby, updateClassicLobby, createLobby, createTournamentLobby, initTournamentLobby, updateTournamentLobby, joinLobby } from "./lobby.js";
 import { initLobbyList, closeLobbyListSocket, goToLobby } from "./lobby_list.js";
@@ -32,7 +32,6 @@ import { initChangePasswordForm } from "./forgot_password/change_password.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
 import { initHowToPlayDivs } from "./how_to_play.js";
 import { loadStatsPage } from "./stats_content.js";
-import { initGameSettings } from "./game/game_settings.js";
 
 const routes = {
   "/start": "start_panel.html",
@@ -297,18 +296,32 @@ async function initPlayPage() {
 
   // first page
   document.getElementById("localplay").onclick = async () => {
-    startingMenuSwitcher.disableDivInput('play-select-container')
-    await loadContentToTarget('menu/play_settings_content.html', 'play-settings-container')
-    document.getElementById('settingsback').onclick = () => divSwitcher.setCurrentDiv('play-settings-container', 'play-select-container')
-    document.getElementById('start-game').onclick = () => startLocalGame()
-    divSwitcher.setCurrentDiv('play-select-container', 'play-settings-container')
-    initGameSettings();
-  };
+    await goToGameSettings(
+      'play-select-container',
+      () => divSwitcher.setCurrentDiv('play-settings-container', 'play-select-container'),
+      'Start Game',
+      startLocalGame
+    )
+  }
   document.getElementById("onlineplay").onclick = () => {
     startingMenuSwitcher.setCurrentDiv('playtype', 'gamemode')
   };
 
   // second page
+  const hostLobbyAndJoin = async (isTournament) => {
+    let lobbyID = null
+    if (isTournament) {
+      lobbyID = await createTournamentLobby(20)
+    } else {
+      lobbyID = await createLobby()
+    }
+
+    if (lobbyID == null) {
+      queueNotification('magenta', `Failed to create lobby.`, () => { })
+      return
+    }
+    await goToLobby('play-settings-container', lobbyID, isTournament)
+  }
   const goToLobbyList = async (isTournament) => {
     divSwitcher.disableDivInput('play-select-container')
     await loadContentToTarget('menu/lobby_list_content.html', 'play-lobby-list-container')
@@ -317,20 +330,12 @@ async function initPlayPage() {
       divSwitcher.setCurrentDiv('play-lobby-list-container', 'play-select-container')
     }
     document.getElementById('lobby-host-button').onclick = async () => {
-      divSwitcher.disableDivInput('play-select-container')
-      // TODO: move this to lobby stuff
-      let lobbyID = null
-      if (isTournament) {
-        lobbyID = await createTournamentLobby(20)
-      } else {
-        lobbyID = await createLobby()
-      }
-
-      if (lobbyID == null) {
-        queueNotification('magenta', `Failed to create lobby.`, () => { })
-        return
-      }
-      await goToLobby(lobbyID, isTournament)
+      await goToGameSettings(
+        'play-lobby-list-container',
+        () => divSwitcher.setCurrentDiv('play-settings-container', 'play-lobby-list-container'),
+        'Host Game',
+        () => hostLobbyAndJoin(isTournament)
+      )
     }
     initLobbyList(isTournament)
     divSwitcher.setCurrentDiv('play-select-container', 'play-lobby-list-container')
