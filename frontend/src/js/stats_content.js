@@ -209,6 +209,8 @@ export async function loadMatchDetails(matchId) {
   function generateMatchStatsHTML(stats) {
 	// Format duration into minutes and seconds
 	const duration = stats.match_duration ? formatDuration(stats.match_duration) : 'N/A';
+    const gameDate = formatDate(new Date(stats.created_at));
+    const gameTime = formatTime(new Date(stats.created_at));
 	
 	return `
 	  <div class="match-stats-details">
@@ -225,7 +227,12 @@ export async function loadMatchDetails(matchId) {
             <div class="score" id="match-score" style="background-color: ${stats.pong_match?.p1_score > stats.pong_match?.p2_score ? 'var(--teal-500)' : 'var(--magenta-500)'}">
               ${stats.pong_match?.p1_score || 0} - ${stats.pong_match?.p2_score || 0}
             </div>
-            <div class="time">${formatTime(new Date(stats.created_at))}</div>
+
+            <div class=match-stats-game-details>
+                <div class="match-stats-game-details-row">Duration: ${duration}</div>
+                <div class="match-stats-game-details-row">Date: ${gameDate}</div>
+                <div class="match-stats-game-details-row">Time: ${gameTime}</div>
+          </div>
           </div>
         
           <div class="game-stats-avatar-section">
@@ -235,11 +242,6 @@ export async function loadMatchDetails(matchId) {
             <div class="avatar-name" id="p2-name">${stats.pong_match?.player2?.username || 'Player 2'}</div>
           </div>
         </div>
-
-		  <div class="match-info">
-			<p class="match-date">${formatDate(new Date(stats.created_at))}</p>
-			<p class="match-duration">Duration: ${duration}</p>
-		  </div>
 
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200">
         <!-- Title -->
