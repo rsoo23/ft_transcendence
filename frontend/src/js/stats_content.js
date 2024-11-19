@@ -224,23 +224,27 @@ export async function loadMatchDetails(matchId) {
 	
     // Paddle bounces
     const totalBounces = stats.p1_paddle_bounces + stats.p2_paddle_bounces;
-    const maxWidth = 450; // Total bounces available width for both bars
-    let p1Width = maxWidth / 2;
-    let p2Width = maxWidth / 2;
+    const maxWidth = 450;
+    let p1Width, p2Width;
     
-    if (totalBounces > 0) {
-        p1Width = Math.max((stats.p1_paddle_bounces / totalBounces) * maxWidth, 30); // Minimum width of 30px
-        p2Width = Math.max((stats.p2_paddle_bounces / totalBounces) * maxWidth, 30);
+    if (totalBounces === 0) {
+        p1Width = maxWidth / 2;
+        p2Width = maxWidth / 2;
+    } else {
+        p1Width = (stats.p1_paddle_bounces / totalBounces) * maxWidth;
+        p2Width = (stats.p2_paddle_bounces / totalBounces) * maxWidth;
     }
-
+    
     // Color switches
     const totalSwitches = stats.p1_color_switches + stats.p2_color_switches;
-    let p1SwitchWidth = maxWidth / 2;
-    let p2SwitchWidth = maxWidth / 2;
+    let p1SwitchWidth, p2SwitchWidth;
     
-    if (totalSwitches > 0) {
-        p1SwitchWidth = Math.max((stats.p1_color_switches / totalSwitches) * maxWidth, 30);
-        p2SwitchWidth = Math.max((stats.p2_color_switches / totalSwitches) * maxWidth, 30);
+    if (totalSwitches === 0) {
+        p1SwitchWidth = maxWidth / 2;
+        p2SwitchWidth = maxWidth / 2;
+    } else {
+        p1SwitchWidth = (stats.p1_color_switches / totalSwitches) * maxWidth;
+        p2SwitchWidth = (stats.p2_color_switches / totalSwitches) * maxWidth;
     }
 
 	return `
