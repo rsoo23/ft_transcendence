@@ -61,7 +61,6 @@ function setPvpTallyBar(response) {
   }
 
   pvpTallyLabel.innerHTML = `${response.wins} - ${response.losses}`
-  console.log(response)
 }
 
 
@@ -96,6 +95,5 @@ function setUserTotalTally(response) {
   }
 
   userTallyLabel.innerHTML = `${response.wins} - ${response.losses}`
-  console.log(response)
 }
 
