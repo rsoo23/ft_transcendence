@@ -11,6 +11,7 @@ import { getGameSettingsInfo } from "./game/game_settings.js";
 import { checkInTournament, checkIsTournamentOpponent, joinTournament, leaveTournament, updateTournamentPlayerReady } from "./tournament.js";
 
 var lobbySocket = null
+var lobbyID = null
 var inLobby = false
 var lobbyType = ''
 var lobbyUsers = []
@@ -18,6 +19,10 @@ var lobbyStarting = false
 
 export function checkInLobby() {
   return inLobby
+}
+
+export function getLobbyID() {
+  return lobbyID
 }
 
 export function getLobbyType() {
@@ -82,6 +87,7 @@ export function getUserById(id) {
 }
 
 export async function joinLobby(id) {
+  lobbyID = id
   lobbySocket = new WebSocket(`ws://${window.location.host}/ws/lobby/${id}`, ['Authorization', getAccessToken()])
   lobbySocket.onmessage = async (e) => {
     const data = JSON.parse(e.data)
@@ -259,6 +265,7 @@ export function leaveLobby() {
   lobbyType = ''
   lobbyUsers = []
   lobbyStarting = false
+  lobbyID = null
 
   // this is to check if you're leaving a lobby normally
   const path = window.location.pathname;

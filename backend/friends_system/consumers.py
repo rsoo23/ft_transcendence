@@ -54,6 +54,11 @@ class FriendsSystemConsumer(WebsocketConsumer):
             case "unblock_friend":
                 unblocked_id = text_data_json['unblocked_id']
                 self.unblock_friend(unblocked_id)
+            case "game_lobby_invite":
+                target_id = text_data_json['receiver_id']
+                lobby_id = text_data_json['lobby_id']
+                is_tournament = text_data_json['is_tournament']
+                self.handle_game_invite(target_id, lobby_id, is_tournament)
 
     def send_friend_request(self, receiver_id):
         receiver = CustomUser.objects.get(pk=receiver_id)
@@ -169,6 +174,21 @@ class FriendsSystemConsumer(WebsocketConsumer):
             unblocked_id,
             'unblock_friend',
             f'Successfully unblocked {friend.username}'
+        )
+
+    def handle_game_invite(self, target_id, lobby_id, is_tournament):
+        current_user_friend_list = FriendList.objects.get(current_user=self.current_user)
+        friend = CustomUser.objects.get(pk=target_id)
+
+        self.send_to_target_channel(
+            target_id,
+            'game_lobby_invite_receive',
+            json.dumps({'username': self.current_user.username, 'lobby_id': lobby_id, 'is_tournament': is_tournament})
+        )
+        self.send_to_client_channel(
+            target_id,
+            'game_lobby_invite_confirm',
+            f'Successfully sent invite to {friend.username}'
         )
 
     def send_to_target_channel(self, target_id, action, message):
