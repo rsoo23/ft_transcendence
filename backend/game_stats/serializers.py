@@ -14,7 +14,7 @@ class PongMatchSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = PongMatch
-        fields = ['id', 'player1', 'player2', 'p1_score', 'p2_score', 'date_joined']
+        fields = ['id', 'player1', 'player2', 'p1_score', 'p2_score', 'date_joined', 'type']
 
 class MatchStatsSerializer(serializers.ModelSerializer):
     pong_match = PongMatchSerializer()

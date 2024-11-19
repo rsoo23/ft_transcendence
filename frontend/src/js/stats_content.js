@@ -196,6 +196,8 @@ function createScoreSection(match, isPlayer1) {
 export async function loadMatchDetails(matchId) {
 	try {
 	  const matchStats = await getRequest(`/api/game_stats/match-stats/${matchId}/`);
+      console.log('Full match stats:', matchStats);
+      console.log('Match type:', matchStats.pong_match?.type);
 	  const matchStatsContainer = document.getElementById('match-stats-container');
 	  const content = matchStatsContainer.querySelector('.content');
 	  
@@ -218,18 +220,62 @@ export async function loadMatchDetails(matchId) {
 
   function generateMatchStatsHTML(stats) {
 	// Format duration into minutes and seconds
+    console.log('Stats in generate HTML:', stats);
+    console.log('Pong match:', stats.pong_match);
+    console.log('Game type received:', stats.pong_match?.type);
 	const duration = stats.match_duration ? formatDuration(stats.match_duration) : 'N/A';
     const gameDate = formatDate(new Date(stats.created_at));
     const gameTime = formatTime(new Date(stats.created_at));
+    const gameType = stats.pong_match?.type;
+    const formattedGameType = formatGameType(gameType);
 	
-    const total = stats.p1_paddle_bounces + stats.p2_paddle_bounces;
-    const maxWidth = 450; // Total available width for both bars
-    let p1Width = maxWidth;
-    let p2Width = 0;
+    // Paddle bounces
+    const totalBounces = stats.p1_paddle_bounces + stats.p2_paddle_bounces;
+    const maxWidth = 450;
+    let p1Width, p2Width;
     
-    if (total > 0) {
-        p1Width = Math.max((stats.p1_paddle_bounces / total) * maxWidth, 30); // Minimum width of 30px
-        p2Width = Math.max((stats.p2_paddle_bounces / total) * maxWidth, 30);
+    if (totalBounces === 0) {
+        p1Width = maxWidth / 2;
+        p2Width = maxWidth / 2;
+    } else {
+        p1Width = (stats.p1_paddle_bounces / totalBounces) * maxWidth;
+        p2Width = (stats.p2_paddle_bounces / totalBounces) * maxWidth;
+    }
+    
+    // Color switches
+    const totalSwitches = stats.p1_color_switches + stats.p2_color_switches;
+    let p1SwitchWidth, p2SwitchWidth;
+    
+    if (totalSwitches === 0) {
+        p1SwitchWidth = maxWidth / 2;
+        p2SwitchWidth = maxWidth / 2;
+    } else {
+        p1SwitchWidth = (stats.p1_color_switches / totalSwitches) * maxWidth;
+        p2SwitchWidth = (stats.p2_color_switches / totalSwitches) * maxWidth;
+    }
+
+    // Wall Hits
+    const totalWallHits = stats.p1_points_lost_by_wall_hit + stats.p2_points_lost_by_wall_hit;
+    let p1WallWidth, p2WallWidth;
+    
+    if (totalWallHits === 0) {
+        p1WallWidth = maxWidth / 2;
+        p2WallWidth = maxWidth / 2;
+    } else {
+        p1WallWidth = (stats.p1_points_lost_by_wall_hit / totalWallHits) * maxWidth;
+        p2WallWidth = (stats.p2_points_lost_by_wall_hit / totalWallHits) * maxWidth;
+    }
+    
+    // Wrong Color Hits
+    const totalWrongColorHits = stats.p1_points_lost_by_wrong_color + stats.p2_points_lost_by_wrong_color;
+    let p1WrongColorWidth, p2WrongColorWidth;
+    
+    if (totalWrongColorHits === 0) {
+        p1WrongColorWidth = maxWidth / 2;
+        p2WrongColorWidth = maxWidth / 2;
+    } else {
+        p1WrongColorWidth = (stats.p1_points_lost_by_wrong_color / totalWrongColorHits) * maxWidth;
+        p2WrongColorWidth = (stats.p2_points_lost_by_wrong_color / totalWrongColorHits) * maxWidth;
     }
 
 	return `
@@ -252,6 +298,7 @@ export async function loadMatchDetails(matchId) {
                 <div class="match-stats-game-details-row">Duration: ${duration}</div>
                 <div class="match-stats-game-details-row">Date: ${gameDate}</div>
                 <div class="match-stats-game-details-row">Time: ${gameTime}</div>
+                <div class="match-stats-game-details-row">Type: ${formattedGameType}</div>
           </div>
           </div>
         
@@ -263,57 +310,66 @@ export async function loadMatchDetails(matchId) {
           </div>
         </div>
 
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 150">
-        <text x="300" y="30" font-family="Arial" font-size="20" fill="var(--charcoal-200)" text-anchor="middle" >Paddle Bounces</text>
+
+        <!-- Paddle Bounces Graph -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 90">
+        <text x="300" y="30" font-family="Arial" font-size="18" fill="var(--charcoal-200)" text-anchor="middle" >Paddle Bounces</text>
     
-        <!-- Value Label -->
         <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_paddle_bounces}</text>
         <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_paddle_bounces}</text>    
         
-        <!-- Bars -->
         <g transform="translate(80, -30)">
             <!-- Paddle bounces -->
             <rect x="0" y="80" width="${p1Width}" height="30" fill="var(--yellow-500)" rx="4"/>
             <rect x="${p1Width}" y="80" width="${p2Width}" height="30" fill="var(--blue-500)" rx="4"/>
             //rx is for rounded corners
         </g>
-
-        
-        <!-- Legend -->
-        <g transform="translate(80, 100)">
-            <!-- Player 1 -->
-            <rect x="0" y="0" width="20" height="20" fill="var(--yellow-500)" rx="4"/>
-            <text x="30" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 1</text>
-            
-            <!-- Player 2 -->
-            <rect x="120" y="0" width="20" height="20" fill="var(--blue-500)" rx="4"/>
-            <text x="150" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 2</text>
-        </g>
     </svg>
 
-   
-	    <div class="stats-grid">
-	      <div class="stat-row">
-	        <div class="stat-value">${stats.p1_paddle_bounces}</div>
-	        <div class="stat-label">Paddle Bounces</div>
-	        <div class="stat-value">${stats.p2_paddle_bounces}</div>
-	      </div>
-	      <div class="stat-row">
-	        <div class="stat-value">${stats.p1_color_switches}</div>
-	        <div class="stat-label">Color Switches</div>
-	        <div class="stat-value">${stats.p2_color_switches}</div>
-	      </div>
-	      <div class="stat-row">
-	        <div class="stat-value">${stats.p1_points_lost_by_wall_hit}</div>
-	        <div class="stat-label">Wall Hits</div>
-	        <div class="stat-value">${stats.p2_points_lost_by_wall_hit}</div>
-	      </div>
-	      <div class="stat-row">
-	        <div class="stat-value">${stats.p1_points_lost_by_wrong_color}</div>
-	        <div class="stat-label">Wrong Color Hits</div>
-	        <div class="stat-value">${stats.p2_points_lost_by_wrong_color}</div>
-	      </div>
-	    </div>
+
+        <!-- Color Switches Graph -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 90">
+            <text x="300" y="30" font-family="Arial" font-size="18" fill="var(--charcoal-200)" text-anchor="middle">Color Switches</text>
+            <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_color_switches}</text>
+            <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_color_switches}</text>    
+            
+            <g transform="translate(80, -30)">
+                <rect x="0" y="80" width="${p1SwitchWidth}" height="30" fill="var(--yellow-500)" rx="4"/>
+                <rect x="${p1SwitchWidth}" y="80" width="${p2SwitchWidth}" height="30" fill="var(--blue-500)" rx="4"/>
+            </g>
+        </svg>
+    
+        <!-- Wall Hits Graph -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 90">
+            <text x="300" y="30" font-family="Arial" font-size="18" fill="var(--charcoal-200)" text-anchor="middle">Wall Hits</text>
+        
+            <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_points_lost_by_wall_hit}</text>
+            <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_points_lost_by_wall_hit}</text>    
+            
+            <g transform="translate(80, -30)">
+                <rect x="0" y="80" width="${p1WallWidth}" height="30" fill="var(--yellow-500)" rx="4"/>
+                <rect x="${p1WallWidth}" y="80" width="${p2WallWidth}" height="30" fill="var(--blue-500)" rx="4"/>
+            </g>
+        </svg>
+        
+        <!-- Wrong Color Hits Graph -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 150">
+            <text x="300" y="30" font-family="Arial" font-size="18" fill="var(--charcoal-200)" text-anchor="middle">Wrong Color Hits</text>
+        
+            <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_points_lost_by_wrong_color}</text>
+            <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_points_lost_by_wrong_color}</text>    
+            
+            <g transform="translate(80, -30)">
+                <rect x="0" y="80" width="${p1WrongColorWidth}" height="30" fill="var(--yellow-500)" rx="4"/>
+                <rect x="${p1WrongColorWidth}" y="80" width="${p2WrongColorWidth}" height="30" fill="var(--blue-500)" rx="4"/>
+            </g>
+            <g transform="translate(80, 100)">
+                <rect x="0" y="0" width="20" height="20" fill="var(--yellow-500)" rx="4"/>
+                <text x="30" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 1</text>
+                <rect x="120" y="0" width="20" height="20" fill="var(--blue-500)" rx="4"/>
+                <text x="150" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 2</text>
+            </g>
+        </svg>
 	  </div>
 	`;
   }
@@ -330,3 +386,17 @@ export async function loadMatchDetails(matchId) {
 	  return `${Math.round(seconds)}s`;
 	}
   }
+
+  function formatGameType(type) {
+    switch(type) {
+        case 'local_classic':
+            return 'Local Play';
+        case 'online_classic':
+            return 'Online Play';
+        case 'online_tournament':
+            return 'Tournament';
+        default:
+            console.log('Unknown game type:', type);
+            return type || 'Unknown Type';
+    }
+}
