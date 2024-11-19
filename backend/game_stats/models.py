@@ -7,6 +7,9 @@ class MatchStats(models.Model):
         on_delete=models.CASCADE,
         related_name='match_stats'
     )
+
+    winner_id = models.IntegerField(null=True, blank=True)
+    loser_id = models.IntegerField(null=True, blank=True)
     
     p1_paddle_bounces = models.IntegerField(default=0)
     p2_paddle_bounces = models.IntegerField(default=0)
@@ -31,3 +34,8 @@ class MatchStats(models.Model):
 
     def __str__(self):
         return f"Stats for Match {self.pong_match.id}"
+
+    def save(self, *args, **kwargs):
+        self.winner_id = self.pong_match.player1_id if self.pong_match.p1_score > self.pong_match.p2_score else self.pong_match.player2_id
+        self.loser_id = self.pong_match.player1_id if self.pong_match.p1_score < self.pong_match.p2_score else self.pong_match.player2_id
+        super().save(*args, **kwargs)

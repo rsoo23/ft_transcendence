@@ -22,3 +22,8 @@ class MatchStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = MatchStats
         fields = '__all__'
+
+class UserStatsSerializer(serializers.Serializer):
+    wins = serializers.IntegerField()
+    losses = serializers.IntegerField()
+
