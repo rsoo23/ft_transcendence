@@ -7,7 +7,7 @@ import { send_otp_2FA } from "./network_utils/2FA_utils.js";
 import { check_email, initEmailForm } from "./forgot_password/get_email.js";
 import { verify_code } from "./forgot_password/verify_code.js";
 import { handle_change_password } from "./forgot_password/change_password.js";
-import { handleLogin } from "./login_panel.js";
+import { handleLogin, loginInfo } from "./login_panel.js";
 import { handleSignup } from "./signup_panel.js";
 import { initAvatarUpload } from "./settings/upload_avatar.js";
 import { initLogoutButton } from "./settings/logout.js";
@@ -26,7 +26,7 @@ import { initLobbyList, closeLobbyListSocket, goToLobby } from "./lobby_list.js"
 import { closeUserUpdateSocket, connectUserUpdateSocket } from "./user_updates/websocket.js";
 import { init2FAToggle } from "./2FA_panel.js";
 import { generateArcBackground, generateGeometricBackground, getRandomInt, loadMainBackground, removeBackground, setBackgroundLinesColor } from "./animations/main_background.js";
-import { refreshToken } from "./network_utils/token_utils.js";
+import { refreshToken, retrieveTokens } from "./network_utils/token_utils.js";
 import { initVerifyForm } from "./forgot_password/verify_code.js";
 import { initChangePasswordForm } from "./forgot_password/change_password.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
@@ -181,10 +181,10 @@ async function loadDynamicContent(contentName) {
       initChangePasswordPage()
       break
     case '2fa_verify':
-      init2FAPages(contentName)
+      init2FAVerify()
       break
     case '2fa_enable':
-      init2FAPages(contentName)
+      init2FAEnable()
       break
     default:
       console.error("Error: invalid contentName");
@@ -325,7 +325,7 @@ async function initPlayPage() {
       }
 
       if (lobbyID == null) {
-        queueNotification('magenta', `Failed to create lobby.`, () => {})
+        queueNotification('magenta', `Failed to create lobby.`, () => { })
         return
       }
       await goToLobby(lobbyID, isTournament)
@@ -341,7 +341,7 @@ async function initPlayPage() {
 }
 
 async function initStatsPage() {
-	await loadStatsPage();
+  await loadStatsPage();
 }
 
 export async function initFriendsPage(
@@ -413,38 +413,54 @@ function initChangePasswordPage() {
   );
 }
 
-function init2FAPages(contentName) {
-  if (contentName === "2fa_verify" || contentName === "2fa_enable") {
-    send_otp_2FA();
-    if (contentName === "2fa_verify") {
-      initBackButton(() => loadPage("login"));
-    } else {
-      initBackButton(() => {
-        loadPage("main_menu");
-        loadMainMenuContent("settings");
-      });
-    }
-    initResendCodeButton(() => send_otp_2FA());
-    initRandomColorButton("submit-2fa-button", "two-fa-panel", async () => {
+function init2FAVerify() {
+  send_otp_2FA();
+  initBackButton(() => loadPage("login"));
+  initResendCodeButton(() => send_otp_2FA());
+  initRandomColorButton("submit-2fa-button", "two-fa-panel", async () => {
+    try {
       const result = await handle2FA();
 
       if (result === "error") {
         return;
       }
 
-      if (contentName === "2fa_enable") {
-        const twoFactorToggle = document.querySelector(".profile-settings-toggle-input");
-        if (twoFactorToggle) {
-          twoFactorToggle.checked = true;
-        }
+      const tokenResponse = await retrieveTokens(loginInfo);
+
+      if (tokenResponse === "success") {
+        loadPage("main_menu");
+        loadMainMenuContent("play");
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  });
+}
+
+function init2FAEnable() {
+  send_otp_2FA();
+  initBackButton(() => {
+    loadPage("main_menu");
+    loadMainMenuContent("settings");
+  });
+  initResendCodeButton(() => send_otp_2FA());
+  initRandomColorButton("submit-2fa-button", "two-fa-panel", async () => {
+    try {
+      const result = await handle2FA();
+
+      if (result === "error") {
+        return;
+      }
+
+      const twoFactorToggle = document.querySelector(".profile-settings-toggle-input");
+      if (twoFactorToggle) {
+        twoFactorToggle.checked = true;
       }
 
       loadPage("main_menu");
-      if (contentName === "2fa_verify") {
-        loadMainMenuContent("play");
-      } else {
-        loadMainMenuContent("settings");
-      }
-    });
-  }
+      loadMainMenuContent("settings");
+    } catch (error) {
+      console.error(error)
+    }
+  })
 }
