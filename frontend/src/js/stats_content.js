@@ -219,15 +219,26 @@ export async function loadMatchDetails(matchId) {
 		  </div>
           </div>
 
-        <div class="players-container">
-          <div class="player-column">
-            <h3>${stats.pong_match?.player1?.username || 'Player 1'}</h3>
-            <p class="game-stats-score ${stats.pong_match?.p1_score > stats.pong_match?.p2_score ? 'winner' : ''}">${stats.pong_match?.p1_score || 0}</p>
+        <div class="match-record-large">
+          <div class="game-stats-avatar-section">
+            <div class="avatar-container">
+              <img class="avatar" src="/static/images/kirby.png" alt="avatar" id="p1-avatar">
+            </div>
+            <div class="avatar-name" id="p1-name">${stats.pong_match?.player1?.username || 'Player 1'}</div>
           </div>
-          <div class="vs-divider">VS</div>
-          <div class="player-column">
-            <h3>${stats.pong_match?.player2?.username || 'Player 2'}</h3>
-            <p class="game-stats-score ${stats.pong_match?.p2_score > stats.pong_match?.p1_score ? 'winner' : ''}">${stats.pong_match?.p2_score || 0}</p>
+        
+          <div class="score-time-section">
+            <div class="score" id="match-score" style="background-color: ${stats.pong_match?.p1_score > stats.pong_match?.p2_score ? 'var(--teal-500)' : 'var(--magenta-500)'}">
+              ${stats.pong_match?.p1_score || 0} - ${stats.pong_match?.p2_score || 0}
+            </div>
+            <div class="time">${formatTime(new Date(stats.created_at))}</div>
+          </div>
+        
+          <div class="game-stats-avatar-section">
+            <div class="avatar-container">
+              <img class="avatar" src="/static/images/kirby.png" alt="avatar" id="p2-avatar">
+            </div>
+            <div class="avatar-name" id="p2-name">${stats.pong_match?.player2?.username || 'Player 2'}</div>
           </div>
         </div>
 
