@@ -18,6 +18,16 @@ export class GameManager {
     this.p1PowerupBar = document.getElementById('p1-powerup-bar')
     this.p2PowerupBar = document.getElementById('p2-powerup-bar')
     this.powerup_charge_num = [0, 0]
+
+    this.gameHeader = document.getElementById('game-header-text')
+    this.prevGameTurn = 0
+  }
+
+  updateTurn(gameTurn) {
+    if (gameTurn && gameTurn !== this.prevGameTurn) {
+      this.gameHeader.innerHTML = `Turn ${gameTurn}`
+      this.prevGameTurn = gameTurn
+    }
   }
 
   switchColorIndicator(playerNum, colorIndex) {
