@@ -30,13 +30,11 @@
   width: 0.5rem;
 }
 
-/* Track */
 .scrollable-container::-webkit-scrollbar-track {
   border-radius: 1rem;
   background-color: var(--charcoal-700);
 }
  
-/* Handle */
 .scrollable-container::-webkit-scrollbar-thumb {
   background: var(--charcoal-400);
   border-radius: 10px;
@@ -44,7 +42,6 @@
   transition: 0.2s;
 }
 
-/* Handle on hover */
 .scrollable-container::-webkit-scrollbar-thumb:hover {
   background: var(--charcoal-500); 
   cursor: pointer;
@@ -74,11 +71,6 @@
 .match-record:active {
   background-color: var(--charcoal-800);
   cursor: pointer;
-}
-
-.match-record .record-section {
-  color: #000;
-  font-weight: 800;
 }
 
 .match-record .score {
