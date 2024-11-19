@@ -117,7 +117,7 @@
   height: 2.5rem;
   box-sizing: border-box;
   border-style: solid;
-  border-width: 0rem; /* avatar border circle */
+  border-width: 0.15rem; /* avatar border circle */
   border-color: var(--charcoal-100);
   border-radius: 50%;
 }
@@ -232,7 +232,7 @@
   }
   
   .game-stats-score {
-	font-size: 2.5rem;
+	font-size: 2rem;
 	font-weight: bold;
 	margin: 0.5rem 0;
 	color: var(--charcoal-300);
@@ -298,14 +298,14 @@
   }
   
   .match-record-large .avatar-container {
-	width: 7rem;
-	height: 7rem;
+	width: 5rem;
+	height: 5rem;
   }
   
   .match-record-large .avatar {
-	width: 7rem;
-	height: 7rem;
-	border-width: 0rem;
+	width: 5rem;
+	height: 5rem;
+	border-width: 0.15rem;
   }
   
   .match-record-large .avatar-name {
@@ -315,9 +315,9 @@
   }
   
   .match-record-large .score {
-	font-size: 2rem;
-	padding: 0.75rem 1.5rem;
-	border-radius: 1.5rem;
+	font-size: 1.5rem;
+	padding: 0.5rem 1rem;
+	border-radius: 1.2rem;
 	text-align: center;
   }
   
@@ -332,6 +332,7 @@
 	flex-direction: column;
 	gap: 0.25rem;
 	margin-top: 0.5rem;
+	text-align: center;
   }
 
   .match-stats-game-details-row {
