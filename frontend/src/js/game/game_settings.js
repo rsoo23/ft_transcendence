@@ -38,3 +38,11 @@ export function initGameSettings() {
     ballSpeedValue.textContent = 25;
   });
 }
+
+export function getGameSettingsInfo() {
+  return {
+    game_score: gameScore,
+    ball_speed_increment: ballSpeedIncrement,
+    is_powerup_checked: isPowerupChecked,
+  }
+}

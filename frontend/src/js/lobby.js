@@ -7,6 +7,7 @@ import { queueNotification } from "./ui_utils/notification_utils.js";
 import { loadPage, loadUsersInfo } from "./router.js";
 import { joinMatch, defaultMatchOnClose } from "./game/api.js";
 import { initLobbyList } from "./lobby_list.js";
+import { getGameSettingsInfo } from "./game/game_settings.js";
 import { checkInTournament, checkIsTournamentOpponent, joinTournament, leaveTournament, updateTournamentPlayerReady } from "./tournament.js";
 
 var lobbySocket = null
@@ -232,7 +233,10 @@ export async function joinLobby(id) {
     }
   }
   lobbySocket.onclose = (e) => closeLobbySocket(e, eCodeHandler)
-  lobbySocket.onopen = () => {}
+  lobbySocket.onopen = () => lobbySocket.send(JSON.stringify({
+    action: 'settings',
+    info: getGameSettingsInfo(),
+  }))
 }
 
 function closeLobbySocket(e, callback) {

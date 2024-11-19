@@ -42,6 +42,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
             users.append({'id': self.user_id, 'ready': False})
             cache.set(self.group_lobby, json.dumps(users))
             self.cache_lock = asyncio.Lock()
+            self.game_settings = {}
             await self.channel_layer.group_add('lobbyhost', self.channel_name)
             await self.channel_layer.group_send(GROUP_LOBBYLIST, {
                 'type': 'lobby.receive.id',
@@ -91,6 +92,12 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                     'ready': content['value'],
                 })
 
+            case 'settings':
+                if not self.is_host:
+                    return
+
+                self.game_settings = content['info']
+
             case 'start':
                 if not self.is_host:
                     return
@@ -120,7 +127,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
 
                 else:
                     users = await self.get_lobby_info()
-                    match = await create_match_and_game(users[0]['id'], users[1]['id'], 'online_classic')
+                    match = await create_match_and_game(users[0]['id'], users[1]['id'], 'online_classic', -1, self.game_settings)
                     await self.channel_layer.group_send(self.group_lobby, {
                         'type': 'lobby.notify.match',
                         'id': match.id,
@@ -255,7 +262,7 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                         opponent['id'],
                         'online_tournament',
                         event['tournament_id'],
-                        { 'tournament_round': event['tournament_round'] },
+                        { 'tournament_round': event['tournament_round'] } | self.game_settings,
                     )
                     await self.channel_layer.group_send(self.group_lobby, {
                         'type': 'lobby.notify.match',

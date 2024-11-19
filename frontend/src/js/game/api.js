@@ -4,23 +4,18 @@ import { initRenderer, stopRenderer, updateRenderer } from './worker_ui_handler.
 import { loadPage, loadMainMenuContent } from '../router.js'
 import { PONG_INPUTS } from '../global_vars.js'
 import { leaveLobby } from '../lobby.js'
-import { ballSpeedIncrement, gameScore, isPowerupChecked } from "./game_settings.js";
+import { getGameSettingsInfo } from "./game_settings.js";
 
 var matchSocket = null
 var matchCallback = null
 var inMatchID = 0
 
 export async function createMatch(player1ID, player2ID, type) {
-  const info = {
-    'game_score': gameScore,
-    'ball_speed_increment': ballSpeedIncrement,
-    'is_powerup_checked': isPowerupChecked
-  }
   const response = await postRequest('/api/pong/create-match/', {
     'player1_uuid': player1ID,
     'player2_uuid': player2ID,
     'type': type,
-    'info': info
+    'info': getGameSettingsInfo(),
   })
   if (!response['success']) {
     console.log(response['Error'])
