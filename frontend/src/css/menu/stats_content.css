@@ -298,13 +298,13 @@
   }
   
   .match-record-large .avatar-container {
-	width: 8rem;
-	height: 8rem;
+	width: 7rem;
+	height: 7rem;
   }
   
   .match-record-large .avatar {
-	width: 8rem;
-	height: 8rem;
+	width: 7rem;
+	height: 7rem;
 	border-width: 0rem;
   }
   
@@ -318,6 +318,7 @@
 	font-size: 2rem;
 	padding: 0.75rem 1.5rem;
 	border-radius: 1.5rem;
+	text-align: center;
   }
   
   .match-record-large .time {

@@ -200,7 +200,17 @@ export async function loadMatchDetails(matchId) {
 	  const content = matchStatsContainer.querySelector('.content');
 	  
 	  content.innerHTML = generateMatchStatsHTML(matchStats);
-  
+
+      const p1Avatar = document.getElementById('p1-avatar');
+      const p2Avatar = document.getElementById('p2-avatar');
+
+      if (matchStats.pong_match?.player1?.id) {
+        loadUserAvatar(p1Avatar, matchStats.pong_match.player1.id);
+      }
+
+      if (matchStats.pong_match?.player2?.id) {
+        loadUserAvatar(p2Avatar, matchStats.pong_match.player2.id);
+     }
 	} catch (error) {
 	  console.error('Error loading match details:', error);
 	}
