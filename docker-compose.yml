@@ -42,7 +42,8 @@ services:
   nginx:
     image: nginx:1.27.0-alpine
     ports:
-      - 8000:8000
+      - 80:80
+      - 443:443
     networks:
       - django_net
     depends_on:
@@ -52,6 +53,7 @@ services:
       - django_statics:/var/www/django
       - django_media:/var/www/media
       - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./config/nginx/certificates:/etc/nginx/certificates
     env_file:
       - .env
     restart: unless-stopped
