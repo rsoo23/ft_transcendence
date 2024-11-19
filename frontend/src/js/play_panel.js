@@ -7,6 +7,7 @@ import { PanelSwitcher } from "./ui_utils/panelswitcher_utils.js";
 import { initClassicLobby, updateClassicLobby, initTournamentLobby, updateTournamentLobby, getLobbyType, checkInLobby } from "./lobby.js";
 import { checkInTournament, loadTournamentList } from "./tournament.js";
 import { ballSpeedIncrement, gameScore, isPowerupChecked } from "./game/game_settings.js";
+import { initGameSettings } from "./game/game_settings.js";
 
 // for moving stuff
 export var startingMenuSwitcher = null
@@ -105,4 +106,15 @@ export async function tryReturnToLobby() {
     divSwitcher.setCurrentDiv('play-lobby-container', 'play-tournament-container', true)
     loadTournamentList()
   }
+}
+
+export async function goToGameSettings(currentDiv, backCallback, startName, startCallback) {
+  startingMenuSwitcher.disableDivInput('play-select-container')
+  await loadContentToTarget('menu/play_settings_content.html', 'play-settings-container')
+  document.getElementById('settingsback').onclick = backCallback
+  const startButton = document.getElementById('start-game')
+  startButton.onclick = startCallback
+  startButton.textContent = startName
+  divSwitcher.setCurrentDiv(currentDiv, 'play-settings-container')
+  initGameSettings()
 }
