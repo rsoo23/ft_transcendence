@@ -7,6 +7,8 @@ import { loadChatInterface } from "../realtime_chat/chat_utils.js"
 import { loadUsersInfo } from "../router.js"
 import { loadUserAvatar } from "../settings/upload_avatar.js"
 import { getColor } from "../ui_utils/color_utils.js"
+import { queueNotification } from "../ui_utils/notification_utils.js"
+import { checkInLobby, getLobbyID, getLobbyType } from "../lobby.js"
 
 export const FRIEND_LIST_STATE = {
   SHOWING_FRIEND_LIST: 0,
@@ -280,6 +282,14 @@ function initFriendRecordIcon(icon, iconId, userId) {
 
   switch (iconId) {
     case 'challenge-icon':
+      callback = () => {
+        if (checkInLobby()) {
+          // createGameInviteNotification('uyanftouywanyutnafwyotwyuntyawuntyuwantyuwantuywntuywntuywantyuwantyuwantuywntuyn', 0, false)
+          sendToFriendSystemSocket({ action: 'game_lobby_invite', receiver_id: userId, lobby_id: getLobbyID(), is_tournament: (getLobbyType() == 'tournament') })
+        } else {
+          queueNotification('magenta', 'You are not in a lobby.', () => {})
+        }
+      }
       break
     case 'chat-icon':
       callback = (() => {

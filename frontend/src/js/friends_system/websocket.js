@@ -2,7 +2,7 @@ import { currentPageState, PAGE_STATE } from "../global_vars.js";
 import { getAccessToken } from "../network_utils/token_utils.js";
 import { currentChatUserId, loadChatInterface } from "../realtime_chat/chat_utils.js";
 import { initFriendsPage } from "../router.js";
-import { queueNotification } from "../ui_utils/notification_utils.js";
+import { queueNotification, createGameInviteNotification } from "../ui_utils/notification_utils.js";
 import { hideOverlay, showOverlay } from "../ui_utils/overlay_utils.js";
 import { currentFriendListState, FRIEND_LIST_STATE, loadFriendListPanel, loadFriendSearchPanel } from "./utils.js";
 
@@ -136,6 +136,11 @@ async function handleActionNotifications(data) {
     }
   } else if (data.action === 'block_friend_failed') {
     queueNotification('magenta', data.message, null)
+  } else if (data.action === 'game_lobby_invite_confirm') {
+    queueNotification('blue', data.message, null)
+  } else if (data.action === 'game_lobby_invite_receive') {
+    const info = JSON.parse(data.message)
+    createGameInviteNotification(info.username, info.lobby_id, info.is_tournament)
   } else {
     queueNotification('teal', data.message, null)
   }
