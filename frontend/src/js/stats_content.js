@@ -221,6 +221,7 @@ export async function loadMatchDetails(matchId) {
 	const duration = stats.match_duration ? formatDuration(stats.match_duration) : 'N/A';
     const gameDate = formatDate(new Date(stats.created_at));
     const gameTime = formatTime(new Date(stats.created_at));
+    const gameType = formatGameType(stats.pong_match?.type);
 	
     // Paddle bounces
     const totalBounces = stats.p1_paddle_bounces + stats.p2_paddle_bounces;
@@ -291,6 +292,7 @@ export async function loadMatchDetails(matchId) {
                 <div class="match-stats-game-details-row">Duration: ${duration}</div>
                 <div class="match-stats-game-details-row">Date: ${gameDate}</div>
                 <div class="match-stats-game-details-row">Time: ${gameTime}</div>
+                <div class="match-stats-game-details-row">Type: ${gameType}</div>
           </div>
           </div>
         
@@ -378,3 +380,12 @@ export async function loadMatchDetails(matchId) {
 	  return `${Math.round(seconds)}s`;
 	}
   }
+
+  function formatGameType(type) {
+     switch(type) {
+        case 'local_classic':
+            return 'Local Classic';
+        default:
+            return 'Online Play';
+     }
+}
