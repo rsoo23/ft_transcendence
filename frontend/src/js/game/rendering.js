@@ -88,6 +88,7 @@ class Countdown {
     renderInfo.fillTextScaled(text, pos.x, pos.y);
 
     renderInfo.ctx.stroke()
+    postMessage({ type: 'update_turn', payload: nextState.info.game_turn })
   }
 }
 
