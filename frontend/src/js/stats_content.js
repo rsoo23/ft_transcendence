@@ -196,6 +196,8 @@ function createScoreSection(match, isPlayer1) {
 export async function loadMatchDetails(matchId) {
 	try {
 	  const matchStats = await getRequest(`/api/game_stats/match-stats/${matchId}/`);
+      console.log('Full match stats:', matchStats);
+      console.log('Match type:', matchStats.pong_match?.type);
 	  const matchStatsContainer = document.getElementById('match-stats-container');
 	  const content = matchStatsContainer.querySelector('.content');
 	  
@@ -218,10 +220,14 @@ export async function loadMatchDetails(matchId) {
 
   function generateMatchStatsHTML(stats) {
 	// Format duration into minutes and seconds
+    console.log('Stats in generate HTML:', stats);
+    console.log('Pong match:', stats.pong_match);
+    console.log('Game type received:', stats.pong_match?.type);
 	const duration = stats.match_duration ? formatDuration(stats.match_duration) : 'N/A';
     const gameDate = formatDate(new Date(stats.created_at));
     const gameTime = formatTime(new Date(stats.created_at));
-    const gameType = formatGameType(stats.pong_match?.type);
+    const gameType = stats.pong_match?.type;
+    const formattedGameType = formatGameType(gameType);
 	
     // Paddle bounces
     const totalBounces = stats.p1_paddle_bounces + stats.p2_paddle_bounces;
@@ -292,7 +298,7 @@ export async function loadMatchDetails(matchId) {
                 <div class="match-stats-game-details-row">Duration: ${duration}</div>
                 <div class="match-stats-game-details-row">Date: ${gameDate}</div>
                 <div class="match-stats-game-details-row">Time: ${gameTime}</div>
-                <div class="match-stats-game-details-row">Type: ${gameType}</div>
+                <div class="match-stats-game-details-row">Type: ${formattedGameType}</div>
           </div>
           </div>
         
@@ -382,10 +388,15 @@ export async function loadMatchDetails(matchId) {
   }
 
   function formatGameType(type) {
-     switch(type) {
+    switch(type) {
         case 'local_classic':
-            return 'Local Classic';
-        default:
+            return 'Local Play';
+        case 'online_classic':
             return 'Online Play';
-     }
+        case 'tournament':
+            return 'Tournament';
+        default:
+            console.log('Unknown game type:', type);
+            return 'Unknown Type';
+    }
 }
