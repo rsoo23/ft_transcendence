@@ -247,6 +247,30 @@ export async function loadMatchDetails(matchId) {
         p2SwitchWidth = (stats.p2_color_switches / totalSwitches) * maxWidth;
     }
 
+    // Wall Hits
+    const totalWallHits = stats.p1_points_lost_by_wall_hit + stats.p2_points_lost_by_wall_hit;
+    let p1WallWidth, p2WallWidth;
+    
+    if (totalWallHits === 0) {
+        p1WallWidth = maxWidth / 2;
+        p2WallWidth = maxWidth / 2;
+    } else {
+        p1WallWidth = (stats.p1_points_lost_by_wall_hit / totalWallHits) * maxWidth;
+        p2WallWidth = (stats.p2_points_lost_by_wall_hit / totalWallHits) * maxWidth;
+    }
+    
+    // Wrong Color Hits
+    const totalWrongColorHits = stats.p1_points_lost_by_wrong_color + stats.p2_points_lost_by_wrong_color;
+    let p1WrongColorWidth, p2WrongColorWidth;
+    
+    if (totalWrongColorHits === 0) {
+        p1WrongColorWidth = maxWidth / 2;
+        p2WrongColorWidth = maxWidth / 2;
+    } else {
+        p1WrongColorWidth = (stats.p1_points_lost_by_wrong_color / totalWrongColorHits) * maxWidth;
+        p2WrongColorWidth = (stats.p2_points_lost_by_wrong_color / totalWrongColorHits) * maxWidth;
+    }
+
 	return `
 	  <div class="match-stats-details">
 
@@ -280,7 +304,7 @@ export async function loadMatchDetails(matchId) {
 
 
         <!-- Paddle Bounces Graph -->
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 150">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 100">
         <text x="300" y="30" font-family="Arial" font-size="20" fill="var(--charcoal-200)" text-anchor="middle" >Paddle Bounces</text>
     
         <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_paddle_bounces}</text>
@@ -292,21 +316,11 @@ export async function loadMatchDetails(matchId) {
             <rect x="${p1Width}" y="80" width="${p2Width}" height="30" fill="var(--blue-500)" rx="4"/>
             //rx is for rounded corners
         </g>
-        
-        <g transform="translate(80, 100)">
-            <!-- Player 1 -->
-            <rect x="0" y="0" width="20" height="20" fill="var(--yellow-500)" rx="4"/>
-            <text x="30" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 1</text>
-            
-            <!-- Player 2 -->
-            <rect x="120" y="0" width="20" height="20" fill="var(--blue-500)" rx="4"/>
-            <text x="150" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 2</text>
-        </g>
     </svg>
 
 
         <!-- Color Switches Graph -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 150">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 100">
             <text x="300" y="30" font-family="Arial" font-size="20" fill="var(--charcoal-200)" text-anchor="middle">Color Switches</text>
             <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_color_switches}</text>
             <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_color_switches}</text>    
@@ -315,7 +329,32 @@ export async function loadMatchDetails(matchId) {
                 <rect x="0" y="80" width="${p1SwitchWidth}" height="30" fill="var(--yellow-500)" rx="4"/>
                 <rect x="${p1SwitchWidth}" y="80" width="${p2SwitchWidth}" height="30" fill="var(--blue-500)" rx="4"/>
             </g>
+        </svg>
+    
+        <!-- Wall Hits Graph -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 100">
+            <text x="300" y="30" font-family="Arial" font-size="20" fill="var(--charcoal-200)" text-anchor="middle">Wall Hits</text>
+        
+            <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_points_lost_by_wall_hit}</text>
+            <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_points_lost_by_wall_hit}</text>    
             
+            <g transform="translate(80, -30)">
+                <rect x="0" y="80" width="${p1WallWidth}" height="30" fill="var(--yellow-500)" rx="4"/>
+                <rect x="${p1WallWidth}" y="80" width="${p2WallWidth}" height="30" fill="var(--blue-500)" rx="4"/>
+            </g>
+        </svg>
+        
+        <!-- Wrong Color Hits Graph -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 150">
+            <text x="300" y="30" font-family="Arial" font-size="20" fill="var(--charcoal-200)" text-anchor="middle">Wrong Color Hits</text>
+        
+            <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_points_lost_by_wrong_color}</text>
+            <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_points_lost_by_wrong_color}</text>    
+            
+            <g transform="translate(80, -30)">
+                <rect x="0" y="80" width="${p1WrongColorWidth}" height="30" fill="var(--yellow-500)" rx="4"/>
+                <rect x="${p1WrongColorWidth}" y="80" width="${p2WrongColorWidth}" height="30" fill="var(--blue-500)" rx="4"/>
+            </g>
             <g transform="translate(80, 100)">
                 <rect x="0" y="0" width="20" height="20" fill="var(--yellow-500)" rx="4"/>
                 <text x="30" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 1</text>
@@ -323,19 +362,6 @@ export async function loadMatchDetails(matchId) {
                 <text x="150" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 2</text>
             </g>
         </svg>
-    
-	    <div class="stats-grid">
-	      <div class="stat-row">
-	        <div class="stat-value">${stats.p1_points_lost_by_wall_hit}</div>
-	        <div class="stat-label">Wall Hits</div>
-	        <div class="stat-value">${stats.p2_points_lost_by_wall_hit}</div>
-	      </div>
-	      <div class="stat-row">
-	        <div class="stat-value">${stats.p1_points_lost_by_wrong_color}</div>
-	        <div class="stat-label">Wrong Color Hits</div>
-	        <div class="stat-value">${stats.p2_points_lost_by_wrong_color}</div>
-	      </div>
-	    </div>
 	  </div>
 	`;
   }

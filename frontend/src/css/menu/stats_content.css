@@ -242,22 +242,6 @@
 	color: var(--teal-500);
   }
   
-  .stats-grid {
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-  }
-  
-  .stat-row {
-	display: grid;
-	grid-template-columns: 1fr 2fr 1fr;
-	align-items: center;
-	text-align: center;
-	padding: 1rem;
-	background-color: var(--charcoal-700);
-	border-radius: 0.5rem;
-  }
-  
   .stat-label {
 	color: var(--charcoal-300);
   }
