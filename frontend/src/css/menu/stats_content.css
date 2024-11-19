@@ -104,6 +104,7 @@
 
 .match-record .score-time-section {
   gap: 0.3125rem;
+  text
 }
 
 .match-record .score-time-section {
@@ -331,4 +332,5 @@
   .match-record-large .time {
 	font-size: 1rem;
 	margin-top: 0.5rem;
+	text-align: center;
   }
