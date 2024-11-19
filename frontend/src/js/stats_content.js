@@ -200,7 +200,17 @@ export async function loadMatchDetails(matchId) {
 	  const content = matchStatsContainer.querySelector('.content');
 	  
 	  content.innerHTML = generateMatchStatsHTML(matchStats);
-  
+
+      const p1Avatar = document.getElementById('p1-avatar');
+      const p2Avatar = document.getElementById('p2-avatar');
+
+      if (matchStats.pong_match?.player1?.id) {
+        loadUserAvatar(p1Avatar, matchStats.pong_match.player1.id);
+      }
+
+      if (matchStats.pong_match?.player2?.id) {
+        loadUserAvatar(p2Avatar, matchStats.pong_match.player2.id);
+     }
 	} catch (error) {
 	  console.error('Error loading match details:', error);
 	}
@@ -209,51 +219,75 @@ export async function loadMatchDetails(matchId) {
   function generateMatchStatsHTML(stats) {
 	// Format duration into minutes and seconds
 	const duration = stats.match_duration ? formatDuration(stats.match_duration) : 'N/A';
+    const gameDate = formatDate(new Date(stats.created_at));
+    const gameTime = formatTime(new Date(stats.created_at));
 	
+    const total = stats.p1_paddle_bounces + stats.p2_paddle_bounces;
+    const maxWidth = 450; // Total available width for both bars
+    let p1Width = maxWidth;
+    let p2Width = 0;
+    
+    if (total > 0) {
+        p1Width = Math.max((stats.p1_paddle_bounces / total) * maxWidth, 30); // Minimum width of 30px
+        p2Width = Math.max((stats.p2_paddle_bounces / total) * maxWidth, 30);
+    }
+
 	return `
 	  <div class="match-stats-details">
-		<div class="match-header">
-		  <div class="match-info">
-			<p class="match-date">${formatDate(new Date(stats.created_at))}</p>
-			<p class="match-duration">Duration: ${duration}</p>
-		  </div>
-          </div>
 
-        <div class="players-container">
-          <div class="player-column">
-            <h3>${stats.pong_match?.player1?.username || 'Player 1'}</h3>
-            <p class="game-stats-score ${stats.pong_match?.p1_score > stats.pong_match?.p2_score ? 'winner' : ''}">${stats.pong_match?.p1_score || 0}</p>
+        <div class="match-record-large">
+          <div class="game-stats-avatar-section">
+            <div class="avatar-container">
+              <img class="avatar" src="/static/images/kirby.png" alt="avatar" id="p1-avatar">
+            </div>
+            <div class="avatar-name" id="p1-name">${stats.pong_match?.player1?.username || 'Player 1'}</div>
           </div>
-          <div class="vs-divider">VS</div>
-          <div class="player-column">
-            <h3>${stats.pong_match?.player2?.username || 'Player 2'}</h3>
-            <p class="game-stats-score ${stats.pong_match?.p2_score > stats.pong_match?.p1_score ? 'winner' : ''}">${stats.pong_match?.p2_score || 0}</p>
+        
+          <div class="score-time-section">
+            <div class="score" id="match-score" style="background-color: ${stats.pong_match?.p1_score > stats.pong_match?.p2_score ? 'var(--teal-500)' : 'var(--magenta-500)'}">
+              ${stats.pong_match?.p1_score || 0} - ${stats.pong_match?.p2_score || 0}
+            </div>
+
+            <div class=match-stats-game-details>
+                <div class="match-stats-game-details-row">Duration: ${duration}</div>
+                <div class="match-stats-game-details-row">Date: ${gameDate}</div>
+                <div class="match-stats-game-details-row">Time: ${gameTime}</div>
+          </div>
+          </div>
+        
+          <div class="game-stats-avatar-section">
+            <div class="avatar-container">
+              <img class="avatar" src="/static/images/kirby.png" alt="avatar" id="p2-avatar">
+            </div>
+            <div class="avatar-name" id="p2-name">${stats.pong_match?.player2?.username || 'Player 2'}</div>
           </div>
         </div>
 
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200">
-        <!-- Title -->
-        <text x="20" y="40" font-family="Arial" font-size="24" fill="#E2E8F0">Paddle Bounces</text>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 150">
+        <text x="300" y="30" font-family="Arial" font-size="20" fill="var(--charcoal-200)" text-anchor="middle" >Paddle Bounces</text>
     
         <!-- Value Label -->
-        <text x="20" y="100" font-family="Arial" font-size="18" fill="#E2E8F0">800</text>
+        <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_paddle_bounces}</text>
+        <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_paddle_bounces}</text>    
         
         <!-- Bars -->
-        <g transform="translate(80, 0)">
-            <!-- Single row for paddle bounces -->
-            <rect x="0" y="80" width="150" height="30" fill="#3B82F6" rx="4"/>
-            <rect x="150" y="80" width="300" height="30" fill="#EC4899" rx="4"/>
+        <g transform="translate(80, -30)">
+            <!-- Paddle bounces -->
+            <rect x="0" y="80" width="${p1Width}" height="30" fill="var(--yellow-500)" rx="4"/>
+            <rect x="${p1Width}" y="80" width="${p2Width}" height="30" fill="var(--blue-500)" rx="4"/>
+            //rx is for rounded corners
         </g>
+
         
         <!-- Legend -->
-        <g transform="translate(80, 150)">
+        <g transform="translate(80, 100)">
             <!-- Player 1 -->
-            <rect x="0" y="0" width="20" height="20" fill="#3B82F6" rx="4"/>
-            <text x="30" y="15" font-family="Arial" font-size="16" fill="#E2E8F0">Player 1</text>
+            <rect x="0" y="0" width="20" height="20" fill="var(--yellow-500)" rx="4"/>
+            <text x="30" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 1</text>
             
             <!-- Player 2 -->
-            <rect x="120" y="0" width="20" height="20" fill="#EC4899" rx="4"/>
-            <text x="150" y="15" font-family="Arial" font-size="16" fill="#E2E8F0">Player 2</text>
+            <rect x="120" y="0" width="20" height="20" fill="var(--blue-500)" rx="4"/>
+            <text x="150" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 2</text>
         </g>
     </svg>
 
