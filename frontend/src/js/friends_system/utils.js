@@ -287,9 +287,9 @@ function initFriendRecordIcon(icon, iconId, userId) {
         if (checkInLobby() && !checkInTournament()) {
           sendToFriendSystemSocket({ action: 'game_lobby_invite', receiver_id: userId, lobby_id: getLobbyID(), is_tournament: (getLobbyType() == 'tournament') })
         } else if (checkInTournament()) {
-          queueNotification('magenta', 'The tournament has already started.', () => {})
+          queueNotification('magenta', 'The tournament has already started', () => {})
         } else {
-          queueNotification('magenta', 'You are not in a lobby.', () => {})
+          queueNotification('magenta', 'You are not in a lobby', () => {})
         }
       }
       break
