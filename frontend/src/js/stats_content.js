@@ -304,8 +304,8 @@ export async function loadMatchDetails(matchId) {
 
 
         <!-- Paddle Bounces Graph -->
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 100">
-        <text x="300" y="30" font-family="Arial" font-size="20" fill="var(--charcoal-200)" text-anchor="middle" >Paddle Bounces</text>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 90">
+        <text x="300" y="30" font-family="Arial" font-size="18" fill="var(--charcoal-200)" text-anchor="middle" >Paddle Bounces</text>
     
         <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_paddle_bounces}</text>
         <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_paddle_bounces}</text>    
@@ -320,8 +320,8 @@ export async function loadMatchDetails(matchId) {
 
 
         <!-- Color Switches Graph -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 100">
-            <text x="300" y="30" font-family="Arial" font-size="20" fill="var(--charcoal-200)" text-anchor="middle">Color Switches</text>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 90">
+            <text x="300" y="30" font-family="Arial" font-size="18" fill="var(--charcoal-200)" text-anchor="middle">Color Switches</text>
             <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_color_switches}</text>
             <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_color_switches}</text>    
             
@@ -332,8 +332,8 @@ export async function loadMatchDetails(matchId) {
         </svg>
     
         <!-- Wall Hits Graph -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 100">
-            <text x="300" y="30" font-family="Arial" font-size="20" fill="var(--charcoal-200)" text-anchor="middle">Wall Hits</text>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 90">
+            <text x="300" y="30" font-family="Arial" font-size="18" fill="var(--charcoal-200)" text-anchor="middle">Wall Hits</text>
         
             <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_points_lost_by_wall_hit}</text>
             <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_points_lost_by_wall_hit}</text>    
@@ -346,7 +346,7 @@ export async function loadMatchDetails(matchId) {
         
         <!-- Wrong Color Hits Graph -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 150">
-            <text x="300" y="30" font-family="Arial" font-size="20" fill="var(--charcoal-200)" text-anchor="middle">Wrong Color Hits</text>
+            <text x="300" y="30" font-family="Arial" font-size="18" fill="var(--charcoal-200)" text-anchor="middle">Wrong Color Hits</text>
         
             <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_points_lost_by_wrong_color}</text>
             <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_points_lost_by_wrong_color}</text>    
