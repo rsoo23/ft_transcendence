@@ -102,7 +102,7 @@ export async function goToGameSettings(currentDiv, backCallback, startName, star
   startingMenuSwitcher.disableDivInput('play-select-container')
   await loadContentToTarget('menu/play_settings_content.html', 'play-settings-container')
   document.getElementById('settingsback').onclick = backCallback
-  const startButton = document.getElementById('start-game')
+  const startButton = document.getElementById('settings-start-game')
   startButton.onclick = startCallback
   startButton.textContent = startName
   divSwitcher.setCurrentDiv(currentDiv, 'play-settings-container')

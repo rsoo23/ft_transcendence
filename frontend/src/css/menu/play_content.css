@@ -178,12 +178,12 @@
   margin-right: auto;
 }
 
-#start-game, #reset-to-default {
+#settings-start-game, #start-game, #reset-to-default {
   background-color: var(--teal-500);
   transition: opacity 0.5s;
 }
 
-#start-game:disabled, #reset-to-default:disabled {
+#settings-start-game:disabled, #start-game:disabled, #reset-to-default:disabled {
   background-color: var(--charcoal-700);
   opacity: 0.5;
   cursor: auto;
