@@ -216,7 +216,7 @@
 .match-stats-details {
   background-color: var(--charcoal-800);
   border-radius: 1rem;
-  padding: 1rem 2rem 2rem 2rem;
+  padding: 0rem 2rem 2rem 2rem;
   width: 80%;
   max-width: 800px;
   margin: 0rem auto;
@@ -310,7 +310,7 @@
   border-radius: 1.2rem;
   text-align: center;
   width: fit-content;
-  margin: 0 auto; /* Center the score - top and bottom margin 0, left and right margins auto by browser */
+  margin: 0 auto; /* Center the score - top and bottom margin 0, left and right margins auto by browser*/
 }
 
 .match-record-large .time {
@@ -331,3 +331,7 @@
   font-size: 1rem;
   color: var(--charcoal-100);
 }
+
+.match-stats-details svg {
+	margin-top: -0.5rem;
+  }
