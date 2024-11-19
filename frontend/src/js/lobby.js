@@ -7,9 +7,11 @@ import { queueNotification } from "./ui_utils/notification_utils.js";
 import { loadPage, loadUsersInfo } from "./router.js";
 import { joinMatch, defaultMatchOnClose } from "./game/api.js";
 import { initLobbyList } from "./lobby_list.js";
+import { getGameSettingsInfo } from "./game/game_settings.js";
 import { checkInTournament, checkIsTournamentOpponent, joinTournament, leaveTournament, updateTournamentPlayerReady } from "./tournament.js";
 
 var lobbySocket = null
+var lobbyID = null
 var inLobby = false
 var lobbyType = ''
 var lobbyUsers = []
@@ -17,6 +19,10 @@ var lobbyStarting = false
 
 export function checkInLobby() {
   return inLobby
+}
+
+export function getLobbyID() {
+  return lobbyID
 }
 
 export function getLobbyType() {
@@ -81,6 +87,7 @@ export function getUserById(id) {
 }
 
 export async function joinLobby(id) {
+  lobbyID = id
   lobbySocket = new WebSocket(`ws://${window.location.host}/ws/lobby/${id}`, ['Authorization', getAccessToken()])
   lobbySocket.onmessage = async (e) => {
     const data = JSON.parse(e.data)
@@ -232,7 +239,10 @@ export async function joinLobby(id) {
     }
   }
   lobbySocket.onclose = (e) => closeLobbySocket(e, eCodeHandler)
-  lobbySocket.onopen = () => {}
+  lobbySocket.onopen = () => lobbySocket.send(JSON.stringify({
+    action: 'settings',
+    info: getGameSettingsInfo(),
+  }))
 }
 
 function closeLobbySocket(e, callback) {
@@ -255,6 +265,7 @@ export function leaveLobby() {
   lobbyType = ''
   lobbyUsers = []
   lobbyStarting = false
+  lobbyID = null
 
   // this is to check if you're leaving a lobby normally
   const path = window.location.pathname;

@@ -1,5 +1,8 @@
 import { getColor } from "./color_utils.js"
 import { addEventListenerTo, truncateString } from "./ui_utils.js"
+import { goToLobby } from "../lobby_list.js"
+import { leaveLobby } from "../lobby.js"
+import { loadMainMenuContent } from "../router.js"
 
 const NOTIFICATION_DURATION = 20000
 let notificationQueue = []
@@ -19,15 +22,50 @@ function processNotificationQueue() {
   const notification = createNotification(color, text, () => callback);
 
   notificationContainer.appendChild(notification)
+  setTimeout(() => deleteNotification(notification), NOTIFICATION_DURATION)
+}
+
+function deleteNotification(notification) {
+  notification.style.opacity = '0%'
+  notification.style.pointerEvents = 'auto'
+
   setTimeout(() => {
-    notification.style.opacity = '0%'
-    notification.style.pointerEvents = 'auto'
+    notification.remove()
+  }, 200)
+}
 
-    setTimeout(() => {
-      notificationContainer.firstChild.remove()
-    }, 200)
+export function createGameInviteNotification(username, lobbyID, isTournament) {
+  const type = (isTournament)? 'Tournament' : 'Classic'
+  const notificationContainer = document.getElementById('notification-container')
+  const notification = createNotification('blue', `${truncateString(username, 15)} has invited you to their ${type} lobby.`, () => {})
 
-  }, NOTIFICATION_DURATION)
+  const accept = document.createElement('button')
+  accept.textContent = 'check'
+  accept.classList.add('material-icons')
+  accept.classList.add('button')
+  accept.classList.add('round-button')
+  accept.style.setProperty('background-color', 'transparent')
+  accept.onclick = async () => {
+    deleteNotification(notification)
+    leaveLobby()
+    await loadMainMenuContent('play')
+    await goToLobby(lobbyID, isTournament)
+  }
+
+  const decline = document.createElement('button')
+  decline.textContent = 'close'
+  decline.classList.add('material-icons')
+  decline.classList.add('button')
+  decline.classList.add('round-button')
+  decline.style.setProperty('background-color', 'transparent')
+  decline.onclick = () => deleteNotification(notification)
+
+  notification.appendChild(accept)
+  notification.appendChild(decline)
+  notification.style.setProperty('width', 'fit-content')
+  notificationContainer.appendChild(notification)
+
+  setTimeout(() => deleteNotification(notification), NOTIFICATION_DURATION)
 }
 
 export function createNotification(color, text, callback) {
@@ -53,7 +91,7 @@ export function createNotification(color, text, callback) {
 
   addEventListenerTo(
     notification,
-    'mouseup',
+    'mousedown',
     async () => callback()
   )
 

@@ -53,7 +53,7 @@ export function closeLobbyListSocket() {
   }
 }
 
-export async function goToLobby(lobbyID, isTournament) {
+export async function goToLobby(currentDiv, lobbyID, isTournament) {
   const content = (isTournament)? 'menu/lobby_tournament_content.html' : 'menu/lobby_classic_content.html'
   await loadContentToTarget(content, 'play-lobby-container')
   closeLobbyListSocket()
@@ -64,7 +64,7 @@ export async function goToLobby(lobbyID, isTournament) {
   } else {
     initClassicLobby()
   }
-  divSwitcher.setCurrentDiv('play-lobby-list-container', 'play-lobby-container')
+  divSwitcher.setCurrentDiv(currentDiv, 'play-lobby-container')
   if (isTournament) {
     updateTournamentLobby()
   } else {
@@ -77,7 +77,7 @@ async function appendLobbyEntry(lobbyId) {
     const target = e.currentTarget
     const substr = target.id.substring('lobby-entry-'.length)
     const lobbyID = Number(substr)
-    await goToLobby(lobbyID, lobbyListTournament)
+    await goToLobby('play-lobby-list-container', lobbyID, lobbyListTournament)
   }
 
   const lobbyList = document.getElementById('lobby-list')
