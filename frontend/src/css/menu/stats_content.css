@@ -231,11 +231,6 @@
 	margin: 0rem auto;
   }
   
-  .match-header {
-	text-align: center;
-	margin-bottom: 2rem;
-  }
-  
   .match-date, .match-duration {
 	color: var(--charcoal-100);
 	margin: 0.5rem;

@@ -212,12 +212,6 @@ export async function loadMatchDetails(matchId) {
 	
 	return `
 	  <div class="match-stats-details">
-		<div class="match-header">
-		  <div class="match-info">
-			<p class="match-date">${formatDate(new Date(stats.created_at))}</p>
-			<p class="match-duration">Duration: ${duration}</p>
-		  </div>
-          </div>
 
         <div class="match-record-large">
           <div class="game-stats-avatar-section">
@@ -241,6 +235,11 @@ export async function loadMatchDetails(matchId) {
             <div class="avatar-name" id="p2-name">${stats.pong_match?.player2?.username || 'Player 2'}</div>
           </div>
         </div>
+
+		  <div class="match-info">
+			<p class="match-date">${formatDate(new Date(stats.created_at))}</p>
+			<p class="match-duration">Duration: ${duration}</p>
+		  </div>
 
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200">
         <!-- Title -->
