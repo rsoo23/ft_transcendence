@@ -30,8 +30,8 @@ class PvpTallyView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, user1_id, user2_id):
-        user1_wins = MatchStats.objects.filter(pong_match__winner_id=user1_id, pong_match__loser_id=user2_id).count()
-        user1_losses = MatchStats.objects.filter(pong_match__winner_id=user2_id, pong_match__loser_id=user1_id).count()
+        user1_wins = MatchStats.objects.filter(winner_id=user1_id, loser_id=user2_id).count()
+        user1_losses = MatchStats.objects.filter(winner_id=user2_id, loser_id=user1_id).count()
 
         data = {
             'wins': user1_wins,
@@ -45,8 +45,8 @@ class UserTotalTallyView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, user_id):
-        user_wins = MatchStats.objects.filter(pong_match__winner_id=user_id).count()
-        user_losses = MatchStats.objects.filter(pong_match__loser_id=user_id).count()
+        user_wins = MatchStats.objects.filter(winner_id=user_id).count()
+        user_losses = MatchStats.objects.filter(loser_id=user_id).count()
 
         data = {
             'wins': user_wins,
