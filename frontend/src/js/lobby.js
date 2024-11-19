@@ -257,10 +257,11 @@ export function leaveLobby() {
   lobbyStarting = false
 
   // this is to check if you're leaving a lobby normally
+  const path = window.location.pathname;
   if (document.getElementById('lobby-list') != null) {
     initLobbyList(isTournament)
     divSwitcher.setCurrentDiv('play-lobby-container', 'play-lobby-list-container')
-  } else {
+  } else if (path.startsWith('/menu/play')) {
     divSwitcher.setCurrentDiv('play-lobby-container', 'play-select-container')
   }
 
