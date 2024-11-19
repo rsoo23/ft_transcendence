@@ -1,7 +1,9 @@
 import { GameManager } from './game_manager.js'
 import { isPowerupChecked } from './game_settings.js'
 
-var workerUI = null
+const WORKER_UI_LINK = '/static/js/game/worker_ui.js'
+
+var workerUI = new Worker(WORKER_UI_LINK, { type: 'module' });
 
 const observer = new ResizeObserver((entries) => {
   const div = entries[0].target
@@ -10,14 +12,9 @@ const observer = new ResizeObserver((entries) => {
 
 // this should only be called once
 export function initRenderer() {
-  if (workerUI != null) {
-    workerUI.terminate()
-  }
-
   const div = document.getElementById('game-container')
   const canvas = document.getElementById('pongcanvas')
   const offscreen = canvas.transferControlToOffscreen();
-  workerUI = new Worker('./static/js/game/worker_ui.js', { type: 'module' });
   workerUI.postMessage({ type: 'updateCanvas', object: offscreen }, [offscreen]);
   workerUI.postMessage({ type: 'updateWindowSize', object: [div.offsetWidth, div.offsetHeight] })
   workerUI.postMessage({ type: 'start' })
@@ -53,7 +50,7 @@ export function initRenderer() {
 export function stopRenderer() {
   workerUI.terminate()
   observer.disconnect()
-  workerUI = null
+  workerUI = new Worker(WORKER_UI_LINK, { type: 'module' });
 }
 
 export function updateRenderer(states) {
