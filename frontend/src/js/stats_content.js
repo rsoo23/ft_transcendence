@@ -222,6 +222,16 @@ export async function loadMatchDetails(matchId) {
     const gameDate = formatDate(new Date(stats.created_at));
     const gameTime = formatTime(new Date(stats.created_at));
 	
+    const total = stats.p1_paddle_bounces + stats.p2_paddle_bounces;
+    const maxWidth = 450; // Total available width for both bars
+    let p1Width = maxWidth;
+    let p2Width = 0;
+    
+    if (total > 0) {
+        p1Width = Math.max((stats.p1_paddle_bounces / total) * maxWidth, 30); // Minimum width of 30px
+        p2Width = Math.max((stats.p2_paddle_bounces / total) * maxWidth, 30);
+    }
+
 	return `
 	  <div class="match-stats-details">
 
@@ -263,19 +273,20 @@ export async function loadMatchDetails(matchId) {
         <!-- Bars -->
         <g transform="translate(80, -30)">
             <!-- Paddle bounces -->
-            <rect x="0" y="80" width="150" height="30" fill="var(--teal-500)" rx="4"/>
-            <rect x="150" y="80" width="300" height="30" fill="var(--magenta-500)" rx="4"/>
+            <rect x="0" y="80" width="${p1Width}" height="30" fill="var(--yellow-500)" rx="4"/>
+            <rect x="${p1Width}" y="80" width="${p2Width}" height="30" fill="var(--blue-500)" rx="4"/>
+            //rx is for rounded corners
         </g>
 
         
         <!-- Legend -->
         <g transform="translate(80, 100)">
             <!-- Player 1 -->
-            <rect x="0" y="0" width="20" height="20" fill="var(--teal-500)" rx="4"/>
+            <rect x="0" y="0" width="20" height="20" fill="var(--yellow-500)" rx="4"/>
             <text x="30" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 1</text>
             
             <!-- Player 2 -->
-            <rect x="120" y="0" width="20" height="20" fill="var(--magenta-500)" rx="4"/>
+            <rect x="120" y="0" width="20" height="20" fill="var(--blue-500)" rx="4"/>
             <text x="150" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 2</text>
         </g>
     </svg>
