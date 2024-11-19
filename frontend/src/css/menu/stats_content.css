@@ -289,6 +289,9 @@
   
   .match-stats-details {
 	animation: fadeIn 0.3s ease-out;
+	border-radius: 1rem;
+	padding: 2rem;
+	margin-bottom: 2rem;
   }
   
   .match-record.selected {
@@ -333,14 +336,4 @@
   .match-record-large .time {
 	font-size: 1rem;
 	margin-top: 0.5rem;
-  }
-  
-  /* Update match-stats-details to better accommodate the new layout */
-  .match-stats-details {
-	background-color: var(--charcoal-800);
-	border-radius: 1rem;
-	padding: 2rem;
-	width: 90%;
-	max-width: 900px;
-	margin: 0 auto;
   }
