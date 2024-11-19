@@ -1,6 +1,7 @@
 import { getColor } from "./color_utils.js"
 import { addEventListenerTo, truncateString } from "./ui_utils.js"
 import { goToLobby } from "../lobby_list.js"
+import { leaveLobby } from "../lobby.js"
 import { loadMainMenuContent } from "../router.js"
 
 const NOTIFICATION_DURATION = 20000
@@ -46,6 +47,7 @@ export function createGameInviteNotification(username, lobbyID, isTournament) {
   accept.style.setProperty('background-color', 'transparent')
   accept.onclick = async () => {
     deleteNotification(notification)
+    leaveLobby()
     await loadMainMenuContent('play')
     await goToLobby(lobbyID, isTournament)
   }
