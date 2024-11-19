@@ -258,7 +258,7 @@ export async function loadMatchDetails(matchId) {
     
         <!-- Value Label -->
         <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_paddle_bounces}</text>
-        <text x="380" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_paddle_bounces}</text>    
+        <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_paddle_bounces}</text>    
         
         <!-- Bars -->
         <g transform="translate(80, -30)">
