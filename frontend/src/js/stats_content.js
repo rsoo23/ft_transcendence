@@ -393,10 +393,10 @@ export async function loadMatchDetails(matchId) {
             return 'Local Play';
         case 'online_classic':
             return 'Online Play';
-        case 'tournament':
+        case 'online_tournament':
             return 'Tournament';
         default:
             console.log('Unknown game type:', type);
-            return 'Unknown Type';
+            return type || 'Unknown Type';
     }
 }
