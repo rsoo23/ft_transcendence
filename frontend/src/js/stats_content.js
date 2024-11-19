@@ -253,29 +253,30 @@ export async function loadMatchDetails(matchId) {
           </div>
         </div>
 
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200">
-        <!-- Title -->
-        <text x="20" y="40" font-family="Arial" font-size="24" fill="#E2E8F0">Paddle Bounces</text>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 150">
+        <text x="300" y="30" font-family="Arial" font-size="20" fill="var(--charcoal-200)" text-anchor="middle" >Paddle Bounces</text>
     
         <!-- Value Label -->
-        <text x="20" y="100" font-family="Arial" font-size="18" fill="#E2E8F0">800</text>
+        <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_paddle_bounces}</text>
+        <text x="380" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_paddle_bounces}</text>    
         
         <!-- Bars -->
-        <g transform="translate(80, 0)">
-            <!-- Single row for paddle bounces -->
-            <rect x="0" y="80" width="150" height="30" fill="#3B82F6" rx="4"/>
-            <rect x="150" y="80" width="300" height="30" fill="#EC4899" rx="4"/>
+        <g transform="translate(80, -30)">
+            <!-- Paddle bounces -->
+            <rect x="0" y="80" width="150" height="30" fill="var(--teal-500)" rx="4"/>
+            <rect x="150" y="80" width="300" height="30" fill="var(--magenta-500)" rx="4"/>
         </g>
+
         
         <!-- Legend -->
-        <g transform="translate(80, 150)">
+        <g transform="translate(80, 100)">
             <!-- Player 1 -->
-            <rect x="0" y="0" width="20" height="20" fill="#3B82F6" rx="4"/>
-            <text x="30" y="15" font-family="Arial" font-size="16" fill="#E2E8F0">Player 1</text>
+            <rect x="0" y="0" width="20" height="20" fill="var(--teal-500)" rx="4"/>
+            <text x="30" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 1</text>
             
             <!-- Player 2 -->
-            <rect x="120" y="0" width="20" height="20" fill="#EC4899" rx="4"/>
-            <text x="150" y="15" font-family="Arial" font-size="16" fill="#E2E8F0">Player 2</text>
+            <rect x="120" y="0" width="20" height="20" fill="var(--magenta-500)" rx="4"/>
+            <text x="150" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 2</text>
         </g>
     </svg>
 
