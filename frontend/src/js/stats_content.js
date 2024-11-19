@@ -222,14 +222,25 @@ export async function loadMatchDetails(matchId) {
     const gameDate = formatDate(new Date(stats.created_at));
     const gameTime = formatTime(new Date(stats.created_at));
 	
-    const total = stats.p1_paddle_bounces + stats.p2_paddle_bounces;
-    const maxWidth = 450; // Total available width for both bars
-    let p1Width = maxWidth;
-    let p2Width = 0;
+    // Paddle bounces
+    const totalBounces = stats.p1_paddle_bounces + stats.p2_paddle_bounces;
+    const maxWidth = 450; // Total bounces available width for both bars
+    let p1Width = maxWidth / 2;
+    let p2Width = maxWidth / 2;
     
-    if (total > 0) {
-        p1Width = Math.max((stats.p1_paddle_bounces / total) * maxWidth, 30); // Minimum width of 30px
-        p2Width = Math.max((stats.p2_paddle_bounces / total) * maxWidth, 30);
+    if (totalBounces > 0) {
+        p1Width = Math.max((stats.p1_paddle_bounces / totalBounces) * maxWidth, 30); // Minimum width of 30px
+        p2Width = Math.max((stats.p2_paddle_bounces / totalBounces) * maxWidth, 30);
+    }
+
+    // Color switches
+    const totalSwitches = stats.p1_color_switches + stats.p2_color_switches;
+    let p1SwitchWidth = maxWidth / 2;
+    let p2SwitchWidth = maxWidth / 2;
+    
+    if (totalSwitches > 0) {
+        p1SwitchWidth = Math.max((stats.p1_color_switches / totalSwitches) * maxWidth, 30);
+        p2SwitchWidth = Math.max((stats.p2_color_switches / totalSwitches) * maxWidth, 30);
     }
 
 	return `
@@ -263,23 +274,21 @@ export async function loadMatchDetails(matchId) {
           </div>
         </div>
 
+
+        <!-- Paddle Bounces Graph -->
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 150">
         <text x="300" y="30" font-family="Arial" font-size="20" fill="var(--charcoal-200)" text-anchor="middle" >Paddle Bounces</text>
     
-        <!-- Value Label -->
         <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_paddle_bounces}</text>
         <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_paddle_bounces}</text>    
         
-        <!-- Bars -->
         <g transform="translate(80, -30)">
             <!-- Paddle bounces -->
             <rect x="0" y="80" width="${p1Width}" height="30" fill="var(--yellow-500)" rx="4"/>
             <rect x="${p1Width}" y="80" width="${p2Width}" height="30" fill="var(--blue-500)" rx="4"/>
             //rx is for rounded corners
         </g>
-
         
-        <!-- Legend -->
         <g transform="translate(80, 100)">
             <!-- Player 1 -->
             <rect x="0" y="0" width="20" height="20" fill="var(--yellow-500)" rx="4"/>
@@ -291,18 +300,27 @@ export async function loadMatchDetails(matchId) {
         </g>
     </svg>
 
-   
+
+        <!-- Color Switches Graph -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 150">
+            <text x="300" y="30" font-family="Arial" font-size="20" fill="var(--charcoal-200)" text-anchor="middle">Color Switches</text>
+            <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_color_switches}</text>
+            <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_color_switches}</text>    
+            
+            <g transform="translate(80, -30)">
+                <rect x="0" y="80" width="${p1SwitchWidth}" height="30" fill="var(--yellow-500)" rx="4"/>
+                <rect x="${p1SwitchWidth}" y="80" width="${p2SwitchWidth}" height="30" fill="var(--blue-500)" rx="4"/>
+            </g>
+            
+            <g transform="translate(80, 100)">
+                <rect x="0" y="0" width="20" height="20" fill="var(--yellow-500)" rx="4"/>
+                <text x="30" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 1</text>
+                <rect x="120" y="0" width="20" height="20" fill="var(--blue-500)" rx="4"/>
+                <text x="150" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 2</text>
+            </g>
+        </svg>
+    
 	    <div class="stats-grid">
-	      <div class="stat-row">
-	        <div class="stat-value">${stats.p1_paddle_bounces}</div>
-	        <div class="stat-label">Paddle Bounces</div>
-	        <div class="stat-value">${stats.p2_paddle_bounces}</div>
-	      </div>
-	      <div class="stat-row">
-	        <div class="stat-value">${stats.p1_color_switches}</div>
-	        <div class="stat-label">Color Switches</div>
-	        <div class="stat-value">${stats.p2_color_switches}</div>
-	      </div>
 	      <div class="stat-row">
 	        <div class="stat-value">${stats.p1_points_lost_by_wall_hit}</div>
 	        <div class="stat-label">Wall Hits</div>
