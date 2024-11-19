@@ -81,7 +81,7 @@ export function getUserById(id) {
 }
 
 export async function joinLobby(id) {
-  lobbySocket = new WebSocket(`ws://${window.location.host}/ws/lobby/${id}`, ['Authorization', getAccessToken()])
+  lobbySocket = new WebSocket(`wss://${window.location.host}/ws/lobby/${id}`, ['Authorization', getAccessToken()])
   lobbySocket.onmessage = async (e) => {
     const data = JSON.parse(e.data)
     console.log(data)

@@ -22,7 +22,7 @@ export function checkIsTournamentOpponent(id) {
 
 export async function joinTournament(id) {
   inTournament = true
-  tournamentSocket = new WebSocket(`ws://${window.location.host}/ws/tournament/${id}`, ['Authorization', getAccessToken()])
+  tournamentSocket = new WebSocket(`wss://${window.location.host}/ws/tournament/${id}`, ['Authorization', getAccessToken()])
   tournamentSocket.onmessage = async (e) => {
     const data = JSON.parse(e.data)
     console.log(data)

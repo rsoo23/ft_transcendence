@@ -18,7 +18,7 @@ var lobbyListTournament = false
 export async function initLobbyList(isTournament) {
   document.getElementById('lobby-list').innerHTML = ''
   lobbyListTournament = isTournament
-  lobbyListSocket = new WebSocket(`ws://${window.location.host}/ws/lobby_list/`, [
+  lobbyListSocket = new WebSocket(`wss://${window.location.host}/ws/lobby_list/`, [
     'Authorization', getAccessToken(),
     'IsTournament', `${isTournament}`,
   ])
