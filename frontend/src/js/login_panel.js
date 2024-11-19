@@ -4,13 +4,15 @@ import { resetInputField, setInputFieldHint } from "./ui_utils/input_field_utils
 import { postRequest, getRequest } from "./network_utils/api_requests.js";
 import { retrieveTokens } from "./network_utils/token_utils.js";
 
+export let loginInfo = {}
+
 export async function handleLogin() {
   const inputContainers = {
     'username': document.getElementById('login-username-input-container'),
     'password': document.getElementById('login-password-input-container')
   }
 
-  const loginInfo = {
+  loginInfo = {
     'username': document.getElementById('login-username').value,
     'password': document.getElementById('login-password').value,
   }
@@ -24,16 +26,17 @@ export async function handleLogin() {
 
     console.log(response)
     if (response.success) {
-        const tokenResponse = await retrieveTokens(loginInfo)
+      const twoFactorStatus = await status_2FA()
 
-        if (tokenResponse === 'success') {
-          // Check if 2FA is enabled for the user
-          const twoFactorStatus = await status_2FA()
-          if (twoFactorStatus) {
-              return 'success-with-2fa'  // This will trigger 2FA verification
-          }
-          return 'success'
-        }
+      if (twoFactorStatus) {
+        return 'success-with-2fa'  // This will trigger 2FA verification
+      }
+
+      const tokenResponse = await retrieveTokens(loginInfo)
+
+      if (tokenResponse === 'success') {
+        return 'success'
+      }
     } else {
       handleLoginErrors(inputContainers, response.errors)
       return 'error'
@@ -75,7 +78,7 @@ function handleLoginErrors(inputContainers, errors) {
   }
 }
 
-async function status_2FA() {
+export async function status_2FA() {
   const response = await getRequest('/api/two_factor_auth/status_2FA/')
   console.log(response.success)
   if (response.success)

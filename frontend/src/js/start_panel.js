@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function initializeApp() {
   await refreshToken()
+
   if (await verifyToken()) {
     setInterval(refreshToken, 10 * 60 * 1000)
     await loadPage('main_menu')

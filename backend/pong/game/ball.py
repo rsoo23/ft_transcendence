@@ -53,6 +53,8 @@ class Ball():
         elif game_info.player_turn == 2:
             game_info.player_turn = 1
 
+        game_info.game_turn += 1
+
         game_info.total_paddel_hits = 0
 
     def tick(self, game_info, dt):

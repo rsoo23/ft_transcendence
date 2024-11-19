@@ -43,6 +43,9 @@ export function initRenderer() {
       case 'activate_powerup':
         gameManager.activatePowerup(payload.activator_player_num, payload.is_powerup_activated)
         break
+      case 'update_turn':
+        gameManager.updateTurn(payload)
+        break
     }
   })
 }

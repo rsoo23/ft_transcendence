@@ -18,7 +18,7 @@ class CountdownTimer():
         states = ObjectState('countdown_timer')
         states.append(self.pos, 0.0)
 
-        states.append(self.pos, 1.0, {'player_turn': game_info.player_turn, 'time': int(countdown)})
+        states.append(self.pos, 1.0, {'game_turn': game_info.game_turn, 'player_turn': game_info.player_turn, 'time': int(countdown)})
 
         return states
 
