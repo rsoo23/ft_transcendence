@@ -133,7 +133,6 @@ export async function joinLobby(id) {
           await loadUsersInfo()
           user = getUserById(data.user)
 
-          // how
           if (!user) {
             console.error('unable to get new user info')
             break
@@ -159,7 +158,6 @@ export async function joinLobby(id) {
             await loadUsersInfo()
             user = getUserById(userInfo.id)
 
-            // how
             if (!user) {
               console.error('unable to get new user info')
               break

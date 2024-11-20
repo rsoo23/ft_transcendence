@@ -1,6 +1,3 @@
-// import { colorSwitcher } from "./api.js";
-
-// TODO: check if we still need this
 export class Pos2D {
   constructor(x, y) {
     this.x = x;

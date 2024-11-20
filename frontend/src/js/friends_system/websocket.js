@@ -46,7 +46,6 @@ export function connectFriendSystemSocket() {
   };
 
   friendsSystemSocket.onclose = function (e) {
-    console.log(e)
     if (e.wasClean) {
       console.log('Friend system socket connection closed cleanly');
     } else {

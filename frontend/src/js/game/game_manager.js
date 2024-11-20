@@ -1,4 +1,3 @@
-// import { PONG_INPUTS } from "../global_vars.js"
 import { getColor } from "../ui_utils/color_utils.js"
 
 export class GameManager {
