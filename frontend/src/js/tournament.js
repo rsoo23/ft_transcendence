@@ -170,6 +170,10 @@ export function loadTournamentList() {
   }
   console.log(usersInfo)
   const list = document.getElementById('bracket-list')
+  if (!list) {
+    return
+  }
+
   list.innerHTML = ''
   let column = tournamentInfo.length - 1
   for (const round of tournamentInfo) {
