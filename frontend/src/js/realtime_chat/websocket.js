@@ -33,7 +33,7 @@ export function connectChat(receiverId) {
   selectedUserId = receiverId
 
   // open a new WebSocket
-  const webSocketUrl = 'ws://' + window.location.host + '/ws/chat/' + selectedUserId + '/'
+  const webSocketUrl = 'wss://' + window.location.host + '/ws/chat/' + selectedUserId + '/'
 
   chatSocket = new WebSocket(webSocketUrl, ['Authorization', getAccessToken()])
 

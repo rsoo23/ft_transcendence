@@ -59,7 +59,7 @@ async function createSocket(matchID, callback) {
   inMatchID = matchID
   matchCallback = callback
   matchSocket = new WebSocket(
-    `ws://${window.location.host}/ws/pong/${matchID}`,
+    `wss://${window.location.host}/ws/pong/${matchID}`,
     ['Authorization', getAccessToken()]
   )
   matchSocket.onmessage = (e) => {

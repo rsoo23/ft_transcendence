@@ -13,7 +13,7 @@ export function connectUserUpdateSocket() {
     return
   }
 
-  const webSocketUrl = 'ws://' + window.location.host + '/ws/user_update/'
+  const webSocketUrl = 'wss://' + window.location.host + '/ws/user_update/'
   userUpdateSocket = new WebSocket(webSocketUrl, ['Authorization', getAccessToken()])
 
   userUpdateSocket.onopen = function (e) {
