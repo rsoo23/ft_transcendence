@@ -35,6 +35,9 @@ class ServerManager():
                 'paused': False,
                 'p1_consumer': None,
                 'p2_consumer': None,
+                'p1_api_last_msg_timer': 0,
+                'p2_api_last_msg_timer': 0,
+                'last_game_state': {},
             }
 
     def get_game(self, match_id):
@@ -138,9 +141,11 @@ class ServerManager():
 
         if match_info['p1_consumer'] != None:
             async_to_sync(match_info['p1_consumer'].close)()
+            match_info['p1_consumer'] = None
 
         if match_info['p2_consumer'] != None:
             async_to_sync(match_info['p2_consumer'].close)()
+            match_info['p2_consumer'] = None
 
     # deletes the game data from the array
     def delete_game(self, match_id):
@@ -249,15 +254,28 @@ class ServerManager():
                 msg = match_info['game_info'].tick(GameLogic.sec_per_frame)
                 accumulator_ms -= GameLogic.ms_per_frame
 
+            # decrease timer for api users (this is why you ping)
+            if match_info['p1_api_last_msg_timer'] > 0:
+                match_info['p1_api_last_msg_timer'] -= delta_time
+
+            if match_info['p2_api_last_msg_timer'] > 0:
+                match_info['p2_api_last_msg_timer'] -= delta_time
+
             # send message to clients :]
             if msg != None:
+                match_info['last_game_state'] = msg
                 try:
                     if match_info['p1_consumer'] != None:
                         async_to_sync(match_info['p1_consumer'].send_json)(msg)
+                    elif match_info['p1_api_last_msg_timer'] == 0:
+                        raise Exception()
+
                     if match_info['p2_consumer'] != None:
                         async_to_sync(match_info['p2_consumer'].send_json)(msg)
+                    elif match_info['p2_api_last_msg_timer'] == 0:
+                        raise Exception()
 
-                except:
+                except Exception:
                     print('unable to send message to socket, pausing')
                     match_info['paused'] = True
 

@@ -1,4 +1,5 @@
 from adrf.decorators import api_view
+from rest_framework.response import Response
 from rest_framework.decorators import permission_classes, parser_classes
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
@@ -78,3 +79,48 @@ async def create_match(request):
 
     except Exception as error:
         return JsonResponse({'success': False, 'Error': str(error)}, status=401)
+
+def update_user_timeout(server_info, user):
+    ping_timer = 10000 # in ms
+    if request.user == match.player1:
+        server_info['p1_api_last_msg_timer'] = ping_timer
+
+    elif request.user == match.player2:
+        server_info['p2_api_last_msg_timer'] = ping_timer
+
+def get_active_match(match_id, user):
+    match = PongMatch.objects.get(id=match_id)
+
+    if request.user != match.player1 and request.user != match.player2:
+        raise ValueError('Forbidden access. User not in match data.')
+
+    server_info = server_manager.get_game(match_id)
+    if (not server_info):
+        raise ValueError('Match is no longer available.')
+
+    return server_info
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def ping_match(request, match_id):
+    try:
+        update_user_timeout(get_active_match(match_id, request.user), request.user)
+
+    except Exception as error:
+        return JsonResponse({'success': False, 'Error': str(error)}, status=401)
+
+    return JsonResponse({'success': True})
+
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_match_state(request, match_id):
+    try:
+        server_info = get_active_match(match_id, request.user)
+
+    except Exception as error:
+        return JsonResponse({'success': False, 'Error': str(error)}, status=401)
+
+    update_user_timeout(server_info, request.user)
+    return Response(server_info['last_game_state'])
