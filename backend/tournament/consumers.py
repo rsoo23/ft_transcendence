@@ -137,6 +137,13 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         })
 
     async def tournament_notify_left(self, event):
+        if self.opponent and event['user'] == self.opponent['id']:
+            await self.channel_layer.group_send(self.group_tournament, {
+                'type': 'tournament.match.end',
+                'winner_id': self.user_id,
+                'round': self.round,
+            })
+
         await self.send_json({
             'event': 'left',
             'user': event['user'],
