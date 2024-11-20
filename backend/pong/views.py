@@ -81,6 +81,7 @@ async def create_match(request):
         return JsonResponse({'success': False, 'Error': str(error)}, status=401)
 
 def update_user_timeout(server_info, user):
+    match = PongMatch.objects.get(id=match_id)
     ping_timer = 10000 # in ms
     if request.user == match.player1:
         server_info['p1_api_last_msg_timer'] = ping_timer
@@ -124,3 +125,24 @@ def get_match_state(request, match_id):
 
     update_user_timeout(server_info, request.user)
     return Response(server_info['last_game_state'])
+
+@csrf_exempt
+@api_view(['POST'])
+@parser_classes([JSONParser])
+@permission_classes([IsAuthenticated])
+def set_player_input(request, match_id):
+    try:
+        server_info = get_active_match(match_id, request.user)
+
+    except Exception as error:
+        return JsonResponse({'success': False, 'Error': str(error)}, status=401)
+
+    match = PongMatch.objects.get(id=match_id)
+    if request.user == match.player1:
+        player_num = 1
+
+    elif request.user == match.player2:
+        player_num = 2
+
+    server_manager.update_player_input(match_id, player_num, request.content['input'], request.content['value'])
+    update_user_timeout(server_info, request.user)
