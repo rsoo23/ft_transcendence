@@ -143,6 +143,6 @@ def set_player_input(request, match_id):
     elif request.user == match.player2:
         player_num = 2
 
-    server_manager.update_player_input(match_id, player_num, request.content['input'], request.content['value'])
+    server_manager.update_player_input(match_id, player_num, request.data['input'], request.data['value'])
     update_user_timeout(server_info, request.user)
     return JsonResponse({'success': True})
