@@ -1,7 +1,7 @@
 import { getAccessToken } from "./network_utils/token_utils.js";
 import { currentUserInfo, usersInfo, LOSE_BUTTON_MSGS } from "./global_vars.js";
 import { getRequest } from "./network_utils/api_requests.js";
-import { checkUserIsReady, validateAvatarImg, leaveLobby, getUserById } from "./lobby.js";
+import { checkUserIsReady, checkUserInLobby, validateAvatarImg, leaveLobby, getUserById } from "./lobby.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
 
 var tournamentSocket = null
@@ -130,12 +130,19 @@ export function loadTournamentList() {
 
     const ready = document.createElement('i')
     ready.classList.add('material-icons')
-    ready.textContent = (winner && winner.id == user.id)? 'emoji_events' : 'done'
-    if (user && !winner) {
-      ready.id = `tournament-ready-${user.id}`
-      ready.style.setProperty('visibility', (checkUserIsReady(user.id))? 'visible' : 'hidden')
-    } else {
-      ready.style.setProperty('visibility', (user && winner && winner.id == user.id)? 'visible' : 'hidden')
+    if (user) {
+      if (winner && winner.id == user.id) {
+        ready.textContent = 'emoji_events'
+        ready.style.setProperty('visibility', 'visible')
+      } else if (!checkUserInLobby(user.id)) {
+        ready.textContent = 'logout'
+        ready.style.setProperty('visibility', 'visible')
+        ready.style.setProperty('color', 'var(--magenta-500)')
+      } else if (!winner) {
+        ready.textContent = 'done'
+        ready.id = `tournament-ready-${user.id}`
+        ready.style.setProperty('visibility', (checkUserIsReady(user.id))? 'visible' : 'hidden')
+      }
     }
 
     const nameDiv = document.createElement('div')
@@ -144,9 +151,13 @@ export function loadTournamentList() {
 
     const div = document.createElement('div')
     div.classList.add('tournament-user-container')
-    if (user && winner) {
-      div.style.setProperty('background-color', (user.id == winner.id)? 'var(--teal-800)' : 'var(--magenta-800)')
-      div.style.setProperty('outline-color', (user.id == winner.id)? 'var(--teal-500)' : 'var(--magenta-500)')
+    if (user) {
+      if (winner) {
+        div.style.setProperty('background-color', (user.id == winner.id)? 'var(--teal-800)' : 'var(--magenta-800)')
+        div.style.setProperty('outline-color', (user.id == winner.id)? 'var(--teal-500)' : 'var(--magenta-500)')
+      } else if (!checkUserInLobby(user.id)) {
+        div.style.setProperty('background-color', 'var(--magenta-800)')
+      }
     }
     if (user && user.id == currentUserInfo.id) {
       div.classList.add('tournament-currentuser-container')
@@ -246,7 +257,7 @@ export function updateTournamentPlayerReady(id, isReady) {
     opponentReadyStatus.textContent = 'You lost...'
     if (button.textContent == 'Ready' || button.textContent == 'Unready') {
       const randInt = (max, min) => Math.ceil(Math.random() * (max - min) + min)
-      button.textContent = LOSE_BUTTON_MSGS[randInt(0, LOSE_BUTTON_MSGS.length)]
+      button.textContent = LOSE_BUTTON_MSGS[randInt(0, LOSE_BUTTON_MSGS.length - 1)]
       button.style.setProperty('background-color', 'var(--magenta-500)')
       button.onclick = leaveTournament
     }

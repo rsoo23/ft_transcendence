@@ -80,6 +80,9 @@ class ServerManager():
             match_info['game_info'].ended = True
             match_info['thread'].join()
 
+        p1_still_in = bool(match_info['p1_consumer'])
+        p2_still_in = bool(match_info['p2_consumer'])
+
         # self.disconnect_consumers_from_game(match_id)
         if match_info['p1_consumer'] != None:
             async_to_sync(match_info['p1_consumer'].close)()
@@ -99,7 +102,7 @@ class ServerManager():
             match_data.ended = True
             match_data.save()
 
-            if match_data.tournament != None:
+            if match_data.tournament != None and p1_still_in and p2_still_in:
                 is_p1_winner = (match_data.p1_score >= match_info['game_info'].win_score)
                 async_to_sync(self.channel_layer.group_send)(f'tournament-{match_data.tournament.id}', {
                     'type': 'tournament.match.end',
