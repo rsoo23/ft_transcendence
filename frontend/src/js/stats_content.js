@@ -7,9 +7,9 @@ export async function loadStatsPage() {
     // Get match stats from your API
     // console.log("Fetching match stats...");
     const matchStats = await getRequest('/api/game_stats/match-stats/');
-    const container = document.querySelector('.scrollable-container');
+    const container = document.querySelector('.match-scrollable-container');
     // if (!container) {
-    //     console.error("Could not find .scrollable-container");
+    //     console.error("Could not find .match-scrollable-container");
     //     return;
     // }
 
