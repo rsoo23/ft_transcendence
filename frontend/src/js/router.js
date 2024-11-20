@@ -1,7 +1,18 @@
-import { initHotbar, updateBorderColor, updateButtonState, } from "./ui_utils/hotbar_utils.js";
-import { initBackButton, initRandomColorButton, } from "./ui_utils/button_utils.js";
+import {
+  initHotbar,
+  updateBorderColor,
+  updateButtonState,
+} from "./ui_utils/hotbar_utils.js";
+import {
+  initBackButton,
+  initRandomColorButton,
+} from "./ui_utils/button_utils.js";
 import { initTogglePasswordVisibilityIcon } from "./ui_utils/input_field_utils.js";
-import { FRIEND_LIST_STATE, loadFriendListPanel, loadFriendSearchPanel, } from "./friends_system/utils.js";
+import {
+  FRIEND_LIST_STATE,
+  loadFriendListPanel,
+  loadFriendSearchPanel,
+} from "./friends_system/utils.js";
 import { handle2FA, initResendCodeButton } from "./2FA_panel.js";
 import { send_otp_2FA } from "./network_utils/2FA_utils.js";
 import { check_email, initEmailForm } from "./forgot_password/get_email.js";
@@ -14,18 +25,57 @@ import { initLogoutButton } from "./settings/logout.js";
 import { getRequest } from "./network_utils/api_requests.js";
 import { initEmailSettings } from "./settings/update_email.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
-import { currentPageState, PAGE_STATE, setCurrentPageState, setCurrentUserInfo, setUsersInfo } from "./global_vars.js";
+import {
+  currentPageState,
+  PAGE_STATE,
+  setCurrentPageState,
+  setCurrentUserInfo,
+  setUsersInfo,
+} from "./global_vars.js";
 import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
 import { initUsernameSettings } from "./settings/update_username.js";
-import { closeFriendSystemSocket, connectFriendSystemSocket, } from "./friends_system/websocket.js";
-import { initPlayDivs, startingMenuSwitcher, divSwitcher, loadMultiplayerTest, startLocalGame, tryReturnToLobby, goToGameSettings } from "./play_panel.js";
+import {
+  closeFriendSystemSocket,
+  connectFriendSystemSocket,
+} from "./friends_system/websocket.js";
+import {
+  initPlayDivs,
+  startingMenuSwitcher,
+  divSwitcher,
+  loadMultiplayerTest,
+  startLocalGame,
+  tryReturnToLobby,
+  goToGameSettings,
+} from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
-import { initClassicLobby, updateClassicLobby, createLobby, createTournamentLobby, initTournamentLobby, updateTournamentLobby, joinLobby } from "./lobby.js";
-import { initLobbyList, closeLobbyListSocket, goToLobby } from "./lobby_list.js";
-import { closeUserUpdateSocket, connectUserUpdateSocket } from "./user_updates/websocket.js";
+import {
+  initClassicLobby,
+  updateClassicLobby,
+  createLobby,
+  createTournamentLobby,
+  initTournamentLobby,
+  updateTournamentLobby,
+  joinLobby,
+} from "./lobby.js";
+import {
+  initLobbyList,
+  closeLobbyListSocket,
+  goToLobby,
+} from "./lobby_list.js";
+import {
+  closeUserUpdateSocket,
+  connectUserUpdateSocket,
+} from "./user_updates/websocket.js";
 import { init2FAToggle } from "./2FA_panel.js";
-import { generateArcBackground, generateGeometricBackground, getRandomInt, loadMainBackground, removeBackground, setBackgroundLinesColor } from "./animations/main_background.js";
+import {
+  generateArcBackground,
+  generateGeometricBackground,
+  getRandomInt,
+  loadMainBackground,
+  removeBackground,
+  setBackgroundLinesColor,
+} from "./animations/main_background.js";
 import { refreshToken, retrieveTokens } from "./network_utils/token_utils.js";
 import { initVerifyForm } from "./forgot_password/verify_code.js";
 import { initChangePasswordForm } from "./forgot_password/change_password.js";
@@ -60,24 +110,24 @@ window.addEventListener("popstate", async (event) => {
 
   if (path.startsWith("/menu")) {
     loadContentToMainMenu(lastUrlSegment);
-  } else if (path.startsWith('/main_menu')) {
-    await loadPage('main_menu');
-    await loadMainMenuContent('play');
-    setCurrentPageState(PAGE_STATE.IN_PLAY_PAGE)
+  } else if (path.startsWith("/main_menu")) {
+    await loadPage("main_menu");
+    await loadMainMenuContent("play");
+    setCurrentPageState(PAGE_STATE.IN_PLAY_PAGE);
   } else {
     loadContent(lastUrlSegment);
-    setCurrentPageState(PAGE_STATE.NOT_IN_MENU_PAGE)
+    setCurrentPageState(PAGE_STATE.NOT_IN_MENU_PAGE);
   }
 
-  if (!path.startsWith('/menu/friends')) {
-    closeChatSocket()
-  } else if (!path.startsWith('/menu')) {
-    closeFriendSystemSocket()
-    closeUserUpdateSocket()
+  if (!path.startsWith("/menu/friends")) {
+    closeChatSocket();
+  } else if (!path.startsWith("/menu")) {
+    closeFriendSystemSocket();
+    closeUserUpdateSocket();
   }
 
-  if (!path.startsWith('/menu/play')) {
-    closeLobbyListSocket()
+  if (!path.startsWith("/menu/play")) {
+    closeLobbyListSocket();
   }
 });
 
@@ -89,7 +139,7 @@ export async function loadContent(contentName) {
   try {
     const html = await getRequest(`/static/components/${htmlPath}`, "text");
 
-    document.getElementById('inner-body').innerHTML = html;
+    document.getElementById("inner-body").innerHTML = html;
 
     loadDynamicContent(contentName);
   } catch (error) {
@@ -108,8 +158,8 @@ export async function loadContentToMainMenu(contentName) {
     document.querySelector("#main-menu-panel > .content-container").innerHTML =
       html;
 
-    if (contentName !== 'friends') {
-      closeChatSocket()
+    if (contentName !== "friends") {
+      closeChatSocket();
     }
     updateBorderColor(contentName);
     updateButtonState(contentName);
@@ -133,59 +183,59 @@ export async function loadMainMenuContent(contentName) {
 // - initializes event listeners for any ui components
 async function loadDynamicContent(contentName) {
   switch (contentName) {
-    case 'start':
-      initStartPage()
-      break
-    case 'login':
-      initLoginPage()
-      break
-    case 'signup':
-      initSignupPage()
-      break
-    case 'main_menu':
-      initMainMenuPage()
-      break
-    case 'play':
-      initPlayPage()
-      setCurrentPageState(PAGE_STATE.IN_PLAY_PAGE)
-      break
-    case 'game':
+    case "start":
+      initStartPage();
+      break;
+    case "login":
+      initLoginPage();
+      break;
+    case "signup":
+      initSignupPage();
+      break;
+    case "main_menu":
+      initMainMenuPage();
+      break;
+    case "play":
+      initPlayPage();
+      setCurrentPageState(PAGE_STATE.IN_PLAY_PAGE);
+      break;
+    case "game":
       // TODO: move game stuff here
-      break
-    case 'friends':
-      initFriendsPage()
-      setCurrentPageState(PAGE_STATE.IN_FRIENDS_PAGE)
-      break
-    case 'stats':
-      initStatsPage()
-      setCurrentPageState(PAGE_STATE.IN_STATS_PAGE)
-      break
-    case 'how-to-play':
-      initHowToPlayPage()
-      setCurrentPageState(PAGE_STATE.IN_HOW_TO_PLAY_PAGE)
-      break
-    case 'settings':
-      initSettingsPage()
-      setCurrentPageState(PAGE_STATE.IN_SETTINGS_PAGE)
-      break
-    case 'forgot_password/get_email':
-      initGetEmailPage()
-      break
-    case 'forgot_password/verify_code':
-      initVerifyCodePage()
-      break
-    case 'forgot_password/change_password':
-      initChangePasswordPage()
-      break
-    case 'forgot_password/change_password':
-      initChangePasswordPage()
-      break
-    case '2fa_verify':
-      init2FAVerify()
-      break
-    case '2fa_enable':
-      init2FAEnable()
-      break
+      break;
+    case "friends":
+      initFriendsPage();
+      setCurrentPageState(PAGE_STATE.IN_FRIENDS_PAGE);
+      break;
+    case "stats":
+      initStatsPage();
+      setCurrentPageState(PAGE_STATE.IN_STATS_PAGE);
+      break;
+    case "how-to-play":
+      initHowToPlayPage();
+      setCurrentPageState(PAGE_STATE.IN_HOW_TO_PLAY_PAGE);
+      break;
+    case "settings":
+      initSettingsPage();
+      setCurrentPageState(PAGE_STATE.IN_SETTINGS_PAGE);
+      break;
+    case "forgot_password/get_email":
+      initGetEmailPage();
+      break;
+    case "forgot_password/verify_code":
+      initVerifyCodePage();
+      break;
+    case "forgot_password/change_password":
+      initChangePasswordPage();
+      break;
+    case "forgot_password/change_password":
+      initChangePasswordPage();
+      break;
+    case "2fa_verify":
+      init2FAVerify();
+      break;
+    case "2fa_enable":
+      init2FAEnable();
+      break;
     default:
       console.error("Error: invalid contentName");
   }
@@ -222,7 +272,7 @@ export async function loadUsersInfo() {
 }
 
 async function initStartPage() {
-  loadMainBackground()
+  loadMainBackground();
   initRandomColorButton("login-button", "start-page-panel", () =>
     loadPage("login")
   );
@@ -230,10 +280,9 @@ async function initStartPage() {
     loadPage("signup")
   );
   initRandomColorButton("surprise-button", "start-page-panel", () => {
-    removeBackground()
-    loadMainBackground()
-  }
-  );
+    removeBackground();
+    loadMainBackground();
+  });
 }
 
 async function initLoginPage() {
@@ -243,7 +292,7 @@ async function initLoginPage() {
     if (result === "success-with-2fa") {
       loadPage("2fa_verify");
     } else if (result === "success") {
-      setInterval(refreshToken, 10 * 60 * 1000)
+      setInterval(refreshToken, 10 * 60 * 1000);
       await loadPage("main_menu");
       loadMainMenuContent("play");
     }
@@ -282,13 +331,13 @@ async function initSignupPage() {
 }
 
 async function initMainMenuPage() {
-  loadMainBackground()
+  loadMainBackground();
   initHotbar();
   await loadCurrentUserInfo();
   await loadUsersInfo();
 
-  connectUserUpdateSocket()
-  connectFriendSystemSocket()
+  connectUserUpdateSocket();
+  connectFriendSystemSocket();
 }
 
 async function initPlayPage() {
@@ -297,54 +346,72 @@ async function initPlayPage() {
   // first page
   document.getElementById("localplay").onclick = async () => {
     await goToGameSettings(
-      'play-select-container',
-      () => divSwitcher.setCurrentDiv('play-settings-container', 'play-select-container'),
-      'Start Game',
+      "play-select-container",
+      () =>
+        divSwitcher.setCurrentDiv(
+          "play-settings-container",
+          "play-select-container"
+        ),
+      "Start Game",
       startLocalGame
-    )
-  }
+    );
+  };
   document.getElementById("onlineplay").onclick = () => {
-    startingMenuSwitcher.setCurrentDiv('playtype', 'gamemode')
+    startingMenuSwitcher.setCurrentDiv("playtype", "gamemode");
   };
 
   // second page
   const hostLobbyAndJoin = async (isTournament) => {
-    let lobbyID = null
+    let lobbyID = null;
     if (isTournament) {
-      lobbyID = await createTournamentLobby(20)
+      lobbyID = await createTournamentLobby(20);
     } else {
-      lobbyID = await createLobby()
+      lobbyID = await createLobby();
     }
 
     if (lobbyID == null) {
-      queueNotification('magenta', `Failed to create lobby.`, () => { })
-      return
+      queueNotification("magenta", `Failed to create lobby.`, () => {});
+      return;
     }
-    await goToLobby('play-settings-container', lobbyID, isTournament)
-  }
+    await goToLobby("play-settings-container", lobbyID, isTournament);
+  };
   const goToLobbyList = async (isTournament) => {
-    divSwitcher.disableDivInput('play-select-container')
-    await loadContentToTarget('menu/lobby_list_content.html', 'play-lobby-list-container')
-    document.getElementById('lobbylistback').onclick = () => {
-      closeLobbyListSocket()
-      divSwitcher.setCurrentDiv('play-lobby-list-container', 'play-select-container')
-    }
-    document.getElementById('lobby-host-button').onclick = async () => {
+    divSwitcher.disableDivInput("play-select-container");
+    await loadContentToTarget(
+      "menu/lobby_list_content.html",
+      "play-lobby-list-container"
+    );
+    document.getElementById("lobbylistback").onclick = () => {
+      closeLobbyListSocket();
+      divSwitcher.setCurrentDiv(
+        "play-lobby-list-container",
+        "play-select-container"
+      );
+    };
+    document.getElementById("lobby-host-button").onclick = async () => {
       await goToGameSettings(
-        'play-lobby-list-container',
-        () => divSwitcher.setCurrentDiv('play-settings-container', 'play-lobby-list-container'),
-        'Host Game',
+        "play-lobby-list-container",
+        () =>
+          divSwitcher.setCurrentDiv(
+            "play-settings-container",
+            "play-lobby-list-container"
+          ),
+        "Host Game",
         () => hostLobbyAndJoin(isTournament)
-      )
-    }
-    initLobbyList(isTournament)
-    divSwitcher.setCurrentDiv('play-select-container', 'play-lobby-list-container')
-  }
-  document.getElementById("gamemodeback").onclick = () => startingMenuSwitcher.setCurrentDiv('gamemode', 'playtype');
-  document.getElementById("quickplay").onclick = () => goToLobbyList(false)
+      );
+    };
+    initLobbyList(isTournament);
+    divSwitcher.setCurrentDiv(
+      "play-select-container",
+      "play-lobby-list-container"
+    );
+  };
+  document.getElementById("gamemodeback").onclick = () =>
+    startingMenuSwitcher.setCurrentDiv("gamemode", "playtype");
+  document.getElementById("quickplay").onclick = () => goToLobbyList(false);
   document.getElementById("tournament").onclick = () => goToLobbyList(true);
 
-  await tryReturnToLobby()
+  await tryReturnToLobby();
 }
 
 async function initStatsPage() {
@@ -360,11 +427,11 @@ export async function initFriendsPage(
     await loadFriendSearchPanel();
   }
 
-  await loadContentToTarget('menu/chat_demo.html', 'friends-content-container')
+  await loadContentToTarget("menu/chat_demo.html", "friends-content-container");
 }
 
 async function initHowToPlayPage() {
-  initHowToPlayDivs()
+  initHowToPlayDivs();
 }
 
 async function initSettingsPage() {
@@ -421,10 +488,7 @@ function initChangePasswordPage() {
 }
 
 function init2FAVerify() {
-  send_otp_2FA();
-  initBackButton(() => loadPage("login"));
-  initResendCodeButton(() => send_otp_2FA());
-  initRandomColorButton("submit-2fa-button", "two-fa-panel", async () => {
+  const handle2FAVerify = async () => {
     try {
       const result = await handle2FA();
 
@@ -432,42 +496,71 @@ function init2FAVerify() {
         return;
       }
 
-      const tokenResponse = await retrieveTokens(loginInfo);
+      localStorage.setItem("is2FAVerified", true);
 
-      if (tokenResponse === "success") {
-        loadPage("main_menu");
-        loadMainMenuContent("play");
-      }
+      loadPage("main_menu");
+      loadMainMenuContent("play");
     } catch (error) {
-      console.error(error)
+      console.error(error);
+    }
+  };
+
+  const input = document.getElementById("two-fa-code");
+
+  send_otp_2FA();
+  initBackButton(() => loadPage("login"));
+  initResendCodeButton(() => send_otp_2FA());
+  initRandomColorButton("submit-2fa-button", "two-fa-panel", async () =>
+    handle2FAVerify()
+  );
+
+  input.removeEventListener("keydown", handle2FAEnable);
+  input.addEventListener("keydown", async (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      await handle2FAVerify();
     }
   });
 }
 
 function init2FAEnable() {
+  const input = document.getElementById("two-fa-code");
+
   send_otp_2FA();
   initBackButton(() => {
     loadPage("main_menu");
     loadMainMenuContent("settings");
   });
   initResendCodeButton(() => send_otp_2FA());
-  initRandomColorButton("submit-2fa-button", "two-fa-panel", async () => {
-    try {
-      const result = await handle2FA();
+  initRandomColorButton("submit-2fa-button", "two-fa-panel", async () =>
+    handle2FAEnable()
+  );
 
-      if (result === "error") {
-        return;
-      }
-
-      const twoFactorToggle = document.querySelector(".profile-settings-toggle-input");
-      if (twoFactorToggle) {
-        twoFactorToggle.checked = true;
-      }
-
-      loadPage("main_menu");
-      loadMainMenuContent("settings");
-    } catch (error) {
-      console.error(error)
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      handle2FAEnable();
     }
-  })
+  });
 }
+
+const handle2FAEnable = async () => {
+  try {
+    const result = await handle2FA();
+
+    if (result === "error") {
+      return;
+    }
+
+    const twoFactorToggle = document.querySelector(
+      ".profile-settings-toggle-input"
+    );
+    if (twoFactorToggle) {
+      twoFactorToggle.checked = true;
+    }
+
+    loadPage("main_menu");
+    loadMainMenuContent("settings");
+  } catch (error) {
+    console.error(error);
+  }
+};
