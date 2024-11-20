@@ -20,6 +20,21 @@ from rest_framework import status
 
 from .emails import send_email
 
+@csrf_exempt
+def create_email_token(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        email = data.get('email')
+        encoded_jwt = jwt.encode({'email': email}, JWT_SECRET_KEY, algorithm= 'HS256')
+        if encoded_jwt is None:
+            return JsonResponse({'error': 'Token creation fail'}, status=405)
+        
+        response = JsonResponse({'success': True, 'message': 'Sending back Email_Token cookie'})
+        response.set_cookie('Email_Token', encoded_jwt, httponly = 'True', max_age=120)
+        return response
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def send_otp_2FA(request):

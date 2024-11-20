@@ -22,12 +22,6 @@ export function getRandomInt(min, max) {
 
 export function removeBackground() {
   const curves = document.getElementById('curves')
-  // const backgroundLines = document.querySelectorAll(`.line`)
-  //
-  // backgroundLines.forEach(line => {
-  //   // line.style.animation = `dashReversed 5s ease-in-out forwards`
-  //   line.classList.toggle('reversed')
-  // })
 
   curves.innerHTML = ''
 }

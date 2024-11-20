@@ -64,7 +64,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 	'user_management',
-    'token_management',
     'friends_system',
     'channels',
     'pong',

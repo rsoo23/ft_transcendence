@@ -3,14 +3,12 @@ import { getColor } from "./ui_utils/color_utils.js"
 export const ANIM_WAIT_DURATION = 550
 export const MAX_AVATAR_FILE_SIZE = 2000000
 
-// currentUserInfo
 export let currentUserInfo = {}
 
 export function setCurrentUserInfo(obj) {
   currentUserInfo = obj
 }
 
-// usersInfo
 export let usersInfo = {}
 
 export function setUsersInfo(obj) {
@@ -53,7 +51,6 @@ export function getUsername(userId) {
   }
 }
 
-// page state
 export const PAGE_STATE = {
   IN_PLAY_PAGE: 0,
   IN_STATS_PAGE: 1,
@@ -69,7 +66,6 @@ export function setCurrentPageState(state) {
   currentPageState = state
 }
 
-// avatar_paths
 export let avatarPaths = {}
 
 export function setAvatarPath(userId, avatarPath) {

@@ -1,7 +1,6 @@
 
 import { addEventListenerTo } from "./ui_utils.js"
 
-
 export function initTogglePasswordVisibilityIcon() {
   const togglePasswordVisibilityIcons = document.getElementsByClassName('toggle-password-visibility-icon')
 

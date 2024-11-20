@@ -61,18 +61,9 @@ export async function refreshToken() {
   return response.ok
 }
 
-export async function getIdToken(loginInfo) {
-  try {
-    await postRequest('/api/token_management/create_token/', loginInfo)
-  } catch (error) {
-    console.error('Error:', error);
-    alert('ID Token Creation Error');
-  }
-}
-
 export async function getEmailToken(email) {
   try {
-    await postRequest('/api/token_management/create_email_token/', email)
+    await postRequest('/api/two_factor_auth/create_email_token/', email)
   } catch (error) {
     console.error('Error:', error);
     alert('Email Token Creation Error');

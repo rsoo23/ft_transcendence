@@ -1,4 +1,3 @@
-
 import { getColor } from "./ui_utils/color_utils.js";
 import { resetInputField } from "./ui_utils/input_field_utils.js";
 import { postRequest } from "./network_utils/api_requests.js";

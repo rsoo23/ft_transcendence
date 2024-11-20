@@ -1,4 +1,4 @@
-import { currentUserInfo, getUserId, setOnlineStatus } from "../global_vars.js";
+import { currentUserInfo, getUserId } from "../global_vars.js";
 import { getRequest } from "../network_utils/api_requests.js";
 import { loadUserAvatar } from "../settings/upload_avatar.js";
 import { hideOverlay, showOverlay } from "../ui_utils/overlay_utils.js";

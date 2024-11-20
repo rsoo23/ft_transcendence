@@ -1,15 +1,7 @@
 import { getAccessToken } from "./network_utils/token_utils.js"
 import { getRequest } from "./network_utils/api_requests.js"
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
-import {
-  initClassicLobby,
-  updateClassicLobby,
-  createLobby,
-  createTournamentLobby,
-  initTournamentLobby,
-  updateTournamentLobby,
-  joinLobby,
-} from "./lobby.js";
+import { initClassicLobby, updateClassicLobby, initTournamentLobby, updateTournamentLobby, joinLobby } from "./lobby.js";
 import { divSwitcher } from "./play_panel.js";
 import { loadUserAvatar } from "./settings/upload_avatar.js"
 
@@ -27,13 +19,13 @@ export async function initLobbyList(isTournament) {
     const data = JSON.parse(e.data)
 
     switch (data.event) {
-    case 'receive':
-      appendLobbyEntry(data.id)
-      break
+      case 'receive':
+        appendLobbyEntry(data.id)
+        break
 
-    case 'remove':
-      removeLobbyEntry(data.id)
-      break
+      case 'remove':
+        removeLobbyEntry(data.id)
+        break
     }
   }
 
@@ -55,7 +47,7 @@ export function closeLobbyListSocket() {
 }
 
 export async function goToLobby(currentDiv, lobbyID, isTournament) {
-  const content = (isTournament)? 'menu/lobby_tournament_content.html' : 'menu/lobby_classic_content.html'
+  const content = (isTournament) ? 'menu/lobby_tournament_content.html' : 'menu/lobby_classic_content.html'
   await loadContentToTarget(content, 'play-lobby-container')
   closeLobbyListSocket()
   await joinLobby(lobbyID)

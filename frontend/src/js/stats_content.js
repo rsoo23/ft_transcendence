@@ -4,6 +4,7 @@ import { currentUserInfo } from "./global_vars.js";
 
 export async function loadStatsPage() {
   try {
+    // Get match stats from your API
     const matchStats = await getRequest('/api/game_stats/match-stats/');
     const container = document.querySelector('.scrollable-container');
 
