@@ -264,6 +264,12 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                         event['tournament_id'],
                         { 'tournament_round': event['tournament_round'] } | self.game_settings,
                     )
+                    await self.channel_layer.group_send(f'tournament-{event["tournament_id"]}', {
+                        'type': 'tournament.notify.match',
+                        'id': match.id,
+                        'p1': sender['id'],
+                        'p2': opponent['id'],
+                    })
                     await self.channel_layer.group_send(self.group_lobby, {
                         'type': 'lobby.notify.match',
                         'id': match.id,

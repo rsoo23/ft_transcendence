@@ -3,6 +3,8 @@ from .models import TournamentModel
 from django.core.cache import cache
 from .views import set_tournament_cache, clear_tournament_cache
 from pong.views import create_match_and_game
+from pong.server import server_manager
+import asyncio
 import json
 
 class TournamentConsumer(AsyncJsonWebsocketConsumer):
@@ -24,6 +26,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 
         tournament_info = json.loads(cache.get(f'tournament-info-{self.tournament_id}'))
         self.lobby_id = tournament_info['lobby_id']
+        self.current_match_id = 0
         self.opponent = None
         self.is_loser = False
         self.group_lobby = f'lobby-{self.lobby_id}'
@@ -138,6 +141,8 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 
     async def tournament_notify_left(self, event):
         if self.opponent and event['user'] == self.opponent['id']:
+            loop = asyncio.get_running_loop()
+            await loop.run_in_executor(None, server_manager.close_game, self.current_match_id)
             await self.channel_layer.group_send(self.group_tournament, {
                 'type': 'tournament.match.end',
                 'winner_id': self.user_id,
@@ -150,10 +155,10 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         })
 
     async def tournament_notify_match(self, event):
-        await self.send_json({
-            'event': 'match',
-            'id': id,
-        })
+        if self.user_id != event['p1'] and self.user_id != event['p2']:
+            return
+
+        self.current_match_id = event['id']
 
     async def tournament_notify_lose(self, event):
         if self.user_id == event['user']:
