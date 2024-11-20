@@ -257,7 +257,7 @@ export function updateTournamentPlayerReady(id, isReady) {
     opponentReadyStatus.textContent = 'You lost...'
     if (button.textContent == 'Ready' || button.textContent == 'Unready') {
       const randInt = (max, min) => Math.ceil(Math.random() * (max - min) + min)
-      button.textContent = LOSE_BUTTON_MSGS[randInt(0, LOSE_BUTTON_MSGS.length)]
+      button.textContent = LOSE_BUTTON_MSGS[randInt(0, LOSE_BUTTON_MSGS.length - 1)]
       button.style.setProperty('background-color', 'var(--magenta-500)')
       button.onclick = leaveTournament
     }
