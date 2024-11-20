@@ -1,8 +1,9 @@
 import { getAccessToken } from "./network_utils/token_utils.js";
 import { currentUserInfo, usersInfo, LOSE_BUTTON_MSGS } from "./global_vars.js";
 import { getRequest } from "./network_utils/api_requests.js";
-import { checkUserIsReady, checkUserInLobby, validateAvatarImg, leaveLobby, getUserById } from "./lobby.js";
+import { checkUserIsReady, checkUserInLobby, leaveLobby, getUserById } from "./lobby.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
+import { loadUserAvatar } from "./settings/upload_avatar.js"
 
 var tournamentSocket = null
 var tournamentInfo = {}
@@ -121,7 +122,7 @@ export function loadTournamentList() {
     const avatar = document.createElement('img')
     avatar.classList.add('profile-settings-avatar')
     if (user) {
-      avatar.src = validateAvatarImg(user.avatar_img)
+      loadUserAvatar(avatar, user.id)
     }
     const name = document.createElement('p')
     if (user) {
@@ -169,6 +170,10 @@ export function loadTournamentList() {
   }
   console.log(usersInfo)
   const list = document.getElementById('bracket-list')
+  if (!list) {
+    return
+  }
+
   list.innerHTML = ''
   let column = tournamentInfo.length - 1
   for (const round of tournamentInfo) {

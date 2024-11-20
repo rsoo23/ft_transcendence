@@ -58,11 +58,6 @@ export function initAvatarUpload() {
   }
 }
 
-function setDefaultAvatar() {
-  const avatar = document.querySelector("#profile-settings-container .profile-settings-avatar");
-  avatar.src = "/static/images/kirby.png";
-}
-
 async function uploadAvatarImage() {
   if (!imageToUpload) {
     return;
@@ -91,22 +86,22 @@ async function uploadAvatarImage() {
 }
 
 export async function loadUserAvatar(avatarElement, userId) {
-    try {
-        const response = await fetch(`/api/get_avatar_image/?user_id=${userId}`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Authorization': `Bearer ${getAccessToken()}` }
-    });
+  try {
+    const response = await fetch(`/api/get_avatar_image/?user_id=${userId}`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+  });
   
-    if (response.ok) {
-        const blob = await response.blob();
-        const imageUrl = URL.createObjectURL(blob);
-        avatarElement.src = imageUrl;
-    } else {
-        setDefaultAvatar(avatarElement);
-    }
-    } catch (error) {
-      console.error('Error loading avatar:', error);
-      setDefaultAvatar(avatarElement);
-    }
-    }
+  if (response.ok) {
+    const blob = await response.blob();
+    const imageUrl = URL.createObjectURL(blob);
+    avatarElement.src = imageUrl;
+  } else {
+    avatarElement.src = "/static/images/kirby.png";
+  }
+  } catch (error) {
+    console.error('Error loading avatar:', error);
+    avatarElement.src = "/static/images/kirby.png";
+  }
+}
