@@ -17,6 +17,8 @@ export async function handleLogout() {
       closeChatSocket()
       closeFriendSystemSocket()
 
+      localStorage.setItem('is2FAVerified', false)
+
       loadPage("start");
     } else {
       alert("Logout failed: " + (response.error || "Unknown error"));

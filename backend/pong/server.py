@@ -35,6 +35,9 @@ class ServerManager():
                 'paused': False,
                 'p1_consumer': None,
                 'p2_consumer': None,
+                'p1_api_last_msg_timer': 0,
+                'p2_api_last_msg_timer': 0,
+                'last_game_state': {},
             }
 
     def get_game(self, match_id):
@@ -80,6 +83,9 @@ class ServerManager():
             match_info['game_info'].ended = True
             match_info['thread'].join()
 
+        p1_still_in = bool(match_info['p1_consumer'])
+        p2_still_in = bool(match_info['p2_consumer'])
+
         # self.disconnect_consumers_from_game(match_id)
         if match_info['p1_consumer'] != None:
             async_to_sync(match_info['p1_consumer'].close)()
@@ -99,7 +105,7 @@ class ServerManager():
             match_data.ended = True
             match_data.save()
 
-            if match_data.tournament != None:
+            if match_data.tournament != None and p1_still_in and p2_still_in:
                 is_p1_winner = (match_data.p1_score >= match_info['game_info'].win_score)
                 async_to_sync(self.channel_layer.group_send)(f'tournament-{match_data.tournament.id}', {
                     'type': 'tournament.match.end',
@@ -138,9 +144,11 @@ class ServerManager():
 
         if match_info['p1_consumer'] != None:
             async_to_sync(match_info['p1_consumer'].close)()
+            match_info['p1_consumer'] = None
 
         if match_info['p2_consumer'] != None:
             async_to_sync(match_info['p2_consumer'].close)()
+            match_info['p2_consumer'] = None
 
     # deletes the game data from the array
     def delete_game(self, match_id):
@@ -182,14 +190,23 @@ class ServerManager():
         else:
             return
 
-        if match_info['p1_consumer'] == None or (match_info['local'] == False and match_info['p2_consumer'] == None):
+        self.try_start_game(match_id)
+
+    def try_start_game(self, match_id):
+        match_info = self.get_game(match_id)
+        if match_info == None:
+            return
+
+        if (
+            (match_info['p1_consumer'] == None and match_info['p1_api_last_msg_timer'] <= 0)
+            or (match_info['local'] == False and match_info['p2_consumer'] == None and match_info['p2_api_last_msg_timer'] <= 0)
+        ):
             return
 
         if match_info['thread'].is_alive():
             match_info['paused'] = False
             return
 
-        # NOTE: idk if update_player_consumer should be initializing the game, but eh
         self.start_game(match_id)
 
     def remove_player_consumer(self, match_id, player_num):
@@ -249,15 +266,28 @@ class ServerManager():
                 msg = match_info['game_info'].tick(GameLogic.sec_per_frame)
                 accumulator_ms -= GameLogic.ms_per_frame
 
+            # decrease timer for api users (this is why you ping)
+            if match_info['p1_api_last_msg_timer'] > 0:
+                match_info['p1_api_last_msg_timer'] -= delta_time
+
+            if match_info['p2_api_last_msg_timer'] > 0:
+                match_info['p2_api_last_msg_timer'] -= delta_time
+
             # send message to clients :]
             if msg != None:
+                match_info['last_game_state'] = msg
                 try:
                     if match_info['p1_consumer'] != None:
                         async_to_sync(match_info['p1_consumer'].send_json)(msg)
+                    elif match_info['p1_api_last_msg_timer'] <= 0:
+                        raise Exception()
+
                     if match_info['p2_consumer'] != None:
                         async_to_sync(match_info['p2_consumer'].send_json)(msg)
+                    elif not match_info['local'] and match_info['p2_api_last_msg_timer'] <= 0:
+                        raise Exception()
 
-                except:
+                except Exception:
                     print('unable to send message to socket, pausing')
                     match_info['paused'] = True
 

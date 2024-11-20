@@ -24,17 +24,16 @@ export async function handleLogin() {
   try {
     const response = await postRequest('/api/login/', loginInfo)
 
-    console.log(response)
     if (response.success) {
-      const twoFactorStatus = await status_2FA()
-
-      if (twoFactorStatus) {
-        return 'success-with-2fa'  // This will trigger 2FA verification
-      }
-
       const tokenResponse = await retrieveTokens(loginInfo)
 
       if (tokenResponse === 'success') {
+        const twoFactorStatus = await status_2FA()
+
+        if (twoFactorStatus) {
+          localStorage.setItem('is2FAEnabled', true)
+          return 'success-with-2fa'  // This will trigger 2FA verification
+        }
         return 'success'
       }
     } else {
@@ -80,7 +79,7 @@ function handleLoginErrors(inputContainers, errors) {
 
 export async function status_2FA() {
   const response = await getRequest('/api/two_factor_auth/status_2FA/')
-  console.log(response.success)
+
   if (response.success)
     return true
   else

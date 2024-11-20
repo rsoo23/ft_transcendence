@@ -11,6 +11,7 @@ import {
   joinLobby,
 } from "./lobby.js";
 import { divSwitcher } from "./play_panel.js";
+import { loadUserAvatar } from "./settings/upload_avatar.js"
 
 var lobbyListSocket = null
 var lobbyListTournament = false
@@ -94,11 +95,7 @@ async function appendLobbyEntry(lobbyId) {
 
   const lobbyIcon = document.createElement('img')
   lobbyIcon.classList.add('profile-settings-avatar')
-  if (userInfo.avatar_img == null) {
-    lobbyIcon.src = "/static/images/kirby.png";
-  } else {
-    lobbyIcon.setAttribute('src', userInfo.avatar_img)
-  }
+  loadUserAvatar(lobbyIcon, userInfo.id)
 
   const lobbyName = document.createElement('p')
   lobbyName.textContent = `${userInfo.username}'s Lobby`

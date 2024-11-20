@@ -138,12 +138,12 @@ class Ball():
             # check for vertical walls, if hit, score a point for one side
             if self.pos.x + Ball.size.x >= game_info.game_size.x or self.pos.x < 0:
                 if self.vector.x < 0:
-                    game_info.add_wall_hit(2)
+                    game_info.add_wall_hit(1)
                     game_info.score[1] += 1
                     self.pos.x = 0
 
                 else:
-                    game_info.add_wall_hit(1)
+                    game_info.add_wall_hit(2)
                     game_info.score[0] += 1
                     self.pos.x = game_info.game_size.x - Ball.size.x
 

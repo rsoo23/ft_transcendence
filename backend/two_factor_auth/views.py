@@ -35,7 +35,7 @@ def send_otp_2FA(request):
             user.save()
         
         otp = generate_otp()
-        cache.set(user.base32_secret, otp, timeout=30)
+        cache.set(user.base32_secret, otp, timeout=600)
         send_email(email, otp)
         
         return Response({

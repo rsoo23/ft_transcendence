@@ -1,8 +1,9 @@
 import { getAccessToken } from "./network_utils/token_utils.js";
 import { currentUserInfo, usersInfo, LOSE_BUTTON_MSGS } from "./global_vars.js";
 import { getRequest } from "./network_utils/api_requests.js";
-import { checkUserIsReady, validateAvatarImg, leaveLobby, getUserById } from "./lobby.js";
+import { checkUserIsReady, checkUserInLobby, leaveLobby, getUserById } from "./lobby.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
+import { loadUserAvatar } from "./settings/upload_avatar.js"
 
 var tournamentSocket = null
 var tournamentInfo = {}
@@ -25,40 +26,37 @@ export async function joinTournament(id) {
   tournamentSocket = new WebSocket(`ws://${window.location.host}/ws/tournament/${id}`, ['Authorization', getAccessToken()])
   tournamentSocket.onmessage = async (e) => {
     const data = JSON.parse(e.data)
-    console.log(data)
 
     switch (data.event) {
-    case 'info':
-      console.log(data.info.list)
-      tournamentInfo = data.info.list
-      tournamentCurrentOpponent = data.opponent
-      if (document.getElementById('bracket-list') == null) {
+      case 'info':
+        tournamentInfo = data.info.list
+        tournamentCurrentOpponent = data.opponent
+        if (document.getElementById('bracket-list') == null) {
+          break
+        }
+
+        loadTournamentList()
         break
-      }
 
-      loadTournamentList()
-      break
+      case 'winner':
+        const response = await getRequest(`/api/users/${data.user}/`)
+        tournamentWinner = response
 
-    case 'winner':
-      const response = await getRequest(`/api/users/${data.user}/`)
-      tournamentWinner = response
+        if (document.getElementById('bracket-list') == null) {
+          break
+        }
 
-      if (document.getElementById('bracket-list') == null) {
+        loadTournamentList()
         break
-      }
 
-      loadTournamentList()
-      break
+      case 'lose':
+        if (data.user != currentUserInfo.id) {
+          break
+        }
 
-    case 'lose':
-      if (data.user != currentUserInfo.id) {
+        tournamentIsLoser = true
+        updateTournamentPlayerReady(data.user, false)
         break
-      }
-
-      console.log('rip in pieces')
-      tournamentIsLoser = true
-      updateTournamentPlayerReady(data.user, false)
-      break
     }
   }
 
@@ -67,9 +65,9 @@ export async function joinTournament(id) {
     tournamentSocket = null
 
     if (e.code == 1006) {
-      queueNotification('magenta', 'Tournament is no longer available.', () => {})
+      queueNotification('magenta', 'Tournament is no longer available.', () => { })
     } else if (e.code == 1011) {
-      queueNotification('magenta', 'Invalid tournament.', () => {})
+      queueNotification('magenta', 'Invalid tournament.', () => { })
     }
 
     if (inTournament) {
@@ -77,7 +75,7 @@ export async function joinTournament(id) {
     }
   }
 
-  tournamentSocket.onopen = () => {}
+  tournamentSocket.onopen = () => { }
 }
 
 export function leaveTournament() {
@@ -121,7 +119,7 @@ export function loadTournamentList() {
     const avatar = document.createElement('img')
     avatar.classList.add('profile-settings-avatar')
     if (user) {
-      avatar.src = validateAvatarImg(user.avatar_img)
+      loadUserAvatar(avatar, user.id)
     }
     const name = document.createElement('p')
     if (user) {
@@ -130,12 +128,19 @@ export function loadTournamentList() {
 
     const ready = document.createElement('i')
     ready.classList.add('material-icons')
-    ready.textContent = (winner && winner.id == user.id)? 'emoji_events' : 'done'
-    if (user && !winner) {
-      ready.id = `tournament-ready-${user.id}`
-      ready.style.setProperty('visibility', (checkUserIsReady(user.id))? 'visible' : 'hidden')
-    } else {
-      ready.style.setProperty('visibility', (user && winner && winner.id == user.id)? 'visible' : 'hidden')
+    if (user) {
+      if (winner && winner.id == user.id) {
+        ready.textContent = 'emoji_events'
+        ready.style.setProperty('visibility', 'visible')
+      } else if (!checkUserInLobby(user.id)) {
+        ready.textContent = 'logout'
+        ready.style.setProperty('visibility', 'visible')
+        ready.style.setProperty('color', 'var(--magenta-500)')
+      } else if (!winner) {
+        ready.textContent = 'done'
+        ready.id = `tournament-ready-${user.id}`
+        ready.style.setProperty('visibility', (checkUserIsReady(user.id)) ? 'visible' : 'hidden')
+      }
     }
 
     const nameDiv = document.createElement('div')
@@ -144,9 +149,13 @@ export function loadTournamentList() {
 
     const div = document.createElement('div')
     div.classList.add('tournament-user-container')
-    if (user && winner) {
-      div.style.setProperty('background-color', (user.id == winner.id)? 'var(--teal-800)' : 'var(--magenta-800)')
-      div.style.setProperty('outline-color', (user.id == winner.id)? 'var(--teal-500)' : 'var(--magenta-500)')
+    if (user) {
+      if (winner) {
+        div.style.setProperty('background-color', (user.id == winner.id) ? 'var(--teal-800)' : 'var(--magenta-800)')
+        div.style.setProperty('outline-color', (user.id == winner.id) ? 'var(--teal-500)' : 'var(--magenta-500)')
+      } else if (!checkUserInLobby(user.id)) {
+        div.style.setProperty('background-color', 'var(--magenta-800)')
+      }
     }
     if (user && user.id == currentUserInfo.id) {
       div.classList.add('tournament-currentuser-container')
@@ -156,24 +165,25 @@ export function loadTournamentList() {
     div.appendChild(ready)
     return div
   }
-  console.log(usersInfo)
   const list = document.getElementById('bracket-list')
+  if (!list) {
+    return
+  }
+
   list.innerHTML = ''
   let column = tournamentInfo.length - 1
   for (const round of tournamentInfo) {
     const bracketContainer = document.createElement('div')
     bracketContainer.classList.add('tournament-bracket-container')
 
-    console.log(2 ** column)
     for (let i = 0; i < 2 ** column; i++) {
-    // for (const pairInfo of round) {
       const pair = document.createElement('div')
       pair.classList.add('tournament-pair-container')
 
-      const pairInfo = (i < round.length)? round[i] : null
-      const winner = (pairInfo && pairInfo.winner)? pairInfo.winner : null
-      const player1 = (pairInfo && pairInfo.player1)? getUserById(pairInfo.player1.id) : null
-      const player2 = (pairInfo && pairInfo.player2)? getUserById(pairInfo.player2.id) : null
+      const pairInfo = (i < round.length) ? round[i] : null
+      const winner = (pairInfo && pairInfo.winner) ? pairInfo.winner : null
+      const player1 = (pairInfo && pairInfo.player1) ? getUserById(pairInfo.player1.id) : null
+      const player2 = (pairInfo && pairInfo.player2) ? getUserById(pairInfo.player2.id) : null
       let p1Div = createPair(player1, winner)
       let p2Div = createPair(player2, winner)
 
@@ -226,7 +236,7 @@ export function loadTournamentList() {
 export function updateTournamentPlayerReady(id, isReady) {
   const ready = document.getElementById(`tournament-ready-${id}`)
   if (ready) {
-    ready.style.setProperty('visibility', (isReady)? 'visible' : 'hidden')
+    ready.style.setProperty('visibility', (isReady) ? 'visible' : 'hidden')
   }
 
   const opponentReadyStatus = document.getElementById('opponentstatus')
@@ -246,12 +256,12 @@ export function updateTournamentPlayerReady(id, isReady) {
     opponentReadyStatus.textContent = 'You lost...'
     if (button.textContent == 'Ready' || button.textContent == 'Unready') {
       const randInt = (max, min) => Math.ceil(Math.random() * (max - min) + min)
-      button.textContent = LOSE_BUTTON_MSGS[randInt(0, LOSE_BUTTON_MSGS.length)]
+      button.textContent = LOSE_BUTTON_MSGS[randInt(0, LOSE_BUTTON_MSGS.length - 1)]
       button.style.setProperty('background-color', 'var(--magenta-500)')
       button.onclick = leaveTournament
     }
   } else if (tournamentCurrentOpponent != null && id == tournamentCurrentOpponent.id) {
-    opponentReadyStatus.textContent = (isReady)? 'Opponent is ready!' : 'Waiting for opponent...'
+    opponentReadyStatus.textContent = (isReady) ? 'Opponent is ready!' : 'Waiting for opponent...'
   } else if (tournamentCurrentOpponent == null) {
     opponentReadyStatus.textContent = 'Waiting for previous round to end...'
   }

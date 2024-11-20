@@ -1,4 +1,3 @@
-
 #match-history-container {
   min-width: 20rem;
   height: 100%;
@@ -34,7 +33,7 @@
   border-radius: 1rem;
   background-color: var(--charcoal-700);
 }
- 
+
 .scrollable-container::-webkit-scrollbar-thumb {
   background: var(--charcoal-400);
   border-radius: 10px;
@@ -43,7 +42,7 @@
 }
 
 .scrollable-container::-webkit-scrollbar-thumb:hover {
-  background: var(--charcoal-500); 
+  background: var(--charcoal-500);
   cursor: pointer;
 }
 
@@ -54,13 +53,13 @@
 }
 
 .match-record {
-	display: flex;
-	justify-content: space-around;
-	width: 100%;
-	height: 5rem;
-	background-color: var(--charcoal-600);
-	border-radius: 10px;
-	transition: 0.2s;
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  height: 5rem;
+  background-color: var(--charcoal-600);
+  border-radius: 10px;
+  transition: 0.2s;
 }
 
 .match-record:hover {
@@ -203,7 +202,7 @@
   align-items: center;
   font-size: 1.875rem;
   margin-top: 2rem;
-  margin-bottom: 0.5rem
+  margin-bottom: 0.5rem;
 }
 
 .game-stats-avatar-section {
@@ -214,128 +213,129 @@
   width: 5rem; /* Fixed width for player sections */
 }
 
+.match-record > .game-stats-avatar-section {
+  gap: 0.25rem;
+}
+
 .match-stats-details {
-	background-color: var(--charcoal-800);
-	border-radius: 1rem;
-	padding: 1rem 2rem 2rem 2rem;
-	width: 80%;
-	max-width: 800px;
-	margin: 0rem auto;
+  background-color: var(--charcoal-800);
+  border-radius: 1rem;
+  padding: 0rem 2rem 2rem 2rem;
+  width: 80%;
+  max-width: 800px;
+  margin: 0rem auto;
+}
+
+.match-date,
+.match-duration {
+  color: var(--charcoal-100);
+  margin: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.game-stats-score {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+  color: var(--charcoal-300);
+}
+
+.game-stats-score.winner {
+  color: var(--teal-500);
+}
+
+.stat-label {
+  color: var(--charcoal-300);
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--charcoal-100);
+}
+
+/* Animation for stats loading */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  
-  .match-date, .match-duration {
-	color: var(--charcoal-100);
-	margin: 0.5rem;
-	font-size: 1.1rem;
-	font-weight: 600;
-	letter-spacing: 0.02em;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .game-stats-score {
-	font-size: 2rem;
-	font-weight: bold;
-	margin: 0.5rem 0;
-	color: var(--charcoal-300);
-  }
-  
-  .game-stats-score.winner {
-	color: var(--teal-500);
-  }
-  
-  .stats-grid {
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-  }
-  
-  .stat-row {
-	display: grid;
-	grid-template-columns: 1fr 2fr 1fr;
-	align-items: center;
-	text-align: center;
-	padding: 1rem;
-	background-color: var(--charcoal-700);
-	border-radius: 0.5rem;
-  }
-  
-  .stat-label {
-	color: var(--charcoal-300);
-  }
-  
-  .stat-value {
-	font-size: 1.25rem;
-	font-weight: bold;
-	color: var(--charcoal-100);
-  }
-  
-  /* Animation for stats loading */
-  @keyframes fadeIn {
-	from { opacity: 0; transform: translateY(20px); }
-	to { opacity: 1; transform: translateY(0); }
-  }
-  
-  .match-stats-details {
-	animation: fadeIn 0.3s ease-out;
-	border-radius: 1rem;
-	padding: 2rem;
-	margin-bottom: 2rem;
-  }
-  
-  .match-record.selected {
-	background-color: var(--charcoal-700);
-	border: 2px solid var(--yellow-500);
-  }
+}
+
+.match-stats-details {
+  animation: fadeIn 0.3s ease-out;
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.match-record.selected {
+  background-color: var(--charcoal-700);
+  border: 2px solid var(--yellow-500);
+}
 
 .match-record-large {
-	display: flex;
-	justify-content: space-around;
-	align-items: center;
-	width: 100%;
-	height: 12rem; /* Larger height than regular match record */
-	background-color: var(--charcoal-700);
-	border-radius: 15px;
-	margin-bottom: 2rem;
-  }
-  
-  .match-record-large .avatar-container {
-	width: 5rem;
-	height: 5rem;
-  }
-  
-  .match-record-large .avatar {
-	width: 5rem;
-	height: 5rem;
-	border-width: 0.15rem;
-  }
-  
-  .match-record-large .avatar-name {
-	font-size: 1.2rem;
-	margin-top: 0.5rem;
-	max-width: 8rem;
-  }
-  
-  .match-record-large .score {
-	font-size: 1.5rem;
-	padding: 0.5rem 1rem;
-	border-radius: 1.2rem;
-	text-align: center;
-  }
-  
-  .match-record-large .time {
-	font-size: 1rem;
-	margin-top: 0.5rem;
-	text-align: center;
-  }
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  height: 12rem; /* Larger height than regular match record */
+  background-color: var(--charcoal-700);
+  border-radius: 15px;
+  margin-bottom: 2rem;
+}
 
-  .match-stats-game-details {
-	display: flex;
-	flex-direction: column;
-	gap: 0.25rem;
-	margin-top: 0.5rem;
-	text-align: center;
-  }
+.match-record-large .avatar-container {
+  width: 5rem;
+  height: 5rem;
+}
 
-  .match-stats-game-details-row {
-    font-size: 1rem;
-    color: var(--charcoal-100);
+.match-record-large .avatar {
+  width: 5rem;
+  height: 5rem;
+  border-width: 0.15rem;
+}
+
+.match-record-large .avatar-name {
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+  max-width: 8rem;
+}
+
+.match-record-large .score {
+  font-size: 1.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 1.2rem;
+  text-align: center;
+  width: fit-content;
+  margin: 0 auto; /* Center the score - top and bottom margin 0, left and right margins auto by browser*/
+}
+
+.match-record-large .time {
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.match-stats-game-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.match-stats-game-details-row {
+  font-size: 1rem;
+  color: var(--charcoal-100);
+}
+
+.match-stats-details svg {
+	margin-top: -0.5rem;
   }
