@@ -401,7 +401,7 @@ export function updateTournamentLobby() {
   }
 
   const startButton = document.getElementById('start-game')
-  // startButton.disabled = (lobbyUsers.length <= 1)
+  startButton.disabled = (lobbyUsers.length <= 1)
   startButton.style.setProperty(
     'visibility',
     (lobbyUsers.length > 0 && lobbyUsers[0].id == currentUserInfo.id)? 'visible' : 'hidden'
