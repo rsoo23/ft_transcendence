@@ -1,5 +1,4 @@
 from adrf.decorators import api_view
-from rest_framework.response import Response
 from rest_framework.decorators import permission_classes, parser_classes
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
@@ -124,7 +123,7 @@ def get_match_state(request, match_id):
         return JsonResponse({'success': False, 'Error': str(error)}, status=401)
 
     update_user_timeout(server_info, request.user)
-    return Response(server_info['last_game_state'])
+    return JsonResponse({'success': True, 'game_state': server_info['last_game_state']})
 
 @csrf_exempt
 @api_view(['POST'])
@@ -146,3 +145,4 @@ def set_player_input(request, match_id):
 
     server_manager.update_player_input(match_id, player_num, request.content['input'], request.content['value'])
     update_user_timeout(server_info, request.user)
+    return JsonResponse({'success': True})
