@@ -161,3 +161,23 @@ def join_match(request, match_id):
     update_user_timeout(server_info, request.user)
     server_manager.try_start_game(match_id)
     return JsonResponse({'success': True})
+
+@csrf_exempt
+@api_view(['POST'])
+@parser_classes([JSONParser])
+@permission_classes([IsAuthenticated])
+def leave_match(request, match_id):
+    try:
+        server_info = get_active_match(match_id, request.user)
+
+    except Exception as error:
+        return JsonResponse({'success': False, 'Error': str(error)}, status=401)
+
+    match = PongMatch.objects.get(id=match_id)
+    if request.user == match.player1:
+        server_info['p1_api_last_msg_timer'] = 0
+
+    elif request.user == match.player2:
+        server_info['p2_api_last_msg_timer'] = 0
+
+    return JsonResponse({'success': True})
