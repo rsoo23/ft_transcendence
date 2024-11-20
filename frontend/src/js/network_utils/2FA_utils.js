@@ -1,4 +1,4 @@
-import { getRequest, postRequest } from "./api_requests.js";
+import { postRequest } from "./api_requests.js";
 
 export async function send_otp_2FA() {
   try {

@@ -1,4 +1,4 @@
-import { getRequest, postRequest } from "./network_utils/api_requests.js";
+import { postRequest } from "./network_utils/api_requests.js";
 import { currentUserInfo, usersInfo } from "./global_vars.js"
 import { getAccessToken } from "./network_utils/token_utils.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";

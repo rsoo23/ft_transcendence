@@ -1,7 +1,7 @@
 
-import { addEventListenerTo, loadContentToTarget, truncateString } from "../ui_utils/ui_utils.js"
-import { getRequest, postRequest } from "../network_utils/api_requests.js"
-import { friendRecordIconInfo, getUserId, setOnlineStatus, usersInfo } from "../global_vars.js"
+import { addEventListenerTo, loadContentToTarget } from "../ui_utils/ui_utils.js"
+import { getRequest } from "../network_utils/api_requests.js"
+import { friendRecordIconInfo, getUserId, setOnlineStatus } from "../global_vars.js"
 import { friendsSystemSocket } from "./websocket.js"
 import { loadChatInterface } from "../realtime_chat/chat_utils.js"
 import { loadUsersInfo } from "../router.js"
@@ -287,9 +287,9 @@ function initFriendRecordIcon(icon, iconId, userId) {
         if (checkInLobby() && !checkInTournament()) {
           sendToFriendSystemSocket({ action: 'game_lobby_invite', receiver_id: userId, lobby_id: getLobbyID(), is_tournament: (getLobbyType() == 'tournament') })
         } else if (checkInTournament()) {
-          queueNotification('magenta', 'The tournament has already started', () => {})
+          queueNotification('magenta', 'The tournament has already started', () => { })
         } else {
-          queueNotification('magenta', 'You are not in a lobby', () => {})
+          queueNotification('magenta', 'You are not in a lobby', () => { })
         }
       }
       break

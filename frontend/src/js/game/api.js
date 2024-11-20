@@ -3,7 +3,6 @@ import { getAccessToken } from '../network_utils/token_utils.js'
 import { initRenderer, stopRenderer, updateRenderer } from './worker_ui_handler.js'
 import { loadPage, loadMainMenuContent } from '../router.js'
 import { PONG_INPUTS } from '../global_vars.js'
-import { leaveLobby } from '../lobby.js'
 import { getGameSettingsInfo } from "./game_settings.js";
 
 var matchSocket = null
