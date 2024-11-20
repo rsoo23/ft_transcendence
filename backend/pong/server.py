@@ -187,14 +187,23 @@ class ServerManager():
         else:
             return
 
-        if match_info['p1_consumer'] == None or (match_info['local'] == False and match_info['p2_consumer'] == None):
+        self.try_start_game(match_id)
+
+    def try_start_game(self, match_id):
+        match_info = self.get_game(match_id)
+        if match_info == None:
+            return
+
+        if (
+            (match_info['p1_consumer'] == None and match_info['p1_api_last_msg_timer'] <= 0)
+            or (match_info['local'] == False and match_info['p2_consumer'] == None and match_info['p2_api_last_msg_timer'] <= 0)
+        ):
             return
 
         if match_info['thread'].is_alive():
             match_info['paused'] = False
             return
 
-        # NOTE: idk if update_player_consumer should be initializing the game, but eh
         self.start_game(match_id)
 
     def remove_player_consumer(self, match_id, player_num):
@@ -267,12 +276,12 @@ class ServerManager():
                 try:
                     if match_info['p1_consumer'] != None:
                         async_to_sync(match_info['p1_consumer'].send_json)(msg)
-                    elif match_info['p1_api_last_msg_timer'] == 0:
+                    elif match_info['p1_api_last_msg_timer'] <= 0:
                         raise Exception()
 
                     if match_info['p2_consumer'] != None:
                         async_to_sync(match_info['p2_consumer'].send_json)(msg)
-                    elif match_info['p2_api_last_msg_timer'] == 0:
+                    elif match_info['p2_api_last_msg_timer'] <= 0:
                         raise Exception()
 
                 except Exception:

@@ -146,3 +146,18 @@ def set_player_input(request, match_id):
     server_manager.update_player_input(match_id, player_num, request.data['input'], request.data['value'])
     update_user_timeout(server_info, request.user)
     return JsonResponse({'success': True})
+
+@csrf_exempt
+@api_view(['POST'])
+@parser_classes([JSONParser])
+@permission_classes([IsAuthenticated])
+def join_match(request, match_id):
+    try:
+        server_info = get_active_match(match_id, request.user)
+
+    except Exception as error:
+        return JsonResponse({'success': False, 'Error': str(error)}, status=401)
+
+    update_user_timeout(server_info, request.user)
+    server_manager.try_start_game(match_id)
+    return JsonResponse({'success': True})
