@@ -63,7 +63,7 @@ export async function refreshToken() {
 
 export async function getEmailToken(email) {
   try {
-    await postRequest('/api/token_management/create_email_token/', email)
+    await postRequest('/api/two_factor_auth/create_email_token/', email)
   } catch (error) {
     console.error('Error:', error);
     alert('Email Token Creation Error');
