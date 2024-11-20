@@ -151,9 +151,13 @@ export function loadTournamentList() {
 
     const div = document.createElement('div')
     div.classList.add('tournament-user-container')
-    if (user && winner) {
-      div.style.setProperty('background-color', (user.id == winner.id)? 'var(--teal-800)' : 'var(--magenta-800)')
-      div.style.setProperty('outline-color', (user.id == winner.id)? 'var(--teal-500)' : 'var(--magenta-500)')
+    if (user) {
+      if (winner) {
+        div.style.setProperty('background-color', (user.id == winner.id)? 'var(--teal-800)' : 'var(--magenta-800)')
+        div.style.setProperty('outline-color', (user.id == winner.id)? 'var(--teal-500)' : 'var(--magenta-500)')
+      } else if (!checkUserInLobby(user.id)) {
+        div.style.setProperty('background-color', 'var(--magenta-800)')
+      }
     }
     if (user && user.id == currentUserInfo.id) {
       div.classList.add('tournament-currentuser-container')
