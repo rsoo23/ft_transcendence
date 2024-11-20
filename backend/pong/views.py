@@ -79,19 +79,19 @@ async def create_match(request):
     except Exception as error:
         return JsonResponse({'success': False, 'Error': str(error)}, status=401)
 
-def update_user_timeout(server_info, user):
+def update_user_timeout(server_info, user, match_id):
     match = PongMatch.objects.get(id=match_id)
     ping_timer = 10000 # in ms
-    if request.user == match.player1:
+    if user == match.player1:
         server_info['p1_api_last_msg_timer'] = ping_timer
 
-    elif request.user == match.player2:
+    elif user == match.player2:
         server_info['p2_api_last_msg_timer'] = ping_timer
 
 def get_active_match(match_id, user):
     match = PongMatch.objects.get(id=match_id)
 
-    if request.user != match.player1 and request.user != match.player2:
+    if user != match.player1 and user != match.player2:
         raise ValueError('Forbidden access. User not in match data.')
 
     server_info = server_manager.get_game(match_id)
@@ -105,7 +105,7 @@ def get_active_match(match_id, user):
 @permission_classes([IsAuthenticated])
 def ping_match(request, match_id):
     try:
-        update_user_timeout(get_active_match(match_id, request.user), request.user)
+        update_user_timeout(get_active_match(match_id, request.user), request.user, match_id)
 
     except Exception as error:
         return JsonResponse({'success': False, 'Error': str(error)}, status=401)
@@ -122,7 +122,7 @@ def get_match_state(request, match_id):
     except Exception as error:
         return JsonResponse({'success': False, 'Error': str(error)}, status=401)
 
-    update_user_timeout(server_info, request.user)
+    update_user_timeout(server_info, request.user, match_id)
     return JsonResponse({'success': True, 'game_state': server_info['last_game_state']})
 
 @csrf_exempt
@@ -144,7 +144,7 @@ def set_player_input(request, match_id):
         player_num = 2
 
     server_manager.update_player_input(match_id, player_num, request.data['input'], request.data['value'])
-    update_user_timeout(server_info, request.user)
+    update_user_timeout(server_info, request.user, match_id)
     return JsonResponse({'success': True})
 
 @csrf_exempt
@@ -158,7 +158,7 @@ def join_match(request, match_id):
     except Exception as error:
         return JsonResponse({'success': False, 'Error': str(error)}, status=401)
 
-    update_user_timeout(server_info, request.user)
+    update_user_timeout(server_info, request.user, match_id)
     server_manager.try_start_game(match_id)
     return JsonResponse({'success': True})
 
