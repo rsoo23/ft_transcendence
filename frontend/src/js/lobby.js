@@ -43,6 +43,20 @@ export function checkUserIsReady(id) {
   return (target && target.ready)
 }
 
+export function checkUserInLobby(id) {
+  let target = null
+  for (const user of lobbyUsers) {
+    if (user.id != id) {
+      continue
+    }
+
+    target = user
+    break
+  }
+
+  return (target)
+}
+
 export function validateAvatarImg(src) {
   if (src == null) {
     return "/static/images/kirby.png"

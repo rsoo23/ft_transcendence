@@ -1,7 +1,7 @@
 import { getAccessToken } from "./network_utils/token_utils.js";
 import { currentUserInfo, usersInfo, LOSE_BUTTON_MSGS } from "./global_vars.js";
 import { getRequest } from "./network_utils/api_requests.js";
-import { checkUserIsReady, validateAvatarImg, leaveLobby, getUserById } from "./lobby.js";
+import { checkUserIsReady, checkUserInLobby, validateAvatarImg, leaveLobby, getUserById } from "./lobby.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
 
 var tournamentSocket = null
@@ -130,12 +130,19 @@ export function loadTournamentList() {
 
     const ready = document.createElement('i')
     ready.classList.add('material-icons')
-    ready.textContent = (winner && winner.id == user.id)? 'emoji_events' : 'done'
-    if (user && !winner) {
-      ready.id = `tournament-ready-${user.id}`
-      ready.style.setProperty('visibility', (checkUserIsReady(user.id))? 'visible' : 'hidden')
-    } else {
-      ready.style.setProperty('visibility', (user && winner && winner.id == user.id)? 'visible' : 'hidden')
+    if (user) {
+      if (winner && winner.id == user.id) {
+        ready.textContent = 'emoji_events'
+        ready.style.setProperty('visibility', 'visible')
+      } else if (!checkUserInLobby(user.id)) {
+        ready.textContent = 'logout'
+        ready.style.setProperty('visibility', 'visible')
+        ready.style.setProperty('color', 'var(--magenta-500)')
+      } else if (!winner) {
+        ready.textContent = 'done'
+        ready.id = `tournament-ready-${user.id}`
+        ready.style.setProperty('visibility', (checkUserIsReady(user.id))? 'visible' : 'hidden')
+      }
     }
 
     const nameDiv = document.createElement('div')
