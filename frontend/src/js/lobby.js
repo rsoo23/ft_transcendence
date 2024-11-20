@@ -8,7 +8,7 @@ import { loadPage, loadUsersInfo } from "./router.js";
 import { joinMatch, defaultMatchOnClose } from "./game/api.js";
 import { initLobbyList } from "./lobby_list.js";
 import { getGameSettingsInfo } from "./game/game_settings.js";
-import { checkInTournament, checkIsTournamentOpponent, joinTournament, leaveTournament, updateTournamentPlayerReady } from "./tournament.js";
+import { checkInTournament, checkIsTournamentOpponent, joinTournament, leaveTournament, loadTournamentList, updateTournamentPlayerReady } from "./tournament.js";
 
 var lobbySocket = null
 var lobbyID = null
@@ -123,7 +123,9 @@ export async function joinLobby(id) {
         } else {
           queueNotification('magenta', `${user.username} has left the lobby.`, () => {})
         }
-        if (lobbyType == 'tournament') {
+        if (checkInTournament()) {
+          loadTournamentList()
+        } else if (lobbyType == 'tournament') {
           removeTournamentUser(user)
           updateTournamentLobby()
         } else {
