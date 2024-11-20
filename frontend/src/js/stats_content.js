@@ -7,7 +7,7 @@ export async function loadStatsPage() {
     // Get match stats from your API
     // console.log("Fetching match stats...");
     const matchStats = await getRequest('/api/game_stats/match-stats/');
-    const container = document.querySelector('.match-scrollable-container');
+    const container = document.querySelector('.scrollable-container');
     // if (!container) {
     //     console.error("Could not find .match-scrollable-container");
     //     return;
@@ -35,17 +35,17 @@ export async function loadStatsPage() {
 
     // Add click handlers to all match records
     document.querySelectorAll('.match-record').forEach(record => {
-		record.addEventListener('click', () => {
-		  // Get the match ID from the data attribute
-		  const matchId = record.getAttribute('data-match-id');
-		  loadMatchDetails(matchId);
-		  
-		  // Remove highlight from all records and highlight the clicked one
-		  document.querySelectorAll('.match-record').forEach(r => 
-			r.classList.remove('selected'));
-		  record.classList.add('selected');
-		});
-	  });
+      record.addEventListener('click', () => {
+        // Get the match ID from the data attribute
+        const matchId = record.getAttribute('data-match-id');
+        loadMatchDetails(matchId);
+
+        // Remove highlight from all records and highlight the clicked one
+        document.querySelectorAll('.match-record').forEach(r =>
+          r.classList.remove('selected'));
+        record.classList.add('selected');
+      });
+    });
 
   } catch (error) {
     console.error('Error loading match history:', error);
@@ -194,93 +194,93 @@ function createScoreSection(match, isPlayer1) {
 }
 
 export async function loadMatchDetails(matchId) {
-	try {
-	  const matchStats = await getRequest(`/api/game_stats/match-stats/${matchId}/`);
-      console.log('Full match stats:', matchStats);
-      console.log('Match type:', matchStats.pong_match?.type);
-	  const matchStatsContainer = document.getElementById('match-stats-container');
-	  const content = matchStatsContainer.querySelector('.content');
-	  
-	  content.innerHTML = generateMatchStatsHTML(matchStats);
+  try {
+    const matchStats = await getRequest(`/api/game_stats/match-stats/${matchId}/`);
+    console.log('Full match stats:', matchStats);
+    console.log('Match type:', matchStats.pong_match?.type);
+    const matchStatsContainer = document.getElementById('match-stats-container');
+    const content = matchStatsContainer.querySelector('.content');
 
-      const userAvatar = document.getElementById('user-avatar');
-      const opponentAvatar = document.getElementById('opponent-avatar');
+    content.innerHTML = generateMatchStatsHTML(matchStats);
 
-	  const isPlayer1 = matchStats.pong_match?.player1?.id === currentUserInfo.id;
-    
-	  if (isPlayer1) {
-		if (matchStats.pong_match?.player1?.id) {
-		  loadUserAvatar(userAvatar, matchStats.pong_match.player1.id);
-		}
-		if (matchStats.pong_match?.player2?.id) {
-		  loadUserAvatar(opponentAvatar, matchStats.pong_match.player2.id);
-		}
-	  } else {
-		if (matchStats.pong_match?.player2?.id) {
-		  loadUserAvatar(userAvatar, matchStats.pong_match.player2.id);
-		}
-		if (matchStats.pong_match?.player1?.id) {
-		  loadUserAvatar(opponentAvatar, matchStats.pong_match.player1.id);
-		}
-	  }
-	} catch (error) {
-	  console.error('Error loading match details:', error);
-	}
+    const userAvatar = document.getElementById('user-avatar');
+    const opponentAvatar = document.getElementById('opponent-avatar');
+
+    const isPlayer1 = matchStats.pong_match?.player1?.id === currentUserInfo.id;
+
+    if (isPlayer1) {
+      if (matchStats.pong_match?.player1?.id) {
+        loadUserAvatar(userAvatar, matchStats.pong_match.player1.id);
+      }
+      if (matchStats.pong_match?.player2?.id) {
+        loadUserAvatar(opponentAvatar, matchStats.pong_match.player2.id);
+      }
+    } else {
+      if (matchStats.pong_match?.player2?.id) {
+        loadUserAvatar(userAvatar, matchStats.pong_match.player2.id);
+      }
+      if (matchStats.pong_match?.player1?.id) {
+        loadUserAvatar(opponentAvatar, matchStats.pong_match.player1.id);
+      }
+    }
+  } catch (error) {
+    console.error('Error loading match details:', error);
   }
+}
 
-  function generateMatchStatsHTML(stats) {
-    // determine current user position
-    const isPlayer1 = stats.pong_match?.player1?.id === currentUserInfo.id;
-    
-    // group stats by user and opponent instead of player1/player2
-    const userStats = {
-      paddleBounces: isPlayer1 ? stats.p1_paddle_bounces : stats.p2_paddle_bounces,
-      colorSwitches: isPlayer1 ? stats.p1_color_switches : stats.p2_color_switches,
-      wallHits: isPlayer1 ? stats.p1_points_lost_by_wall_hit : stats.p2_points_lost_by_wall_hit,
-      wrongColorHits: isPlayer1 ? stats.p1_points_lost_by_wrong_color : stats.p2_points_lost_by_wrong_color,
-      score: isPlayer1 ? stats.pong_match?.p1_score : stats.pong_match?.p2_score,
-      player: isPlayer1 ? stats.pong_match?.player1 : stats.pong_match?.player2
-    };
-    
-    const opponentStats = {
-      paddleBounces: isPlayer1 ? stats.p2_paddle_bounces : stats.p1_paddle_bounces,
-      colorSwitches: isPlayer1 ? stats.p2_color_switches : stats.p1_color_switches,
-      wallHits: isPlayer1 ? stats.p2_points_lost_by_wall_hit : stats.p1_points_lost_by_wall_hit,
-      wrongColorHits: isPlayer1 ? stats.p2_points_lost_by_wrong_color : stats.p1_points_lost_by_wrong_color,
-      score: isPlayer1 ? stats.pong_match?.p2_score : stats.pong_match?.p1_score,
-      player: isPlayer1 ? stats.pong_match?.player2 : stats.pong_match?.player1
-    };
+function generateMatchStatsHTML(stats) {
+  // determine current user position
+  const isPlayer1 = stats.pong_match?.player1?.id === currentUserInfo.id;
 
-	// Format duration into minutes and seconds
-    console.log('Stats in generate HTML:', stats);
-    console.log('Pong match:', stats.pong_match);
-    console.log('Game type received:', stats.pong_match?.type);
-	const duration = stats.match_duration ? formatDuration(stats.match_duration) : 'N/A';
-    const gameDate = formatDate(new Date(stats.created_at));
-    const gameTime = formatTime(new Date(stats.created_at));
-    const gameType = stats.pong_match?.type;
-    const formattedGameType = formatGameType(gameType);
+  // group stats by user and opponent instead of player1/player2
+  const userStats = {
+    paddleBounces: isPlayer1 ? stats.p1_paddle_bounces : stats.p2_paddle_bounces,
+    colorSwitches: isPlayer1 ? stats.p1_color_switches : stats.p2_color_switches,
+    wallHits: isPlayer1 ? stats.p1_points_lost_by_wall_hit : stats.p2_points_lost_by_wall_hit,
+    wrongColorHits: isPlayer1 ? stats.p1_points_lost_by_wrong_color : stats.p2_points_lost_by_wrong_color,
+    score: isPlayer1 ? stats.pong_match?.p1_score : stats.pong_match?.p2_score,
+    player: isPlayer1 ? stats.pong_match?.player1 : stats.pong_match?.player2
+  };
+
+  const opponentStats = {
+    paddleBounces: isPlayer1 ? stats.p2_paddle_bounces : stats.p1_paddle_bounces,
+    colorSwitches: isPlayer1 ? stats.p2_color_switches : stats.p1_color_switches,
+    wallHits: isPlayer1 ? stats.p2_points_lost_by_wall_hit : stats.p1_points_lost_by_wall_hit,
+    wrongColorHits: isPlayer1 ? stats.p2_points_lost_by_wrong_color : stats.p1_points_lost_by_wrong_color,
+    score: isPlayer1 ? stats.pong_match?.p2_score : stats.pong_match?.p1_score,
+    player: isPlayer1 ? stats.pong_match?.player2 : stats.pong_match?.player1
+  };
+
+  // Format duration into minutes and seconds
+  console.log('Stats in generate HTML:', stats);
+  console.log('Pong match:', stats.pong_match);
+  console.log('Game type received:', stats.pong_match?.type);
+  const duration = stats.match_duration ? formatDuration(stats.match_duration) : 'N/A';
+  const gameDate = formatDate(new Date(stats.created_at));
+  const gameTime = formatTime(new Date(stats.created_at));
+  const gameType = stats.pong_match?.type;
+  const formattedGameType = formatGameType(gameType);
 
 
-    const maxWidth = 450;
+  const maxWidth = 450;
 
-    // Paddle bounces
-    const totalBounces = userStats.paddleBounces + opponentStats.paddleBounces;
-    const [userBouncesWidth, oppBouncesWidth] = calculateBarWidths(userStats.paddleBounces, opponentStats.paddleBounces, maxWidth);
-    
-    // Color switches
-    const totalSwitches = userStats.colorSwitches + opponentStats.colorSwitches;
-    const [userSwitchWidth, oppSwitchWidth] = calculateBarWidths(userStats.colorSwitches, opponentStats.colorSwitches, maxWidth);
-    
-    // Wall hits
-    const totalWallHits = userStats.wallHits + opponentStats.wallHits;
-    const [userWallWidth, oppWallWidth] = calculateBarWidths(userStats.wallHits, opponentStats.wallHits, maxWidth);
-    
-    // Wrong color hits
-    const totalWrongColorHits = userStats.wrongColorHits + opponentStats.wrongColorHits;
-    const [userWrongColorWidth, oppWrongColorWidth] = calculateBarWidths(userStats.wrongColorHits, opponentStats.wrongColorHits, maxWidth);  
-    
-	return `
+  // Paddle bounces
+  const totalBounces = userStats.paddleBounces + opponentStats.paddleBounces;
+  const [userBouncesWidth, oppBouncesWidth] = calculateBarWidths(userStats.paddleBounces, opponentStats.paddleBounces, maxWidth);
+
+  // Color switches
+  const totalSwitches = userStats.colorSwitches + opponentStats.colorSwitches;
+  const [userSwitchWidth, oppSwitchWidth] = calculateBarWidths(userStats.colorSwitches, opponentStats.colorSwitches, maxWidth);
+
+  // Wall hits
+  const totalWallHits = userStats.wallHits + opponentStats.wallHits;
+  const [userWallWidth, oppWallWidth] = calculateBarWidths(userStats.wallHits, opponentStats.wallHits, maxWidth);
+
+  // Wrong color hits
+  const totalWrongColorHits = userStats.wrongColorHits + opponentStats.wrongColorHits;
+  const [userWrongColorWidth, oppWrongColorWidth] = calculateBarWidths(userStats.wrongColorHits, opponentStats.wrongColorHits, maxWidth);
+
+  return `
 	  <div class="match-stats-details">
 
         <div class="match-record-large">
@@ -372,41 +372,41 @@ export async function loadMatchDetails(matchId) {
         </svg>
 	  </div>
 	`;
-  }
+}
 
-  function formatDuration(duration) {
-	// Parse the duration string (e.g., "00:05:23")
-	const [hours, minutes, seconds] = duration.split(':').map(Number);
-	
-	if (hours > 0) {
-	  return `${hours}h ${minutes}m ${Math.round(seconds)}s`;
-	} else if (minutes > 0) {
-	  return `${minutes}m ${Math.round(seconds)}s`;
-	} else {
-	  return `${Math.round(seconds)}s`;
-	}
-  }
+function formatDuration(duration) {
+  // Parse the duration string (e.g., "00:05:23")
+  const [hours, minutes, seconds] = duration.split(':').map(Number);
 
-  function formatGameType(type) {
-    switch(type) {
-        case 'local_classic':
-            return 'Local Play';
-        case 'online_classic':
-            return 'Online Play';
-        case 'online_tournament':
-            return 'Tournament';
-        default:
-            console.log('Unknown game type:', type);
-            return type || 'Unknown Type';
-    }
+  if (hours > 0) {
+    return `${hours}h ${minutes}m ${Math.round(seconds)}s`;
+  } else if (minutes > 0) {
+    return `${minutes}m ${Math.round(seconds)}s`;
+  } else {
+    return `${Math.round(seconds)}s`;
+  }
+}
+
+function formatGameType(type) {
+  switch (type) {
+    case 'local_classic':
+      return 'Local Play';
+    case 'online_classic':
+      return 'Online Play';
+    case 'online_tournament':
+      return 'Tournament';
+    default:
+      console.log('Unknown game type:', type);
+      return type || 'Unknown Type';
+  }
 }
 
 function calculateBarWidths(value1, value2, maxWidth) {
-    const total = value1 + value2;
-    if (total === 0) {
-      return [maxWidth / 2, maxWidth / 2];
-    }
-    const width1 = (value1 / total) * maxWidth;
-    const width2 = (value2 / total) * maxWidth;
-    return [width1, width2];
+  const total = value1 + value2;
+  if (total === 0) {
+    return [maxWidth / 2, maxWidth / 2];
   }
+  const width1 = (value1 / total) * maxWidth;
+  const width2 = (value2 / total) * maxWidth;
+  return [width1, width2];
+}
