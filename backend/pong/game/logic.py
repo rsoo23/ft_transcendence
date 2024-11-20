@@ -28,6 +28,7 @@ class GameLogic():
         self.game_size = Vector2(400, 240)
         self.score = [0, 0]
         self.win_score = int(self.info['game_score'])
+        # self.win_score = 1
         self.countdown_duration = 5
         self.player_turn = 1
         self.game_turn = 1

@@ -78,3 +78,106 @@ async def create_match(request):
 
     except Exception as error:
         return JsonResponse({'success': False, 'Error': str(error)}, status=401)
+
+def update_user_timeout(server_info, user, match_id):
+    match = PongMatch.objects.get(id=match_id)
+    ping_timer = 10000 # in ms
+    if user == match.player1:
+        server_info['p1_api_last_msg_timer'] = ping_timer
+
+    elif user == match.player2:
+        server_info['p2_api_last_msg_timer'] = ping_timer
+
+def get_active_match(match_id, user):
+    match = PongMatch.objects.get(id=match_id)
+
+    if user != match.player1 and user != match.player2:
+        raise ValueError('Forbidden access. User not in match data.')
+
+    server_info = server_manager.get_game(match_id)
+    if (not server_info):
+        raise ValueError('Match is no longer available.')
+
+    return server_info
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def ping_match(request, match_id):
+    try:
+        update_user_timeout(get_active_match(match_id, request.user), request.user, match_id)
+
+    except Exception as error:
+        return JsonResponse({'success': False, 'Error': str(error)}, status=401)
+
+    return JsonResponse({'success': True})
+
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_match_state(request, match_id):
+    try:
+        server_info = get_active_match(match_id, request.user)
+
+    except Exception as error:
+        return JsonResponse({'success': False, 'Error': str(error)}, status=401)
+
+    update_user_timeout(server_info, request.user, match_id)
+    return JsonResponse({'success': True, 'game_state': server_info['last_game_state']})
+
+@csrf_exempt
+@api_view(['POST'])
+@parser_classes([JSONParser])
+@permission_classes([IsAuthenticated])
+def set_player_input(request, match_id):
+    try:
+        server_info = get_active_match(match_id, request.user)
+
+    except Exception as error:
+        return JsonResponse({'success': False, 'Error': str(error)}, status=401)
+
+    match = PongMatch.objects.get(id=match_id)
+    if request.user == match.player1:
+        player_num = 1
+
+    elif request.user == match.player2:
+        player_num = 2
+
+    server_manager.update_player_input(match_id, player_num, request.data['input'], request.data['value'])
+    update_user_timeout(server_info, request.user, match_id)
+    return JsonResponse({'success': True})
+
+@csrf_exempt
+@api_view(['POST'])
+@parser_classes([JSONParser])
+@permission_classes([IsAuthenticated])
+def join_match(request, match_id):
+    try:
+        server_info = get_active_match(match_id, request.user)
+
+    except Exception as error:
+        return JsonResponse({'success': False, 'Error': str(error)}, status=401)
+
+    update_user_timeout(server_info, request.user, match_id)
+    server_manager.try_start_game(match_id)
+    return JsonResponse({'success': True})
+
+@csrf_exempt
+@api_view(['POST'])
+@parser_classes([JSONParser])
+@permission_classes([IsAuthenticated])
+def leave_match(request, match_id):
+    try:
+        server_info = get_active_match(match_id, request.user)
+
+    except Exception as error:
+        return JsonResponse({'success': False, 'Error': str(error)}, status=401)
+
+    match = PongMatch.objects.get(id=match_id)
+    if request.user == match.player1:
+        server_info['p1_api_last_msg_timer'] = 0
+
+    elif request.user == match.player2:
+        server_info['p2_api_last_msg_timer'] = 0
+
+    return JsonResponse({'success': True})
