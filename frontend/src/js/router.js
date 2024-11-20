@@ -484,7 +484,7 @@ function init2FAVerify() {
 
       localStorage.setItem("is2FAVerified", true);
 
-      loadPage("main_menu");
+      await loadPage("main_menu");
       loadMainMenuContent("play");
     } catch (error) {
       console.error(error);
@@ -524,6 +524,7 @@ function init2FAEnable() {
 
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
+      event.preventDefault();
       handle2FAEnable();
     }
   });
@@ -544,7 +545,7 @@ const handle2FAEnable = async () => {
       twoFactorToggle.checked = true;
     }
 
-    loadPage("main_menu");
+    await loadPage("main_menu");
     loadMainMenuContent("settings");
   } catch (error) {
     console.error(error);
