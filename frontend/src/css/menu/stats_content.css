@@ -213,6 +213,10 @@
   width: 5rem; /* Fixed width for player sections */
 }
 
+.match-record > .game-stats-avatar-section {
+  gap: 0.25rem;
+}
+
 .match-stats-details {
   background-color: var(--charcoal-800);
   border-radius: 1rem;
