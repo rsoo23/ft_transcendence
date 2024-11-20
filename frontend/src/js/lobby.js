@@ -9,6 +9,7 @@ import { joinMatch, defaultMatchOnClose } from "./game/api.js";
 import { initLobbyList } from "./lobby_list.js";
 import { getGameSettingsInfo } from "./game/game_settings.js";
 import { checkInTournament, checkIsTournamentOpponent, joinTournament, leaveTournament, loadTournamentList, updateTournamentPlayerReady } from "./tournament.js";
+import { loadUserAvatar } from "./settings/upload_avatar.js"
 
 var lobbySocket = null
 var lobbyID = null
@@ -55,14 +56,6 @@ export function checkUserInLobby(id) {
   }
 
   return (target)
-}
-
-export function validateAvatarImg(src) {
-  if (src == null) {
-    return "/static/images/kirby.png"
-  } else {
-    return src
-  }
 }
 
 export async function createLobby() {
@@ -376,7 +369,7 @@ function setClassicPlayerInfo(info, prefix) {
     return
   }
 
-  avatar.src = validateAvatarImg(info.avatar_img)
+  loadUserAvatar(avatar, info.id)
   avatar.style.setProperty('display', 'block')
   header.style.setProperty('display', 'block')
   ready.style.setProperty('display', 'block')
@@ -447,7 +440,7 @@ export function updateTournamentLobby() {
 function appendTournamentUser(info) {
   const avatar = document.createElement('img')
   avatar.classList.add('profile-settings-avatar')
-  avatar.src = validateAvatarImg(info.avatar_img)
+  loadUserAvatar(avatar, info.id)
 
   const name = document.createElement('p')
   name.textContent = info.username
