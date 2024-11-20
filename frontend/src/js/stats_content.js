@@ -203,22 +203,54 @@ export async function loadMatchDetails(matchId) {
 	  
 	  content.innerHTML = generateMatchStatsHTML(matchStats);
 
-      const p1Avatar = document.getElementById('p1-avatar');
-      const p2Avatar = document.getElementById('p2-avatar');
+      const userAvatar = document.getElementById('user-avatar');
+      const opponentAvatar = document.getElementById('opponent-avatar');
 
-      if (matchStats.pong_match?.player1?.id) {
-        loadUserAvatar(p1Avatar, matchStats.pong_match.player1.id);
-      }
-
-      if (matchStats.pong_match?.player2?.id) {
-        loadUserAvatar(p2Avatar, matchStats.pong_match.player2.id);
-     }
+	  const isPlayer1 = matchStats.pong_match?.player1?.id === currentUserInfo.id;
+    
+	  if (isPlayer1) {
+		if (matchStats.pong_match?.player1?.id) {
+		  loadUserAvatar(userAvatar, matchStats.pong_match.player1.id);
+		}
+		if (matchStats.pong_match?.player2?.id) {
+		  loadUserAvatar(opponentAvatar, matchStats.pong_match.player2.id);
+		}
+	  } else {
+		if (matchStats.pong_match?.player2?.id) {
+		  loadUserAvatar(userAvatar, matchStats.pong_match.player2.id);
+		}
+		if (matchStats.pong_match?.player1?.id) {
+		  loadUserAvatar(opponentAvatar, matchStats.pong_match.player1.id);
+		}
+	  }
 	} catch (error) {
 	  console.error('Error loading match details:', error);
 	}
   }
 
   function generateMatchStatsHTML(stats) {
+    // determine current user position
+    const isPlayer1 = stats.pong_match?.player1?.id === currentUserInfo.id;
+    
+    // group stats by user and opponent instead of player1/player2
+    const userStats = {
+      paddleBounces: isPlayer1 ? stats.p1_paddle_bounces : stats.p2_paddle_bounces,
+      colorSwitches: isPlayer1 ? stats.p1_color_switches : stats.p2_color_switches,
+      wallHits: isPlayer1 ? stats.p1_points_lost_by_wall_hit : stats.p2_points_lost_by_wall_hit,
+      wrongColorHits: isPlayer1 ? stats.p1_points_lost_by_wrong_color : stats.p2_points_lost_by_wrong_color,
+      score: isPlayer1 ? stats.pong_match?.p1_score : stats.pong_match?.p2_score,
+      player: isPlayer1 ? stats.pong_match?.player1 : stats.pong_match?.player2
+    };
+    
+    const opponentStats = {
+      paddleBounces: isPlayer1 ? stats.p2_paddle_bounces : stats.p1_paddle_bounces,
+      colorSwitches: isPlayer1 ? stats.p2_color_switches : stats.p1_color_switches,
+      wallHits: isPlayer1 ? stats.p2_points_lost_by_wall_hit : stats.p1_points_lost_by_wall_hit,
+      wrongColorHits: isPlayer1 ? stats.p2_points_lost_by_wrong_color : stats.p1_points_lost_by_wrong_color,
+      score: isPlayer1 ? stats.pong_match?.p2_score : stats.pong_match?.p1_score,
+      player: isPlayer1 ? stats.pong_match?.player2 : stats.pong_match?.player1
+    };
+
 	// Format duration into minutes and seconds
     console.log('Stats in generate HTML:', stats);
     console.log('Pong match:', stats.pong_match);
@@ -228,70 +260,40 @@ export async function loadMatchDetails(matchId) {
     const gameTime = formatTime(new Date(stats.created_at));
     const gameType = stats.pong_match?.type;
     const formattedGameType = formatGameType(gameType);
-	
-    // Paddle bounces
-    const totalBounces = stats.p1_paddle_bounces + stats.p2_paddle_bounces;
+
+
     const maxWidth = 450;
-    let p1Width, p2Width;
-    
-    if (totalBounces === 0) {
-        p1Width = maxWidth / 2;
-        p2Width = maxWidth / 2;
-    } else {
-        p1Width = (stats.p1_paddle_bounces / totalBounces) * maxWidth;
-        p2Width = (stats.p2_paddle_bounces / totalBounces) * maxWidth;
-    }
+
+    // Paddle bounces
+    const totalBounces = userStats.paddleBounces + opponentStats.paddleBounces;
+    const [userBouncesWidth, oppBouncesWidth] = calculateBarWidths(userStats.paddleBounces, opponentStats.paddleBounces, maxWidth);
     
     // Color switches
-    const totalSwitches = stats.p1_color_switches + stats.p2_color_switches;
-    let p1SwitchWidth, p2SwitchWidth;
+    const totalSwitches = userStats.colorSwitches + opponentStats.colorSwitches;
+    const [userSwitchWidth, oppSwitchWidth] = calculateBarWidths(userStats.colorSwitches, opponentStats.colorSwitches, maxWidth);
     
-    if (totalSwitches === 0) {
-        p1SwitchWidth = maxWidth / 2;
-        p2SwitchWidth = maxWidth / 2;
-    } else {
-        p1SwitchWidth = (stats.p1_color_switches / totalSwitches) * maxWidth;
-        p2SwitchWidth = (stats.p2_color_switches / totalSwitches) * maxWidth;
-    }
-
-    // Wall Hits
-    const totalWallHits = stats.p1_points_lost_by_wall_hit + stats.p2_points_lost_by_wall_hit;
-    let p1WallWidth, p2WallWidth;
+    // Wall hits
+    const totalWallHits = userStats.wallHits + opponentStats.wallHits;
+    const [userWallWidth, oppWallWidth] = calculateBarWidths(userStats.wallHits, opponentStats.wallHits, maxWidth);
     
-    if (totalWallHits === 0) {
-        p1WallWidth = maxWidth / 2;
-        p2WallWidth = maxWidth / 2;
-    } else {
-        p1WallWidth = (stats.p1_points_lost_by_wall_hit / totalWallHits) * maxWidth;
-        p2WallWidth = (stats.p2_points_lost_by_wall_hit / totalWallHits) * maxWidth;
-    }
+    // Wrong color hits
+    const totalWrongColorHits = userStats.wrongColorHits + opponentStats.wrongColorHits;
+    const [userWrongColorWidth, oppWrongColorWidth] = calculateBarWidths(userStats.wrongColorHits, opponentStats.wrongColorHits, maxWidth);  
     
-    // Wrong Color Hits
-    const totalWrongColorHits = stats.p1_points_lost_by_wrong_color + stats.p2_points_lost_by_wrong_color;
-    let p1WrongColorWidth, p2WrongColorWidth;
-    
-    if (totalWrongColorHits === 0) {
-        p1WrongColorWidth = maxWidth / 2;
-        p2WrongColorWidth = maxWidth / 2;
-    } else {
-        p1WrongColorWidth = (stats.p1_points_lost_by_wrong_color / totalWrongColorHits) * maxWidth;
-        p2WrongColorWidth = (stats.p2_points_lost_by_wrong_color / totalWrongColorHits) * maxWidth;
-    }
-
 	return `
 	  <div class="match-stats-details">
 
         <div class="match-record-large">
           <div class="game-stats-avatar-section">
             <div class="avatar-container">
-              <img class="avatar" src="/static/images/kirby.png" alt="avatar" id="p1-avatar">
+              <img class="avatar" src="/static/images/kirby.png" alt="avatar" id="user-avatar">
             </div>
-            <div class="avatar-name" id="p1-name">${stats.pong_match?.player1?.username || 'Player 1'}</div>
+            <div class="avatar-name">${userStats.player?.username || 'Player 1'}</div>
           </div>
         
           <div class="score-time-section">
-            <div class="score" id="match-score" style="background-color: ${stats.pong_match?.p1_score > stats.pong_match?.p2_score ? 'var(--teal-500)' : 'var(--magenta-500)'}">
-              ${stats.pong_match?.p1_score || 0} - ${stats.pong_match?.p2_score || 0}
+            <div class="score" style="background-color: ${userStats.score > opponentStats.score ? 'var(--teal-500)' : 'var(--magenta-500)'}">
+            ${userStats.score || 0} - ${opponentStats.score || 0}
             </div>
 
             <div class=match-stats-game-details>
@@ -304,9 +306,9 @@ export async function loadMatchDetails(matchId) {
         
           <div class="game-stats-avatar-section">
             <div class="avatar-container">
-              <img class="avatar" src="/static/images/kirby.png" alt="avatar" id="p2-avatar">
+              <img class="avatar" src="/static/images/kirby.png" alt="avatar" id="opponent-avatar">
             </div>
-            <div class="avatar-name" id="p2-name">${stats.pong_match?.player2?.username || 'Player 2'}</div>
+            <div class="avatar-name">${opponentStats.player?.username || 'Player 2'}</div>
           </div>
         </div>
 
@@ -315,14 +317,14 @@ export async function loadMatchDetails(matchId) {
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 90">
         <text x="300" y="30" font-family="Arial" font-size="18" fill="var(--charcoal-200)" text-anchor="middle" >Paddle Bounces</text>
     
-        <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_paddle_bounces}</text>
-        <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_paddle_bounces}</text>    
+        <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${userStats.paddleBounces}</text>
+        <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${opponentStats.paddleBounces}</text>   
         
         <g transform="translate(80, -30)">
             <!-- Paddle bounces -->
-            <rect x="0" y="80" width="${p1Width}" height="30" fill="var(--yellow-500)" rx="4"/>
-            <rect x="${p1Width}" y="80" width="${p2Width}" height="30" fill="var(--blue-500)" rx="4"/>
-            //rx is for rounded corners
+          <rect x="0" y="80" width="${userBouncesWidth}" height="30" fill="var(--yellow-500)" rx="4"/>
+          <rect x="${userBouncesWidth}" y="80" width="${oppBouncesWidth}" height="30" fill="var(--blue-500)" rx="4"/>
+        //rx is for rounded corners
         </g>
     </svg>
 
@@ -330,38 +332,41 @@ export async function loadMatchDetails(matchId) {
         <!-- Color Switches Graph -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 90">
             <text x="300" y="30" font-family="Arial" font-size="18" fill="var(--charcoal-200)" text-anchor="middle">Color Switches</text>
-            <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_color_switches}</text>
-            <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_color_switches}</text>    
+            <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${userStats.colorSwitches}</text>
+            <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${opponentStats.colorSwitches}</text>     
             
             <g transform="translate(80, -30)">
-                <rect x="0" y="80" width="${p1SwitchWidth}" height="30" fill="var(--yellow-500)" rx="4"/>
-                <rect x="${p1SwitchWidth}" y="80" width="${p2SwitchWidth}" height="30" fill="var(--blue-500)" rx="4"/>
+                <rect x="0" y="80" width="${userSwitchWidth}" height="30" fill="var(--yellow-500)" rx="4"/>
+                <rect x="${userSwitchWidth}" y="80" width="${oppSwitchWidth}" height="30" fill="var(--blue-500)" rx="4"/>
+
             </g>
         </svg>
     
         <!-- Wall Hits Graph -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 90">
-            <text x="300" y="30" font-family="Arial" font-size="18" fill="var(--charcoal-200)" text-anchor="middle">Wall Hits</text>
+            <text x="300" y="30" font-family="Arial" font-size="18" fill="var(--charcoal-200)" text-anchor="middle">Points Lost to Wall Hits</text>
         
-            <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_points_lost_by_wall_hit}</text>
-            <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_points_lost_by_wall_hit}</text>    
+            <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${userStats.wallHits}</text>
+            <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${opponentStats.wallHits}</text>    
+   
             
             <g transform="translate(80, -30)">
-                <rect x="0" y="80" width="${p1WallWidth}" height="30" fill="var(--yellow-500)" rx="4"/>
-                <rect x="${p1WallWidth}" y="80" width="${p2WallWidth}" height="30" fill="var(--blue-500)" rx="4"/>
+                <rect x="0" y="80" width="${userWallWidth}" height="30" fill="var(--yellow-500)" rx="4"/>
+                <rect x="${userWallWidth}" y="80" width="${oppWallWidth}" height="30" fill="var(--blue-500)" rx="4"/>
+
             </g>
         </svg>
         
         <!-- Wrong Color Hits Graph -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 150">
-            <text x="300" y="30" font-family="Arial" font-size="18" fill="var(--charcoal-200)" text-anchor="middle">Wrong Color Hits</text>
+            <text x="300" y="30" font-family="Arial" font-size="18" fill="var(--charcoal-200)" text-anchor="middle">Points Lost to Wrong Color Hits</text>
         
-            <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p1_points_lost_by_wrong_color}</text>
-            <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${stats.p2_points_lost_by_wrong_color}</text>    
-            
+            <text x="20" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${userStats.wrongColorHits}</text>
+            <text x="580" y="70" font-family="Arial" font-size="18" fill="var(--charcoal-100)">${opponentStats.wrongColorHits}</text>    
             <g transform="translate(80, -30)">
-                <rect x="0" y="80" width="${p1WrongColorWidth}" height="30" fill="var(--yellow-500)" rx="4"/>
-                <rect x="${p1WrongColorWidth}" y="80" width="${p2WrongColorWidth}" height="30" fill="var(--blue-500)" rx="4"/>
+              <rect x="0" y="80" width="${userWrongColorWidth}" height="30" fill="var(--yellow-500)" rx="4"/>
+              <rect x="${userWrongColorWidth}" y="80" width="${oppWrongColorWidth}" height="30" fill="var(--blue-500)" rx="4"/>
+
             </g>
 
         </svg>
@@ -395,3 +400,13 @@ export async function loadMatchDetails(matchId) {
             return type || 'Unknown Type';
     }
 }
+
+function calculateBarWidths(value1, value2, maxWidth) {
+    const total = value1 + value2;
+    if (total === 0) {
+      return [maxWidth / 2, maxWidth / 2];
+    }
+    const width1 = (value1 / total) * maxWidth;
+    const width2 = (value2 / total) * maxWidth;
+    return [width1, width2];
+  }
