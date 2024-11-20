@@ -24,7 +24,6 @@ export function connectUserUpdateSocket() {
 
   userUpdateSocket.onmessage = async function (e) {
     const data = JSON.parse(e.data);
-    console.log(data)
 
     if (data.action === 'update_username') {
       handleUsernameUpdate(data)
@@ -35,7 +34,6 @@ export function connectUserUpdateSocket() {
   };
 
   userUpdateSocket.onclose = function (e) {
-    console.log(e)
     if (e.wasClean) {
       console.log('User update socket connection closed cleanly');
     } else {

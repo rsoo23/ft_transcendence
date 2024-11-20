@@ -24,7 +24,6 @@ export async function handleLogin() {
   try {
     const response = await postRequest('/api/login/', loginInfo)
 
-    console.log(response)
     if (response.success) {
       const tokenResponse = await retrieveTokens(loginInfo)
 
@@ -80,7 +79,7 @@ function handleLoginErrors(inputContainers, errors) {
 
 export async function status_2FA() {
   const response = await getRequest('/api/two_factor_auth/status_2FA/')
-  console.log(response.success)
+
   if (response.success)
     return true
   else

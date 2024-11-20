@@ -33,7 +33,6 @@ export function connectFriendSystemSocket() {
 
   friendsSystemSocket.onmessage = async function (e) {
     const data = JSON.parse(e.data);
-    console.log(data)
 
     handleActionNotifications(data)
 

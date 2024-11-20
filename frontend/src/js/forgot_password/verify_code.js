@@ -24,7 +24,7 @@ export async function verify_code() {
       return 'success'
     } else {
       alert('Change password code is wrong')
-      console.log('Error')
+      console.error('Error')
       return 'error'
     }
   } catch (error) {
@@ -49,34 +49,34 @@ function isInputEmpty(code, inputContainers) {
 }
 
 export function initVerifyForm() {
-    const form = document.getElementById('forgot-password-form');
-    const submitButton = document.getElementById('submit-code-button');
-    const codeInput = document.getElementById('forgot-password-code');
-    
-    form.onsubmit = async (e) => {
+  const form = document.getElementById('forgot-password-form');
+  const submitButton = document.getElementById('submit-code-button');
+  const codeInput = document.getElementById('forgot-password-code');
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const result = await verify_code();
+    if (result === 'success') {
+      loadPage('forgot_password/change_password');
+    }
+  };
+
+  // Enter key press
+  codeInput.addEventListener('keydown', async (e) => {
+    if (e.key === 'Enter') {
       e.preventDefault();
       const result = await verify_code();
       if (result === 'success') {
-         loadPage('forgot_password/change_password');
+        loadPage('forgot_password/change_password');
       }
-    };
-    
-    // Enter key press
-    codeInput.addEventListener('keydown', async (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const result = await verify_code();
-        if (result === 'success') {
-           loadPage('forgot_password/change_password');
-        }
-      }
-    });
-    
-    // Button click
-    submitButton.onclick = async () => {
-      const result = await verify_code();
-      if (result === 'success') {
-          loadPage('forgot_password/change_password');
-      }
-    };
-  }
+    }
+  });
+
+  // Button click
+  submitButton.onclick = async () => {
+    const result = await verify_code();
+    if (result === 'success') {
+      loadPage('forgot_password/change_password');
+    }
+  };
+}

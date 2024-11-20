@@ -74,7 +74,6 @@ export let avatarPaths = {}
 
 export function setAvatarPath(userId, avatarPath) {
   avatarPaths[userId] = avatarPath
-  console.log('set ', userId, avatarPath)
 }
 
 export let hotbarItems = {
