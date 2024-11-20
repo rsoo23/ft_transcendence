@@ -17,8 +17,14 @@ export async function loadStatsPage() {
 
     if (!matchStats || matchStats.length === 0) {
       const noMatchesDiv = document.createElement('div');
+
       noMatchesDiv.className = 'no-matches';
-      noMatchesDiv.textContent = 'No match history found';
+      noMatchesDiv.textContent = 'No matches played yet';
+      noMatchesDiv.style.display = 'flex'
+      noMatchesDiv.style.justifyContent = 'center'
+      noMatchesDiv.style.fontSize = '1rem'
+      noMatchesDiv.style.fontWeight = '500'
+      noMatchesDiv.style.marginTop = '2rem'
       container.appendChild(noMatchesDiv);
       return;
     }
