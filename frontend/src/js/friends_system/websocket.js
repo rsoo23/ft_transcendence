@@ -21,7 +21,7 @@ export function connectFriendSystemSocket() {
   }
 
   // open a new WebSocket
-  const webSocketUrl = 'ws://' + window.location.host + '/ws/friends_system/'
+  const webSocketUrl = 'wss://' + window.location.host + '/ws/friends_system/'
   friendsSystemSocket = new WebSocket(webSocketUrl, ['Authorization', getAccessToken()])
 
   friendsSystemSocket.onopen = function (e) {
