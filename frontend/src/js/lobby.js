@@ -127,6 +127,7 @@ export async function joinLobby(id) {
 
         // how
         if (!user) {
+          console.log('unable to get new user info')
           break
         }
       }
@@ -145,9 +146,16 @@ export async function joinLobby(id) {
       lobbyUsers = data.list // we do this to reserve space :]
       for (let i = 0; i < data.list.length; i++) {
         const userInfo = data.list[i]
-        let user = getUserById(data.user)
+        let user = getUserById(userInfo.id)
         if (!user) {
-          user = await getRequest(`/api/users/${userInfo.id}/`)
+          await loadUsersInfo()
+          user = getUserById(userInfo.id)
+
+          // how
+          if (!user) {
+            console.log('unable to get new user info')
+            break
+          }
         }
         user['ready'] = userInfo.ready
         lobbyUsers[i] = user

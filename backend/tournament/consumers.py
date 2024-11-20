@@ -149,8 +149,10 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         })
 
     async def tournament_notify_lose(self, event):
-        self.is_loser = True
-        self.opponent = None
+        if self.user_id == event['user']:
+            self.is_loser = True
+            self.opponent = None
+
         await self.send_json({
             'event': 'lose',
             'user': event['user'],
