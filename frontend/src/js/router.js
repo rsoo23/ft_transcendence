@@ -432,12 +432,10 @@ function init2FAVerify() {
         return;
       }
 
-      const tokenResponse = await retrieveTokens(loginInfo);
+      localStorage.setItem('is2FAVerified', true)
 
-      if (tokenResponse === "success") {
-        loadPage("main_menu");
-        loadMainMenuContent("play");
-      }
+      loadPage("main_menu");
+      loadMainMenuContent("play");
     } catch (error) {
       console.error(error)
     }
