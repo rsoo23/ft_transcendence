@@ -1,5 +1,5 @@
 import { getAccessToken } from "./network_utils/token_utils.js";
-import { currentUserInfo, usersInfo, LOSE_BUTTON_MSGS } from "./global_vars.js";
+import { currentUserInfo, LOSE_BUTTON_MSGS } from "./global_vars.js";
 import { getRequest } from "./network_utils/api_requests.js";
 import { checkUserIsReady, checkUserInLobby, leaveLobby, getUserById } from "./lobby.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";
@@ -7,7 +7,6 @@ import { loadUserAvatar } from "./settings/upload_avatar.js"
 
 var tournamentSocket = null
 var tournamentInfo = {}
-var tournamentBrackets = {}
 var tournamentCurrentOpponent = null
 var tournamentWinner = null
 var tournamentIsLoser = false

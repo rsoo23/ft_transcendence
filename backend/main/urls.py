@@ -27,7 +27,6 @@ import os
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('user_management.urls')),
-    path('api/token_management/', include('token_management.urls')),
     path('api/two_factor_auth/', include('two_factor_auth.urls')),
     path('api/', include('friends_system.urls')),
     path('api/', include('realtime_chat.urls')),

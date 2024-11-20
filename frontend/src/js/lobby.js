@@ -1,4 +1,4 @@
-import { getRequest, postRequest } from "./network_utils/api_requests.js";
+import { postRequest } from "./network_utils/api_requests.js";
 import { currentUserInfo, usersInfo } from "./global_vars.js"
 import { getAccessToken } from "./network_utils/token_utils.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
@@ -133,7 +133,6 @@ export async function joinLobby(id) {
           await loadUsersInfo()
           user = getUserById(data.user)
 
-          // how
           if (!user) {
             console.error('unable to get new user info')
             break
@@ -159,7 +158,6 @@ export async function joinLobby(id) {
             await loadUsersInfo()
             user = getUserById(userInfo.id)
 
-            // how
             if (!user) {
               console.error('unable to get new user info')
               break

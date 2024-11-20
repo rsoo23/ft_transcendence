@@ -18,7 +18,7 @@ import { send_otp_2FA } from "./network_utils/2FA_utils.js";
 import { check_email, initEmailForm } from "./forgot_password/get_email.js";
 import { verify_code } from "./forgot_password/verify_code.js";
 import { handle_change_password } from "./forgot_password/change_password.js";
-import { handleLogin, loginInfo } from "./login_panel.js";
+import { handleLogin } from "./login_panel.js";
 import { handleSignup } from "./signup_panel.js";
 import { initAvatarUpload } from "./settings/upload_avatar.js";
 import { initLogoutButton } from "./settings/logout.js";
@@ -26,11 +26,10 @@ import { getRequest } from "./network_utils/api_requests.js";
 import { initEmailSettings } from "./settings/update_email.js";
 import { loadContentToTarget } from "./ui_utils/ui_utils.js";
 import {
-  currentPageState,
   PAGE_STATE,
   setCurrentPageState,
   setCurrentUserInfo,
-  setUsersInfo,
+  setUsersInfo
 } from "./global_vars.js";
 import { initPasswordSettings } from "./settings/update_password.js";
 import { closeChatSocket } from "./realtime_chat/websocket.js";
@@ -42,21 +41,14 @@ import {
 import {
   initPlayDivs,
   startingMenuSwitcher,
-  divSwitcher,
-  loadMultiplayerTest,
-  startLocalGame,
+  divSwitcher, startLocalGame,
   tryReturnToLobby,
-  goToGameSettings,
+  goToGameSettings
 } from "./play_panel.js";
 import { initLink } from "./ui_utils/link_utils.js";
 import {
-  initClassicLobby,
-  updateClassicLobby,
   createLobby,
-  createTournamentLobby,
-  initTournamentLobby,
-  updateTournamentLobby,
-  joinLobby,
+  createTournamentLobby
 } from "./lobby.js";
 import {
   initLobbyList,
@@ -69,14 +61,10 @@ import {
 } from "./user_updates/websocket.js";
 import { init2FAToggle } from "./2FA_panel.js";
 import {
-  generateArcBackground,
-  generateGeometricBackground,
-  getRandomInt,
   loadMainBackground,
-  removeBackground,
-  setBackgroundLinesColor,
+  removeBackground
 } from "./animations/main_background.js";
-import { refreshToken, retrieveTokens } from "./network_utils/token_utils.js";
+import { refreshToken } from "./network_utils/token_utils.js";
 import { initVerifyForm } from "./forgot_password/verify_code.js";
 import { initChangePasswordForm } from "./forgot_password/change_password.js";
 import { queueNotification } from "./ui_utils/notification_utils.js";

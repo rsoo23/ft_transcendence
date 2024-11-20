@@ -1,7 +1,6 @@
 import { currentPageState, PAGE_STATE } from "../global_vars.js";
 import { getAccessToken } from "../network_utils/token_utils.js";
 import { currentChatUserId, loadChatInterface } from "../realtime_chat/chat_utils.js";
-import { initFriendsPage } from "../router.js";
 import { queueNotification, createGameInviteNotification } from "../ui_utils/notification_utils.js";
 import { hideOverlay, showOverlay } from "../ui_utils/overlay_utils.js";
 import { currentFriendListState, FRIEND_LIST_STATE, loadFriendListPanel, loadFriendSearchPanel } from "./utils.js";
@@ -46,7 +45,6 @@ export function connectFriendSystemSocket() {
   };
 
   friendsSystemSocket.onclose = function (e) {
-    console.log(e)
     if (e.wasClean) {
       console.log('Friend system socket connection closed cleanly');
     } else {

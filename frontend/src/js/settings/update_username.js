@@ -1,4 +1,3 @@
-import { postRequest } from "../network_utils/api_requests.js";
 import { currentUserInfo } from "../global_vars.js";
 import { userUpdateSocket } from "../user_updates/websocket.js";
 
