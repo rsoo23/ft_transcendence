@@ -4,14 +4,8 @@ import { currentUserInfo } from "./global_vars.js";
 
 export async function loadStatsPage() {
   try {
-    // Get match stats from your API
-    // console.log("Fetching match stats...");
     const matchStats = await getRequest('/api/game_stats/match-stats/');
     const container = document.querySelector('.scrollable-container');
-    // if (!container) {
-    //     console.error("Could not find .match-scrollable-container");
-    //     return;
-    // }
 
     container.innerHTML = ''; // Clear existing content
 
@@ -31,7 +25,6 @@ export async function loadStatsPage() {
 
     // Group matches by date
     const matchesByDate = groupMatchesByDate(matchStats);
-    // console.log("Grouped matches:", matchesByDate);
 
     // Create sections for each date
     for (const [date, matches] of Object.entries(matchesByDate)) {
@@ -202,8 +195,6 @@ function createScoreSection(match, isPlayer1) {
 export async function loadMatchDetails(matchId) {
   try {
     const matchStats = await getRequest(`/api/game_stats/match-stats/${matchId}/`);
-    console.log('Full match stats:', matchStats);
-    console.log('Match type:', matchStats.pong_match?.type);
     const matchStatsContainer = document.getElementById('match-stats-container');
     const content = matchStatsContainer.querySelector('.content');
 
@@ -258,9 +249,6 @@ function generateMatchStatsHTML(stats) {
   };
 
   // Format duration into minutes and seconds
-  console.log('Stats in generate HTML:', stats);
-  console.log('Pong match:', stats.pong_match);
-  console.log('Game type received:', stats.pong_match?.type);
   const duration = stats.match_duration ? formatDuration(stats.match_duration) : 'N/A';
   const gameDate = formatDate(new Date(stats.created_at));
   const gameTime = formatTime(new Date(stats.created_at));
@@ -402,7 +390,7 @@ function formatGameType(type) {
     case 'online_tournament':
       return 'Tournament';
     default:
-      console.log('Unknown game type:', type);
+      console.error('Unknown game type:', type);
       return type || 'Unknown Type';
   }
 }

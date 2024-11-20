@@ -58,22 +58,4 @@ export function updateRenderer(states) {
     type: 'updateObjectsToDraw',
     object: { states: states, accumulator: 0 },
   });
-  // const currenttime = performance.now()
-  // // console.log(`${currenttime} - ${prevticktime} = ${currenttime - prevticktime}`)
-  // tickavg[tickcount++] = currenttime - prevticktime
-  // prevticktime = currenttime
-  // if (tickcount >= tickavg.length)
-  //   tickcount = 0
-
-  // // console.log('ticked')
-  // if (tickcount % 10 != 0)
-  //   return
-
-  // var tmpsum = 0
-  // for (const t of tickavg) {
-  //   tmpsum += t
-  // }
-  // const tmpavg = tmpsum / tickavg.length
-  // document.getElementById('debugtickrate').textContent = `tick avg = ${tmpavg}\nfps = ${1 * 1000 / tmpavg}`
-  // console.log('updated fps')
 }

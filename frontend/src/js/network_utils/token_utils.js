@@ -30,9 +30,9 @@ export async function verifyToken() {
   if (!response.ok) {
     const contents = await response.json()
     if ('detail' in contents) {
-      console.log(`token: ${contents.detail}`)
+      console.error(`token: ${contents.detail}`)
     } else if (response.status != 500) {
-      console.log('token: no access token found in local memory')
+      console.error('token: no access token found in local memory')
     }
   }
 
@@ -49,9 +49,9 @@ export async function refreshToken() {
   if (!response.ok) {
     const contents = await response.json()
     if ('detail' in contents) {
-      console.log(`token: ${contents.detail}`)
+      console.error(`token: ${contents.detail}`)
     } else if (response.status != 500) {
-      console.log('token: no refresh token found in cookies')
+      console.error('token: no refresh token found in cookies')
     }
   } else {
     const contents = await response.json()

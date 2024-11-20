@@ -48,7 +48,6 @@ async function isFriendBlocked(userId) {
   try {
     const response = await getRequest(`/api/is_friend_blocked/?receiver_id=${userId}`)
 
-    console.log('is friend ', userId, ' blocked: ', response.is_blocked)
     if (response.is_blocked === 'true') {
       return true
     }
@@ -62,7 +61,6 @@ async function loadChatMessages(userId) {
   try {
     const response = await getRequest(`/api/chat_messages/?receiver_id=${userId}`)
 
-    console.log('chat messages: ', response)
     if (response.detail === 'No Room matches the given query.') {
       return
     } else if (response.length === 0) {

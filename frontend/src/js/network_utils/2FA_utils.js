@@ -2,7 +2,6 @@ import { getRequest, postRequest } from "./api_requests.js";
 
 export async function send_otp_2FA() {
   try {
-    console.log("sending post request")
     const response = await postRequest('/api/two_factor_auth/send_otp_2FA/')
 
     if (response.success) {

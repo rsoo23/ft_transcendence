@@ -45,7 +45,6 @@ export function connectChat(receiverId) {
 
   chatSocket.onmessage = function (e) {
     const data = JSON.parse(e.data);
-    console.log(data)
 
     if (data) {
       addMessage(data.sender_username, data.message, data.timestamp)
@@ -53,7 +52,6 @@ export function connectChat(receiverId) {
   };
 
   chatSocket.onclose = function (e) {
-    console.log(e)
     if (e.wasClean) {
       console.log('Chat socket connection closed cleanly');
     } else {

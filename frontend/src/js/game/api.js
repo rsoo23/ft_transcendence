@@ -18,7 +18,7 @@ export async function createMatch(player1ID, player2ID, type) {
     'info': getGameSettingsInfo(),
   })
   if (!response['success']) {
-    console.log(response['Error'])
+    console.error(response['Error'])
     return null
   }
 
@@ -72,7 +72,7 @@ async function createSocket(matchID, callback) {
     try {
       clearTimeout(socketChecker)
     } catch (e) {
-      console.log(e)
+      console.error(e)
     }
     console.log(`connection closed, reason: ${e.code}: ${e.reason}`)
     stopRenderer()

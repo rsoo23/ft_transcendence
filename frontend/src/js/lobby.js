@@ -71,7 +71,7 @@ export async function createLobby() {
     return response.lobby_id
   }
 
-  console.log(response.reason)
+  console.error(response.reason)
   return null
 }
 
@@ -105,161 +105,160 @@ export async function joinLobby(id) {
   lobbySocket = new WebSocket(`ws://${window.location.host}/ws/lobby/${id}`, ['Authorization', getAccessToken()])
   lobbySocket.onmessage = async (e) => {
     const data = JSON.parse(e.data)
-    console.log(data)
 
     switch (data.event) {
-    case 'left':
-      for (let i = 0; i < lobbyUsers.length; i++) {
-        if (lobbyUsers[i].id != data.user) {
-          continue
+      case 'left':
+        for (let i = 0; i < lobbyUsers.length; i++) {
+          if (lobbyUsers[i].id != data.user) {
+            continue
+          }
+
+          const user = lobbyUsers[i]
+          lobbyUsers.splice(i, 1)
+          if (checkInTournament() && checkIsTournamentOpponent(user.id)) {
+            queueNotification('magenta', `Your opponent(${user.username}) has left the tournament.`, () => { })
+          } else if (checkInTournament()) {
+            queueNotification('magenta', `${user.username} has left the tournament.`, () => { })
+          } else {
+            queueNotification('magenta', `${user.username} has left the lobby.`, () => { })
+          }
+          if (checkInTournament()) {
+            loadTournamentList()
+          } else if (lobbyType == 'tournament') {
+            removeTournamentUser(user)
+            updateTournamentLobby()
+          } else {
+            updateClassicLobby()
+          }
+          break
+        }
+        break
+
+      case 'join':
+        let user = getUserById(data.user)
+        if (!user) {
+          await loadUsersInfo()
+          user = getUserById(data.user)
+
+          // how
+          if (!user) {
+            console.error('unable to get new user info')
+            break
+          }
         }
 
-        const user = lobbyUsers[i]
-        lobbyUsers.splice(i, 1)
-        if (checkInTournament() && checkIsTournamentOpponent(user.id)) {
-          queueNotification('magenta', `Your opponent(${user.username}) has left the tournament.`, () => {})
-        } else if (checkInTournament()) {
-          queueNotification('magenta', `${user.username} has left the tournament.`, () => {})
-        } else {
-          queueNotification('magenta', `${user.username} has left the lobby.`, () => {})
-        }
-        if (checkInTournament()) {
-          loadTournamentList()
-        } else if (lobbyType == 'tournament') {
-          removeTournamentUser(user)
+        user['ready'] = false
+        lobbyUsers.push(user)
+        queueNotification('teal', `${user.username} has joined the lobby.`, () => { })
+        if (lobbyType == 'tournament') {
           updateTournamentLobby()
         } else {
           updateClassicLobby()
         }
         break
-      }
-      break
 
-    case 'join':
-      let user = getUserById(data.user)
-      if (!user) {
-        await loadUsersInfo()
-        user = getUserById(data.user)
+      case 'list':
+        lobbyUsers = data.list // we do this to reserve space :]
+        for (let i = 0; i < data.list.length; i++) {
+          const userInfo = data.list[i]
+          let user = getUserById(userInfo.id)
+          if (!user) {
+            await loadUsersInfo()
+            user = getUserById(userInfo.id)
 
-        // how
-        if (!user) {
-          console.log('unable to get new user info')
+            // how
+            if (!user) {
+              console.error('unable to get new user info')
+              break
+            }
+          }
+          user['ready'] = userInfo.ready
+          lobbyUsers[i] = user
+        }
+        if (lobbyType == 'tournament') {
+          updateTournamentLobby()
+        } else {
+          updateClassicLobby()
+        }
+
+      case 'ready':
+        for (const user of lobbyUsers) {
+          if (user.id != data.user) {
+            continue
+          }
+
+          user.ready = data.ready
+        }
+        if (checkInTournament()) {
+          updateTournamentPlayerReady(data.user, data.ready)
+        } else if (lobbyType == 'tournament') {
+          updateTournamentLobby()
+        } else {
+          updateClassicLobby()
+        }
+        break
+
+      case 'start':
+        lobbyStarting = true
+        queueNotification('teal', 'Game starting...', () => { })
+        if (lobbyType == 'tournament') {
+          updateTournamentLobby()
+        } else {
+          updateClassicLobby()
+        }
+        break
+
+      case 'close':
+        break
+
+      case 'match':
+        if (data.p1 != currentUserInfo.id && data.p2 != currentUserInfo.id) {
           break
         }
-      }
 
-      user['ready'] = false
-      lobbyUsers.push(user)
-      queueNotification('teal', `${user.username} has joined the lobby.`, () => {})
-      if (lobbyType == 'tournament') {
-        updateTournamentLobby()
-      } else {
-        updateClassicLobby()
-      }
-      break
+        const oldOnClose = lobbySocket.onclose
+        lobbySocket.onclose = async (e) => {
+          console.error('lobby was abruptly closed')
+          await defaultMatchOnClose()
+          oldOnClose(e)
+        }
+        await loadPage('game')
+        joinMatch(data.id, () => {
+          if (!checkInTournament()) {
+            leaveLobby()
+          } else {
+            lobbySocket.onclose = oldOnClose
+          }
 
-    case 'list':
-      lobbyUsers = data.list // we do this to reserve space :]
-      for (let i = 0; i < data.list.length; i++) {
-        const userInfo = data.list[i]
-        let user = getUserById(userInfo.id)
-        if (!user) {
-          await loadUsersInfo()
-          user = getUserById(userInfo.id)
+          defaultMatchOnClose()
+        })
+        break
 
-          // how
-          if (!user) {
-            console.log('unable to get new user info')
-            break
+      case 'tournament':
+        await loadContentToTarget('menu/tournament_content.html', 'play-tournament-container')
+        joinTournament(data.id)
+
+        const eCodeHandler = (e) => {
+          if (e.code == 1006) {
+            queueNotification('magenta', 'Tournament is no longer available.', () => { })
+          } else if (e.code == 4001) {
+            queueNotification('magenta', 'Tournament has been closed by host.', () => { })
           }
         }
-        user['ready'] = userInfo.ready
-        lobbyUsers[i] = user
-      }
-      if (lobbyType == 'tournament') {
-        updateTournamentLobby()
-      } else {
-        updateClassicLobby()
-      }
+        lobbySocket.onclose = (e) => closeLobbySocket(e, eCodeHandler)
 
-    case 'ready':
-      for (const user of lobbyUsers) {
-        if (user.id != data.user) {
-          continue
-        }
-
-        user.ready = data.ready
-      }
-      if (checkInTournament()) {
-        updateTournamentPlayerReady(data.user, data.ready)
-      } else if (lobbyType == 'tournament') {
-        updateTournamentLobby()
-      } else {
-        updateClassicLobby()
-      }
-      break
-
-    case 'start':
-      lobbyStarting = true
-      queueNotification('teal', 'Game starting...', () => {})
-      if (lobbyType == 'tournament') {
-        updateTournamentLobby()
-      } else {
-        updateClassicLobby()
-      }
-      break
-
-    case 'close':
-      break
-
-    case 'match':
-      if (data.p1 != currentUserInfo.id && data.p2 != currentUserInfo.id) {
+        divSwitcher.setCurrentDiv('play-lobby-container', 'play-tournament-container')
         break
-      }
-
-      const oldOnClose = lobbySocket.onclose
-      lobbySocket.onclose = async (e) => {
-        console.log('lobby was abruptly closed')
-        await defaultMatchOnClose()
-        oldOnClose(e)
-      }
-      await loadPage('game')
-      joinMatch(data.id, () => {
-        if (!checkInTournament()) {
-          leaveLobby()
-        } else {
-          lobbySocket.onclose = oldOnClose
-        }
-
-        defaultMatchOnClose()
-      })
-      break
-
-    case 'tournament':
-      await loadContentToTarget('menu/tournament_content.html', 'play-tournament-container')
-      joinTournament(data.id)
-
-      const eCodeHandler = (e) => {
-        if (e.code == 1006) {
-          queueNotification('magenta', 'Tournament is no longer available.', () => {})
-        } else if (e.code == 4001) {
-          queueNotification('magenta', 'Tournament has been closed by host.', () => {})
-        }
-      }
-      lobbySocket.onclose = (e) => closeLobbySocket(e, eCodeHandler)
-
-      divSwitcher.setCurrentDiv('play-lobby-container', 'play-tournament-container')
-      break
     }
   }
 
   const eCodeHandler = (e) => {
     if (e.code == 1006) {
-      queueNotification('magenta', 'Lobby is no longer available.', () => {})
+      queueNotification('magenta', 'Lobby is no longer available.', () => { })
     } else if (e.code == 4001) {
-      queueNotification('magenta', 'Lobby has been closed by host.', () => {})
+      queueNotification('magenta', 'Lobby has been closed by host.', () => { })
     } else if (e.code == 4002) {
-      queueNotification('magenta', 'Lobby is full.', () => {})
+      queueNotification('magenta', 'Lobby is full.', () => { })
     }
   }
   lobbySocket.onclose = (e) => closeLobbySocket(e, eCodeHandler)
@@ -354,7 +353,7 @@ export function updateClassicLobby() {
   } else if (lobbyUsers.length > 0 && lobbyUsers[0].id != currentUserInfo.id) {
     startButton.setAttribute('disabled', 'true')
     startButton.style.setProperty('visibility', 'hidden')
-    startButton.onclick = () => {}
+    startButton.onclick = () => { }
   } else if (lobbyUsers.length == 1 && lobbyUsers[0].id == currentUserInfo.id) {
     startButton.setAttribute('disabled', 'true')
   } else if (lobbyUsers.length > 1) {
@@ -381,7 +380,7 @@ function setClassicPlayerInfo(info, prefix) {
   header.style.setProperty('display', 'block')
   ready.style.setProperty('display', 'block')
   name.textContent = info.username
-  
+
   if (info.id != currentUserInfo.id) {
     ready.setAttribute('disabled', 'true')
     if (info.ready) {
@@ -428,7 +427,7 @@ export function updateTournamentLobby() {
   startButton.disabled = (lobbyUsers.length <= 1)
   startButton.style.setProperty(
     'visibility',
-    (lobbyUsers.length > 0 && lobbyUsers[0].id == currentUserInfo.id)? 'visible' : 'hidden'
+    (lobbyUsers.length > 0 && lobbyUsers[0].id == currentUserInfo.id) ? 'visible' : 'hidden'
   )
 
   for (const user of lobbyUsers) {
@@ -439,7 +438,7 @@ export function updateTournamentLobby() {
       removeTournamentUser(existingEntry)
     } else {
       const ready = existingEntry.querySelector('i')
-      ready.style.setProperty('visibility', (user.ready)? 'visible' : 'hidden')
+      ready.style.setProperty('visibility', (user.ready) ? 'visible' : 'hidden')
     }
   }
 }
@@ -454,7 +453,7 @@ function appendTournamentUser(info) {
 
   const ready = document.createElement('i')
   ready.classList.add('material-icons')
-  ready.style.setProperty('visibility', (info.ready)? 'visible' : 'hidden')
+  ready.style.setProperty('visibility', (info.ready) ? 'visible' : 'hidden')
   ready.textContent = 'done'
 
   const div = document.createElement('div')

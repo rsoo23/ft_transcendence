@@ -27,7 +27,7 @@ export async function check_email() {
       return 'success'
     } else {
       alert('Email does not exist')
-      console.log('Error')
+      console.error('Error')
       return 'error'
     }
   } catch (error) {
@@ -52,34 +52,34 @@ function isInputEmpty(code, inputContainers) {
 }
 
 export function initEmailForm() {
-    const form = document.getElementById('forgot-password-form');
-    const submitButton = document.getElementById('submit-email-button');
-    const emailInput = document.getElementById('forgot-password-email');
-    
-    form.onsubmit = async (e) => {
+  const form = document.getElementById('forgot-password-form');
+  const submitButton = document.getElementById('submit-email-button');
+  const emailInput = document.getElementById('forgot-password-email');
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const result = await check_email();
+    if (result === 'success') {
+      loadPage('forgot_password/verify_code');
+    }
+  };
+
+  // Enter key press
+  emailInput.addEventListener('keydown', async (e) => {
+    if (e.key === 'Enter') {
       e.preventDefault();
       const result = await check_email();
       if (result === 'success') {
-          loadPage('forgot_password/verify_code');
+        loadPage('forgot_password/verify_code');
       }
-    };
-    
-    // Enter key press
-    emailInput.addEventListener('keydown', async (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const result = await check_email();
-        if (result === 'success') {
-            loadPage('forgot_password/verify_code');
-        }
-      }
-    });
-    
-    // Button click
-    submitButton.onclick = async () => {
-      const result = await check_email();
-      if (result === 'success') {
-          loadPage('forgot_password/verify_code');
-      }
-    };
-  }
+    }
+  });
+
+  // Button click
+  submitButton.onclick = async () => {
+    const result = await check_email();
+    if (result === 'success') {
+      loadPage('forgot_password/verify_code');
+    }
+  };
+}

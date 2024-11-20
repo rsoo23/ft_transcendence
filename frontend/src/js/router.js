@@ -245,7 +245,6 @@ async function loadCurrentUserInfo() {
   try {
     const response = await getRequest("/api/users/current_user/");
 
-    console.log("userInfo: ", response);
     if (response) {
       setCurrentUserInfo(response);
     } else {
@@ -260,7 +259,6 @@ export async function loadUsersInfo() {
   try {
     const response = await getRequest("/api/users/");
 
-    console.log("usersInfo: ", response);
     if (response) {
       setUsersInfo(response);
     } else {
@@ -370,7 +368,7 @@ async function initPlayPage() {
     }
 
     if (lobbyID == null) {
-      queueNotification("magenta", `Failed to create lobby.`, () => {});
+      queueNotification("magenta", `Failed to create lobby.`, () => { });
       return;
     }
     await goToLobby("play-settings-container", lobbyID, isTournament);

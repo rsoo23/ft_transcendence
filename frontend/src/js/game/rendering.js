@@ -207,11 +207,6 @@ export class RenderInfo {
 
     for (const objInfo of this.objectsToDraw) {
       let objStates = objInfo.states
-      // console.log(objStates)
-      // idk why, but sometimes the objstate is null
-      // if (objStates == null)
-      // 	continue;
-
       let prevState = objStates[0];
       let nextState = null;
 
