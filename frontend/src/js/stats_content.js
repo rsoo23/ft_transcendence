@@ -363,12 +363,7 @@ export async function loadMatchDetails(matchId) {
                 <rect x="0" y="80" width="${p1WrongColorWidth}" height="30" fill="var(--yellow-500)" rx="4"/>
                 <rect x="${p1WrongColorWidth}" y="80" width="${p2WrongColorWidth}" height="30" fill="var(--blue-500)" rx="4"/>
             </g>
-            <g transform="translate(80, 100)">
-                <rect x="0" y="0" width="20" height="20" fill="var(--yellow-500)" rx="4"/>
-                <text x="30" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 1</text>
-                <rect x="120" y="0" width="20" height="20" fill="var(--blue-500)" rx="4"/>
-                <text x="150" y="15" font-family="Arial" font-size="16" fill="var(--charcoal-100)">Player 2</text>
-            </g>
+
         </svg>
 	  </div>
 	`;
