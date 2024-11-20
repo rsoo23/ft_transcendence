@@ -281,7 +281,7 @@ class ServerManager():
 
                     if match_info['p2_consumer'] != None:
                         async_to_sync(match_info['p2_consumer'].send_json)(msg)
-                    elif match_info['p2_api_last_msg_timer'] <= 0:
+                    elif not match_info['local'] and match_info['p2_api_last_msg_timer'] <= 0:
                         raise Exception()
 
                 except Exception:
