@@ -7,6 +7,8 @@ services:
     volumes:
       - django_statics:/app/django/static
       - django_media:/app/media
+    environment:
+      PGUSER: ${DB_USER}
     env_file:
       - .env
     depends_on:
@@ -34,6 +36,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     environment:
+      PGUSER: ${DB_USER}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_USER}
