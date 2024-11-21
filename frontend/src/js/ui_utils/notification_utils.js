@@ -49,7 +49,7 @@ export function createGameInviteNotification(username, lobbyID, isTournament) {
     deleteNotification(notification)
     leaveLobby()
     await loadMainMenuContent('play')
-    await goToLobby(lobbyID, isTournament)
+    await goToLobby('play-select-container', lobbyID, isTournament)
   }
 
   const decline = document.createElement('button')
