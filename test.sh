@@ -21,6 +21,15 @@ function post_request {
   -i "${website_url}${1}"
 }
 
+function get_request {
+  curl --request GET \
+  -k \
+  -s \
+  -b "refresh_token=${refresh_token}" \
+  -H "Authorization: Bearer ${access_token}" \
+  -i "${website_url}${1}"
+}
+
 # read -p "Website URL (leave blank for debug localhost): " newurl
 # if [ "${newurl}" != "" ]; then
 #   website_url="${newurl}"
@@ -150,10 +159,9 @@ while [ 1 ]; do
         post_request "/api/pong/set_player_input/${match_id}/" "{\"input\": \"${input}\", \"value\": ${value}}" > /dev/null
       fi
     done
-  # elif [ "${command}" == "monitor" ]; then
-  #   echo "Reading game state.... (press any key to quit)"
-  #   while [
-  #   read -rsn 1 code
+  elif [ "${command}" == "monitor" ]; then
+    get_request "/api/pong/get_match_state/${match_id}/"
+    echo
   elif [ "${command}" == "exit" ]; then
     break
   else
