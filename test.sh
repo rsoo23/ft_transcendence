@@ -7,10 +7,12 @@ username=""
 password=""
 refresh_token=""
 access_token=""
-website_url="http://localhost:8000"
+# website_url="http://localhost:8000"
+website_url="https://localhost:1026"
 
 function post_request {
   curl --request POST \
+  -k \
   -s \
   -b "refresh_token=${refresh_token}" \
   -H 'Content-Type: application/json' \
@@ -19,10 +21,10 @@ function post_request {
   -i "${website_url}${1}"
 }
 
-read -p "Website URL (leave blank for debug localhost): " newurl
-if [ "${newurl}" != "" ]; then
-  website_url="${newurl}"
-fi
+# read -p "Website URL (leave blank for debug localhost): " newurl
+# if [ "${newurl}" != "" ]; then
+#   website_url="${newurl}"
+# fi
 read -p "Username: " username
 read -p "Password: " -s password
 echo
@@ -60,6 +62,7 @@ function ping_match {
 }
 
 echo ">>> ACCESS GRANTED <<<"
+echo "You have 15 minutes before your token expires, have fun :]"
 while [ 1 ]; do
   args=''
   read -e -p '> ' args
@@ -77,6 +80,23 @@ while [ 1 ]; do
     echo "join <match_id>"
     echo "input"
     echo "exit"
+  elif [ "${command}" == "create" ]; then
+    if [ "${arg1}" == "" ]; then
+      echo "Usage: create <player2>"
+      continue
+    fi
+
+    echo "Attempting to create a match..."
+    create_match_data=$(post_request "/api/pong/simple_create_match/" "{\"player2\": \"${arg1}\"}")
+    if [ "$(grep -e '"success": true' <<< "${create_match_data}")" == "" ]; then
+      echo $create_match_data
+      echo "Failed to create match..."
+      continue
+    fi
+
+    echo "Successfully created match!"
+    echo "Match id is $(grep -e 'success' <<< "${create_match_data}" | sed 's/.*"match_id"://; s/\}//')"
+    echo "NOTE: match will be deleted in 30 seconds if it hasn't started"
   elif [ "${command}" == "join" ]; then
     if [ "${arg1}" == "" ]; then
       echo "Usage: join <match_id>"
@@ -130,6 +150,10 @@ while [ 1 ]; do
         post_request "/api/pong/set_player_input/${match_id}/" "{\"input\": \"${input}\", \"value\": ${value}}" > /dev/null
       fi
     done
+  # elif [ "${command}" == "monitor" ]; then
+  #   echo "Reading game state.... (press any key to quit)"
+  #   while [
+  #   read -rsn 1 code
   elif [ "${command}" == "exit" ]; then
     break
   else
