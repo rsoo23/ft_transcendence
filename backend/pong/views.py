@@ -181,3 +181,25 @@ def leave_match(request, match_id):
         server_info['p2_api_last_msg_timer'] = 0
 
     return JsonResponse({'success': True})
+
+@csrf_exempt
+@api_view(['POST'])
+@parser_classes([JSONParser])
+@permission_classes([IsAuthenticated])
+async def simple_create_match(request):
+    try:
+        user1 = request.user.id
+        user2 = await CustomUser.objecta.aget(username=request.data['player2'])
+        info = {
+            "game_score": gameScore,
+            "ball_speed_increment": ballSpeedIncrement,
+            "is_powerup_checked": isPowerupChecked,
+        }
+        match = await create_match_and_game(user1, user2, request.data['type'], -1, info)
+        return JsonResponse({
+            'success': True,
+            'match_id': match.id
+        })
+
+    except Exception as error:
+        return JsonResponse({'success': False, 'Error': str(error)}, status=401)

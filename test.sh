@@ -77,6 +77,21 @@ while [ 1 ]; do
     echo "join <match_id>"
     echo "input"
     echo "exit"
+  elif [ "${command}" == "create" ]; then
+    if [ "${arg1}" == "" ]; then
+      echo "Usage: create <player2>"
+      continue
+    fi
+
+    echo "Attempting to create a match..."
+    create_match_data=$(post_request "/api/pong/simple_create_match/" "{\"player2\": \"${arg1}\"}")
+    if [ "$(grep -e '"success": true' <<< "${create_match_data}")" == "" ]; then
+      echo "Failed to create match..."
+      continue
+    fi
+
+    echo "Successfully created match!"
+    echo "Match id is $(grep -e 'success' <<< "${create_match_data}" | sed -e 's/.*"id":"//; s/".*\}//')"
   elif [ "${command}" == "join" ]; then
     if [ "${arg1}" == "" ]; then
       echo "Usage: join <match_id>"
