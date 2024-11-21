@@ -15,7 +15,6 @@ from django.contrib.auth import authenticate, login, get_user_model
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from .forms import CustomUserCreationForm
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ValidationError
