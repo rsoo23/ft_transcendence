@@ -4,6 +4,7 @@ import { putRequest } from "../network_utils/api_requests.js";
 import { getEmailToken } from "../network_utils/token_utils.js";
 import { send_otp_forgot_password } from "../network_utils/2FA_utils.js";
 import { loadPage } from "../router.js";
+import { initRandomColorButton } from "../ui_utils/button_utils.js";
 
 export async function check_email() {
   const inputContainers = {
@@ -76,10 +77,12 @@ export function initEmailForm() {
   });
 
   // Button click
-  submitButton.onclick = async () => {
+  initRandomColorButton("submit-email-button", "get-email-panel", async () => {
     const result = await check_email();
-    if (result === 'success') {
-      loadPage('forgot_password/verify_code');
+
+    if (result === "error") {
+      return;
     }
-  };
+    loadPage("forgot_password/verify_code");
+  });
 }

@@ -432,14 +432,6 @@ async function initSettingsPage() {
 function initGetEmailPage() {
   initBackButton(() => loadPage("login"));
   initEmailForm();
-  initRandomColorButton("submit-email-button", "get-email-panel", async () => {
-    const result = await check_email();
-
-    if (result === "error") {
-      return;
-    }
-    loadPage("forgot_password/verify_code");
-  });
 }
 
 function initVerifyCodePage() {
