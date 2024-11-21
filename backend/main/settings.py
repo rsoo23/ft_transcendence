@@ -162,7 +162,7 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': getenv_and_validate('DB_NAME'),
+            'NAME': getenv_and_validate('DB_USER'),
             'USER': getenv_and_validate('DB_USER'),
             'PASSWORD': getenv_and_validate('DB_PASSWORD'),
             'HOST': getenv_and_validate('DB_HOST'),

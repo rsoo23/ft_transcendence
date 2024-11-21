@@ -36,7 +36,7 @@ services:
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_DB: ${DB_USER}
     env_file:
       - .env
     healthcheck:
@@ -49,8 +49,8 @@ services:
   nginx:
     image: nginx:1.27.0-alpine
     ports:
-      - 80:80
-      - 443:443
+      - "${HTTP_PORT}:80"
+      - "${HTTPS_PORT}:443"
     networks:
       - django_net
     depends_on:
