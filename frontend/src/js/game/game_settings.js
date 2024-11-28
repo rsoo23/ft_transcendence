@@ -10,7 +10,7 @@ export function setGameSettingsInfo(pGameScore=5, pBallSpeedIncrement=25, pIsPow
 }
 
 export function initGameSettings() {
-  setDefaultGameSettings()
+  setGameSettingsInfo()
   const gameScoreSlider = document.getElementById('game-score');
   const ballSpeedSlider = document.getElementById('ball-speed');
   const gameScoreValue = document.getElementById('game-score-value');
@@ -35,7 +35,7 @@ export function initGameSettings() {
   });
 
   resetToDefault.addEventListener('click', () => {
-    setDefaultGameSettings()
+    setGameSettingsInfo()
     gameScoreSlider.value = gameScore;
     ballSpeedSlider.value = ballSpeedIncrement;
     powerupsCheckbox.checked = isPowerupChecked;
