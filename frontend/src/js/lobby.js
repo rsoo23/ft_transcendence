@@ -149,6 +149,12 @@ export async function joinLobby(id) {
         }
         break
 
+      case 'settings':
+        gameScore = settings.game_score
+        ballSpeedIncrement = settings.ball_speed_increment
+        isPowerupChecked = settings.is_powerup_checked
+        break
+
       case 'list':
         lobbyUsers = data.list // we do this to reserve space :]
         for (let i = 0; i < data.list.length; i++) {

@@ -36,6 +36,10 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
                 'type': 'lobby.notify.join',
                 'user': self.user_id,
             })
+            await self.channel_layer.group_send(self.group_lobby, {
+                'type': 'lobby.request.settings',
+                'channel': self.channel_name,
+            })
 
         else:
             users = []
@@ -167,6 +171,21 @@ class LobbyConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json({
             'event': 'list',
             'list': await self.get_lobby_info(),
+        })
+
+    async def lobby_request_settings(self, event):
+        if not self.is_host:
+            return
+
+        await self.channel_layer.send(event['channel'], {
+            'type': 'lobby.receive.settings',
+            'settings': self.game_settings,
+        })
+
+    async def lobby_receive_settings(self, event):
+        await self.send_json({
+            'event': 'settings',
+            'settings': event['settings'],
         })
 
     async def lobby_notify_left(self, event):
