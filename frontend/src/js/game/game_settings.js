@@ -3,10 +3,10 @@ export let gameScore = 5
 export let ballSpeedIncrement = 25
 export let isPowerupChecked = false
 
-function setDefaultGameSettings() {
-  gameScore = 5
-  ballSpeedIncrement = 25
-  isPowerupChecked = false
+export function setGameSettingsInfo(pGameScore=5, pBallSpeedIncrement=25, pIsPowerupChecked=false) {
+  gameScore = pGameScore
+  ballSpeedIncrement = pBallSpeedIncrement
+  isPowerupChecked = pIsPowerupChecked
 }
 
 export function initGameSettings() {

@@ -7,7 +7,7 @@ import { queueNotification } from "./ui_utils/notification_utils.js";
 import { loadPage, loadUsersInfo } from "./router.js";
 import { joinMatch, defaultMatchOnClose } from "./game/api.js";
 import { initLobbyList } from "./lobby_list.js";
-import { getGameSettingsInfo } from "./game/game_settings.js";
+import { getGameSettingsInfo, setGameSettingsInfo } from "./game/game_settings.js";
 import { checkInTournament, checkIsTournamentOpponent, joinTournament, leaveTournament, loadTournamentList, updateTournamentPlayerReady } from "./tournament.js";
 import { loadUserAvatar } from "./settings/upload_avatar.js"
 
@@ -150,9 +150,11 @@ export async function joinLobby(id) {
         break
 
       case 'settings':
-        gameScore = settings.game_score
-        ballSpeedIncrement = settings.ball_speed_increment
-        isPowerupChecked = settings.is_powerup_checked
+        setGameSettingsInfo(
+          data.settings.game_score,
+          data.settings.ball_speed_increment,
+          data.settings.is_powerup_checked
+        )
         break
 
       case 'list':
