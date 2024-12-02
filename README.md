@@ -1,24 +1,46 @@
-# 42KL-23-Ft_Transcendence
+# ft_transcendence
 
-Final project at 42KL Core's Programme.
+This is the final project for 42KL's Core Program. This project provided us an introduction to web development by reimagining the classic game Pong with our own twist!
 
-This project is about creating a website for the mighty Pong contest!
+<img src="https://github.com/user-attachments/assets/4ba9bc28-9468-4f10-a5a0-7d8c9c90a6aa" alt="start_page_demo" width="500" />
+<img src="https://github.com/user-attachments/assets/1c6561b1-68f0-404a-b0bb-64f0ff56ebcf" alt="start_page_demo" width="500" />
 
 ![login](https://github.com/user-attachments/assets/88dfcfcd-0844-4a23-878c-e1e247b02007)
 
-_____
+## Requirements / Features
+- Use a Framework as a backend (Django)
+- Use a Database for the backend (Postgresql)
+- Standard user management, authentication and users across tournaments
+  - login, signup, changing user settings
+- Remote Playing
+  - players can play each other across different devices
+- Game Customization Options
+  - players can tweak the game settings before playing a match
+- Live Chat
+  - users can send live messages to each other
+- User and Game Statistics Dashboards
+- Implement Two-Factor Authentication (2FA) and JWT
+- Expanding Browser Compatibility
+- Replacing Basic Pong with Server-Side Pong and Implementing an API
 
-## Features
-* User Management
-* Game
+## Snapshots
+### Gameplay
 
-_______
-## Tech Stack
-Backend: Python, Django
+<img src="https://github.com/user-attachments/assets/b85e2f77-f259-44b2-8f73-ccf89a4b9a50" alt="start_page_demo" width="500" />
+<img src="https://github.com/user-attachments/assets/0cec3caf-07e3-4a23-9f0b-7fa382c0a5fc" alt="start_page_demo" width="500" />
 
-________
-## Dependencies
-Docker, docker-compose, Makefile
+
+### Match History + Game Statistics Dashboard
+![image](https://github.com/user-attachments/assets/c18d4a01-a23e-43f0-9f9c-2a93235ab364)
+
+### Friends + Live Chat Page 
+![image](https://github.com/user-attachments/assets/68818ddf-a994-4c3a-96a1-cbb336c4d070)
+
+### How to Play Page
+![image](https://github.com/user-attachments/assets/70cbdd01-45cd-4cf3-b912-418281fe22a7)
+
+### User Settings Page
+![image](https://github.com/user-attachments/assets/11313b8b-fec8-4061-8460-afd92398ae23)
 
 ______
 ## Docker Setup
